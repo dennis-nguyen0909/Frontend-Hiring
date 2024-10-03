@@ -5,7 +5,7 @@ import NotFound from '../components/NotFound/NotFound';
 import { JobPage } from '../pages/job/JobPage';
 import Register from '../pages/auth/RegisterPage';
 import AdminPage from '../pages/admin/AdminPage';
-
+import VerifyEmail from '../pages/auth/VerifyEmail';
 interface IRoute {
     path: string;
     page: ComponentType ;
@@ -40,4 +40,9 @@ export const routes: IRoute[] = [
         page: AdminPage,
         isShowHeader: true,
     },
+    {
+        path:'/verify',
+        page:VerifyEmail,
+        isShowHeader:false
+    }
 ];
