@@ -6,6 +6,8 @@ import { JobPage } from '../pages/job/JobPage';
 import Register from '../pages/auth/RegisterPage';
 import AdminPage from '../pages/admin/AdminPage';
 import VerifyEmail from '../pages/auth/VerifyEmail';
+import ForgotPage from '../pages/auth/ForgotPage';
+import ResetPage from '../pages/auth/ResetPage';
 interface IRoute {
     path: string;
     page: ComponentType ;
@@ -43,6 +45,16 @@ export const routes: IRoute[] = [
     {
         path:'/verify',
         page:VerifyEmail,
+        isShowHeader:false
+    },
+    {
+        path:'/forgot-password',
+        page: ForgotPage,
+        isShowHeader:false
+    },
+    {
+        path:'/reset-password',
+        page: ResetPage,
         isShowHeader:false
     }
 ];
