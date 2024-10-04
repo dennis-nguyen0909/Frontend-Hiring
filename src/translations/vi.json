@@ -1,0 +1,9 @@
+{
+    "role_manager": "Quản lý",
+    "role_admin": "Admin",
+    "role_region": "Quản lý vùng",
+    "role_branch": "Quản lý chi nhánh",
+    "role_employee": "Nhân viên",
+    "home":"Trang chủ"
+  }
+  
