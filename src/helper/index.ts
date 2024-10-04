@@ -1,5 +1,8 @@
 import bagIcon from "../assets/icons/bag.png";
 import buldingIcon from "../assets/icons/building.png";
+import jobIcon from '../assets/icons/job.png'
+import companiesIcon from '../assets/icons/companies.png'
+import candidateIcon from '../assets/icons/candidate.png'
 export const itemsIcon = [
   {
     icon: bagIcon,
@@ -67,3 +70,38 @@ export const menuHeader = [
   },
 ];
 
+export const suggestion = [
+  { name: "Designer", color: '#474C54' },
+  { name: "Programing", color: '#474C54' },
+  { name: "Digital Marketing", color: '#0A65CC' },
+  { name: "Video", color: '#474C54' },
+  { name: "Animation", color: '#474C54' }
+];
+
+
+export const jobItems = [
+  {
+    name: "Live Job",
+    color: '#474C54',
+    count: '1,75,324',
+    image: jobIcon,
+  },
+  {
+    name: "Companies",
+    color: '#474C54',
+    count:'97,354',
+    image: companiesIcon
+  },
+  {
+    name: "Candidates",
+    color: '#0A65CC',
+    count:'38,47,154',
+    image: candidateIcon
+  },
+  {
+    name: "New Jobs",
+    color: '#474C54',
+    count:'7,532',
+    image: jobIcon
+  }
+]

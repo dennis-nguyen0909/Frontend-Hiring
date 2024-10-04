@@ -7,6 +7,8 @@ import store from './redux/store/store.ts'
 import { IntlProvider } from 'react-intl'
 import enMessages from './translations/Messages.ts'
 import viMessages from './translations/vi.json'
+import 'typeface-inter';
+
 const messages={
   en: enMessages,
   vi:viMessages

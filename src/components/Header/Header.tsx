@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PhoneOutlined, SearchOutlined } from "@ant-design/icons";
+import { MenuOutlined, PhoneOutlined, SearchOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { menuHeader } from "../../helper";
 import PhoneInput from "react-phone-input-2";
@@ -65,11 +65,11 @@ const Header: React.FC = () => {
   return (
     <>
       <div
-        className=" flex justify-between items-center px-[110px] w-full "
+        className=" justify-between items-center px-primary w-full sticky hidden md:flex"
         style={{ backgroundColor: "#f1f2f4" }}
       >
         <div>
-          <ul className="flex gap-[20px] items-center">
+          <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap">
             {menuHeader.map((item, index) => {
               return (
                 <li
@@ -95,16 +95,16 @@ const Header: React.FC = () => {
           <p>+1-202-555-0178</p>
 
           <LanguageSelector />
-        </div>
+        </div>  
       </div>
-      <div className=" flex justify-between items-center  w-full border-r-2 " > 
-        <div className="flex items-center justify-start pl-[110px] py-5  border-b-2 w-full">
-          <div className="flex  w-full items-center gap-[40px]">
+      <div className=" flex justify-between items-center  w-full  border-r-2  " > 
+        <div className="flex items-center justify-start md:pl-primary py-5 w-full" style={{borderBottom:'1px solid #e3e5e9'}}>
+          <div className="flex  w-full items-center gap-[40px]  justify-between mx-5 md:mx-0">
             <div className="flex items-center gap-2">
               <Image src={icon} preview={false} />
               <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">MyJob</h1>
             </div>
-            <div className="flex items-center gap-2 border-2 w-[60%] rounded-md">
+            <div className="md:flex items-center gap-2 w-[60%] rounded-md hidden "  style={{border:'1px solid #e3e5e9'}}>
             <Select
               bordered={false}
                   value={selectedLanguage}
@@ -140,9 +140,12 @@ const Header: React.FC = () => {
                 />
               </div>
             </div>
+            <div className="md:hidden flex " >
+              <MenuOutlined style={{fontSize:'24px'}}/>
+            </div>
           </div>
 
-          <div className="flex gap-[10px]  items-center pr-[110px]">
+          <div className="gap-[10px]  items-center pr-primary hidden md:flex">
             <Button size="large"  className="rounded">Sign In</Button>
             <Button size="large" type="primary" className="rounded">Post a Jobs</Button>
           </div>
