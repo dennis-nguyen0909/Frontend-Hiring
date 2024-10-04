@@ -99,7 +99,7 @@ const Header: React.FC = () => {
       </div>
       <div className=" flex justify-between items-center  w-full  border-r-2  " > 
         <div className="flex items-center justify-start md:pl-primary py-5 w-full" style={{borderBottom:'1px solid #e3e5e9'}}>
-          <div className="flex  w-full items-center gap-[40px]  justify-between mx-5 md:mx-0">
+          <div className="flex  w-full items-center gap-[40px]  justify-between md:justify-start mx-5 md:mx-0">
             <div className="flex items-center gap-2">
               <Image src={icon} preview={false} />
               <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">MyJob</h1>
