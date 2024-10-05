@@ -28,5 +28,10 @@ export default {
       
     },
   },
+  variants: {
+    extend: {
+      borderColor: ['hover'], // Enable border color change on hover
+    },
+  },
   plugins: [],
 };

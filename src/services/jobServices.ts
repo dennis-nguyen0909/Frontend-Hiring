@@ -10,10 +10,14 @@ interface IJob{
     filter ?:string;
     sort ?:string;
 }
-export const getAllJobs = async(data:IJob)=>{
-    const resData = await axiosInstance.get('/jobs',{
-        withCredentials:true
+export const getAllJobs = async (data: { pageSize: number }) => {
+    const resData = await axiosInstance.get('/jobs', {
+      params: {
+        pageSize: data.pageSize // Add limit as a query parameter
+      },
+      withCredentials: true,
     });
-    if(resData) return resData.data
-    return null
-} 
+    
+    if (resData) return resData.data;
+    return null;
+  }
