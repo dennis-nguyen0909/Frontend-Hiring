@@ -9,6 +9,7 @@ export default {
       colors: {
         primaryBlue: "#0f65cc",
         textBlack: "#18191C",
+        btnColor:"#EDEFF5"
       },
       spacing: {
         'primary': '110px',
@@ -23,7 +24,8 @@ export default {
       },
       boxShadow:{
         'custom': '0px 0px 15px rgba(0, 0, 0, 0.15)'
-      }
+      },
+      
     },
   },
   plugins: [],
