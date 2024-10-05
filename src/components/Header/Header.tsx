@@ -63,7 +63,7 @@ const Header: React.FC = () => {
   ]
 
   return (
-    <>
+    <div>
       <div
         className=" justify-between items-center px-primary w-full sticky hidden md:flex"
         style={{ backgroundColor: "#f1f2f4" }}
@@ -78,10 +78,10 @@ const Header: React.FC = () => {
                   style={{ color: item.color }} // Thiết lập màu văn bản động
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.color = item.colorHover)
-                  } // Đổi màu khi hover
+                  } 
                   onMouseLeave={(e) =>
                     (e.currentTarget.style.color = item.color)
-                  } // Quay về màu ban đầu khi rời hover
+                  } 
                 >
                   <Link to={item.path}>{item.name}</Link>
                 </li>
@@ -151,7 +151,7 @@ const Header: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

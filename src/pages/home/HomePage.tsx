@@ -1,12 +1,10 @@
-import { Button, Image, Input, Select } from "antd";
-import introduceBackground from "../../assets/images/introduce.png";
-import { suggestion } from "../../helper";
-import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
 import Introduce from "../introduce/Introduce";
+import Puporlar from "../puporlar/PuporlarPage";
 const HomePage = () => {
   return (
    <>
     <Introduce />
+    <Puporlar />
    </>
   );
 };

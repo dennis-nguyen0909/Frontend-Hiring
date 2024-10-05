@@ -7,7 +7,7 @@ interface DefaultPageProps {
 
 const DefaultPage: React.FC<DefaultPageProps> = ({ children }) => {
   return (
-    <div>
+    <div >
       {/* Header có thể tái sử dụng trên nhiều trang */}
       <Header />
 
@@ -17,9 +17,11 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children }) => {
       </main>
 
       {/* Footer có thể tái sử dụng */}
+
+{/* 
       <footer>
         <p>© 2024 My Application. All rights reserved.</p>
-      </footer>
+      </footer> */}
     </div>
   );
 };

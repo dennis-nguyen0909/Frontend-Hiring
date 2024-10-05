@@ -8,6 +8,7 @@ export default {
     extend: {
       colors: {
         primaryBlue: "#0f65cc",
+        textBlack: "#18191C",
       },
       spacing: {
         'primary': '110px',
@@ -15,11 +16,14 @@ export default {
       textColor: {
         'primary': '#0f65cc',
         'title':'#5E6670',
-        'grayText':'767F8C'
+        'grayText':'#767F8C'
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
       },
+      boxShadow:{
+        'custom': '0px 0px 15px rgba(0, 0, 0, 0.15)'
+      }
     },
   },
   plugins: [],
