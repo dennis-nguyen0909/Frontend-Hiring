@@ -1,6 +1,6 @@
 // src/services/authService.ts
 import axios from 'axios';
-import { LoginData, RegisterData, VerifyCode } from './types';
+import { LoginData, RegisterData, VerifyCode } from '../types';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL

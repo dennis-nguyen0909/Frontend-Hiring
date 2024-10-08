@@ -6,7 +6,7 @@ import facebook from '../../assets/icons/fb.png'
 import google from '../../assets/icons/gg.png'
 import { ArrowRightOutlined, EyeFilled, EyeInvisibleOutlined} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import * as authService from '../../services/authServices'
+import * as authService from '../../services/modules/authServices'
 import { itemsIcon } from "../../helper";
 // full_name: string;
 // email: string;

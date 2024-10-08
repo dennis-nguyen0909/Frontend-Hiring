@@ -3,30 +3,51 @@ import React, { useState } from "react";
 import logo from '../../assets/icons/logo.png';
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import * as authService from '../../services/authServices';
-
+import { useDispatch, useSelector } from "react-redux";
+import { getDetailUser, verifyCode } from "../../services";
+import { jwtDecode, JwtPayload } from "jwt-decode";
+import { updateUser } from "../../redux/slices/userSlices";
 const VerifyEmail = () => {
   const [codeId, setCodeId] = useState<string>('');
+  const user = useSelector(state=> state.user)
+  console.log("duydeptraiaiia",user)
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch =useDispatch();
   const { email, userId } = location.state || {};
 
   const onSubmitVerify = async () => {
     try {
-      const verifyCode = await authService.verifyCode({ id: userId, code_id: codeId });
-      if (verifyCode?.data?.access_token) {
-        localStorage.setItem('token', verifyCode.data.access_token);
-        navigate('/');
+      const response = await verifyCode({ id: userId, code_id: codeId });
+      if (response?.data?.access_token) {
+        const {access_token,refresh_token}=response.data
+        localStorage.setItem('access_token',access_token);
+        localStorage.setItem('refresh_token',refresh_token);
+        // navigate('/',{
+        //   state:{
+        //     accessToken:verifyCode?.data?.access_token
+        //   }
+        // });
+        console.log("resonse",response)
+        const decodeId = jwtDecode(access_token);
+        console.log("decodeId",decodeId)
+        handleGetDetailUser(decodeId,access_token)
       }else{
         notification.error({
           message: "Notification",
-          description: verifyCode?.message[0],
+          description: response?.message[0],
         })
       }
     } catch (error) {
       console.error("Error during verification:", error);
     }
   };
+
+  const handleGetDetailUser =async (id:JwtPayload,access_token:string)=>{
+    const storage = localStorage.getItem('refresh_token');
+    const res = await getDetailUser(id.sub+"", access_token); 
+    dispatch(updateUser({ ...res?.data.items, access_token: access_token, refresh_token: storage }));
+  }
 
   const renderFormVerify = () => {
     return (

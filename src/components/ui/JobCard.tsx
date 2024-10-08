@@ -27,9 +27,13 @@ const JobCard = ({ job }) => {
         <div className="flex flex-col ml-4 gap-2 w-full">
           <div className="flex items-center gap-3 justify-between md:justify-start">
             <p className="text-base font-semibold">{job?.title}</p>
-            <div className="bg-[#E8F1FF] text-primaryBlue px-2 py-1 rounded-full text-xs">Contact Base</div>
+            <div className="bg-[#E8F1FF] text-primaryBlue px-2 py-1 rounded-full text-xs hidden md:block">Contact Base</div>
+                <div className={`bg-white ${isHover ? 'bg-[#E8F1FF]' : ''} w-10 h-10 cursor-pointer rounded-md block md:hidden `}>
+            <Image src={bookmark} preview={false} />
+            </div>
           </div>
           <div className="flex flex-wrap gap-2 w-max flex-col md:flex-row">
+          <div className="bg-[#E8F1FF] text-primaryBlue px-2 py-1 rounded-full text-xs text-center block md:hidden ">Contact Base</div>
             {job?.location && (
               <p className="flex items-center gap-1 text-sm">
                 <Image
@@ -59,11 +63,12 @@ const JobCard = ({ job }) => {
               />
               {job?.benefit[0]}
             </p>
+
           </div>
         </div>
       </div>
       <div className=" w-full  flex items-center md:justify-end gap-3 mt-4 sm:mt-0 justify-between">
-        <div className={`bg-white ${isHover ? 'bg-[#E8F1FF]' : ''} w-10 h-10 cursor-pointer rounded-md`}>
+        <div className={`bg-white ${isHover ? 'bg-[#E8F1FF]' : ''} w-10 h-10 cursor-pointer rounded-md hidden md:block `}>
           <Image src={bookmark} preview={false} />
         </div>
         <Button
@@ -72,7 +77,7 @@ const JobCard = ({ job }) => {
               isHover
               ? "!bg-[#0A65CC] !text-white"
               : "!text-[#0A65CC] !bg-[#EDEFF5]"
-          }`}
+          } flex-1 md:flex-none` }
         >
           Apply Now <ArrowRightOutlined className="font-bold" />
         </Button>

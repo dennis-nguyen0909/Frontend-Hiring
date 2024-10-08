@@ -1,7 +1,7 @@
 import { Button, Image } from "antd";
 import React, { useEffect, useState } from "react";
 import arrowRight from "../../assets/icons/arrowRight.png";
-import * as jobServices from "../../services/jobServices";
+import * as jobServices from "../../services/modules/jobServices";
 import defaultImage from "../../assets/images/company/default.png";
 import { ArrowRightOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import JobCard from "../../components/ui/JobCard";
@@ -25,8 +25,8 @@ const [isHover,setIsHover]=useState(false)
   }, []);
   console.log("jobs", jobs);
   return (
-    <div className="px-5 md:px-primary  h-screen">
-      <div className="flex justify-between items-center h-1/4">
+    <div className="px-5 md:px-primary h-auto mb-[150px]">
+      <div className="flex justify-between items-center h-1/4" style={{margin:'50px 0'}}>
         <h1 className="text-textBlack text-3xl font-medium">Featured job</h1>
         <div className="relative flex items-center ">
           <Button className="text-primary w-[130px] h-[40px]">View all <ArrowRightOutlined className="font-bold" /> </Button>
