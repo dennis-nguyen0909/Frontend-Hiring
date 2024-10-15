@@ -25,6 +25,9 @@ export default {
       boxShadow:{
         'custom': '0px 0px 15px rgba(0, 0, 0, 0.15)'
       },
+      fontSize:{
+        'text-primary':'20px',
+      }
       
     },
   },

@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+import { isJsonString } from "../untils";
 import { 
   bagIcon, 
   buldingIcon, 
@@ -53,36 +55,64 @@ export const menuHeader = [
     
   },
   {
-    name: "Find Job",
+    name: "Jobs",
     path: "/find-job",
     color:"#5E6670",
     colorHover:"#205faf"
   },
   {
-    name: "Employers",
+    name: "Companies",
     path: "/employers",
     color:"#5E6670",
     colorHover:"#205faf"
   },
   {
-    name: "Candidates",
+    name: "About",
     path: "/candidates",
     color:"#5E6670",
     colorHover:"#205faf"
   },
-  {
-    name: "Pricing Plans",
-    path: "/pricing-plans",
-    color:"#5E6670",
-    colorHover:"#205faf"
-  },
-  {
-    name: "Customer Supports",
-    path: "/customer-supports",
-    color:"#5E6670",
-    colorHover:"#205faf"
-  },
 ];
+
+// export const menuHeader = [
+//   {
+//     name: "Việc làm",
+//     path: "/",
+//     color:"#5E6670",
+//     colorHover:"#205faf"
+    
+//   },
+//   {
+//     name: "Hồ Sơ & CV",
+//     path: "/find-job",
+//     color:"#5E6670",
+//     colorHover:"#205faf"
+//   },
+//   {
+//     name: "Công Cụ",
+//     path: "/employers",
+//     color:"#5E6670",
+//     colorHover:"#205faf"
+//   },
+//   {
+//     name: "Cẩm Nang Nghề Nghiệp",
+//     path: "/candidates",
+//     color:"#5E6670",
+//     colorHover:"#205faf"
+//   },
+//   {
+//     name: "TOP CV",
+//     path: "/pricing-plans",
+//     color:"#5E6670",
+//     colorHover:"#205faf"
+//   },
+//   {
+//     name: "Customer Supports",
+//     path: "/customer-supports",
+//     color:"#5E6670",
+//     colorHover:"#205faf"
+//   },
+// ];
 
 export const suggestion = [
   { name: "Designer", color: '#474C54' },
@@ -264,3 +294,17 @@ export const popularCategorys = [
     icon:dataSEIcon
   }
 ]
+
+
+export const handleDecoded = (token: any) => {
+  let decoded = {};
+  try {
+    if (token) {
+      // Decode the JWT token directly
+      decoded = jwtDecode(token);
+    }
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+  return { decoded, token };
+};

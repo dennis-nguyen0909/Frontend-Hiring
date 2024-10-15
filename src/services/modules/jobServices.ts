@@ -1,9 +1,6 @@
-// src/services/authService.ts
-import axios from 'axios';
+import { axiosInstance } from "../config/axiosConfig";
 
-const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL
-});
+// src/services/authService.ts
 interface IJob{
     current ?:string;
     pageSize ?:string;

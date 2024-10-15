@@ -19,18 +19,13 @@ const VerifyEmail = () => {
   const onSubmitVerify = async () => {
     try {
       const response = await verifyCode({ id: userId, code_id: codeId });
-      if (response?.data?.access_token) {
+      console.log("res",response)
+      if (response?.data?.user) {
         const {access_token,refresh_token}=response.data
         localStorage.setItem('access_token',access_token);
         localStorage.setItem('refresh_token',refresh_token);
-        // navigate('/',{
-        //   state:{
-        //     accessToken:verifyCode?.data?.access_token
-        //   }
-        // });
-        console.log("resonse",response)
+        navigate('/');
         const decodeId = jwtDecode(access_token);
-        console.log("decodeId",decodeId)
         handleGetDetailUser(decodeId,access_token)
       }else{
         notification.error({
