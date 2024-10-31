@@ -1,24 +1,23 @@
 import React, { useState } from "react";
-import {
-  MenuOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { menuHeader } from "../../helper";
 import "react-phone-input-2/lib/style.css";
-import { Button, Image, Input, Select } from "antd";
-import icon from "../../assets/icons/logo.png";
+import { Avatar, Button, Divider, Image, Popover } from "antd";
+import avtDefault from '../../assets/avatars/avatar-default.jpg'
 import { useSelector } from "react-redux";
 import logo from "../../assets/logo/LogoH.png";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import Setting from "../Setting/Setting";
+import './styles.css'
 const Header: React.FC = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
 
-  console.log("usersss", user);
+
   const handleChange = (value: string) => {
     setSelectedLanguage(value);
-    console.log(`Selected language: ${value}`);
   };
   const languages: any = [
     {
@@ -66,9 +65,28 @@ const Header: React.FC = () => {
       ),
     },
   ];
+  
+  const content = (
+    <div className="w-[400px]">
+                      <div className="flex items-center">
+                          <Avatar size="large" src={avtDefault} />
+                          <div className="ml-5">
+                              <p className="font-semibold text-[14px] text-primaryColor ">{user?.full_name}</p>
+                              <p className="font-light text-[12px] text-[#ccc]">Mã ứng viên:<span className="text-black">{user?._id}</span></p>
+                              <p className="font-light text-[12px] text-[#ccc]">Email: {user?.email}</p>
+                          </div>
+                      </div>
+                      <Divider />
+                      <div className="menu-setting">
+                            <Setting />
+                      </div>
+
+    </div>
+  );
+
 
   return (
-    <div>
+    <header>
       <div
         className=" justify-between items-center px-primary w-full py-3 sticky hidden md:flex"
         style={{ backgroundColor: "black" }}
@@ -90,6 +108,38 @@ const Header: React.FC = () => {
               </li>
             );
           })}
+          <div>
+            {user.access_token ? (
+              <Popover
+               placement="bottomLeft"
+               overlayClassName="no-arrow"
+               opened={hovered} content={content} >
+                <li
+                className="relative w-[90px] bg-white rounded-full py-1 px-1 flex items-center justify-between cursor-pointer"
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
+              >
+                <Avatar size="large" src={avtDefault} />
+                {!hovered ? (
+                  <ChevronDown />
+                ) : (
+                  <ChevronUp />
+                )}
+              </li>
+              </Popover>
+            ):(
+              <div>
+                 <div className="flex space-x-2">
+                <Button onClick={() => navigate("/login")} variant="outline" className="bg-white text-black hover:bg-gray-200 hover:!text-black">
+                  Login
+                </Button>
+                <Button onClick={() => navigate("/register")} style={{backgroundColor: "#d64453"}}  className="text-white outline-none border-none hover:!text-black">
+                  Register
+                </Button>
+      </div>
+                </div>
+            )}
+          </div>
         </ul>
         {/* <div className="flex items-center gap-5 ">
           <Image src={phoneCall} preview={false} />
@@ -191,7 +241,7 @@ const Header: React.FC = () => {
           </div>
         </div>
       </div> */}
-    </div>
+    </header>
   );
 };
 

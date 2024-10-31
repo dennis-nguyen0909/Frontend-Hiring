@@ -1,0 +1,3 @@
+.no-arrow .ant-popover-arrow {
+    display: none; /* Ẩn tam giác */
+  }

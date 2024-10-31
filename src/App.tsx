@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { routes } from '../src/routes/index';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Fragment } from 'react';
 import DefaultPage from './pages/default/DefaultPage';
 import NotFound from './components/NotFound/NotFound';
-import { useDispatch, useSelector } from 'react-redux';
-import { axiosJWT } from './services/config/axiosConfig';
+import { useDispatch } from 'react-redux';
 import { handleDecoded } from './helper';
-import { getDetailUser, refreshToken } from './services'; // Assuming you have refreshToken in services
+import { getDetailUser } from './services'; // Assuming you have refreshToken in services
 import { resetUser, updateUser } from './redux/slices/userSlices';
-import  { JwtPayload,jwtDecode } from 'jwt-decode'; // Fix the import for jwtDecode
-
+import  { jwtDecode, JwtPayload } from 'jwt-decode'; // Fix the import for jwtDecode
+import {axiosInstance} from './services/config/axiosConfig';
+import * as  authServices from './services/modules/authServices'
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
@@ -19,6 +19,7 @@ function App() {
     const accessToken = localStorage.getItem("access_token");
     if (accessToken) {
       const { token, decoded } = handleDecoded(accessToken);
+      console.log("decoded",decoded)
       if (decoded?.sub) {
         handleGetDetailUser(decoded, token);
       }
@@ -35,57 +36,39 @@ function App() {
     }
   };
 
-  // axiosJWT.interceptors.request.use(
-  //   async (config) => {
-  //     try {
-  //       const currentTime = new Date().getTime() / 1000; // current time in seconds
-  //       const accessToken = localStorage.getItem("access_token");
-  //       const decoded = handleDecoded(accessToken);
+  axiosInstance.interceptors.request.use(
+    async (config) => {
+      const currentTime = new Date();
+      const accessToken = localStorage.getItem("access_token");
+      const { decoded } = handleDecoded(accessToken);
+      const storage = localStorage.getItem("refresh_token");
   
-  //       console.log("current time:", currentTime);
-  //       console.log("accessToken from localStorage:", accessToken);
-  //       console.log("decoded:", decoded);
+      if (!storage) {
+        console.log("No refresh token found.");
+        return config;
+      }
   
-  //       let storage = localStorage.getItem("refresh_token");
+      const decodedRefreshToken = jwtDecode(storage);
+      console.log("Decoded Refresh Token:", decodedRefreshToken);
   
-  //       if (decoded?.exp && decoded.exp < currentTime) {
-  //         console.log("Access token expired, checking refresh token...");
+      if (decodedRefreshToken?.exp && decoded?.exp < currentTime.getTime() / 1000) {
+        console.log("Access token expired, checking refresh token...");
   
-  //         if (storage) {
-  //           const refreshToken = JSON.parse(storage);
-  //           const decodedRefreshToken = jwtDecode(refreshToken);
-  
-  //           console.log("Decoded Refresh Token:", decodedRefreshToken);
-  
-  //           if (decodedRefreshToken?.exp && decodedRefreshToken.exp > currentTime) {
-  //             console.log("Refresh token valid, refreshing access token...");
-  //             const data = await refreshToken(refreshToken);
-  
-  //             console.log("New access token:", data?.access_token);
-  //             config.headers["Authorization"] = `Bearer ${data?.access_token}`;
-  //             localStorage.setItem('access_token', data?.access_token);
-  //             dispatch(updateUser({ access_token: data?.access_token }));
-  //           } else {
-  //             console.log("Refresh token expired");
-  //             dispatch(resetUser());
-  //             localStorage.removeItem('access_token');
-  //             localStorage.removeItem('refresh_token');
-  //           }
-  //         }
-  //       } else {
-  //         console.log("Access token still valid");
-  //         config.headers["Authorization"] = `Bearer ${accessToken}`;
-  //       }
-  //     } catch (error) {
-  //       console.error('Error in request interceptor:', error);
-  //       dispatch(resetUser());
-  //     }
-  //     return config;
-  //   },
-  //   (err) => {
-  //     return Promise.reject(err);
-  //   }
-  // );
+        if (decodedRefreshToken.exp > currentTime.getTime() / 1000) {
+          console.log("Refreshing token...");
+          const data = await authServices.refreshToken(storage);
+          config.headers["token"] = `Bearer ${data?.access_token}`;
+        } else {
+          console.log("Refresh token expired, resetting user.");
+          dispatch(resetUser());
+        }
+      }
+      return config;
+    },
+    function (err) {
+      return Promise.reject(err);
+    }
+  );
   
 
   return (

@@ -4,7 +4,7 @@ import logo from '../../assets/images/logo.png';
 import icon from '../../assets/icons/logo.png';
 import { ArrowRightOutlined, EyeFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import * as authService from '../../services/modules/authServices';
+import * as authServices from '../../services/modules/authServices';
 import LoadingComponent from "../../components/Loading/LoadingComponent";
 import { itemsIcon } from "../../helper";
 import facebook from '../../assets/icons/fb.png'
@@ -27,7 +27,7 @@ const LoginPage = () => {
         try {
             setIsLoading(true);
             const { fullName, username, email, password, role } = values;
-            const res = await authService.register({ full_name: fullName, username, email, password, role });
+            const res = await authServices.register({ full_name: fullName, username, email, password, role });
             if (res.data) {
                 notification.success({
                     message: "Notification",
@@ -48,7 +48,10 @@ const LoginPage = () => {
                 });
             }
         } catch (error) {
-            console.error(error);
+            notification.error({
+                message: "Notification",
+                description: error.message,
+            })
         }
         setIsLoading(false);
     };

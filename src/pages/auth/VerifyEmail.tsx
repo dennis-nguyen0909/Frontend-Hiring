@@ -20,7 +20,7 @@ const VerifyEmail = () => {
     try {
       const response = await verifyCode({ id: userId, code_id: codeId });
       console.log("res",response)
-      if (response?.data?.user) {
+      if (response?.data) {
         const {access_token,refresh_token}=response.data
         localStorage.setItem('access_token',access_token);
         localStorage.setItem('refresh_token',refresh_token);
@@ -34,7 +34,10 @@ const VerifyEmail = () => {
         })
       }
     } catch (error) {
-      console.error("Error during verification:", error);
+      notification.error({
+        message: "Notification",
+        description: error.message,
+      })
     }
   };
 

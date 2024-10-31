@@ -8,7 +8,7 @@ interface JobItemsProps {
 }
 
 const JobItems: React.FC<JobItemsProps> = ({ count, label,key,image }) => {
-    console.log("duydeptrai",count)
+
   return (
     <div key={key} className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow w-[280px]">
       <div className="flex items-center justify-center w-12 h-12 bg-blue-50 rounded-lg">

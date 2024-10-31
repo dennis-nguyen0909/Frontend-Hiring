@@ -3,16 +3,18 @@ import JobWork from "../../components/ui/JobWork";
 import TopCompanies from "../../components/ui/TopCompanies";
 
 import FeatureJob from "../FeatureJob/FeatureJob";
+import FeatureJobV2 from "../FeatureJob/FeatureJobV2";
 import Introduce from "../introduce/Introduce";
+import IntroduceV2 from "../introduce/IntroduceV2";
 
 const HomePage = () => {
   return (
    <>
-    <Introduce />
+    <IntroduceV2 />
     {/* <Puporlar /> */}
-    <JobWork />
-    <PopularCategory />
-    <FeatureJob />
+    {/* <JobWork /> */}
+    {/* <PopularCategory /> */}
+    <FeatureJobV2 />
     <TopCompanies />
    </>
   );

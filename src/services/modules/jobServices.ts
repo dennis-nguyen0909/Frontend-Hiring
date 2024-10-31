@@ -1,4 +1,4 @@
-import { axiosInstance } from "../config/axiosConfig";
+import { axiosInstance } from "../config/axiosInterceptor";
 
 // src/services/authService.ts
 interface IJob{

@@ -1,5 +1,5 @@
 // src/services/authService.ts
-import { axiosInstance } from '../config/axiosConfig';
+import { axiosInstance } from '../config/axiosInterceptor';
 import { LoginData, RegisterData, VerifyCode } from '../types';
 
 export const login = async (data: LoginData) => {
@@ -38,5 +38,33 @@ export const retryActive = async (email: string) => {
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Đăng ký thất bại');
+  }
+};
+
+export const logout = async (token:string) => {
+  console.log("token",token)
+  try {
+    const response = await axiosInstance.post('/auth/logout', {}, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Đăng xuất thất bại');
+  }
+};
+
+export const refreshToken = async (token:string) => {
+  console.log("token",token)
+  try {
+    const response = await axiosInstance.post('/auth/refresh-token', {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Đăng xuất thất bại');
   }
 };

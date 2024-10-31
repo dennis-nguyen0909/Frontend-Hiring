@@ -23,7 +23,8 @@ const [isHover,setIsHover]=useState(false)
   useEffect(() => {
     handleGetAllJobs();
   }, []);
-  console.log("jobs", jobs);
+
+  
   return (
     <div className="px-5 md:px-primary h-auto mb-[150px]">
       <div className="flex justify-between items-center h-1/4" style={{margin:'50px 0'}}>

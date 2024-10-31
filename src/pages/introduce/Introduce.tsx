@@ -6,7 +6,6 @@ import JobItems from "../../components/ui/JobItems";
 
 const Introduce = () =>{
 
-
     return (
         <div className="h-auto bg-[#f7f7f7] px-4 md:px-primary pb-20">
             <div className="flex w-full flex-col h-auto ">

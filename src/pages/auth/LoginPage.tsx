@@ -78,9 +78,9 @@ const LoginPage = () => {
       const { email, password } = values;
       // Gọi hàm login từ authService với email và password
       const res = await login({ username: email, password });
-      console.log("duydeptrai", res);
-      if (+res.error_code === 200) {
+      if (res.data.user) {
         const { access_token, refresh_token } = res.data.user;
+  
         localStorage.setItem("access_token", access_token);
         localStorage.setItem("refresh_token", refresh_token);
         const decoded = jwtDecode(access_token);
