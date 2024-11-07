@@ -1,5 +1,4 @@
 import { Button, Image } from "antd";
-import React from "react";
 import { popularCategorys } from "../../helper";
 import arrowRight from '../../assets/icons/arrowRight.png'
 const PopularCategory = ()=>{

@@ -8,6 +8,8 @@ import AdminPage from '../pages/admin/AdminPage';
 import VerifyEmail from '../pages/auth/VerifyEmail';
 import ForgotPage from '../pages/auth/ForgotPage';
 import ResetPage from '../pages/auth/ResetPage';
+import UserDetail from '../pages/detail/UserDetail';
+import Profile from '../pages/detail/Profile/Profile';
 interface IRoute {
     path: string;
     page: ComponentType ;
@@ -56,5 +58,20 @@ export const routes: IRoute[] = [
         path:'/reset-password',
         page: ResetPage,
         isShowHeader:false
-    }
+    },
+    {
+        path:'/setting-profile/:id',
+        page: UserDetail,
+        isShowHeader:true
+    },
+    {
+        path:'/profile/:id',
+        page: Profile,
+        isShowHeader:true
+    },
+    {
+        path: '*',
+        page: NotFound,
+        isShowHeader: false,
+    },
 ];

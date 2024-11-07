@@ -38,7 +38,6 @@ const [isHover,setIsHover]=useState(false)
   const handleChange = ()=>{
 
   } 
-  console.log("jobs",jobs)
   return (
     <div className="px-5 md:px-primary h-auto mb-[150px] bg-[#f3f5f7] pb-[100px] pt-[10px]">
       <div className="flex justify-between items-center h-1/4" style={{margin:'50px 0'}}>

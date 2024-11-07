@@ -5,7 +5,7 @@ interface UserState {
   id: string | null;
   name: string | null;
   email: string | null;
-  fullname:string | null;
+  full_name:string | null;
   phone:string | null;
   avatar:string | null;
   address:string | null;
@@ -19,16 +19,17 @@ interface UserState {
   auth_providers:string | null;
   save_job_ids:string | null;
   cvs:string | null;
+  background:string | null;
 }
 
 const initialState: UserState = {
-  id: null,
-  name: null,
-  email: null,
-  fullname: null,
-  phone: null,
-  avatar: null,
-  address: null,
+  id: "",
+  name: "",
+  email: "",
+  full_name: "",
+  phone: "",
+  avatar: "",
+  address: "",
   gender: null,
   role: null,
   account_type: null,
@@ -37,6 +38,9 @@ const initialState: UserState = {
   auth_providers: null,
   save_job_ids: null,
   cvs: null,
+  background: "",
+  access_token: "",
+  refresh_token: "",
 };
 
 const userSlice = createSlice({

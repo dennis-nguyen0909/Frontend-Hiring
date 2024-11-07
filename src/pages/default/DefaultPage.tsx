@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Header from '../../components/Header/Header';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../../components/Footer/Footer';
 
 interface DefaultPageProps {
   children: React.ReactNode; // Nhận nội dung các trang con thông qua props
@@ -25,11 +26,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children }) => {
       </main>
 
       {/* Footer có thể tái sử dụng */}
-
-{/* 
-      <footer>
-        <p>© 2024 My Application. All rights reserved.</p>
-      </footer> */}
+        <Footer />
     </div>
   );
 };

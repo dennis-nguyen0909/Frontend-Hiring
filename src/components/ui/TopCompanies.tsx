@@ -20,7 +20,7 @@ const TopCompanies = () => {
       useEffect(() => {
         handleGetAllCompanys();
       }, []);
-      console.log("jobs", company);
+
       const renderCompanies = ()=>{
             return (
                 <div className="mt-[50px] flex flex-wrap gap-3 justify-between ">

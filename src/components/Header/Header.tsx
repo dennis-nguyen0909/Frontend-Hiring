@@ -69,7 +69,7 @@ const Header: React.FC = () => {
   const content = (
     <div className="w-[400px]">
                       <div className="flex items-center">
-                          <Avatar size="large" src={avtDefault} />
+                          <Avatar size="large" src={user?.avatar || avtDefault} />
                           <div className="ml-5">
                               <p className="font-semibold text-[14px] text-primaryColor ">{user?.full_name}</p>
                               <p className="font-light text-[12px] text-[#ccc]">Mã ứng viên:<span className="text-black">{user?._id}</span></p>
@@ -99,12 +99,12 @@ const Header: React.FC = () => {
           {menuHeader.map((item, idx) => {
             return (
               <li key={idx}>
-                <Link
-                  to={`/${item.name.toLowerCase()}`}
-                  className="text-white text-text-primary transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C]"
+                <div
+                  onClick={() => navigate(`${item.path}`)}
+                  className="text-white text-text-primary transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
                 >
                   {item.name}
-                </Link>
+                </div>
               </li>
             );
           })}
@@ -119,7 +119,7 @@ const Header: React.FC = () => {
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
               >
-                <Avatar size="large" src={avtDefault} />
+                <Avatar size="large" src={user?.avatar || avtDefault} />
                 {!hovered ? (
                   <ChevronDown />
                 ) : (

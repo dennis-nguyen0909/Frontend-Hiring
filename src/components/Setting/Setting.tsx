@@ -44,7 +44,7 @@ const Setting = () => {
       }
     };
     const settingsItems = [
-      { icon: <User className="w-5 h-5 text-primaryColor" />, text: "Cài đặt thông tin cá nhân", action: (navigate) => navigate(`/profile/${user._id}`) },
+      { icon: <User className="w-5 h-5 text-primaryColor" />, text: "Cài đặt thông tin cá nhân", action: (navigate) => navigate(`/setting-profile/${user._id}`) },
       { icon: <ArrowUpCircle className="w-5 h-5 text-primaryColor" />, text: "Nâng cấp tài khoản VIP", action: (navigate) => console.log("Nâng cấp tài khoản VIP") },
       { icon: <Gift className="w-5 h-5 text-primaryColor" />, text: "Kích hoạt quà tặng", action: (navigate) => console.log("Kích hoạt quà tặng") },
       { icon: <User className="w-5 h-5 text-primaryColor" />, text: "Nhà tuyển dụng xem hồ sơ", action: (navigate) => console.log("Nhà tuyển dụng xem hồ sơ") },

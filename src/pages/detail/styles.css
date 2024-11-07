@@ -1,0 +1,20 @@
+/* Màu khi switch đã checked */
+.custom-switch.ant-switch-checked {
+    background-color: #d64453; /* Màu khi checked */
+  }
+  
+  /* Màu khi hover trong trạng thái checked */
+  .custom-switch.ant-switch-checked:hover {
+    background-color: #d64453; /* Màu khi hover và đã checked */
+  }
+  
+  /* Màu khi đang bấm giữ (active) trong trạng thái checked */
+  .custom-switch.ant-switch-checked:active {
+    background-color: #d64453; /* Màu khi active và đã checked */
+  }
+  
+  :where(.css-dev-only-do-not-override-14qglws).ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
+    background-color: #d64453; /* Màu khi active và đã checked */
+
+  }
+  

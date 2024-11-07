@@ -1,10 +1,28 @@
 import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Image, Input } from "antd";
+import { AutoComplete, Button, Image, Input } from "antd";
 import introduceBackground from "../../assets/images/introduce.png";
 import { jobItems, suggestion } from "../../helper";
 import JobItems from "../../components/ui/JobItems";
+import { useState } from "react";
 
 const IntroduceV2 = () =>{
+    const [jobSuggestions, setJobSuggestions] = useState([]);  // Dữ liệu gợi ý cho công việc
+    const [locationSuggestions, setLocationSuggestions] = useState([]);  // Dữ liệu gợi ý cho địa điểm
+  
+    // Hàm tìm kiếm gợi ý công việc
+    const handleJobSearch = (value) => {
+      // Giả sử bạn có một API hoặc một mảng dữ liệu để lấy các gợi ý công việc
+      const jobData = ['Developer', 'Designer', 'Product Manager', 'Software Engineer', 'UI/UX Designer'];
+      setJobSuggestions(jobData.filter(item => item.toLowerCase().includes(value.toLowerCase())));
+    };
+  
+    // Hàm tìm kiếm gợi ý địa điểm
+    const handleLocationSearch = (value) => {
+      // Giả sử bạn có một API hoặc một mảng dữ liệu để lấy các gợi ý địa điểm
+      const locationData = ['New York', 'San Francisco', 'Los Angeles', 'Hanoi', 'Ho Chi Minh'];
+      setLocationSuggestions(locationData.filter(item => item.toLowerCase().includes(value.toLowerCase())));
+    };
+  
 
     return (
         <div className="h-auto bg-white px-4 md:px-primary pb-20 my-[150px]">
@@ -20,24 +38,32 @@ const IntroduceV2 = () =>{
                             >
                             <div className="relative w-full rounded-l-lg">
                                 <SearchOutlined className="absolute text-[24px] left-3 top-1/2 transform -translate-y-1/2 text-primaryColorH z-10" />
-                                <Input
-                                className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg"
+                                <AutoComplete
+                                className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg w-[80%]"
                                 size="large"
                                 placeholder="Job title, keyword, company"
-                                style={{ paddingLeft: "50px", height: "50px" }}
-                                />
+                                style={{ marginLeft: "50px" }}
+                                onSearch={handleJobSearch} 
+                                options={jobSuggestions.map((item) => ({ value: item }))} 
+                                >
+                                <Input className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg" />
+                                </AutoComplete>
                             </div>
             
                             <div className="w-[1px] h-[40px] bg-gray-300 mx-2"></div>
             
                             <div className="relative w-full rounded-r-lg">
                                 <EnvironmentOutlined className="absolute text-[24px] left-3 top-1/2 transform -translate-y-1/2 text-primaryColorH z-10" />
-                                <Input
-                                className="border-0 focus:border-0 focus:ring-0 rounded-r-lg text-lg"
-                                size="large"
-                                placeholder="Location, city"
-                                style={{ paddingLeft: "50px", height: "50px" }}
-                                />
+                                <AutoComplete
+                                    className="border-0 focus:border-0 focus:ring-0 rounded-r-lg text-lg w-[80%]"
+                                    size="large"
+                                    placeholder="Location, city"
+                                    style={{  marginLeft: "50px" }}
+                                    onSearch={handleLocationSearch} // Tìm kiếm gợi ý địa điểm
+                                    options={locationSuggestions.map((item) => ({ value: item }))}  // Chuyển các gợi ý thành các options cho AutoComplete
+                                    >
+                                    <Input className="border-0 focus:border-0 focus:ring-0 rounded-r-lg text-lg" />
+                                    </AutoComplete>
                             </div>
             
                             <Button

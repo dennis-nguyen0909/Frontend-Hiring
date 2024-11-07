@@ -1,4 +1,5 @@
 // src/services/authService.ts
+import { axiosJWT } from '../config/axiosConfig';
 import { axiosInstance } from '../config/axiosInterceptor';
 import { LoginData, RegisterData, VerifyCode } from '../types';
 

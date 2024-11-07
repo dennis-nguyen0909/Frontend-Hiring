@@ -16,15 +16,38 @@ function App() {
   const dispatch = useDispatch();
   
   useEffect(() => {
-    const accessToken = localStorage.getItem("access_token");
-    if (accessToken) {
-      const { token, decoded } = handleDecoded(accessToken);
-      console.log("decoded",decoded)
-      if (decoded?.sub) {
-        handleGetDetailUser(decoded, token);
+    const checkTokenExpiration = () => {
+      const accessToken = localStorage.getItem("access_token");
+      if (accessToken) {
+        const { token, decoded } = handleDecoded(accessToken);
+        console.log("decoded", decoded);
+
+        if (!decoded) return;
+        
+        if (decoded?.exp && decoded.exp < Date.now() / 1000000) {
+          fetchRefreshToken();
+        } else if (decoded?.sub) {
+          handleGetDetailUser(decoded, token);
+        }
       }
-    }
+    };
+
+    // Gọi hàm kiểm tra khi component mount
+    checkTokenExpiration();
+
+    // Thiết lập interval để kiểm tra token mỗi 5 phút (300,000 ms)
+    const intervalId = setInterval(checkTokenExpiration, 10000);
+
+    // Cleanup interval khi component bị unmount
+    return () => clearInterval(intervalId);
   }, []);
+  
+  
+  const fetchRefreshToken = async()=>{
+    console.log("duydeptrai",localStorage.getItem('access_token'))
+    const data = await authServices.refreshToken(localStorage.getItem('access_token') as string);
+    console.log("data",data)
+  }
 
   const handleGetDetailUser = async (decoded: JwtPayload, access_token: string) => {
     try {

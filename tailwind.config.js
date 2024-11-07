@@ -9,9 +9,13 @@ export default {
         btnColor: "#EDEFF5",
         primaryColorH: "#d3464f",
         primaryColor: "#d64453",
+        grayPrimary: "#80878e",
       },
       spacing: {
         primary: "110px",
+        primaryx2: "220px",
+        primaryx3: "330px",
+        primaryx4: "440px",
       },
       textColor: {
         primary: "#0f65cc",
