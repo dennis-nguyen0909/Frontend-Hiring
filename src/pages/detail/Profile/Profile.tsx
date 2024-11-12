@@ -15,8 +15,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   ArrowLeft,
   ArrowRight,
-  BookOpen,
-  Briefcase,
   Camera,
   CheckCircle2,
   Download,
@@ -25,21 +23,23 @@ import {
   Star,
 } from "lucide-react";
 import { useRef, useState } from "react";
-import * as mediaServices from "../../../services/modules/mediaServices";
 import * as userServices from "../../../services/modules/userServices";
 import { useNavigate } from "react-router-dom";
+import EducationComponent from "../Education/Education";
+import ExperienceComponent from "../Experience/Experience";
+import { MediaApi } from "../../../services/modules/mediaServices";
 const Profile = () => {
+  const dispatch = useDispatch();
   const fileInputRef = useRef(null);
   const fileInputAvtRef = useRef(null);
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
   const [visibleInAvatar, setVisibleInAvatar] = useState(false);
-  const [coverImage, setCoverImage] = useState(userDetail?.background || null); // Trạng thái lưu ảnh bìa
-  const dispatch = useDispatch();
+  const [coverImage, setCoverImage] = useState(userDetail?.background || null);
   const uploadFileToMedia = async (file: File) => {
     try {
-      const res = await mediaServices.postMedia(file);
+      const res = await MediaApi.postMedia(file,userDetail.access_token);
       return res;
     } catch (error) {
       notification.error({
@@ -48,9 +48,12 @@ const Profile = () => {
       });
     }
   };
+
+
   const handleOpenFile = () => {
     fileInputRef.current.click();
   };
+
   const handleOpenFileAvt = () => {
     fileInputAvtRef.current.click();
   };
@@ -58,20 +61,20 @@ const Profile = () => {
   const updateUserApi = async (params) => {
     try {
       const res = await userServices.updateUser(params);
-      if(res.data){
+      if (res.data) {
         dispatch(
           updateUser({ ...res.data, access_token: userDetail.access_token })
         );
         notification.success({
           message: "Thông báo",
           description: "Cập nhật thành công",
-        })
+        });
       }
     } catch (error) {
       notification.error({
         message: "Thông báo",
         description: error.message,
-      })
+      });
     }
   };
 
@@ -118,23 +121,25 @@ const Profile = () => {
       }
     }
   };
-  const onChangeSwitch = async (checked: boolean,type:string) => {
+  const onChangeSwitch = async (checked: boolean, type: string) => {
     switch (type) {
       case "allowProfilesToSearch":
-          
         break;
-        case "isSearchJobStatus":
-          // eslint-disable-next-line no-case-declarations
-          const params = {
-            id: userDetail._id,
-            is_search_jobs_status: checked,
-          };
-          await updateUserApi(params)
-          break;
+      case "isSearchJobStatus":
+        // eslint-disable-next-line no-case-declarations
+        const params = {
+          id: userDetail._id,
+          is_search_jobs_status: checked,
+        };
+        await updateUserApi(params);
+        break;
       default:
         break;
     }
   };
+
+
+
   return (
     <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto mt-10 py-2 gap-5 ">
       <Col span={16} className="max-w-3xl mx-auto p-4 space-y-6 rounded-xl">
@@ -228,7 +233,7 @@ const Profile = () => {
 
             <div className="flex items-center gap-4 p-4 border rounded-lg">
               <div className="p-2 bg-red-100 rounded-full">
-                <Pencil className="h-6 w-6 text-[#d3464f]" />
+                <Pencil className="h-6 w-6 text-primaryColor" />
               </div>
               <div>
                 <h3 className="font-medium">Cập nhật thông tin cá nhân</h3>
@@ -278,33 +283,11 @@ const Profile = () => {
           </Card>
 
           {/* Education Section */}
-          <Card className="p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-6 w-6 text-[#d3464f]" />
-                <h2 className="font-semibold">Học vấn</h2>
-              </div>
-              <Button>Thêm mục</Button>
-            </div>
-            <p className="text-sm text-gray-500">
-              Nếu bạn đã có CV trên TopCV, bấm Cập nhật để hệ thống tự động điền
-              phần này theo CV.
-            </p>
-          </Card>
-
+          <EducationComponent />
           {/* Experience Section */}
-          <Card className="p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2">
-                <Briefcase className="h-6 w-6 text-[#d3464f]" />
-                <h2 className="font-semibold">Kinh nghiệm</h2>
-              </div>
-              <Button>Thêm mục</Button>
-            </div>
-          </Card>
+          <ExperienceComponent />
         </div>
       </Col>
-
       <Col className="w-1/4 bg-white h-fit rounded-2xl px-8 py-4 ">
         <div className="flex justify-around items-center gap-5">
           <div>
@@ -337,7 +320,9 @@ const Profile = () => {
         <div className="mt-8">
           <Switch
             className="custom-switch"
-            onChange={(checked) => onChangeSwitch(checked, "allowProfilesToSearch")}
+            onChange={(checked) =>
+              onChangeSwitch(checked, "allowProfilesToSearch")
+            }
             size="default"
           />
           <span className="ml-2 text-[12px] font-semibold text-grayPrimary">

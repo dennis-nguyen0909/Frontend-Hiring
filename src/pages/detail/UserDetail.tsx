@@ -65,6 +65,7 @@ const UserDetail = () => {
       });
     }
   };
+  console.log("userDetail", userDetail);  
 
   const updateUserApi = async (params: any) => {
     try {

@@ -21,6 +21,7 @@ export default {
         primary: "#0f65cc",
         title: "#5E6670",
         grayText: "#767F8C",
+        graySecondary: "#8f8f8f",
       },
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui"],

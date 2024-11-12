@@ -97,6 +97,10 @@ const LoginPage = () => {
         message.success(res.message[0]);
       }
     } catch (error) {
+      notification.error({
+        message: "Login failed",
+        description: error.message,
+      })
       console.error("Login failed:", error);
     }
   };

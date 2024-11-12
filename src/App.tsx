@@ -20,7 +20,6 @@ function App() {
       const accessToken = localStorage.getItem("access_token");
       if (accessToken) {
         const { token, decoded } = handleDecoded(accessToken);
-        console.log("decoded", decoded);
 
         if (!decoded) return;
         
@@ -44,9 +43,7 @@ function App() {
   
   
   const fetchRefreshToken = async()=>{
-    console.log("duydeptrai",localStorage.getItem('access_token'))
     const data = await authServices.refreshToken(localStorage.getItem('access_token') as string);
-    console.log("data",data)
   }
 
   const handleGetDetailUser = async (decoded: JwtPayload, access_token: string) => {
