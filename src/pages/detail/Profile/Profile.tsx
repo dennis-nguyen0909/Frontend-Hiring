@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import EducationComponent from "../Education/Education";
 import ExperienceComponent from "../Experience/Experience";
 import { MediaApi } from "../../../services/modules/mediaServices";
+import SkillComponent from "../Skill/Skill";
 const Profile = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
@@ -286,6 +287,8 @@ const Profile = () => {
           <EducationComponent />
           {/* Experience Section */}
           <ExperienceComponent />
+          {/* Skill Section */}
+          <SkillComponent />
         </div>
       </Col>
       <Col className="w-1/4 bg-white h-fit rounded-2xl px-8 py-4 ">
