@@ -97,26 +97,30 @@ function App() {
         <div>Loading...</div>
       ) : (
         <Router>
-          <Routes>
-            {routes.map((route) => {
-              const Page = route.page;
-              const Layout = route.isShowHeader ? DefaultPage : Fragment;
-              return (
-                <Route key={route.path} path={route.path} element={
-                  <Layout>
-                    {route.isPrivate ? (
-                      // You can handle authentication logic here
-                      <NotFound />
-                    ) : (
-                      <Page />
-                    )}
-                  </Layout>
-                } />
-              );
-            })}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
+  <Routes>
+    {routes.map((route) => {
+      const Page = route.page;
+      const Layout = route.isShowHeader ? DefaultPage : Fragment;
+      return (
+        <Route
+          key={route.path}
+          path={route.path}
+          element={
+            <Layout showFooter={route.isShowFooter !== false}>
+              {route.isPrivate ? (
+                // You can handle authentication logic here
+                <NotFound />
+              ) : (
+                <Page />
+              )}
+            </Layout>
+          }
+        />
+      );
+    })}
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+</Router>
       )}
     </div>
   );

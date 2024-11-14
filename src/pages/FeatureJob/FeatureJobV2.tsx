@@ -32,15 +32,15 @@ const FeatureJobV2 = () => {
   const handleGetCities=async()=>{
     try {
       const res = await CitiesAPI.getCitiesByCode('79',userDetail.access_token);
-      console.log("duydeptrai",res)
-
       if(res.data){
-        setCities(res.data[0]);
+        console.log("readas",res)
+        setCities(res.data);
       }
     } catch (error) {
       console.error(error)
     }
   }
+
 
   useEffect(() => {
     handleGetAllJobs();
@@ -59,7 +59,6 @@ const FeatureJobV2 = () => {
   const handleChangeFilter = (value: string) => {
     console.log("Filter Value:", value);
   };
-  console.log("cities",cities)
 
   return (
     <div className="px-5 md:px-primary h-auto mb-[150px] bg-[#f3f5f7] pb-[100px] pt-[10px]">

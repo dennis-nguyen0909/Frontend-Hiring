@@ -36,7 +36,7 @@ type District = {
 type IDataCityProps = {
   code: string;
   codename: string;
-  districts: District[];
+  districts_id: District[];
   division_type: string;
   name: string;
   phone_code: string;
@@ -120,9 +120,9 @@ export default function LocationSlider({
           >
             {dataCity?.name} {/* City name */}
           </button>
-
+{console.log('datacity',dataCity)}
           {/* Map over districts and display each as a button */}
-          {dataCity?.districts?.map((district) => (
+          {dataCity?.districts_id?.map((district) => (
             <button
               key={district._id}
               onClick={() => setSelectedLocation(district.code)} // Set selectedLocation with district code

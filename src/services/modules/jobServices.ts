@@ -22,7 +22,7 @@ export const JobApi = {
   },
 
   // Phương thức POST để thêm một công việc mới
-  postJob: async (data: any, accessToken: string) => {
+  postJob: async (data: unknown, accessToken: string) => {
     try {
       const res = await axiosInstance.post('/jobs', data, {
         headers: {
@@ -80,6 +80,22 @@ export const JobApi = {
 
   // Phương thức PATCH để cập nhật công việc
   updateJob: async (id: string, data: any, accessToken: string) => {
+    try {
+      const res = await axiosInstance.patch(`/jobs/${id}`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      });
+
+      if (res.data) return res.data;
+      return null;
+    } catch (error) {
+      console.error("Error updating job:", error);
+      return null;
+    }
+  },
+  getJobByEmployerID: async (id: string, accessToken: string) => {
     try {
       const res = await axiosInstance.patch(`/jobs/${id}`, data, {
         headers: {

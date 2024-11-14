@@ -72,6 +72,12 @@ export const menuHeader = [
     color:"#5E6670",
     colorHover:"#205faf"
   },
+  {
+    name: "Dashboard",
+    path: "/dashboard",
+    color:"#5E6670",
+    colorHover:"#205faf"
+  },
 ];
 
 // export const menuHeader = [

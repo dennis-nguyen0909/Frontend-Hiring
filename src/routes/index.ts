@@ -10,11 +10,14 @@ import ForgotPage from '../pages/auth/ForgotPage';
 import ResetPage from '../pages/auth/ResetPage';
 import UserDetail from '../pages/detail/UserDetail';
 import Profile from '../pages/detail/Profile/Profile';
+import ManagePage from '../pages/employer/manage/ManagePage';
+import DashBoard from '../pages/dashboard';
 interface IRoute {
     path: string;
     page: ComponentType ;
     isShowHeader?: boolean;
     isPrivate?: boolean;
+    isShowFooter?:boolean;
 }
 
 export const routes: IRoute[] = [
@@ -68,6 +71,17 @@ export const routes: IRoute[] = [
         path:'/profile/:id',
         page: Profile,
         isShowHeader:true
+    },
+    {
+        path:'/employer/:id',
+        page: ManagePage,
+        isShowHeader:true
+    },
+    {
+        path:'/dashboard',
+        page: DashBoard,
+        isShowHeader:true,
+        isShowFooter:false
     },
     {
         path: '*',

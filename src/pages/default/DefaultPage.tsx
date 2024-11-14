@@ -7,7 +7,7 @@ interface DefaultPageProps {
   children: React.ReactNode; // Nhận nội dung các trang con thông qua props
 }
 
-const DefaultPage: React.FC<DefaultPageProps> = ({ children }) => {
+const DefaultPage: React.FC<DefaultPageProps> = ({ children,showFooter }) => {
   const accessToken = localStorage.getItem('access_token');
   const navigate = useNavigate();
   useEffect(()=>{
@@ -26,7 +26,8 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children }) => {
       </main>
 
       {/* Footer có thể tái sử dụng */}
-        <Footer />
+        
+        {showFooter && <Footer />}
     </div>
   );
 };
