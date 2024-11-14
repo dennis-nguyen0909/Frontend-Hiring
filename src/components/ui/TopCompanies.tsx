@@ -1,14 +1,14 @@
 import React from "react"
 
-import * as jobServices from "../../services/modules/jobServices";
 import { useEffect, useState } from "react";
 import CompanyCard from "./CompanyCard";
+import { JobApi } from "../../services/modules/jobServices";
 const TopCompanies = () => {
     const [company,setCompany]=useState([]);
     const [pageSize,setPageSize]=useState(8)
     const handleGetAllCompanys = async () => {
         try {
-          const res = await jobServices.getAllJobs({pageSize:pageSize});
+          const res = await JobApi.getAllJobs({pageSize:pageSize})
           if (res.data) {
             setCompany(res.data.items);
           }
