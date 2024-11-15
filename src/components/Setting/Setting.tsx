@@ -115,10 +115,10 @@ const renderSettingAdmin =()=>{
       })}
   </>
 }
-const {role_name} = user?.role
+const {role_name} = user?.role || {}
   return (
     <div className="flex flex-col gap-3 z-30">
-      {role_name === ROLE_NAME_USER ? renderSettingCandidate() : role_name === ROLE_NAME_EMPLOYEE ?  renderSettingEmployeer():role_name === ROLE_NAME_ADMIN ?renderSettingAdmin():null}
+      {role_name && role_name === ROLE_NAME_USER ? renderSettingCandidate() : role_name && role_name === ROLE_NAME_EMPLOYEE ?  renderSettingEmployeer():role_name && role_name === ROLE_NAME_ADMIN ?renderSettingAdmin():null}
     </div>
   );
 };

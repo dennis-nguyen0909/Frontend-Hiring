@@ -13,7 +13,7 @@ import {
   UploadOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, DatePicker, Input, Select, Space, Switch, Tabs, Upload } from "antd";
+import { Button, Checkbox, DatePicker, Input, message, Select, Space, Switch, Tabs, Upload } from "antd";
 import TabPane from "antd/es/tabs/TabPane";
 import { useState } from "react";
 import ReactQuill from 'react-quill';
