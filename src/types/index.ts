@@ -13,3 +13,17 @@ export interface IBackendRes<T> {
     }
     access_token:string;
   }
+
+  export type Meta = {
+    count: number,
+    current_page: number,
+    per_page: number,
+    total: number,
+    total_pages: number
+  }
+
+  export interface SkillEmployerFormData {
+    user_id: string
+    name: string
+    description?: string;
+  }

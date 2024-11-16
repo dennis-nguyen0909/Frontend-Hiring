@@ -1,20 +1,136 @@
-'use client'
-
-import { Form, Input, Select, InputNumber, Checkbox, Radio, Button } from 'antd'
-import { Editor } from '@tinymce/tinymce-react'
-import { DollarOutlined } from '@ant-design/icons'
-
-const { TextArea } = Input
+import {
+  Form,
+  Input,
+  Select,
+  InputNumber,
+  Checkbox,
+  Radio,
+  Button,
+  Tag,
+  notification,
+} from "antd";
+import { Editor } from "@tinymce/tinymce-react";
+import { DollarOutlined } from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { useCities } from "../../../../hooks/useCities";
+import { useDistricts } from "../../../../hooks/useDistricts";
+import { useWards } from "../../../../hooks/useWards";
+import { JobApi } from "../../../../services/modules/jobServices";
+import { useSelector } from "react-redux";
+import { EmployerSkillApi } from "../../../../services/modules/EmployerSkillServices";
+import { Meta, ListSkillsFormData } from "../../../../types";
 
 export default function PostJob() {
-  const [form] = Form.useForm()
+  const [form] = Form.useForm();
+  const [experienceInput, setExperienceInput] = useState("");
+  const [experienceList, setExperienceList] = useState([]);
+  const [content, setContent] = useState("");
+  const [benefitInput, setBenefitInput] = useState("");
+  const [benefitList, setBenefitList] = useState([]);
+  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
+  const [ward, setWard] = useState("");
+  const userDetail = useSelector((state) => state.user);
+  const [expireDate, setExpireDate] = useState("");
+  const [listSkills,setListSkills] = useState<ListSkillsFormData[]>([])
+  const [meta,setMeta]=useState<Meta>({
+    count: 0,
+    current_page: 1,
+    per_page: 10,
+    total: 0,
+    total_pages: 0
+  })
+  const { cities, loading: citiesLoading } = useCities();
+  const { districts, loading: districtLoading } = useDistricts(city);
+  const { wards, loading: wardsLoading } = useWards(district);
 
-  const jobBenefits = [
-    'Paid salary', 'Scheduled Team', 'Apple', 'Vision Insurance', 'Dental Insurance',
-    'Medical Insurance', 'Unlimited vacation', 'Edm membership', 'Company retreat',
-    'Learning budget', 'Free gym membership', 'Pay to crypto', 'Profit Sharing',
-    'Bonus Compensation', 'Tax enhancement services', 'No parking cost', 'Working visa cost cover'
-  ]
+  const [isNegotiable, setIsNegotiable] = useState(false);
+
+  const handleNegotiableChange = (e) => {
+    setIsNegotiable(e.target.checked);
+  };
+  const handleCityChange = (value) => {
+    setCity(value);
+  };
+  const handleDistrictChange = (value) => {
+    setDistrict(value);
+  };
+
+  const handleWardChange = (value) => {
+    setWard(value);
+  };
+
+  const handleAddBenefit = () => {
+    if (benefitInput && !benefitList.includes(benefitInput)) {
+      setBenefitList([...benefitList, benefitInput]);
+      setBenefitInput("");
+    }
+  };
+
+  const handleRemoveBenefit = (benefitToRemove) => {
+    setBenefitList(
+      benefitList.filter((benefit) => benefit !== benefitToRemove)
+    );
+  };
+
+  const handleEditorChange = (newContent) => {
+    setContent(newContent);
+  };
+  const handleAddExperience = () => {
+    if (experienceInput.trim()) {
+      setExperienceList([...experienceList, experienceInput]);
+      setExperienceInput("");
+    }
+  };
+  const handleRemoveExperience = (removedExperience) => {
+    setExperienceList(
+      experienceList.filter((exp) => exp !== removedExperience)
+    );
+  };
+  const handleGetLevelByUser = async (params:any) => {
+    const res = await EmployerSkillApi.getSkillByUserId(
+      userDetail.access_token,
+      params
+    )
+    if (res?.data) {
+      setListSkills(res?.data.items)
+      setMeta(res?.data.meta)
+    }
+  }
+
+  useEffect(()=>{
+    handleGetLevelByUser({user_id:userDetail._id})
+  },[])
+  const handleSubmit = async (values: any) => {
+    const salaryRange = { min: values.min_salary, max: values.max_salary };
+    const params = {
+      city_id: city,
+      district_id: district,
+      ward_id: ward,
+      require_experience: experienceList,
+      benefit: benefitList,
+      description: content,
+      user_id: userDetail._id,
+      salary_range: salaryRange,
+      title: values.title,
+      expire_date: expireDate,
+      level: values.level,
+      skills:values.skills
+    };
+    const res = await JobApi.postJob(params, userDetail.access_token);
+
+    if (res.data) {
+      notification.success({
+        message: "Success",
+        description: "Job posted successfully",
+      });
+    } else {
+      notification.error({
+        message: "Error",
+        description: res.message,
+      });
+    }
+  };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -22,65 +138,83 @@ export default function PostJob() {
         form={form}
         layout="vertical"
         className="max-w-4xl mx-auto"
-        // className="mx-auto"
+        onFinish={handleSubmit}
       >
+        {/* Job Title */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Post a Job</h2>
-          
+
           <Form.Item
             label="Job Title"
-            name="jobTitle"
-            rules={[{ required: true }]}
+            name="title"
+            rules={[{ required: true, message: "Job title is required" }]}
           >
             <Input placeholder="Add job title, role, vacancies etc..." />
           </Form.Item>
-
-          <Form.Item
-            label="Tags"
-            name="tags"
-          >
-            <Select
-              mode="tags"
-              placeholder="Job keywords, tags etc..."
-              className="w-full"
-            />
-          </Form.Item>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Form.Item label="Job Size" name="jobSize">
-              <Select placeholder="Select">
-                <Select.Option value="small">Small</Select.Option>
-                <Select.Option value="medium">Medium</Select.Option>
-                <Select.Option value="large">Large</Select.Option>
-              </Select>
-            </Form.Item>
-          </div>
         </div>
 
+        {/* Salary */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Salary</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Form.Item label="Min Salary" name="minSalary">
+
+          <div className="flex justify-between flex-col">
+            {/* Negotiable Salary Checkbox */}
+            <Form.Item name="is_negotiable" valuePropName="checked">
+              <Checkbox onChange={handleNegotiableChange}>
+                Negotiable Salary (Lương thỏa thuận)
+              </Checkbox>
+            </Form.Item>
+
+            {/* Min Salary */}
+            <Form.Item
+              label="Min Salary"
+              name="min_salary"
+              rules={[
+                {
+                  required: !isNegotiable,
+                  message: "Minimum salary is required",
+                },
+              ]}
+            >
               <InputNumber
                 prefix={<DollarOutlined />}
-                className="w-full"
+                className="w-[300px]"
                 placeholder="Minimum salary..."
                 addonAfter="USD"
-              />
-            </Form.Item>
-            
-            <Form.Item label="Max Salary" name="maxSalary">
-              <InputNumber
-                prefix={<DollarOutlined />}
-                className="w-full"
-                placeholder="Maximum salary..."
-                addonAfter="USD"
+                disabled={isNegotiable}
               />
             </Form.Item>
 
-            <Form.Item label="Salary Type" name="salaryType">
-              <Select placeholder="Select">
+            {/* Max Salary */}
+            <Form.Item
+              label="Max Salary"
+              name="max_salary"
+              rules={[
+                {
+                  required: !isNegotiable,
+                  message: "Maximum salary is required",
+                },
+              ]}
+            >
+              <InputNumber
+                prefix={<DollarOutlined />}
+                className="w-[300px]"
+                placeholder="Maximum salary..."
+                addonAfter="USD"
+                disabled={isNegotiable}
+              />
+            </Form.Item>
+
+            {/* Salary Type */}
+            <Form.Item
+              label="Salary Type"
+              name="salary_type"
+              className="w-[300px]"
+              rules={[
+                { required: !isNegotiable, message: "Please select a salary type" },
+              ]}
+            >
+              <Select placeholder="Select" disabled={isNegotiable}>
                 <Select.Option value="yearly">Yearly</Select.Option>
                 <Select.Option value="monthly">Monthly</Select.Option>
                 <Select.Option value="hourly">Hourly</Select.Option>
@@ -89,27 +223,108 @@ export default function PostJob() {
           </div>
         </div>
 
+        {/* Advanced Information */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Advanced Information</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Form.Item label="Education" name="education">
+
+          <div className="">
+          <Form.Item
+          label="Skills"
+          name="skills"
+          rules={[
+            {
+              required: true,
+              message: 'Please select the required skills',
+            },
+          ]}
+        >
+          <Select
+            placeholder="Chọn kỹ năng"
+            mode="multiple" // Cho phép chọn nhiều kỹ năng
+            style={{ width: '100%' }}
+            onChange={(value) => {
+              console.log('Selected skills:', value);
+              console.log('Selected skills:', listSkills);
+            }}
+          >
+            {listSkills.map((skill) => (
+              <Select.Option key={skill._id} value={skill._id}>
+                {skill.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+            <Form.Item
+              label="Education"
+              name="degree"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the required education level",
+                },
+              ]}
+            >
               <Select placeholder="Select">
-                <Select.Option value="bachelor">Bachelor's Degree</Select.Option>
+                <Select.Option value="bachelor">
+                  Bachelor's Degree
+                </Select.Option>
                 <Select.Option value="master">Master's Degree</Select.Option>
                 <Select.Option value="phd">PhD</Select.Option>
               </Select>
             </Form.Item>
-
-            <Form.Item label="Experience" name="experience">
+            <Form.Item
+              label="Experience Level"
+              name="level"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the experience level",
+                },
+              ]}
+            >
               <Select placeholder="Select">
-                <Select.Option value="entry">Entry Level</Select.Option>
-                <Select.Option value="intermediate">Intermediate</Select.Option>
+                <Select.Option value="junior">Junior</Select.Option>
+                <Select.Option value="mid">Mid</Select.Option>
                 <Select.Option value="senior">Senior</Select.Option>
               </Select>
             </Form.Item>
+            <Form.Item
+              label="Experience"
+              rules={[{ required: true, message: "Experience is required" }]}
+            >
+              <Input
+                placeholder="Enter experience and press Enter..."
+                value={experienceInput}
+                onChange={(e) => setExperienceInput(e.target.value)}
+                onPressEnter={handleAddExperience}
+              />
+              <Button
+                type="primary"
+                onClick={handleAddExperience}
+                className="mt-2"
+              >
+                Add Experience
+              </Button>
+              <div className="mt-4">
+                {experienceList.map((exp, index) => (
+                  <Tag
+                    key={index}
+                    closable
+                    onClose={() => handleRemoveExperience(exp)}
+                    className="m-1"
+                  >
+                    {exp}
+                  </Tag>
+                ))}
+              </div>
+            </Form.Item>
 
-            <Form.Item label="Job Type" name="jobType">
+            <Form.Item
+              label="Job Type"
+              name="job_type"
+              rules={[{ required: true, message: "Please select a job type" }]}
+            >
               <Select placeholder="Select">
                 <Select.Option value="fulltime">Full Time</Select.Option>
                 <Select.Option value="parttime">Part Time</Select.Option>
@@ -119,34 +334,109 @@ export default function PostJob() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item label="Vacancies" name="vacancies">
-              <InputNumber className="w-full" placeholder="Number of positions..." />
+            <Form.Item
+              label="Count Apply"
+              name="count_apply"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter the number of vacancies",
+                },
+              ]}
+            >
+              <InputNumber
+                className="w-full"
+                placeholder="Number of positions..."
+              />
             </Form.Item>
 
-            <Form.Item label="Expiration Date" name="expirationDate">
-              <Input type="date" />
+            <Form.Item
+              label="Expiration Date"
+              name="expire_date"
+              rules={[
+                { required: true, message: "Please select an expiration date" },
+              ]}
+            >
+              <Input
+                type="date"
+                onChange={(e) => setExpireDate(new Date(e.target.value))}
+              />
             </Form.Item>
           </div>
         </div>
 
+        {/* Location */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Location</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item label="Country" name="country">
-              <Select placeholder="Select">
-                <Select.Option value="us">United States</Select.Option>
-                <Select.Option value="uk">United Kingdom</Select.Option>
-                <Select.Option value="ca">Canada</Select.Option>
+            {/* City Field */}
+            <Form.Item
+              label="City"
+              name="city"
+              rules={[{ required: true, message: "Please select a city" }]}
+            >
+              <Select
+                placeholder="Select City"
+                value={city}
+                onChange={handleCityChange}
+                loading={citiesLoading}
+              >
+                {/* Render city options dynamically from the hook */}
+                {cities.map((cityItem) => (
+                  <Select.Option key={cityItem._id} value={cityItem._id}>
+                    {cityItem.name}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
 
-            <Form.Item label="City" name="city">
-              <Select placeholder="Select">
-                <Select.Option value="ny">New York</Select.Option>
-                <Select.Option value="sf">San Francisco</Select.Option>
-                <Select.Option value="la">Los Angeles</Select.Option>
+            {/* District Field */}
+            <Form.Item
+              label="District"
+              name="district"
+              rules={[{ required: true, message: "Please select a district" }]}
+            >
+              <Select
+                placeholder="Select District"
+                value={district}
+                onChange={handleDistrictChange}
+                loading={districtLoading}
+              >
+                {/* Render city options dynamically from the hook */}
+                {districts.map((district) => (
+                  <Select.Option key={district._id} value={district._id}>
+                    {district.name}
+                  </Select.Option>
+                ))}
               </Select>
+            </Form.Item>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Ward Field */}
+            <Form.Item
+              label="Ward"
+              name="ward"
+              rules={[{ required: true, message: "Please select a ward" }]}
+            >
+              <Select
+                placeholder="Select Ward"
+                value={ward}
+                onChange={handleWardChange}
+                loading={wardsLoading}
+              >
+                {wards.map((ward) => (
+                  <Select.Option key={ward._id} value={ward._id}>
+                    {ward.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            {/* Address Field */}
+            <Form.Item label="Address" name="address">
+              <Input placeholder="Enter full address" />
             </Form.Item>
           </div>
 
@@ -155,85 +445,107 @@ export default function PostJob() {
           </Form.Item>
         </div>
 
+        {/* Job Benefits */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Job Benefits</h2>
-          
-          <Form.Item name="benefits">
-            <div className="flex flex-wrap gap-2">
-              {jobBenefits.map(benefit => (
-                <Checkbox key={benefit} className="bg-gray-50 px-3 py-1 rounded-full">
+
+          <Form.Item
+            label="Benefits"
+            rules={[
+              { required: true, message: "Please add at least one benefit" },
+            ]}
+          >
+            <Input
+              placeholder="Enter benefit and press Enter..."
+              value={benefitInput}
+              onChange={(e) => setBenefitInput(e.target.value)}
+              onPressEnter={handleAddBenefit}
+            />
+            <Button type="primary" onClick={handleAddBenefit} className="mt-2">
+              Add Benefit
+            </Button>
+            <div className="mt-4">
+              {benefitList.map((benefit, index) => (
+                <Tag
+                  key={index}
+                  closable
+                  onClose={() => handleRemoveBenefit(benefit)}
+                  className="m-1"
+                >
                   {benefit}
-                </Checkbox>
+                </Tag>
               ))}
             </div>
           </Form.Item>
         </div>
 
+        {/* Job Description */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Job Description</h2>
-          
-          <Form.Item name="description">
+
+          <Form.Item
+            name="description"
+            rules={[{ required: true, message: "Job description is required" }]}
+          >
             <Editor
+              apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3" // Bạn có thể lấy API key miễn phí từ TinyMCE
+              initialValue=""
               init={{
-                height: 300,
+                height: 500,
                 menubar: false,
                 plugins: [
-                  'advlist autolink lists link image charmap print preview anchor',
-                  'searchreplace visualblocks code fullscreen',
-                  'insertdatetime media table paste code help wordcount'
+                  "advlist autolink lists link image charmap print preview anchor",
+                  "searchreplace visualblocks code fullscreen",
+                  "insertdatetime media table paste code help wordcount",
                 ],
                 toolbar:
-                  'undo redo | formatselect | bold italic backcolor | \
-                  alignleft aligncenter alignright alignjustify | \
-                  bullist numlist outdent indent | removeformat | help'
+                  "undo redo | formatselect | bold italic backcolor | \
+            alignleft aligncenter alignright alignjustify | \
+            bullist numlist outdent indent | removeformat | help",
               }}
+              onEditorChange={handleEditorChange}
             />
           </Form.Item>
         </div>
 
+        {/* Application Method */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Apply Job on:</h2>
-          
-          <Form.Item name="applicationMethod">
-            <Radio.Group className="w-full">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="border rounded-lg p-4">
-                  <Radio value="jobplat" className="w-full">
-                    <div>
-                      <div className="font-medium">On Jobplat</div>
-                      <div className="text-sm text-gray-500">Candidates will be applying directly at our platform</div>
-                    </div>
-                  </Radio>
-                </div>
-                
-                <div className="border rounded-lg p-4">
-                  <Radio value="external" className="w-full">
-                    <div>
-                      <div className="font-medium">External Platform</div>
-                      <div className="text-sm text-gray-500">Candidates apply on your career site</div>
-                    </div>
-                  </Radio>
-                </div>
-                
-                <div className="border rounded-lg p-4">
-                  <Radio value="email" className="w-full">
-                    <div>
-                      <div className="font-medium">On Your Email</div>
-                      <div className="text-sm text-gray-500">Candidates will send their applications to your email</div>
-                    </div>
-                  </Radio>
-                </div>
-              </div>
+
+          <Form.Item
+            name="applicationMethod"
+            rules={[
+              {
+                required: true,
+                message: "Please select an application method",
+              },
+            ]}
+          >
+            <Radio.Group>
+              <Radio value="linkedin">LinkedIn</Radio>
+              <Radio value="companySite">Company website</Radio>
+              <Radio value="email">Email</Radio>
             </Radio.Group>
+          </Form.Item>
+
+          <Form.Item
+            name="applicationLink"
+            rules={[
+              { required: true, message: "Please enter the application link" },
+            ]}
+          >
+            <Input placeholder="Enter application URL or email" />
           </Form.Item>
         </div>
 
-        <div className="flex justify-end">
-          <Button type="primary" size="large" className="bg-blue-500">
+{/* Image Company s */}
+        {/* Submit Button */}
+        <Form.Item>
+          <Button type="primary" htmlType="submit" className="w-full">
             Post Job
           </Button>
-        </div>
+        </Form.Item>
       </Form>
     </div>
-  )
+  );
 }

@@ -7,6 +7,7 @@ import './styles.css'
 import TabCandidate from '../Tab/TabCandidate';
 import TabJobs from '../Tab/TabJobs';
 import { TAB_CANDIDATE, TAB_JOB, TAB_LEVEL, TAB_SKILL } from '../../../utils/role.utils';
+import SkillEmployer from '../Skill/Skill';
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
@@ -75,7 +76,7 @@ const ManagePage: React.FC = () => {
       )}
       {current===TAB_SKILL&& (
           <div className="h-full w-full">
-          SKILLL
+          <SkillEmployer />
         </div>
       )}
       {current===TAB_LEVEL&& (

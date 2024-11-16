@@ -2,6 +2,7 @@ import { Image } from "antd";
 import React from "react";
 import defaultImage from "../../assets/images/company/default.png";
 import { CircleDollarSign, DollarSign, Heart, MapPin } from "lucide-react";
+import { convertHtmlToText } from "../../untils";
 
 interface IJobItemProps {
   item: any;
@@ -9,7 +10,7 @@ interface IJobItemProps {
 }
 
 const JobItem = ({ item }: IJobItemProps) => {
-
+  console.log("item",item)
   return (
     <div className="bg-white flex h-[130px] rounded-lg shadow-md overflow-hidden">
       {/* Left Content */}
@@ -25,11 +26,11 @@ const JobItem = ({ item }: IJobItemProps) => {
       {/* Right Content */}
       <div className="flex-grow p-4 max-w-[370px] flex flex-col  justify-evenly">
         <h3 className="text-lg font-semibold">{item.title}</h3>
-        <p className="text-gray-600 truncate">{item.description}</p>
+        <p className="text-gray-600 truncate">{convertHtmlToText(item?.description)}</p>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
             <MapPin size={18} />
-            <span className="text-sm text-gray-500">{item.location}</span>
+            <span className="text-sm text-gray-500">{item?.city_id?.name} , {item?.district_id.name}</span>
           </div>
         </div>
         <div className="flex items-center gap-1 justify-between">

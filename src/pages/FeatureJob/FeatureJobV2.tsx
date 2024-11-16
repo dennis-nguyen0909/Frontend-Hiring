@@ -1,4 +1,4 @@
-import { Button, Image, Pagination, Select } from "antd";
+import { Button, Empty, Image, Pagination, Select } from "antd";
 import { useEffect, useState } from "react";
 import arrowRight from "../../assets/icons/arrowRight.png";
 import {
@@ -10,17 +10,21 @@ import JobItem from "../../components/ui/JobItem";
 import { JobApi } from "../../services/modules/jobServices";
 import { CitiesAPI } from "../../services/modules/citiesServices";
 import { useSelector } from "react-redux";
+import { Meta } from "../../types";
+
+
 const FeatureJobV2 = () => {
   const [jobs, setJobs] = useState([]);
   const [pageSize, setPageSize] = useState(12);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedLocation, setSelectedLocation] = useState<string>("");
-  const [meta, setMeta] = useState({});
+  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+  const [meta, setMeta] = useState<Meta>({});
   const [cities,setCities]=useState(null)
   const userDetail = useSelector(state=>state.user)
-  const handleGetAllJobs = async () => {
+  const handleGetAllJobs = async (params?:any) => {
     try {
-      const res = await JobApi.getAllJobs({ pageSize: pageSize, location:selectedLocation });
+      const res = await JobApi.getAllJobs({ pageSize: pageSize,current:currentPage,...params});
       if (res.data) {
         setJobs(res.data.items);
         setMeta(res.data.meta);
@@ -33,7 +37,7 @@ const FeatureJobV2 = () => {
     try {
       const res = await CitiesAPI.getCitiesByCode('79',userDetail.access_token);
       if(res.data){
-        console.log("readas",res)
+        console.log("res",res.data)
         setCities(res.data);
       }
     } catch (error) {
@@ -43,14 +47,22 @@ const FeatureJobV2 = () => {
 
 
   useEffect(() => {
-    handleGetAllJobs();
     handleGetCities();
-  }, [pageSize, currentPage,selectedLocation]);
+    handleGetAllJobs();
+  }, [pageSize, currentPage]);
+
+  useEffect(()=>{
+    if(selectedDistrict.trim()==='' && selectedCity.trim() !==''){
+      handleGetAllJobs({city_id:selectedCity});
+    }else{
+      handleGetAllJobs({district_id:selectedDistrict})
+    }
+  },[selectedCity,selectedDistrict])
 
   const handleChangeSelectedLocation = (location: string) => {
-    setSelectedLocation(location); // Cập nhật state selectedLocation
+    setSelectedCity(location); // Cập nhật state selectedCity
   };
-  console.log("selectedLocation:", selectedLocation); 
+  console.log("selectedCity:", selectedCity); 
 
   const onChangePanigation: PaginationProps["onChange"] = (page) => {
     setCurrentPage(page);
@@ -94,26 +106,34 @@ const FeatureJobV2 = () => {
           <div className="w-2.5/3">
             <LocationSlider
               dataCity={cities}
-              setSelectedLocation={setSelectedLocation} 
-              selectedLocation={selectedLocation}
-              handleChangeSelectedLocation={handleChangeSelectedLocation} // Truyền hàm xử lý thay đổi location
+              selectedDistrict={selectedDistrict}
+              setSelectedDistrict={setSelectedDistrict}
+              setSelectedCity={setSelectedCity} 
+              selectedCity={selectedCity}
+              handleChangeSelectedLocation={handleChangeSelectedLocation}
             />
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      {jobs?.length>0 ?(
+        <div className="grid grid-cols-3 gap-4">
         {jobs?.map((job, idx) => (
           <JobItem item={job} key={idx} />
         ))}
       </div>
+      ):
+      <div className="min-h-[300px] flex items-center justify-center">
+      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+    </div>
+      }
 
-      <div className="panigation">
-        <Pagination
+      <div className="flex justify-center mt-10">
+        {jobs.length>0 && <Pagination
           current={currentPage}
           onChange={onChangePanigation}
           total={meta.total}
-        />
+        />}
       </div>
     </div>
   );
