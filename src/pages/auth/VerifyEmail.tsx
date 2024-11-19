@@ -10,7 +10,6 @@ import { updateUser } from "../../redux/slices/userSlices";
 const VerifyEmail = () => {
   const [codeId, setCodeId] = useState<string>('');
   const user = useSelector(state=> state.user)
-  console.log("duydeptraiaiia",user)
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch =useDispatch();
@@ -19,7 +18,6 @@ const VerifyEmail = () => {
   const onSubmitVerify = async () => {
     try {
       const response = await verifyCode({ id: userId, code_id: codeId });
-      console.log("res",response)
       if (response?.data) {
         const {access_token,refresh_token}=response.data
         localStorage.setItem('access_token',access_token);

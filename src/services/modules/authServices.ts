@@ -43,7 +43,6 @@ export const retryActive = async (email: string) => {
 };
 
 export const logout = async (token:string) => {
-  console.log("token",token)
   try {
     const response = await axiosInstance.post('/auth/logout', {}, {
       headers: {
@@ -57,7 +56,6 @@ export const logout = async (token:string) => {
 };
 
 export const refreshToken = async (token:string) => {
-  console.log("token",token)
   try {
     const response = await axiosInstance.post('/auth/refresh-token', {}, {
       headers: {

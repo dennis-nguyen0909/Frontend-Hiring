@@ -5,3 +5,7 @@ export const TAB_CANDIDATE='CANDIDATE';
 export const TAB_JOB='JOB';
 export const TAB_SKILL='SKILL';
 export const TAB_LEVEL='LEVEL';
+export const PROMOTE_JOB='PROMOTE_JOB';
+export const VIEW_DETAIL='VIEW_DETAIL';
+export const MARK_AS_EXPIRED='MARK_AS_EXPIRED';
+export const MY_JOB_HOME='HOME';

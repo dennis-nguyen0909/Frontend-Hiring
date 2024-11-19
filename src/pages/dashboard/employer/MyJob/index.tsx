@@ -1,30 +1,35 @@
-'use client'
-
 import { Table, Button, Dropdown, Badge, Select } from 'antd'
 import { EllipsisOutlined, TeamOutlined } from '@ant-design/icons'
-import type { ColumnsType } from 'antd/es/table'
+import { JobApi } from '../../../../services/modules/jobServices'
+import { useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { Job, Meta } from '../../../../types'
+import CustomPagination from '../../../../components/ui/CustomPanigation/CustomPanigation'
+import { MARK_AS_EXPIRED, MY_JOB_HOME, PROMOTE_JOB, VIEW_DETAIL } from '../../../../utils/role.utils'
+import JobDetail from './JobDetail'
 
-interface JobData {
-  key: string
-  title: string
-  type: string
-  timeRemaining: string
-  status: 'Active' | 'Expire'
-  applications: number
-}
 
 export default function MyJobEmployer() {
-  const columns: ColumnsType<JobData> = [
+  const columns = [
     {
       title: 'JOBS',
       dataIndex: 'title',
       key: 'title',
-      render: (text: string, record: JobData) => (
+      render: (text: string, record: Job) => (
         <div>
           <div className="font-medium">{text}</div>
           <div className="text-gray-500 text-sm">
-            {record.type} • {record.timeRemaining}
+            {record.job_type} • {new Date(record.expire_date).toLocaleDateString()}
           </div>
+        </div>
+      ),
+    },
+    {
+      title: 'LOCATION',
+      key: 'location',
+      render: (record: Job) => (
+        <div>
+          <div>{record.city_id.name}, {record.district_id.name}</div>
         </div>
       ),
     },
@@ -54,7 +59,7 @@ export default function MyJobEmployer() {
     {
       title: 'ACTIONS',
       key: 'actions',
-      render: () => (
+      render: (record: Job) => (
         <div className="flex gap-2">
           <Button type="primary" className="bg-blue-500">
             View Applications
@@ -62,110 +67,79 @@ export default function MyJobEmployer() {
           <Dropdown
             menu={{
               items: [
-                { key: '1', label: 'Promote Job' },
-                { key: '2', label: 'View Detail' },
-                { key: '3', label: 'Mark as expired' },
+                { key: PROMOTE_JOB, label: 'Promote Job' },
+                { key: VIEW_DETAIL, label: 'View Detail' },
+                { key: MARK_AS_EXPIRED, label: 'Mark as expired' },
               ],
+              onClick:(e)=>handleOnChangeMenu(e,record)
             }}
+            
             trigger={['click']}
+          
           >
             <Button icon={<EllipsisOutlined />} />
           </Dropdown>
         </div>
       ),
     },
-  ]
+  ];
+  
 
-  const data: JobData[] = [
-    {
-      key: '1',
-      title: 'UI/UX Designer',
-      type: 'Full Time',
-      timeRemaining: '27 days remaining',
-      status: 'Active',
-      applications: 798,
-    },
-    {
-      key: '2',
-      title: 'Senior UX Designer',
-      type: 'Internship',
-      timeRemaining: '8 days remaining',
-      status: 'Active',
-      applications: 185,
-    },
-    {
-      key: '3',
-      title: 'Junior Graphic Designer',
-      type: 'Full Time',
-      timeRemaining: '24 days remaining',
-      status: 'Active',
-      applications: 583,
-    },
-    {
-      key: '4',
-      title: 'Front End Developer',
-      type: 'Full Time',
-      timeRemaining: 'Dec 7, 2019',
-      status: 'Expire',
-      applications: 740,
-    },
-    {
-      key: '5',
-      title: 'Technical Support Specialist',
-      type: 'Part Time',
-      timeRemaining: '4 days remaining',
-      status: 'Active',
-      applications: 558,
-    },
-    {
-      key: '6',
-      title: 'Interaction Designer',
-      type: 'Contract Base',
-      timeRemaining: 'Feb 2, 2019',
-      status: 'Expire',
-      applications: 428,
-    },
-    {
-      key: '7',
-      title: 'Software Engineer',
-      type: 'Temporary',
-      timeRemaining: '9 days remaining',
-      status: 'Active',
-      applications: 922,
-    },
-    {
-      key: '8',
-      title: 'Product Designer',
-      type: 'Full Time',
-      timeRemaining: '7 days remaining',
-      status: 'Active',
-      applications: 894,
-    },
-    {
-      key: '9',
-      title: 'Project Manager',
-      type: 'Full Time',
-      timeRemaining: 'Dec 4, 2019',
-      status: 'Expire',
-      applications: 196,
-    },
-    {
-      key: '10',
-      title: 'Marketing Manager',
-      type: 'Full Time',
-      timeRemaining: '4 days remaining',
-      status: 'Active',
-      applications: 492,
-    },
-  ]
+  const userDetail = useSelector(state => state.user)
+  const [listMyJobs,setListMyJobs]=useState<Job[]>([])
+  const [meta,setMeta]=useState<Meta>({
+    count: 0,
+    current_page: 1,
+    per_page: 10,
+    total: 0,
+    total_pages: 0
+  })
+  const [currentMenu,setCurrentMenu]=useState<string>(MY_JOB_HOME);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const handleOnChangeMenu = (e,record)=>{
+    if(e.key){
+      setCurrentMenu(e.key);
+      setSelectedJob(record);
+    }
+  }
+
+  const handleChangeHome=()=>{
+    setCurrentMenu(MY_JOB_HOME);
+    setSelectedJob(null);
+  }
+  
+  const handleGetMyJob = async ({ current=1, pageSize=10 }) => {
+    const params = {
+      current,    // Trang hiện tại
+      pageSize,   // Số lượng phần tử mỗi trang
+    };
+    
+    try {
+      // Gọi API với các tham số phân trang
+      const res = await JobApi.getJobByEmployerID(userDetail._id, params, userDetail.access_token);
+      if (res.data) {
+        // Cập nhật dữ liệu công việc và thông tin phân trang
+        setListMyJobs(res.data.items); // Giả sử bạn có state `jobs` để lưu danh sách công việc
+        setMeta(res.data.meta);  // Giả sử bạn có state `meta` để lưu thông tin phân trang
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  };
+  
+  useEffect(()=>{
+    handleGetMyJob({current:1,pageSize:10});
+  },[])
+  console.log("listMyJobs",listMyJobs)
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded-lg shadow-sm">
+      {!selectedJob &&currentMenu===MY_JOB_HOME && (
+        <div className="bg-white rounded-lg shadow-sm">
         <div className="p-6 border-b">
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-semibold">
-              My Jobs <span className="text-gray-400">(589)</span>
+              My Jobs <span className="text-gray-400">({meta && meta.total})</span>
             </h1>
             <div className="flex gap-4">
               <Select
@@ -193,25 +167,25 @@ export default function MyJobEmployer() {
         
         <Table 
           columns={columns} 
-          dataSource={data}
-          pagination={{
-            total: 50,
-            pageSize: 10,
-            current: 1,
-            showSizeChanger: false,
-            itemRender: (page, type, originalElement) => {
-              if (type === 'prev') {
-                return <Button size="small">Previous</Button>
-              }
-              if (type === 'next') {
-                return <Button size="small">Next</Button>
-              }
-              return originalElement
-            },
-          }}
+          dataSource={listMyJobs}
+          pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
         />
+         <CustomPagination
+        currentPage={meta?.current_page}
+        total={meta?.total}
+        perPage={meta?.per_page}
+        onPageChange={(current, pageSize) => {
+          handleGetMyJob({ current, pageSize });
+        }}
+      />
       </div>
+      )}
+      {currentMenu === VIEW_DETAIL && selectedJob && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <JobDetail handleChangeHome={handleChangeHome} selectedJob={selectedJob}  />
+        </div>
+      )}
     </div>
   )
 }

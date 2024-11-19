@@ -45,7 +45,6 @@ const Setting = () => {
         console.error("Đăng xuất thất bại:", error);
       }
     };
-    console.log("user",user)
     const settingsItems = [
       { icon: <User className="w-5 h-5 text-primaryColor" />, text: "Cài đặt thông tin cá nhân", action: (navigate) => navigate(`/setting-profile/${user._id}`) },
       { icon: <ArrowUpCircle className="w-5 h-5 text-primaryColor" />, text: "Nâng cấp tài khoản VIP", action: (navigate) => console.log("Nâng cấp tài khoản VIP") },

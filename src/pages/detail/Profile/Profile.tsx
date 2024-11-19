@@ -29,6 +29,7 @@ import EducationComponent from "../Education/Education";
 import ExperienceComponent from "../Experience/Experience";
 import { MediaApi } from "../../../services/modules/mediaServices";
 import SkillComponent from "../Skill/Skill";
+import ExperienceNumberCandidate from "../../dashboard/candidate/ExperienceNumberCandidate/ExperienceNumberCandidate";
 const Profile = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
@@ -283,6 +284,7 @@ const Profile = () => {
             </div>
           </Card>
 
+          <ExperienceNumberCandidate />
           {/* Education Section */}
           <EducationComponent />
           {/* Experience Section */}

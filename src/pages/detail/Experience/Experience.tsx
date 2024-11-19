@@ -108,7 +108,7 @@ const ExperienceComponent = () => {
       start_date: start_date,
       end_date: end_date,
       currently_working,
-      description
+      description,
     };
     
     const res = await handleCreateWorkExperience(params, userDetail.access_token);
@@ -387,8 +387,6 @@ const ExperienceComponent = () => {
       if (!date) return 'Hiện tại'
       return moment(date).format('MM/YYYY')
     }
-    console.log("company",company)
-    console.log("company",position)
   
     return (
       <Card 
@@ -455,7 +453,6 @@ const ExperienceComponent = () => {
                 image={item.image_url}
               />
             ))}
-            {console.log("listWorkExperiences",listWorkExperiences)}
           </div>
           {/* </div> */}
         </Card>

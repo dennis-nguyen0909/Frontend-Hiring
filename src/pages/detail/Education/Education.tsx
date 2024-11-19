@@ -171,8 +171,7 @@ const EducationComponent = () => {
   const handleUpdateEducation = async () => {
     try {
       if (education) {
-        const data = form.getFieldsValue();
-        console.log("data",data)
+      const data = form.getFieldsValue();
        const res =  await EducationApi.updateEducation(
           education._id,
           data,

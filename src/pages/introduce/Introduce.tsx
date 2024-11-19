@@ -81,7 +81,6 @@ const Introduce = () =>{
                 </div>
                 <div className="flex items-center gap-5 md:justify-between mt-10 flex-wrap justify-center ">
                 {jobItems.map((item, idx) => {
-                    console.log("duydeptrai",item.image)
                 return (
                     <JobItems key={idx} count={item.count} label={item.name} image={item.image} />
                 );

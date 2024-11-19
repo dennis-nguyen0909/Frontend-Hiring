@@ -26,7 +26,6 @@ export const useCities = () => {
         setLoading(true);
         // Example data
         const cityData = await CitiesAPI.getCities(user.access_token);
-        console.log('cityData',cityData)
         setCities(cityData.data);
       } catch (err) {
         setError(err);

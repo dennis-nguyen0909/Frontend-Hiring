@@ -37,7 +37,6 @@ export default function DashBoardEmployer() {
     { key: '8', icon: <SettingOutlined />, label: 'Settings' },
   ]
 
-  console.log('currentTab',currentTab)
 
   const columns = [
     {
@@ -183,7 +182,7 @@ export default function DashBoardEmployer() {
             <MyJobEmployer />
           )}
           {currentTab === '8' && (
-            <SettingEmployer />
+            <SettingEmployer  />
           )}
           {currentTab === '5' && (
             <SavedCandidate />

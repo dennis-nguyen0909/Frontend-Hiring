@@ -10,7 +10,6 @@ interface IJobItemProps {
 }
 
 const JobItem = ({ item }: IJobItemProps) => {
-  console.log("item",item)
   return (
     <div className="bg-white flex h-[130px] rounded-lg shadow-md overflow-hidden">
       {/* Left Content */}

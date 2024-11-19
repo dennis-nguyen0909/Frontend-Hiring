@@ -142,7 +142,6 @@ export default function SkillEmployer() {
   ]
 
   const onChange = async (pagination: any, filters: any, sorter: any) => {
-    console.log('params', pagination, filters, sorter);
     const currentPage = pagination.current;
     const pageSize = pagination.pageSize;
   

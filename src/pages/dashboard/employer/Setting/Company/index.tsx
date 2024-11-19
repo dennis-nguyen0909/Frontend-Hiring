@@ -9,6 +9,7 @@ const CompanyInfo = ()=>{
     const [companyName, setCompanyName] = useState('')
     const [aboutUs, setAboutUs] = useState('')
     const handleLogoChange = (info: any) => {
+      console.log(info)
         if (info.file.status === 'done') {
           setLogoFile(info.file)
           message.success(`${info.file.name} file uploaded successfully`)

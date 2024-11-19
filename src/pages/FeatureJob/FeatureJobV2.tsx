@@ -37,7 +37,6 @@ const FeatureJobV2 = () => {
     try {
       const res = await CitiesAPI.getCitiesByCode('79',userDetail.access_token);
       if(res.data){
-        console.log("res",res.data)
         setCities(res.data);
       }
     } catch (error) {
@@ -62,7 +61,6 @@ const FeatureJobV2 = () => {
   const handleChangeSelectedLocation = (location: string) => {
     setSelectedCity(location); // Cập nhật state selectedCity
   };
-  console.log("selectedCity:", selectedCity); 
 
   const onChangePanigation: PaginationProps["onChange"] = (page) => {
     setCurrentPage(page);

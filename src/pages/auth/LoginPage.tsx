@@ -63,7 +63,6 @@ const LoginPage = () => {
   const handleGetDetailUser = async (id: JwtPayload, access_token: string) => {
     const storage = localStorage.getItem("refresh_token");
     const res = await getDetailUser(id.sub + "", access_token);
-    console.log("res",res)
     dispatch(
       updateUser({
         ...res?.items,
@@ -84,8 +83,6 @@ const LoginPage = () => {
         localStorage.setItem("access_token", access_token);
         localStorage.setItem("refresh_token", refresh_token);
         const decoded = jwtDecode(access_token);
-        console.log("decoded",decoded)
-        console.log("access_token",access_token)
         if (decoded?.sub) {
           handleGetDetailUser(decoded, access_token);
         }
@@ -119,10 +116,8 @@ const LoginPage = () => {
   const handleActivation = () => {
     message.success("Account activated successfully!");
     setModalVisible(false); // Đóng modal sau khi kích hoạt thành công
-    // Handle account activation logic here
   };
 
-  console.log("email", email);
   const renderFormCreate = () => {
     return (
       <div className="w-[500px]">
@@ -258,10 +253,7 @@ const LoginPage = () => {
   const onSubmitVerify = async () => {
     try {
       const response = await verifyCode({ id: userIdVerify, code_id: codeId });
-      console.log("response",response)
-
       if (response?.data?.user) {
-        console.log("response",response)
         setCurrent(current+1)
       }else{
         notification.error({

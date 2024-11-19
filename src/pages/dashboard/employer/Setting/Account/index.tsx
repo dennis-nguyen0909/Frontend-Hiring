@@ -17,14 +17,12 @@ export default function AccountSettingEmployer() {
 
   const handleSaveContact = () => {
     form.validateFields().then((values) => {
-      console.log('Contact Info:', values)
       message.success('Contact information updated successfully')
     })
   }
 
   const handleChangePassword = () => {
     passwordForm.validateFields().then((values) => {
-      console.log('Password Change:', values)
       message.success('Password changed successfully')
       passwordForm.resetFields()
     })

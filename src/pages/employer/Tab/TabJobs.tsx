@@ -44,13 +44,11 @@ const JobTab = () => {
   const [currentStep, setCurrentStep] = useState(0); // currentStep 0, 1, 2, ...
   
   const handleNext = (values) => {
-    console.log(values); // handle form submission
     setCurrentStep(currentStep + 1);
   };
 
   const handleFinish = () => {
-    console.log('Job created!');
-    setCurrentStep(0); // Reset steps after job is created
+    setCurrentStep(0);
   };
 
   const renderStep = () => {

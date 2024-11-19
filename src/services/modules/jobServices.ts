@@ -95,16 +95,19 @@ export const JobApi = {
       return null;
     }
   },
-  getJobByEmployerID: async (id: string, accessToken: string) => {
+  getJobByEmployerID: async (userId: string, params:any,accessToken: string) => {
     try {
-      const res = await axiosInstance.patch(`/jobs/${id}`, data, {
+      const resData = await axiosInstance.get('/jobs', {
+        params: {
+          user_id:userId,
+          ...params
+        },
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
         withCredentials: true,
       });
-
-      if (res.data) return res.data;
+      if (resData.data) return resData.data;
       return null;
     } catch (error) {
       console.error("Error updating job:", error);

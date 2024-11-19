@@ -55,12 +55,10 @@ const SkillComponent = () => {
   const handleGetSkillByUserId = async () => {
     try {
       const res = await SkillApi.getSkillByUserId(userDetail.access_token);
-      console.log("res", res);
       if (res.data) {
         setListSkills([...res.data]);
       }
     } catch (error) {
-      console.log("error", error);
       notification.error({
         message: "Notification",
         description: error.message,
@@ -68,15 +66,12 @@ const SkillComponent = () => {
     }
   };
 
-  console.log("listSkills", listSkills);
-
   useEffect(() => {
     handleGetSkillByUserId();
   }, []);
 
   const onFinish = async (values: any) => {
     const { name, evalute, description } = values;
-    console.log("values", values);
     const params = {
       name,
       evalute,

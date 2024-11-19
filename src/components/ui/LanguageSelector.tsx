@@ -44,7 +44,6 @@ export default function LanguageSelector() {
 
   const handleChange = (value: string) => {
     setSelectedLanguage(value)
-    console.log(`Selected language: ${value}`)
     // Here you can add logic to change the application's language
   }
 
