@@ -20,6 +20,24 @@ export const JobApi = {
       return null;
     }
   },
+  getAllJobRecent: async (data: { pageSize: number; [key: string]: any }) => {
+    try {
+      const resData = await axiosInstance.get('/jobs/recent', {
+        params: {
+          pageSize: data.pageSize,   // Truyền pageSize vào query
+          ...data,                   // Truyền tất cả các tham số còn lại (bao gồm filter, location, sort, ...)
+        },
+        withCredentials: true,
+      });
+
+      if (resData) return resData.data;
+      return null;
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      return null;
+    }
+  },
+
 
   // Phương thức POST để thêm một công việc mới
   postJob: async (data: unknown, accessToken: string) => {
@@ -43,6 +61,22 @@ export const JobApi = {
   getJobById: async (id: string, accessToken: string) => {
     try {
       const res = await axiosInstance.get(`/jobs/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      });
+
+      if (res.data) return res.data;
+      return null;
+    } catch (error) {
+      console.error("Error fetching job by ID:", error);
+      return null;
+    }
+  },
+  countActiveJobsByUser: async (userId:string,accessToken: string) => {
+    try {
+      const res = await axiosInstance.get(`/jobs/active/${userId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

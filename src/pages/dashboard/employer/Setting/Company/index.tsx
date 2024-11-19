@@ -1,52 +1,110 @@
 import { DeleteOutlined, UploadOutlined } from "@ant-design/icons"
 import { Editor } from "@tinymce/tinymce-react"
-import { Button, Input, message, Upload, UploadFile } from "antd"
+import { Button, Form, Image, Input, message, notification, Upload, UploadFile } from "antd"
 import { useState } from "react"
-
+import * as userServices from '../../../../../services/modules/userServices'
+import { useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
+import { updateUser } from "../../../../../redux/slices/userSlices"
+import { MediaApi } from "../../../../../services/modules/mediaServices"
 const CompanyInfo = ()=>{
     const [logoFile, setLogoFile] = useState<UploadFile | null>(null)
     const [bannerFile, setBannerFile] = useState<UploadFile | null>(null)
-    const [companyName, setCompanyName] = useState('')
-    const [aboutUs, setAboutUs] = useState('')
-    const handleLogoChange = (info: any) => {
-      console.log(info)
-        if (info.file.status === 'done') {
-          setLogoFile(info.file)
-          message.success(`${info.file.name} file uploaded successfully`)
-        } else if (info.file.status === 'error') {
-          message.error(`${info.file.name} file upload failed.`)
+    const [form] = Form.useForm();
+    const userDetail = useSelector(state=>state.user)
+    const dispatch = useDispatch()
+    const [isLoading,setIsLoading]=useState(false)
+    const handleUploadFile =async (file:File,type:string)=>{
+      setIsLoading(true)
+      console.log("file",file)
+        if (file) {
+          try {
+            const res = await MediaApi.postMedia(file,userDetail.access_token); 
+            if (res?.data?.url) {
+              let params;
+              if (type === "banner"){
+                params = {
+                  id:userDetail?._id,
+                  banner_company:res?.data?.url
+                }
+              }else{
+                params = {
+                  id:userDetail?._id,
+                  avatar_company:res?.data?.url
+                }
+              }
+              const responseUpdate = await userServices.updateUser(params);
+              if(responseUpdate.data){
+                notification.success({
+                  message: "Notification",
+                  description: "Cập nhật thành công"
+                })
+                dispatch(updateUser({ ...responseUpdate.data, access_token: userDetail.access_token }))
+              }
+            }
+            
+            setIsLoading(false)
+          } catch (error) {
+            console.error("Error handling file change:", error);
+            setIsLoading(false)
+          }
         }
+    }
+    const handleLogoChange = (info: any) => {
+       handleUploadFile(info.file,"logo")
       }
     
       const handleBannerChange = (info: any) => {
-        if (info.file.status === 'done') {
-          setBannerFile(info.file)
-          message.success(`${info.file.name} file uploaded successfully`)
-        } else if (info.file.status === 'error') {
-          message.error(`${info.file.name} file upload failed.`)
-        }
+        handleUploadFile(info.file,"banner")
       }
 
-  const handleSave = () => {
-    message.success('Changes saved successfully!')
+  const handleSave = async(values: any) => {
+    const {company_name,description} = values
+    const params={
+      company_name,
+      description:description?.level?.content,
+      id:userDetail?._id
+    }
+    const res = await userServices.updateUser(params);
+    if(res.data){
+      notification.success({
+        message: "Notification",
+        description: "Cập nhật thành công"
+      })
+      dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
+    }
+    console.log("values", values)
   }
     return (
-        <div className="mb-8">
+      <Form form={form} layout="vertical" onFinish={handleSave}>
+      <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">Logo & Banner Image</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <p className="mb-2">Upload Logo</p>
+          {userDetail?.avatar_company ? (
+            <Image
+            className="px-2 py-2"
+              src={userDetail?.avatar_company}
+              alt="Logo"
+              width={200}
+              height={200}
+              preview={false}
+            />
+          ):(
+            <Form.Item name="logo" >
             <Upload
               listType="picture-card"
               className="w-full"
               showUploadList={false}
               onChange={handleLogoChange}
+              beforeUpload={()=>false}
             >
               {logoFile ? (
-                <img 
-                  src="/placeholder.svg?height=200&width=200" 
-                  alt="Logo" 
-                  className="w-full h-full object-cover" 
+                <img
+                  src="/placeholder.svg?height=200&width=200"
+                  alt="Logo"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <div className="flex flex-col items-center">
@@ -55,18 +113,22 @@ const CompanyInfo = ()=>{
                 </div>
               )}
             </Upload>
-            {logoFile && (
+          </Form.Item>
+          )}
+            {userDetail?.avatar_company && (
               <div className="flex items-center justify-between mt-2">
                 <span className="text-sm text-gray-500">3.5 MB</span>
                 <div className="flex gap-2">
                   <Button
-                    size="small" 
+                    size="small"
                     icon={<DeleteOutlined />}
                     onClick={() => setLogoFile(null)}
                   >
                     Remove
                   </Button>
-                  <Button size="small" type="link">Replace</Button>
+                  <Button size="small" type="link">
+                    Replace
+                  </Button>
                 </div>
               </div>
             )}
@@ -74,17 +136,27 @@ const CompanyInfo = ()=>{
 
           <div>
             <p className="mb-2">Banner Image</p>
+          {userDetail?.banner_company ? (
+            <Image
+            className="px-2 py-2"
+              src={userDetail?.banner_company}
+              alt="Banner"
+              preview={false}
+            />
+          ):(
+            <Form.Item name="banner">
             <Upload
               listType="picture-card"
               className="w-full"
               showUploadList={false}
               onChange={handleBannerChange}
+              beforeUpload={()=>false}
             >
-              {bannerFile ? (
-                <img 
-                  src="/placeholder.svg?height=200&width=400" 
-                  alt="Banner" 
-                  className="w-full h-full object-cover" 
+              {userDetail?.banner_company ? (
+                <img
+                  src="/placeholder.svg?height=200&width=400"
+                  alt="Banner"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <div className="flex flex-col items-center">
@@ -93,59 +165,78 @@ const CompanyInfo = ()=>{
                 </div>
               )}
             </Upload>
-            {bannerFile && (
+          </Form.Item>
+          )}
+            {userDetail?.banner_company && (
               <div className="flex items-center justify-between mt-2">
                 <span className="text-sm text-gray-500">4.3 MB</span>
                 <div className="flex gap-2">
-                  <Button 
-                    size="small" 
+                  <Button
+                    size="small"
                     icon={<DeleteOutlined />}
                     onClick={() => setBannerFile(null)}
                   >
                     Remove
                   </Button>
-                  <Button size="small" type="link">Replace</Button>
+                  <Button size="small" type="link">
+                    Replace
+                  </Button>
                 </div>
               </div>
             )}
           </div>
         </div>
+
         <div className="mb-4">
-          <label className="block mb-2">Company name</label>
-          <Input
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="Enter company name"
-            className="max-w-md"
-          />
+          <Form.Item
+            label="Company Name"
+            name="company_name"
+            initialValue={userDetail?.company_name}
+            rules={[{ required: true, message: 'Please enter company name' }]}
+          >
+            <Input placeholder="Enter company name" className="max-w-md" />
+          </Form.Item>
         </div>
+
         <div>
-          <label className="block mb-2">About us</label>
-          <Editor
-            value={aboutUs}
-            onEditorChange={(content) => setAboutUs(content)}
-            init={{
-              height: 200,
-              menubar: false,
-              plugins: [
-                'advlist autolink lists link image charmap print preview anchor',
-                'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste code help wordcount'
-              ],
-              toolbar:
-                'bold italic underline strikethrough | link | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat',
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-            }}
-          />
+          <Form.Item
+            label="About Us"
+            name="description"
+            initialValue={userDetail?.description}
+            rules={[{ required: true, message: 'Please write about us' }]}
+          >
+            <Editor
+            // apiKey={process.env.REACT_APP_TINYMCE_API_KEY}
+            apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
+              value={userDetail?.description}
+              onEditorChange={(content) => form.setFieldsValue({ description: content })}
+              init={{
+                height: 200,
+                menubar: false,
+                plugins: [
+                  'advlist autolink lists link image charmap print preview anchor',
+                  'searchreplace visualblocks code fullscreen',
+                  'insertdatetime media table paste code help wordcount',
+                ],
+                toolbar:
+                  'bold italic underline strikethrough | link | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+              }}
+            />
+          </Form.Item>
         </div>
-        <Button 
-            type="primary" 
-            onClick={handleSave}
+
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
             className="bg-blue-500"
           >
             Save Changes
           </Button>
+        </Form.Item>
       </div>
+    </Form>
     )
 }
 

@@ -71,5 +71,16 @@ export const API_APPLICATION = {
     if (resData.data) return resData.data;
     return null;
   },
+  saveCandidate: async (applicationId:string,userId:string,accessToken: string) => {
+    const resData = await axiosInstance.put(`${APPLICATIONS}/${applicationId}/toggle-save/${userId}`,{}, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (resData.data) return resData.data;
+    return null;
+  },
+
   
 };

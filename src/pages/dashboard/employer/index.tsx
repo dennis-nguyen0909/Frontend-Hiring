@@ -1,14 +1,11 @@
-'use client'
-
 import { useState } from 'react'
-import { Layout, Menu, Table, Button, Dropdown, Badge, Typography } from 'antd'
+import { Layout, Menu, Typography } from 'antd'
 import {
   UserOutlined,
   FileTextOutlined,
   SaveOutlined,
   SettingOutlined,
   LogoutOutlined,
-  EllipsisOutlined,
   TeamOutlined,
   DollarOutlined,
   BankOutlined,
@@ -19,7 +16,7 @@ import MyJobEmployer from './MyJob'
 import SettingEmployer from './Setting'
 import SavedCandidate from './SavedCandidate'
 
-const { Header, Sider, Content } = Layout
+const { Sider, Content } = Layout
 const { Title, Text } = Typography
 
 export default function DashBoardEmployer() {
@@ -38,110 +35,7 @@ export default function DashBoardEmployer() {
   ]
 
 
-  const columns = [
-    {
-      title: 'JOBS',
-      dataIndex: 'title',
-      key: 'title',
-      render: (text: string, record: any) => (
-        <div>
-          <div className="font-medium">{text}</div>
-          <div className="text-gray-500 text-sm">
-            {record.type} • {record.timeRemaining}
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: 'STATUS',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: string) => (
-        <Badge 
-          status={status === 'Active' ? 'success' : 'error'} 
-          text={status} 
-          className="whitespace-nowrap"
-        />
-      ),
-    },
-    {
-      title: 'APPLICATIONS',
-      dataIndex: 'applications',
-      key: 'applications',
-      render: (count: number) => (
-        <div className="flex items-center gap-2">
-          <TeamOutlined />
-          <span>{count} Applications</span>
-        </div>
-      ),
-    },
-    {
-      title: 'ACTIONS',
-      key: 'actions',
-      render: () => (
-        <div className="flex gap-2">
-          <Button type="primary" className="bg-blue-500">
-            View Applications
-          </Button>
-          <Dropdown
-            menu={{
-              items: [
-                { key: '1', label: 'Promote Job' },
-                { key: '2', label: 'View Detail' },
-                { key: '3', label: 'Mark as expired' },
-              ],
-            }}
-            trigger={['click']}
-          >
-            <Button icon={<EllipsisOutlined />} />
-          </Dropdown>
-        </div>
-      ),
-    },
-  ]
 
-  const data = [
-    {
-      key: '1',
-      title: 'UI/UX Designer',
-      type: 'Full Time',
-      timeRemaining: '27 days remaining',
-      status: 'Active',
-      applications: 798,
-    },
-    {
-      key: '2',
-      title: 'Senior UX Designer',
-      type: 'Internship',
-      timeRemaining: '8 days remaining',
-      status: 'Active',
-      applications: 185,
-    },
-    {
-      key: '3',
-      title: 'Technical Support Specialist',
-      type: 'Part Time',
-      timeRemaining: '4 days remaining',
-      status: 'Active',
-      applications: 558,
-    },
-    {
-      key: '4',
-      title: 'Junior Graphic Designer',
-      type: 'Full Time',
-      timeRemaining: '24 days remaining',
-      status: 'Active',
-      applications: 583,
-    },
-    {
-      key: '5',
-      title: 'Front End Developer',
-      type: 'Full Time',
-      timeRemaining: 'Dec 7, 2019',
-      status: 'Expired',
-      applications: 740,
-    },
-  ]
 
   return (
     <Layout className="min-h-screen">

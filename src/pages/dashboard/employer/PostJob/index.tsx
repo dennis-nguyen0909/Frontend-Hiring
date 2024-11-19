@@ -115,7 +115,8 @@ export default function PostJob() {
       title: values.title,
       expire_date: expireDate,
       level: values.level,
-      skills:values.skills
+      skills:values.skills,
+      is_negotiable: values.is_negotiable
     };
     const res = await JobApi.postJob(params, userDetail.access_token);
 
@@ -488,7 +489,8 @@ export default function PostJob() {
             rules={[{ required: true, message: "Job description is required" }]}
           >
             <Editor
-              apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3" // Bạn có thể lấy API key miễn phí từ TinyMCE
+              // apiKey={process.env.REACT_APP_TINYMCE_API_KEY} // Bạn có thể lấy API key miễn phí từ TinyMCE
+              apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
               initialValue=""
               init={{
                 height: 500,

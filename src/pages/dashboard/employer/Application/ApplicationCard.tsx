@@ -19,6 +19,7 @@ import {
 import moment from "moment";
 import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
+import { useSelector } from "react-redux";
 
 const { Text } = Typography;
 interface IPropsApplicationCard {
@@ -33,7 +34,7 @@ const ApplicationCard = ({
   className,
 }: IPropsApplicationCard) => {
   const { user_id, applied_date, job_id,save_candidates } = applied;
-
+    const userDetail = useSelector(state=>state.user)
   const items: MenuProps["items"] = [
     {
       key: "rejected",
@@ -98,19 +99,16 @@ const ApplicationCard = ({
 
   const handleSaveCandidate = async (userId: string) => {
     try {
-      const res = await API_APPLICATION.updateApplication(
-        applied._id,
-        { save_candidates: userId?._id },
-        user_id?.access_token
-      );
+    const res = await API_APPLICATION.saveCandidate(applied?._id, userId, user_id?.access_token,userDetail?.access_token);
       if (res.data) {
-        notification.success({
-          message: "Notification",
-          description: "Làm tài liệu thành cong",
-        });
         handleFetchData();
       }
-    } catch (error) {}
+    } catch (error) {
+        notification.error({
+          message: "Notification",
+          description: error.message,
+        })
+    }
   };
   const isSaved = save_candidates && save_candidates.includes(user_id?._id);
   return (
@@ -163,7 +161,7 @@ const ApplicationCard = ({
           <p>Ngày nộp: {moment(applied_date).format("MM/DD/YYYY")}</p>
           <div
             className="cursor-pointer text-xl text-red-500"
-            onClick={() => handleSaveCandidate(user_id)}
+            onClick={() => handleSaveCandidate(user_id?._id)}
           >
               {isSaved ? <HeartFilled/> : <HeartOutlined />}
           </div>
@@ -171,13 +169,6 @@ const ApplicationCard = ({
       </div>
       <Button icon={<DownloadOutlined />} className="w-full mt-4">
         Download CV
-      </Button>
-      <Button
-        icon={<SaveOutlined />}
-        className="w-full mt-4"
-        // onClick={() => handleSaveCandidate(user_id)}
-      >
-        Save Candidate
       </Button>
     </Card>
   );

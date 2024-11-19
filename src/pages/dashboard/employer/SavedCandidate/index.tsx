@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { List, Button, Dropdown, message, Avatar } from 'antd'
 import { 
   MoreOutlined, 
@@ -6,94 +6,31 @@ import {
   DownloadOutlined,
   BookOutlined
 } from '@ant-design/icons'
+import { SAVE_CANDIDATE_API } from '../../../../services/modules/SaveCandidateServices'
+import { useSelector } from 'react-redux'
+import { Meta } from '../../../../types'
+import { defaultMeta } from '../../../../untils'
+import CustomPagination from '../../../../components/ui/CustomPanigation/CustomPanigation'
 
-interface Candidate {
-  id: string
-  name: string
-  position: string
-  avatar: string
-  isBookmarked: boolean
+interface SaveCandidates {
+  _id: string
+  employer: object | string
+  candidate: object | string
+  isActive: boolean
+  createdAt: string
+  updatedAt:string
 }
 
 export default function SavedCandidate() {
-  const [candidates, setCandidates] = useState<Candidate[]>([
-    {
-      id: '1',
-      name: 'Guy Hawkins',
-      position: 'Technical Support Specialist',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    },
-    {
-      id: '2',
-      name: 'Jacob Jones',
-      position: 'Product Designer',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    },
-    {
-      id: '3',
-      name: 'Cameron Williamson',
-      position: 'Marketing Officer',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    },
-    {
-      id: '4',
-      name: 'Robert Fox',
-      position: 'Marketing Manager',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    },
-    {
-      id: '5',
-      name: 'Kathryn Murphy',
-      position: 'Junior Graphic Designer',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    },
-    {
-      id: '6',
-      name: 'Darlene Robertson',
-      position: 'Visual Designer',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    },
-    {
-      id: '7',
-      name: 'Kristin Watson',
-      position: 'Senior UX Designer',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    },
-    {
-      id: '8',
-      name: 'Jenny Wilson',
-      position: 'Interaction Designer',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    },
-    {
-      id: '9',
-      name: 'Marvin McKinney',
-      position: 'Networking Engineer',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    },
-    {
-      id: '10',
-      name: 'Theresa Webb',
-      position: 'Software Engineer',
-      avatar: '/placeholder.svg?height=40&width=40',
-      isBookmarked: true
-    }
-  ])
+  const userDetail = useSelector(state => state.user)
+  const [saveCandidates, setSaveCandidates] = useState<SaveCandidates[]>([])
+  const [meta,setMeta]=useState<Meta>(defaultMeta)
 
   const handleBookmark = (candidateId: string) => {
-    setCandidates(prev => 
+    setSaveCandidates(prev => 
       prev.map(candidate => 
         candidate.id === candidateId 
-          ? { ...candidate, isBookmarked: !candidate.isBookmarked }
+          ? { ...candidate, isActive: !isActive }
           : candidate
       )
     )
@@ -111,6 +48,94 @@ export default function SavedCandidate() {
     message.success('Downloading CV...')
   }
 
+  const handleGetSaveCandidates = async({current=1,pageSize=10}) => {
+    const params = {
+      current,    // Trang hiện tại
+      pageSize,   // Số lượng phần tử mỗi trang
+    };
+    const res = await SAVE_CANDIDATE_API.getSaveCandidateByEmployerId(userDetail?._id, params, userDetail?.access_token);
+    if (res.data) {
+      setSaveCandidates(res.data.items)
+      setMeta(res.data.meta)
+    }else{
+      setSaveCandidates([])
+    }
+  }
+  useEffect(() => {
+    handleGetSaveCandidates({current:1,pageSize:10})
+  },[ ])
+
+  const renderItem = (item)=>{
+    const {candidate,isActive}=item
+    console.log("duydeptrai",candidate)
+    console.log("duydeptrai",item)
+    return (
+      <List.Item
+      key={candidate._id}
+      className="px-6 hover:bg-gray-50 transition-colors"
+      actions={[
+        <Button
+          key="bookmark"
+          type="text"
+          icon={<BookOutlined className={isActive ? 'text-blue-500' : ''} />}
+          onClick={() => handleBookmark(candidate._id)}
+          aria-label={isActive ? 'Remove bookmark' : 'Add bookmark'}
+        />,
+        <Button
+          key="view"
+          type="primary"
+          className="bg-blue-500"
+          onClick={() => handleViewProfile(candidate._id)}
+        >
+          View Profile
+        </Button>,
+        <Dropdown
+          key="more"
+          menu={{
+            items: [
+              {
+                key: '1',
+                icon: <MailOutlined />,
+                label: 'Send Email',
+                onClick: () => handleSendEmail(candidate._id)
+              },
+              {
+                key: '2',
+                icon: <DownloadOutlined />,
+                label: 'Download CV',
+                onClick: () => handleDownloadCV(candidate._id)
+              }
+            ]
+          }}
+          trigger={['click']}
+          placement="bottomRight"
+        >
+          <Button
+            icon={<MoreOutlined />}
+            type="text"
+            aria-label="More options"
+          />
+        </Dropdown>
+      ]}
+    >
+      <List.Item.Meta
+        avatar={
+          <Avatar
+            src={candidate.avatar}
+            alt={`${candidate.name}'s avatar`}
+            className="w-10 h-10"
+          />
+        }
+        title={
+          <span className="font-medium">{candidate.full_name}</span>
+        }
+        description={
+          <span className="text-gray-500">{candidate.position}123</span>
+        }
+      />
+    </List.Item>
+    )
+  }
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className=" mx-auto">
@@ -119,82 +144,29 @@ export default function SavedCandidate() {
             <div className="flex justify-between items-center">
               <h1 className="text-xl font-semibold">Saved Candidates</h1>
               <p className="text-sm text-gray-500">
-                All of the candidates are visible until 24 march, 2021
+                All of the saveCandidates are visible until 24 march, 2021
               </p>
             </div>
           </div>
 
           <List
             itemLayout="horizontal"
-            dataSource={candidates}
-            renderItem={(candidate) => (
-              <List.Item
-                key={candidate.id}
-                className="px-6 hover:bg-gray-50 transition-colors"
-                actions={[
-                  <Button
-                    key="bookmark"
-                    type="text"
-                    icon={<BookOutlined className={candidate.isBookmarked ? 'text-blue-500' : ''} />}
-                    onClick={() => handleBookmark(candidate.id)}
-                    aria-label={candidate.isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
-                  />,
-                  <Button
-                    key="view"
-                    type="primary"
-                    className="bg-blue-500"
-                    onClick={() => handleViewProfile(candidate.id)}
-                  >
-                    View Profile
-                  </Button>,
-                  <Dropdown
-                    key="more"
-                    menu={{
-                      items: [
-                        {
-                          key: '1',
-                          icon: <MailOutlined />,
-                          label: 'Send Email',
-                          onClick: () => handleSendEmail(candidate.id)
-                        },
-                        {
-                          key: '2',
-                          icon: <DownloadOutlined />,
-                          label: 'Download CV',
-                          onClick: () => handleDownloadCV(candidate.id)
-                        }
-                      ]
-                    }}
-                    trigger={['click']}
-                    placement="bottomRight"
-                  >
-                    <Button
-                      icon={<MoreOutlined />}
-                      type="text"
-                      aria-label="More options"
-                    />
-                  </Dropdown>
-                ]}
-              >
-                <List.Item.Meta
-                  avatar={
-                    <Avatar
-                      src={candidate.avatar}
-                      alt={`${candidate.name}'s avatar`}
-                      className="w-10 h-10"
-                    />
-                  }
-                  title={
-                    <span className="font-medium">{candidate.name}</span>
-                  }
-                  description={
-                    <span className="text-gray-500">{candidate.position}</span>
-                  }
-                />
-              </List.Item>
-            )}
+            dataSource={saveCandidates}
+            renderItem={(candidate) => 
+              renderItem(candidate)
+            }
           />
         </div>
+       <div>
+       <CustomPagination
+        currentPage={meta?.current_page}
+        total={meta?.total}
+        perPage={meta?.per_page}
+        onPageChange={(current, pageSize) => {
+          handleGetSaveCandidates({ current, pageSize });
+        }}
+      />
+       </div>
       </div>
     </div>
   )

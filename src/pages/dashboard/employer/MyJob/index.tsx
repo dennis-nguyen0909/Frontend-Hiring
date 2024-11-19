@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { Job, Meta } from '../../../../types'
 import CustomPagination from '../../../../components/ui/CustomPanigation/CustomPanigation'
-import { MARK_AS_EXPIRED, MY_JOB_HOME, PROMOTE_JOB, VIEW_DETAIL } from '../../../../utils/role.utils'
+import { MARK_AS_EXPIRED, MY_JOB_HOME, PROMOTE_JOB, VIEW_DETAIL, VIEW_DETAIL_APPLICATION } from '../../../../utils/role.utils'
 import JobDetail from './JobDetail'
 
 
@@ -61,7 +61,7 @@ export default function MyJobEmployer() {
       key: 'actions',
       render: (record: Job) => (
         <div className="flex gap-2">
-          <Button type="primary" className="bg-blue-500">
+          <Button onClick={()=>handleOnChangeMenu({key:VIEW_DETAIL_APPLICATION},record)} type="primary" className="bg-blue-500">
             View Applications
           </Button>
           <Dropdown
@@ -97,6 +97,7 @@ export default function MyJobEmployer() {
   const [currentMenu,setCurrentMenu]=useState<string>(MY_JOB_HOME);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const handleOnChangeMenu = (e,record)=>{
+    console.log('duydeptrai',e,record)
     if(e.key){
       setCurrentMenu(e.key);
       setSelectedJob(record);
@@ -181,7 +182,7 @@ export default function MyJobEmployer() {
       />
       </div>
       )}
-      {currentMenu === VIEW_DETAIL && selectedJob && (
+      {currentMenu === VIEW_DETAIL_APPLICATION && selectedJob && (
         <div className="bg-white rounded-lg shadow-sm">
           <JobDetail handleChangeHome={handleChangeHome} selectedJob={selectedJob}  />
         </div>

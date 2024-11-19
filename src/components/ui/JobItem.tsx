@@ -16,7 +16,7 @@ const JobItem = ({ item }: IJobItemProps) => {
       <div className="flex items-center justify-center pl-4">
         <Image
           preview={false}
-          src={item.image || defaultImage}
+          src={item?.user_id?.avatar_company || defaultImage}
           className="object-cover rounded-md"
           width={100}
           height={100}
@@ -35,16 +35,22 @@ const JobItem = ({ item }: IJobItemProps) => {
         <div className="flex items-center gap-1 justify-between">
          <div className="flex items-center gap-1">
          <CircleDollarSign size={18} />
+         {item.is_negotiable ? (
+          <span className="text-sm text-gray-500">
+          Lương thỏa thuận
+        </span>
+         ):(
           <div className="flex items-center">
-            <span className="text-sm text-gray-500">
-              {item.salary_range.min}
-            </span>
-            <span className="text-sm text-gray-500"> - </span>
-            <span className="text-sm text-gray-500">
-              {item.salary_range.max}
-            </span>
-            <DollarSign size={14} className="text-gray-500" />
-          </div>
+          <span className="text-sm text-gray-500">
+            {item.salary_range.min}
+          </span>
+          <span className="text-sm text-gray-500"> - </span>
+          <span className="text-sm text-gray-500">
+            {item.salary_range.max}
+          </span>
+          <DollarSign size={14} className="text-gray-500" />
+        </div>
+         )}
          </div>
          <div className="mr-2 transition-colors duration-200 hover:text-[#cf4850]">
                 <Heart size={18} className="cursor-pointer" />
