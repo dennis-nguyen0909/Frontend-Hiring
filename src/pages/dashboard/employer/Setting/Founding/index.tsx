@@ -1,58 +1,60 @@
 'use client'
 
-import { useState } from 'react'
-import { Tabs, Select, DatePicker, Input, Button, Form } from 'antd'
+import { useEffect, useState } from 'react'
+import { Tabs, Select, DatePicker, Input, Button, Form, notification } from 'antd'
 import { Editor } from '@tinymce/tinymce-react'
 import { UserOutlined, GlobalOutlined, WifiOutlined, SettingOutlined, LinkOutlined } from '@ant-design/icons'
+import { ORGANIZATION_API } from '../../../../../services/modules/OrganizationServices'
+import { useSelector } from 'react-redux'
+import moment from 'moment'
+import { useDispatch } from 'react-redux'
+import { updateUser } from '../../../../../redux/slices/userSlices'
 
 export default function Founding() {
   const [form] = Form.useForm()
   const [companyVision, setCompanyVision] = useState('')
-
+  const dispatch = useDispatch()
+const userDetail = useSelector(state => state.user)
   const handleSave = () => {
-    form.validateFields().then((values) => {
-      console.log('Form values:', { ...values, companyVision })
+    form.validateFields().then(async(values) => {
+      const { year_of_establishment} = values
+      const params ={
+        ...values,
+        owner:userDetail?._id,
+        year_of_establishment,
+        company_vision:companyVision
+        
+      }
+      const res = await ORGANIZATION_API.createOrganization(params,userDetail.access_token);
+      if(res.data){
+        notification.success({
+          message: "Notification",
+          description: "Cập nhật thành công"
+        })
+        dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
+      }else{
+        notification.error({
+          message: "Notification",
+          description: res.response.data.message
+        })
+      }
+
     })
   }
 
-  const items = [
-    {
-      key: '1',
-      label: (
-        <span className="flex items-center gap-2">
-          <UserOutlined />
-          Company Info
-        </span>
-      ),
-    },
-    {
-      key: '2',
-      label: (
-        <span className="flex items-center gap-2 text-blue-500">
-          <GlobalOutlined />
-          Founding Info
-        </span>
-      ),
-    },
-    {
-      key: '3',
-      label: (
-        <span className="flex items-center gap-2">
-          <WifiOutlined />
-          Social Media Profile
-        </span>
-      ),
-    },
-    {
-      key: '4',
-      label: (
-        <span className="flex items-center gap-2">
-          <SettingOutlined />
-          Account Setting
-        </span>
-      ),
-    },
-  ]
+useEffect(()=>{
+  if(userDetail && userDetail.organization){
+    form.setFieldsValue({
+      organization_type: userDetail?.organization?.organization_type,
+      industry_type: userDetail?.organization?.industry_type,
+      team_size: userDetail?.organization?.team_size,
+      company_website:userDetail?.organization?.company_website,
+      year_of_establishment:moment(userDetail?.organization?.year_of_establishment).format('MM/DD/YYYY')
+    })
+    setCompanyVision(userDetail?.organization?.company_vision)
+  }
+},[userDetail?.organization])
+
 
   const organizationTypes = [
     'Corporation',
@@ -62,7 +64,7 @@ export default function Founding() {
     'Non-Profit Organization',
   ]
 
-  const industryTypes = [
+  const industry_type = [
     'Technology',
     'Healthcare',
     'Finance',
@@ -81,23 +83,27 @@ export default function Founding() {
     '1000+ employees',
   ]
 
+  const onFinish = (values: any) => {
+    console.log('Form values:', values)
+  }
   return (
     <div className="p-6 min-h-screen">
       <Form
               form={form}
               layout="vertical"
               initialValues={{
-                organizationType: undefined,
-                industryTypes: undefined,
-                teamSize: undefined,
-                establishmentDate: undefined,
-                website: '',
+                organization_type: undefined,
+                industry_type: undefined,
+                team_size: undefined,
+                year_of_establishment: undefined,
+                company_website: '',
               }}
+              onFinish={onFinish}
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <Form.Item
                   label="Organization Type"
-                  name="organizationType"
+                  name="organization_type"
                   rules={[{ required: true, message: 'Please select organization type' }]}
                 >
                   <Select placeholder="Select...">
@@ -111,11 +117,11 @@ export default function Founding() {
 
                 <Form.Item
                   label="Industry Types"
-                  name="industryTypes"
+                  name="industry_type"
                   rules={[{ required: true, message: 'Please select industry type' }]}
                 >
                   <Select placeholder="Select...">
-                    {industryTypes.map(type => (
+                    {industry_type.map(type => (
                       <Select.Option key={type} value={type}>
                         {type}
                       </Select.Option>
@@ -125,7 +131,7 @@ export default function Founding() {
 
                 <Form.Item
                   label="Team Size"
-                  name="teamSize"
+                  name="team_size"
                   rules={[{ required: true, message: 'Please select team size' }]}
                 >
                   <Select placeholder="Select...">
@@ -141,21 +147,17 @@ export default function Founding() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <Form.Item
                   label="Year of Establishment"
-                  name="establishmentDate"
+                  name="year_of_establishment"
                   rules={[{ required: true, message: 'Please select establishment date' }]}
                 >
-                  <DatePicker 
-                    className="w-full" 
-                    format="DD/MM/YYYY"
-                    placeholder="dd/mm/yyyy"
-                  />
+                 <Input placeholder="dd/mm/yyyy" />
                 </Form.Item>
 
                 <Form.Item
                   label="Company Website"
-                  name="website"
+                  name="company_website"
                   rules={[
-                    { required: true, message: 'Please enter website URL' },
+                    { required: true, message: 'Please enter company_website URL' },
                     { type: 'url', message: 'Please enter a valid URL' }
                   ]}
                 >

@@ -70,7 +70,8 @@ export interface IBackendRes<T> {
     title: string;                // Tiêu đề công việc
     updatedAt: string;            // Ngày cập nhật cuối (ISO string)
     user_id: string;              // ID người dùng đã tạo công việc
-    ward_id: string;              // ID phường/xã
+    ward_id: string;       
+    is_active:boolean;       // ID phường/xã
     __v: number;                  // Phiên bản tài liệu
     _id: string;                  // ID công việc
   }

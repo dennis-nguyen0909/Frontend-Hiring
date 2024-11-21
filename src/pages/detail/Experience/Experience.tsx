@@ -10,11 +10,11 @@ import {
   Select,
   Image,
 } from "antd";
-import { EditOutlined, LinkOutlined, PictureOutlined } from "@ant-design/icons";
+import { LinkOutlined, PictureOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
-import { BookOpen, Briefcase, Edit, Pencil } from "lucide-react";
+import { BookOpen, Briefcase, Pencil } from "lucide-react";
 import { ExperienceApi } from "../../../services/modules/experienceServices";
 import { MediaApi } from "../../../services/modules/mediaServices";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";

@@ -1,13 +1,14 @@
 import { DeleteOutlined, UploadOutlined } from "@ant-design/icons"
 import { Editor } from "@tinymce/tinymce-react"
 import { Button, Form, Image, Input, message, notification, Upload, UploadFile } from "antd"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import * as userServices from '../../../../../services/modules/userServices'
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { updateUser } from "../../../../../redux/slices/userSlices"
 import { MediaApi } from "../../../../../services/modules/mediaServices"
 const CompanyInfo = ()=>{
+    const uploadRef=useRef(null)
     const [logoFile, setLogoFile] = useState<UploadFile | null>(null)
     const [bannerFile, setBannerFile] = useState<UploadFile | null>(null)
     const [form] = Form.useForm();
@@ -75,6 +76,28 @@ const CompanyInfo = ()=>{
     }
     console.log("values", values)
   }
+  const handleReplaceLogo = () => {
+    if (uploadRef.current) {
+      uploadRef.current.click(); // Mở hộp thoại file khi nhấn nút Replace
+    }
+  };
+  const handleDeleteAvatar = async()=>{
+    try {
+      const res = await userServices.updateUser({
+        id:userDetail?._id,
+        avatar_company:""
+      })
+      if(res.data){
+        notification.success({
+          message: "Notification",
+          description: "Xóa avatar"
+        })
+        dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
+      }
+    } catch (error) {
+      
+    }
+  }
     return (
       <Form form={form} layout="vertical" onFinish={handleSave}>
       <div className="mb-8">
@@ -94,6 +117,7 @@ const CompanyInfo = ()=>{
           ):(
             <Form.Item name="logo" >
             <Upload
+            ref={uploadRef}
               listType="picture-card"
               className="w-full"
               showUploadList={false}
@@ -115,23 +139,33 @@ const CompanyInfo = ()=>{
             </Upload>
           </Form.Item>
           )}
-            {userDetail?.avatar_company && (
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-sm text-gray-500">3.5 MB</span>
-                <div className="flex gap-2">
-                  <Button
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    onClick={() => setLogoFile(null)}
-                  >
-                    Remove
-                  </Button>
-                  <Button size="small" type="link">
-                    Replace
-                  </Button>
-                </div>
+          {userDetail?.avatar_company && (
+            <div className="flex items-center mt-2 gap-4">
+              <span className="text-sm text-gray-500">3.5 MB</span>
+              <div className="flex gap-2">
+                <Button
+                  size="small"
+                  icon={<DeleteOutlined />}
+                  onClick={() =>  handleDeleteAvatar()}
+                >
+                  Remove
+                </Button>
+                <Button onClick={handleReplaceLogo} size="small" type="link">
+        Replace
+      </Button>
+      <Input 
+        type="file" 
+        ref={uploadRef} 
+        style={{ display: "none" }} 
+        onChange={(e) => {
+          // Xử lý sự kiện khi người dùng chọn file
+          const file = e.target.files[0];
+          console.log("File selected:", file);
+        }} 
+      />
               </div>
-            )}
+            </div>
+          )}
           </div>
 
           <div>

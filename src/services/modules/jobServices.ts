@@ -20,12 +20,13 @@ export const JobApi = {
       return null;
     }
   },
-  getAllJobRecent: async (data: { pageSize: number; [key: string]: any }) => {
+  getAllJobRecent: async (data: { pageSize: number; [key: string]: any },user_id:string) => {
     try {
       const resData = await axiosInstance.get('/jobs/recent', {
         params: {
           pageSize: data.pageSize,   // Truyền pageSize vào query
-          ...data,                   // Truyền tất cả các tham số còn lại (bao gồm filter, location, sort, ...)
+          ...data,            
+          user_id:user_id            // Truyền tất cả các tham số còn lại (bao gồm filter, location, sort, ...)
         },
         withCredentials: true,
       });

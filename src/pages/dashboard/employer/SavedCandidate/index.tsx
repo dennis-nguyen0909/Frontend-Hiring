@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux'
 import { Meta } from '../../../../types'
 import { defaultMeta } from '../../../../untils'
 import CustomPagination from '../../../../components/ui/CustomPanigation/CustomPanigation'
+import CandidateDetailView from '../CandidateDetail/CandidateDetail'
 
 interface SaveCandidates {
   _id: string
@@ -24,7 +25,9 @@ interface SaveCandidates {
 export default function SavedCandidate() {
   const userDetail = useSelector(state => state.user)
   const [saveCandidates, setSaveCandidates] = useState<SaveCandidates[]>([])
+  const [currentTab,setCurrentTab]=useState('save_candidate')
   const [meta,setMeta]=useState<Meta>(defaultMeta)
+  const [selectedCandidate,setSelectedCandidate]=useState<string>('')
 
   const handleBookmark = (candidateId: string) => {
     setSaveCandidates(prev => 
@@ -37,7 +40,8 @@ export default function SavedCandidate() {
   }
 
   const handleViewProfile = (candidateId: string) => {
-    message.info(`Viewing profile of candidate ${candidateId}`)
+    setCurrentTab('view_profile')
+    setSelectedCandidate(candidateId)
   }
 
   const handleSendEmail = (candidateId: string) => {
@@ -138,7 +142,7 @@ export default function SavedCandidate() {
   }
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <div className=" mx-auto">
+      {currentTab === 'save_candidate' &&( <div className=" mx-auto">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6 border-b">
             <div className="flex justify-between items-center">
@@ -167,7 +171,10 @@ export default function SavedCandidate() {
         }}
       />
        </div>
-      </div>
+      </div>)}
+
+      {currentTab === 'view_profile' && <CandidateDetailView candidateId={selectedCandidate} userDetail={userDetail} />}
+     
     </div>
   )
 }

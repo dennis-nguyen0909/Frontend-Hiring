@@ -30,6 +30,7 @@ import ExperienceComponent from "../Experience/Experience";
 import { MediaApi } from "../../../services/modules/mediaServices";
 import SkillComponent from "../Skill/Skill";
 import ExperienceNumberCandidate from "../../dashboard/candidate/ExperienceNumberCandidate/ExperienceNumberCandidate";
+import CertificateComponent from "../Certificate/CertificateComponent";
 const Profile = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
@@ -291,6 +292,8 @@ const Profile = () => {
           <ExperienceComponent />
           {/* Skill Section */}
           <SkillComponent />
+           {/* Certificate */}
+           <CertificateComponent />
         </div>
       </Col>
       <Col className="w-1/4 bg-white h-fit rounded-2xl px-8 py-4 ">

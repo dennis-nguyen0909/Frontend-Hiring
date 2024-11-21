@@ -25,7 +25,7 @@ const SocialEmployer = () => {
         setSocialLinks(updatedLinks);
       };
       const handleSaveChanges = () => {
-        message.success("Changes saved successfully");
+        
       };
     
     return(

@@ -24,3 +24,36 @@ export const getDetailUser = async (id: string, access_token: string) => {
       return null;
     }
   };
+  interface ResetPasswordData {
+    user_id: string;
+    current_password: string;
+    new_password: string;
+  }
+
+  export const USER_API = {
+    resetPassword: async (data: ResetPasswordData,accessToken: string) => {
+      try {
+        const res = await axiosInstance.post(
+          `users/reset-password`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Using data.accessToken directly
+            },
+            withCredentials: true,
+          }
+        );
+  
+        if (res.data) {
+          return res.data; // Return the response data if it's available
+        }
+  
+        return null; // Return null if no data is returned
+      } catch (error) {
+        console.error("Error in resetPassword API:", error);
+  
+     
+        return error; // Return null if any error occurs
+      }
+    },
+  };

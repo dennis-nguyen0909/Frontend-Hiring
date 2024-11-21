@@ -8,6 +8,7 @@ interface GeneralModalProps {
   onOk?: () => void;
   renderBody?: any;
   renderFooter?: () => React.ReactNode;
+  style:any
 }
 
 const GeneralModal: React.FC<GeneralModalProps> = ({
@@ -17,9 +18,11 @@ const GeneralModal: React.FC<GeneralModalProps> = ({
   onOk,
   renderBody,
   renderFooter,
+  style
 }) => {
   return (
     <Modal
+      style={style}
       visible={visible}
       title={title}
       onCancel={onCancel}

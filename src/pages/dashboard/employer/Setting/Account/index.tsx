@@ -1,14 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { Tabs, Form, Input, Button, Select, Modal, message } from 'antd'
+import { useEffect, useState } from 'react'
+import { Tabs, Form, Input, Button, Select, Modal, message, notification } from 'antd'
 import { UserOutlined, GlobalOutlined, WifiOutlined, SettingOutlined, MailOutlined, EyeOutlined, EyeInvisibleOutlined, DeleteOutlined } from '@ant-design/icons'
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'
-
+import { useSelector } from 'react-redux'
+import * as userServices from '../../../../../services/modules/userServices'
+import { useDispatch } from 'react-redux'
+import { updateUser } from '../../../../../redux/slices/userSlices'
 export default function AccountSettingEmployer() {
   const [form] = Form.useForm()
   const [passwordForm] = Form.useForm()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const dispatch = useDispatch()
+  const userDetail = useSelector(state => state.user)
   const [showPassword, setShowPassword] = useState({
     current: false,
     new: false,
@@ -16,15 +21,59 @@ export default function AccountSettingEmployer() {
   })
 
   const handleSaveContact = () => {
-    form.validateFields().then((values) => {
-      message.success('Contact information updated successfully')
+    form.validateFields().then(async (values) => {
+      const params ={
+        ...values,
+        id:userDetail._id
+      }
+      try {
+        const res = await userServices.updateUser(params);
+        console.log("messages",res)
+        if(res.data){
+          notification.success({
+            message: "Notification",
+            description: "Cập nhật thống tin"
+          })
+          dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
+        }
+      } catch (error) {
+        console.log("messages",error)
+        notification.error({
+          message: "Notification",
+          description: error.message
+        })
+      }
     })
   }
 
   const handleChangePassword = () => {
-    passwordForm.validateFields().then((values) => {
+    passwordForm.validateFields().then(async(values) => {
       message.success('Password changed successfully')
-      passwordForm.resetFields()
+      console.log("values",values)
+      try {
+        
+        const res = await userServices.USER_API.resetPassword({
+          ...values,
+          user_id: userDetail._id
+  
+        },userDetail.access_token)
+        if(res.data){
+          notification.success({
+            message: "Notification",
+            description: "Cập nhật thống tin"
+          })
+          dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
+        }else{
+          notification.error({
+            message: "Notification",
+            description: res.response.data.message
+          })
+        }
+        console.log("duytest",res.response.data)
+      } catch (error) {
+        
+      }
+      // passwordForm.resetFields()
     })
   }
 
@@ -32,6 +81,14 @@ export default function AccountSettingEmployer() {
     setShowDeleteModal(false)
     message.success('Account deleted successfully')
   }
+
+  useEffect(()=>{
+    form.setFieldsValue({
+      name: userDetail.name,
+      email: userDetail.email,
+      phone: userDetail.phone,
+    })
+  },[userDetail])
 
   const items = [
     {
@@ -98,7 +155,7 @@ export default function AccountSettingEmployer() {
                   email: '',
                 }}
               >
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <label className="block mb-2">Map Location</label>
                   <LoadScript googleMapsApiKey="your-google-maps-api-key">
                     <GoogleMap
@@ -109,7 +166,7 @@ export default function AccountSettingEmployer() {
                       <Marker position={center} />
                     </GoogleMap>
                   </LoadScript>
-                </div>
+                </div> */}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Form.Item
@@ -132,12 +189,9 @@ export default function AccountSettingEmployer() {
                   <Form.Item
                     label="Email"
                     name="email"
-                    rules={[
-                      { required: true, message: 'Please enter email' },
-                      { type: 'email', message: 'Please enter a valid email' }
-                    ]}
                   >
                     <Input
+                    disabled
                       prefix={<MailOutlined className="text-gray-400" />}
                       placeholder="Email address"
                     />
@@ -163,7 +217,7 @@ export default function AccountSettingEmployer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Form.Item
                     label="Current Password"
-                    name="currentPassword"
+                    name="current_password"
                     rules={[{ required: true, message: 'Please enter current password' }]}
                   >
                     <Input.Password
@@ -176,32 +230,8 @@ export default function AccountSettingEmployer() {
 
                   <Form.Item
                     label="New Password"
-                    name="newPassword"
+                    name="new_password"
                     rules={[{ required: true, message: 'Please enter new password' }]}
-                  >
-                    <Input.Password
-                      placeholder="Password"
-                      iconRender={(visible) => 
-                        visible ? <EyeOutlined /> : <EyeInvisibleOutlined />
-                      }
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Confirm Password"
-                    name="confirmPassword"
-                    dependencies={['newPassword']}
-                    rules={[
-                      { required: true, message: 'Please confirm password' },
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (!value || getFieldValue('newPassword') === value) {
-                            return Promise.resolve()
-                          }
-                          return Promise.reject(new Error('Passwords do not match'))
-                        },
-                      }),
-                    ]}
                   >
                     <Input.Password
                       placeholder="Password"

@@ -1,4 +1,4 @@
-   import {
+import {
   Form,
   Input,
   Select,
@@ -19,8 +19,18 @@ import { JobApi } from "../../../../services/modules/jobServices";
 import { useSelector } from "react-redux";
 import { EmployerSkillApi } from "../../../../services/modules/EmployerSkillServices";
 import { Meta, ListSkillsFormData } from "../../../../types";
+import { ChevronsLeft } from "lucide-react";
+import moment from "moment";
 
-export default function PostJob() {
+interface IPropsJobDetail {
+  idJob: string;
+  handleChangeHome: () => void;
+}
+export default function JobDetail({
+  idJob,
+  handleChangeHome,
+}: IPropsJobDetail) {
+  const [jobDetail, setJobDetail] = useState<any>(null);
   const [form] = Form.useForm();
   const [experienceInput, setExperienceInput] = useState("");
   const [experienceList, setExperienceList] = useState([]);
@@ -32,14 +42,14 @@ export default function PostJob() {
   const [ward, setWard] = useState("");
   const userDetail = useSelector((state) => state.user);
   const [expireDate, setExpireDate] = useState("");
-  const [listSkills,setListSkills] = useState<ListSkillsFormData[]>([])
-  const [meta,setMeta]=useState<Meta>({
+  const [listSkills, setListSkills] = useState<ListSkillsFormData[]>([]);
+  const [meta, setMeta] = useState<Meta>({
     count: 0,
     current_page: 1,
     per_page: 10,
     total: 0,
-    total_pages: 0
-  })
+    total_pages: 0,
+  });
   const { cities, loading: citiesLoading } = useCities();
   const { districts, loading: districtLoading } = useDistricts(city);
   const { wards, loading: wardsLoading } = useWards(district);
@@ -55,10 +65,56 @@ export default function PostJob() {
   const handleDistrictChange = (value) => {
     setDistrict(value);
   };
-
+  useEffect(() => {
+    if (jobDetail?.city_id) {
+      setCity(jobDetail.city_id);
+      setDistrict(jobDetail.district_id);
+      setWard(jobDetail.ward_id);
+    }
+  }, [jobDetail]);
   const handleWardChange = (value) => {
     setWard(value);
   };
+  const handleGetJobDetail = async () => {
+    const res = await JobApi.getJobById(idJob, userDetail.access_token);
+    console.log("resdadada,", res);
+    if (res?.data) {
+      let applicationMethod = "";
+      let applicationLink = "";
+
+      // Kiểm tra giá trị của apply_linkedin, apply_website, apply_email
+      if (res.data.apply_linkedin && res.data.apply_linkedin !== "") {
+        applicationMethod = "linkedin";
+        applicationLink = res.data.apply_linkedin;
+      } else if (res.data.apply_email && res.data.apply_email !== "") {
+        applicationMethod = "email";
+        applicationLink = res.data.apply_email;
+      } else if (res.data.apply_website && res.data.apply_website !== "") {
+        applicationMethod = "company";
+        applicationLink = res.data.apply_website;
+      }
+      form.setFieldsValue({
+        ...res.data,
+        city: res.data.city_id,
+        district: res.data.district_id,
+        ward: res.data.ward_id,
+        min_salary: res.data.salary_range.min,
+        max_salary: res.data.salary_range.max,
+        applicationMethod: applicationMethod,
+        applicationLink: applicationLink,
+        setExpireDate: moment(res.data.expire_date).format("YYYY-MM-DD"),
+      });
+      const formattedExpireDate = moment(res.data.expire_date).format('YYYY-MM-DD');
+      setExpireDate(formattedExpireDate); 
+      setIsNegotiable(res.data.is_negotiable);
+      setExperienceList(res.data.require_experience);
+      setJobDetail(res.data);
+      setBenefitList(res.data.benefit);
+    }
+  };
+  useEffect(() => {
+    handleGetJobDetail();
+  }, []);
 
   const handleAddBenefit = () => {
     if (benefitInput && !benefitList.includes(benefitInput)) {
@@ -87,23 +143,23 @@ export default function PostJob() {
       experienceList.filter((exp) => exp !== removedExperience)
     );
   };
-  const handleGetSkillByUser = async (params:any) => {
+  const handleGetSkillByUser = async (params: any) => {
     const res = await EmployerSkillApi.getSkillByUserId(
       userDetail.access_token,
       params
-    )
+    );
     if (res?.data) {
-      setListSkills(res?.data.items)
-      setMeta(res?.data.meta)
+      setListSkills(res?.data.items);
+      setMeta(res?.data.meta);
     }
-  }
+  };
 
-  useEffect(()=>{
-    handleGetSkillByUser({user_id:userDetail._id})
-  },[])
+  useEffect(() => {
+    handleGetSkillByUser({ user_id: userDetail._id });
+  }, []);
   const handleSubmit = async (values: any) => {
     const salaryRange = { min: values.min_salary, max: values.max_salary };
-    console.log("values",values)
+
     let params = {
       user_id: userDetail._id,
       title: values.title,
@@ -118,30 +174,34 @@ export default function PostJob() {
       benefit: benefitList,
       // time_work: values.time_work, 
       require_experience: experienceList,
-      skills:values.skills,
-      expire_date: expireDate,
       level: values.level,
-      is_negotiable: values.is_negotiable,
-      type_money: values.type_money,//
+      type_money: values.type_money,
       degree: values.degree,
+      expire_date: expireDate,
+      skills: values.skills,
+      is_negotiable: values.is_negotiable,
       count_apply:values.count_apply,
-      apply_linkedin:'',
-      apply_website:'',
-      apply_email:''
+      apply_linkedin: "",
+      apply_website: "",
+      apply_email: "",
     };
-    if(values.applicationMethod === 'linkedin'){
-      params.apply_linkedin=values.applicationLink
-    }else if(values.applicationMethod === 'email'){
-      params.apply_email=values.applicationLink
-    }else if(values.applicationMethod === 'website'){
-      params.apply_website=values.applicationLink
+    if (values.applicationMethod === "linkedin") {
+      params.apply_linkedin = values.applicationLink;
+    } else if (values.applicationMethod === "email") {
+      params.apply_email = values.applicationLink;
+    } else if (values.applicationMethod === "website") {
+      params.apply_website = values.applicationLink;
     }
-    const res = await JobApi.postJob(params, userDetail.access_token);
+    const res = await JobApi.updateJob(
+      jobDetail._id,
+      params,
+      userDetail.access_token
+    );
 
     if (res.data) {
       notification.success({
         message: "Success",
-        description: "Job posted successfully",
+        description: "Update successfully",
       });
     } else {
       notification.error({
@@ -153,15 +213,23 @@ export default function PostJob() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="flex items-center gap-4">
+        <ChevronsLeft
+          className="cursor-pointer hover:text-primaryColor rounded-full"
+          onClick={handleChangeHome}
+          size={40}
+        />
+        <h2 className="text-lg font-semibold ">Thông tin chi tiết</h2>
+      </div>
       <Form
         form={form}
         layout="vertical"
-        className="max-w-4xl mx-auto"
+        className=" mx-auto"
         onFinish={handleSubmit}
       >
         {/* Job Title */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Post a Job</h2>
+          <h2 className="text-lg font-semibold mb-4">Infomation</h2>
 
           <Form.Item
             label="Job Title"
@@ -230,7 +298,10 @@ export default function PostJob() {
               name="salary_type"
               className="w-[300px]"
               rules={[
-                { required: !isNegotiable, message: "Please select a salary type" },
+                {
+                  required: !isNegotiable,
+                  message: "Please select a salary type",
+                },
               ]}
             >
               <Select placeholder="Select" disabled={isNegotiable}>
@@ -239,20 +310,6 @@ export default function PostJob() {
                 <Select.Option value="hourly">Hourly</Select.Option>
               </Select>
             </Form.Item>
-            <Form.Item
-  label="Money Type"
-  name="type_money"
-  className="w-[300px]"
-  rules={[
-    { required: true, message: "Please select a money type" },
-  ]}
->
-  <Select placeholder="Select money type">
-    <Select.Option value="USD">USD</Select.Option>
-    <Select.Option value="VIETNAM_DONG">Vietnamese Dong</Select.Option>
-    <Select.Option value="EUR">EUR</Select.Option>
-  </Select>
-</Form.Item>
           </div>
         </div>
 
@@ -261,32 +318,32 @@ export default function PostJob() {
           <h2 className="text-lg font-semibold mb-4">Advanced Information</h2>
 
           <div className="">
-          <Form.Item
-          label="Skills"
-          name="skills"
-          rules={[
-            {
-              required: true,
-              message: 'Please select the required skills',
-            },
-          ]}
-        >
-          <Select
-            placeholder="Chọn kỹ năng"
-            mode="multiple" // Cho phép chọn nhiều kỹ năng
-            style={{ width: '100%' }}
-            onChange={(value) => {
-              console.log('Selected skills:', value);
-              console.log('Selected skills:', listSkills);
-            }}
-          >
-            {listSkills.map((skill) => (
-              <Select.Option key={skill._id} value={skill._id}>
-                {skill.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+            <Form.Item
+              label="Skills"
+              name="skills"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the required skills",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Chọn kỹ năng"
+                mode="multiple" // Cho phép chọn nhiều kỹ năng
+                style={{ width: "100%" }}
+                onChange={(value) => {
+                  console.log("Selected skills:", value);
+                  console.log("Selected skills:", listSkills);
+                }}
+              >
+                {listSkills.map((skill) => (
+                  <Select.Option key={skill._id} value={skill._id}>
+                    {skill.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
 
             <Form.Item
               label="Education"
@@ -299,11 +356,11 @@ export default function PostJob() {
               ]}
             >
               <Select placeholder="Select">
-                <Select.Option value="Bachelor">
+                <Select.Option value="bachelor">
                   Bachelor's Degree
                 </Select.Option>
-                <Select.Option value="Master">Master's Degree</Select.Option>
-                <Select.Option value="PhD">PhD</Select.Option>
+                <Select.Option value="master">Master's Degree</Select.Option>
+                <Select.Option value="phd">PhD</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item
@@ -392,7 +449,8 @@ export default function PostJob() {
             >
               <Input
                 type="date"
-                onChange={(e) => setExpireDate(new Date(e.target.value))}
+                value={expireDate} // Đảm bảo giá trị là chuỗi theo định dạng 'YYYY-MM-DD'
+                onChange={(e) => setExpireDate(e.target.value)} // Cập nhật giá trị khi người dùng thay đổi
               />
             </Form.Item>
           </div>
@@ -556,7 +614,7 @@ export default function PostJob() {
             ]}
           >
             <Radio.Group>
-            <Radio value="linkedin">LinkedIn</Radio>
+              <Radio value="linkedin">LinkedIn</Radio>
               <Radio value="company">Company website</Radio>
               <Radio value="email">Email</Radio>
             </Radio.Group>
@@ -572,15 +630,14 @@ export default function PostJob() {
           </Form.Item>
         </div>
 
-{/* Image Company s */}
+        {/* Image Company s */}
         {/* Submit Button */}
         <Form.Item>
           <Button type="primary" htmlType="submit" className="w-full">
-            Post Job
+            Update
           </Button>
         </Form.Item>
       </Form>
     </div>
   );
 }
-

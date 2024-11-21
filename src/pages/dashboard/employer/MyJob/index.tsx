@@ -1,4 +1,4 @@
-import { Table, Button, Dropdown, Badge, Select } from 'antd'
+import { Table, Button, Dropdown, Badge, Select, Switch, notification } from 'antd'
 import { EllipsisOutlined, TeamOutlined } from '@ant-design/icons'
 import { JobApi } from '../../../../services/modules/jobServices'
 import { useSelector } from 'react-redux'
@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react'
 import { Job, Meta } from '../../../../types'
 import CustomPagination from '../../../../components/ui/CustomPanigation/CustomPanigation'
 import { MARK_AS_EXPIRED, MY_JOB_HOME, PROMOTE_JOB, VIEW_DETAIL, VIEW_DETAIL_APPLICATION } from '../../../../utils/role.utils'
-import JobDetail from './JobDetail'
+import JobApplication from './JobApplication'
+import JobDetail from './JodDetail'
 
 
 export default function MyJobEmployer() {
@@ -35,25 +36,36 @@ export default function MyJobEmployer() {
     },
     {
       title: 'STATUS',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: string) => (
+      dataIndex: 'is_active',
+      key: 'is_active',
+      render: (isActive: string) => (
         <Badge 
-          status={status === 'Active' ? 'success' : 'error'} 
-          text={status} 
+          status={isActive ? 'success' : 'error'} 
+          text={isActive ? 'Active':'Expired'} 
           className="whitespace-nowrap"
         />
       ),
     },
     {
       title: 'APPLICATIONS',
-      dataIndex: 'applications',
-      key: 'applications',
-      render: (count: number) => (
+      dataIndex: 'candidate_ids',
+      key: 'candidate_ids',
+      render: (candidateIds: [string]) => (
         <div className="flex items-center gap-2">
           <TeamOutlined />
-          <span>{count} Applications</span>
+          <span>{candidateIds?.length && candidateIds.length} Applications</span>
         </div>
+      ),
+    },
+    {
+      title: 'TOGGLE ACTIVE',
+      key: 'toggle_active',
+      render: (record: Job) => (
+        <Switch
+        className='custom-switch'
+          checked={record.is_active}
+          onChange={(checked) => handleToggleActiveJob(record, checked)}
+        />
       ),
     },
     {
@@ -69,7 +81,7 @@ export default function MyJobEmployer() {
               items: [
                 { key: PROMOTE_JOB, label: 'Promote Job' },
                 { key: VIEW_DETAIL, label: 'View Detail' },
-                { key: MARK_AS_EXPIRED, label: 'Mark as expired' },
+                // { key: MARK_AS_EXPIRED, label: 'Mark as expired' },
               ],
               onClick:(e)=>handleOnChangeMenu(e,record)
             }}
@@ -96,8 +108,19 @@ export default function MyJobEmployer() {
   })
   const [currentMenu,setCurrentMenu]=useState<string>(MY_JOB_HOME);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const handleOnChangeMenu = (e,record)=>{
+  const handleOnChangeMenu = async(e,record)=>{
     console.log('duydeptrai',e,record)
+    if(e.key === MARK_AS_EXPIRED){
+      const res = await  JobApi.updateJob(record._id,{is_active:true},userDetail.access_token)
+      if(res.data){
+        notification.success({
+          message: "Success",
+          description: "Job updated successfully"
+        })
+        handleGetMyJob({});
+      }
+      return;
+    }
     if(e.key){
       setCurrentMenu(e.key);
       setSelectedJob(record);
@@ -109,7 +132,7 @@ export default function MyJobEmployer() {
     setSelectedJob(null);
   }
   
-  const handleGetMyJob = async ({ current=1, pageSize=10 }) => {
+  const handleGetMyJob = async ({ current=1, pageSize=10 }:{ current?: number; pageSize?: number }) => {
     const params = {
       current,    // Trang hiện tại
       pageSize,   // Số lượng phần tử mỗi trang
@@ -121,6 +144,7 @@ export default function MyJobEmployer() {
       if (res.data) {
         // Cập nhật dữ liệu công việc và thông tin phân trang
         setListMyJobs(res.data.items); // Giả sử bạn có state `jobs` để lưu danh sách công việc
+        console.log("duydeptrai",res.data)
         setMeta(res.data.meta);  // Giả sử bạn có state `meta` để lưu thông tin phân trang
       }
     } catch (error) {
@@ -132,7 +156,22 @@ export default function MyJobEmployer() {
     handleGetMyJob({current:1,pageSize:10});
   },[])
   console.log("listMyJobs",listMyJobs)
+  const handleToggleActiveJob = async(job: Job, checked: boolean) => {
+    const params = {
+        is_active: checked,
+    }
+    console.log("is_active",params)
+    const res = await JobApi.updateJob(job._id,params,userDetail.access_token)
+    if(res.data){
+      notification.success({
+        message: "Success",
+        description: "Job updated successfully"
+      })
+      handleGetMyJob({});
 
+    }
+  }
+  console.log("selectedJob",listMyJobs)
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {!selectedJob &&currentMenu===MY_JOB_HOME && (
@@ -172,19 +211,24 @@ export default function MyJobEmployer() {
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
         />
-         <CustomPagination
+         {listMyJobs?.length>0 && <CustomPagination
         currentPage={meta?.current_page}
         total={meta?.total}
         perPage={meta?.per_page}
         onPageChange={(current, pageSize) => {
           handleGetMyJob({ current, pageSize });
         }}
-      />
+      />}
       </div>
       )}
       {currentMenu === VIEW_DETAIL_APPLICATION && selectedJob && (
         <div className="bg-white rounded-lg shadow-sm">
-          <JobDetail handleChangeHome={handleChangeHome} selectedJob={selectedJob}  />
+          <JobApplication handleChangeHome={handleChangeHome} selectedJob={selectedJob}  />
+        </div>
+      )}
+      {currentMenu === VIEW_DETAIL && selectedJob && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <JobDetail handleChangeHome={handleChangeHome}  idJob={selectedJob._id}/>
         </div>
       )}
     </div>
