@@ -37,13 +37,15 @@ export default function CourseView() {
             const params = {
                 current,
                 pageSize,
-                user_id: userDetail._id
+                query:{
+                    user_id: userDetail._id
+                }
             };
             const res = await COURSE_API.getAll(params, userDetail.accessToken);
             console.log("duydeptrai",res)
             if (res.data) {
                 
-                setCourses(res.data);
+                setCourses(res.data.items);
             }
         } catch (error) {
             console.error(error);
@@ -63,8 +65,7 @@ export default function CourseView() {
     };
 
 
-  useEffect(()=>{
-    const handleGetDetailPrize = async () => {
+    const handleGetDetailCourse = async () => {
         const res = await COURSE_API.findByCOURSEId(selectedId,userDetail.accessToken);
         if(res.data){
             form.setFieldsValue({
@@ -76,11 +77,14 @@ export default function CourseView() {
                     ? moment(res.data.end_date).format('YYYY-MM-DD') 
                     : '',
             })
-            
-            setLink(res.data.prize_link)
+            setLink(res.data.course_link)
         }
     }
-    handleGetDetailPrize()
+
+  useEffect(()=>{
+    if(selectedId){
+        handleGetDetailCourse()
+    }
 },[selectedId])
     const handleOpenModel = (type: string, id?: string) => {
         setType(type);
@@ -130,6 +134,49 @@ export default function CourseView() {
             });
         }
     };
+
+    const onUpdate = async () => {
+        const values = form.getFieldsValue();
+        const params = {
+            ...values,
+            course_link: link || null,
+            course_image: imgUrl || null,
+        };
+        try {
+            const res = await COURSE_API.update(selectedId, params, userDetail.accessToken);
+            if (res.data) {
+                notification.success({
+                    message: "Notification",
+                    description: 'Cập nhật thành công'
+                });
+                closeModal();
+                handleGetCoursesByUserId({});
+            }
+        } catch (error) {
+                notification.error({
+                    message: "Notification",
+                    description: error.response.data.message
+                })
+        }
+    }
+    const onDelete= async () => {
+        try {
+            const res = await COURSE_API.deleteByUser(selectedId,userDetail.accessToken)
+            if(+res.statusCode === 200){
+                notification.success({
+                    message: "Notification",
+                    description:'Xóa thông báo'
+                })
+                closeModal();
+                handleGetCoursesByUserId({})
+            }
+        }catch(error){
+            notification.error({
+                message: "Notification",
+                description: error.response.data.message
+            })
+        }
+    }
 
     const renderBody = () => {
         return (
@@ -188,6 +235,16 @@ export default function CourseView() {
                             Thêm
                         </Button>
                     )}
+                    {type === 'edit' && (
+                        <div className='flex justify-between gap-2'>
+                             <Button type="primary"  onClick={onUpdate} className="w-full !bg-primaryColor">
+                            Cập nhật
+                        </Button>
+                        <Button type="primary" onClick={onDelete}  className="w-full !bg-black">
+                            Xóa
+                        </Button>
+                        </div>
+                    )}
                 </Form>
             </div>
         );
@@ -225,6 +282,7 @@ export default function CourseView() {
                     Thêm mục
                     </Button>
                     </div>
+                    Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền phần này theo CV.
                 </Card>
             )}
 

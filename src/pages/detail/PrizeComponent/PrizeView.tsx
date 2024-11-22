@@ -32,10 +32,11 @@ export default function PrizeView() {
         const params = {
             current,
             pageSize,
-            user_id:userDetail._id
+            query:{
+                user_id:userDetail._id
+            }
         }
         const res = await PRIZE_API.getAll(params,userDetail.accessToken)
-        console.table("res",res)
         if(res.data){
             setPrizes(res.data.items)
         }
