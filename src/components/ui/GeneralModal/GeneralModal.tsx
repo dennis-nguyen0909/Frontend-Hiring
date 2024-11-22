@@ -8,7 +8,7 @@ interface GeneralModalProps {
   onOk?: () => void;
   renderBody?: any;
   renderFooter?: () => React.ReactNode;
-  style:any
+  style?:any
 }
 
 const GeneralModal: React.FC<GeneralModalProps> = ({

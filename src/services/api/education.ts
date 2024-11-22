@@ -6,3 +6,5 @@ export const APPLICATIONS = `applications`
 export const SAVE_CANDIDATE = `save-candidates`
 export const ORGANIZATION = `organizations`
 export const CERTIFICATE = `certificates`
+export const PRIZE = `prizes`
+export const COURSE = `courses`

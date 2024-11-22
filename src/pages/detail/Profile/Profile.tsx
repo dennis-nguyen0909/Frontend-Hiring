@@ -31,6 +31,12 @@ import { MediaApi } from "../../../services/modules/mediaServices";
 import SkillComponent from "../Skill/Skill";
 import ExperienceNumberCandidate from "../../dashboard/candidate/ExperienceNumberCandidate/ExperienceNumberCandidate";
 import CertificateComponent from "../Certificate/CertificateComponent";
+import PrizeComponent from "../PrizeComponent/PrizeComponent";
+import CourseComponent from "../CourseComponent/CourseComponent";
+import ProjectComponent from "../ProjectComponent/ProjectComponent";
+import PrizeExample from "../PrizeComponent/PrizeView";
+import PrizeView from "../PrizeComponent/PrizeView";
+import CourseView from "../CourseComponent/CourseComponent";
 const Profile = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
@@ -42,7 +48,7 @@ const Profile = () => {
   const [coverImage, setCoverImage] = useState(userDetail?.background || null);
   const uploadFileToMedia = async (file: File) => {
     try {
-      const res = await MediaApi.postMedia(file,userDetail.access_token);
+      const res = await MediaApi.postMedia(file, userDetail.access_token);
       return res;
     } catch (error) {
       notification.error({
@@ -51,7 +57,6 @@ const Profile = () => {
       });
     }
   };
-
 
   const handleOpenFile = () => {
     fileInputRef.current.click();
@@ -140,8 +145,6 @@ const Profile = () => {
         break;
     }
   };
-
-
 
   return (
     <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto mt-10 py-2 gap-5 ">
@@ -292,8 +295,14 @@ const Profile = () => {
           <ExperienceComponent />
           {/* Skill Section */}
           <SkillComponent />
-           {/* Certificate */}
-           <CertificateComponent />
+          {/* Certificate */}
+          <CertificateComponent />
+          {/* Prize */}
+          <PrizeView />
+          {/* Course */}
+          <CourseView />
+          {/* Project */}
+          <ProjectComponent />
         </div>
       </Col>
       <Col className="w-1/4 bg-white h-fit rounded-2xl px-8 py-4 ">
