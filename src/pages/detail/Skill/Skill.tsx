@@ -1,23 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Form,
   Input,
-  Checkbox,
   Button,
   notification,
   Card,
-  Typography,
-  Select,
-  Image,
   Rate,
 } from "antd";
-import { EditOutlined, LinkOutlined, PictureOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
+import { useSelector } from "react-redux";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
-import { BookOpen, Briefcase, Edit, Pencil, Star } from "lucide-react";
-import { ExperienceApi } from "../../../services/modules/experienceServices";
-import { MediaApi } from "../../../services/modules/mediaServices";
+import { BookOpen, Briefcase, Pencil } from "lucide-react";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import { SkillApi } from "../../../services/modules/skillServices";
 const { TextArea } = Input;
@@ -42,8 +34,29 @@ const SkillComponent = () => {
   const handleOpenSkill = (type: string, id?: string) => {
     setVisibleModal(true);
     setActionType(type);
-    setSelectedId(id);
+    if(id){
+      handleGetDetailSkill(id)
+    }
   };
+  const handleGetDetailSkill = async(id)=>{
+    try {
+      const res = await SkillApi.getSkillById(id,user.access_token);
+      setSelectedId(id)
+      if (res.data) {
+        setSkill(res.data);
+        form.setFieldsValue({
+          name: res.data.name,
+          evalute: res.data.evalute,
+          description: res.data.description,
+        });
+      }
+    } catch (error) {
+      notification.error({
+        message: "Notification",
+        description: error.message,
+      });
+    }
+  }
   const closeModal = () => {
     setVisibleModal(false);
     setSkill(null);

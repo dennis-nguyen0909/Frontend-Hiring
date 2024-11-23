@@ -8,7 +8,9 @@ interface GeneralModalProps {
   onOk?: () => void;
   renderBody?: any;
   renderFooter?: () => React.ReactNode;
-  style?:any
+  style?:any;
+  width?: string;
+  centered?: boolean
 }
 
 const GeneralModal: React.FC<GeneralModalProps> = ({
@@ -18,10 +20,14 @@ const GeneralModal: React.FC<GeneralModalProps> = ({
   onOk,
   renderBody,
   renderFooter,
-  style
+  style,
+  width,
+  centered
 }) => {
   return (
     <Modal
+    width={width}
+      centered={centered || true}
       style={style}
       visible={visible}
       title={title}

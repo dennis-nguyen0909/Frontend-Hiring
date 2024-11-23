@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Descriptions, Avatar, Badge, Tooltip, Card, Image } from "antd";
+import { Descriptions, Avatar, Badge, Tooltip, Card, Image, Space, Button } from "antd";
 import * as userServices from "../../../../services/modules/userServices";
 import { CheckCircle, XCircle } from "lucide-react";
+import moment from "moment";
+import axios from "axios";
 
 const CandidateDetailView = ({ candidateId, userDetail }) => {
   const [candidateDetail, setCandidateDetail] = useState();
@@ -21,8 +23,24 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
     handleGetCandidateDetail();
   }, []);
 
-  console.log("candidateDetail", candidateDetail);
-
+  const downloadCV = async (userId: string) => {
+    try {
+      const response = await axios.get(`http://localhost:8082/api/v1/cvs/download/${userId}`, {
+        responseType: 'blob',
+      });
+  
+      const blob = response.data;
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'CV.pdf'; 
+      link.click(); 
+    } catch (error) {
+      console.error('Error downloading CV:', error);
+    }
+  };
+  
+  // Gọi hàm downloadCV khi người dùng nhấn nút hoặc trigger sự kiện
+  
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6">Thông Tin Ứng Viên</h2>
@@ -149,7 +167,7 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
           )}
         </div>
         <div className="space-y-4">
-        <div className="font-medium bg-[#cccccc] rounded-md p-2">Kỹ năng:</div>
+        <div className="font-medium bg-green-200 rounded-md p-2">Chứng chỉ</div>
         {candidateDetail?.certificates?.map((item: any, index: number) => (
               <Card
                 key={index}
@@ -196,6 +214,125 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
               </Card>
             ))}
         </div>
+
+        <div className="space-y-4">
+        <div className="font-medium bg-primaryColor rounded-md p-2">Giải thưởng</div>
+        {candidateDetail?.prizes?.map((item: any, index: number) => (
+             <Card key={index} className="p-4 shadow-lg">
+             <Space  className="flex items-center justify-between" size={16}>
+              <div>
+              <div className="text-xl font-semibold">{item.prize_name}</div>
+               <div className="text-gray-600">{item.organization_name}</div>
+               <div className="text-gray-400">
+                 Ngày nhận: {moment(item.date_of_receipt).format('DD/MM/YYYY')}
+               </div>
+               {item.prize_link && (
+                 <a
+                   href={item.prize_link}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="text-blue-500 mt-4"
+                 >
+                   Liên kết
+                 </a>
+               )}
+   
+              </div>
+               {/* Hiển thị ảnh nếu có */}
+               {item.prize_image && (
+                 <Image
+
+                   preview={true}
+                   src={item.prize_image}
+                   alt="Prize"
+                   className="w-full h-auto rounded-md mt-4 shadow-lg"
+                 />
+               )}
+             </Space>
+           </Card>
+         
+            ))}
+        </div>
+        <div className="space-y-4">
+      <div className="font-medium bg-primaryColor rounded-md p-2">Dự án</div>
+      {candidateDetail?.projects?.map((item, index) => (
+        <Card key={index} className="p-4 shadow-lg">
+          <Space className="flex items-center justify-between" size={16}>
+            <div>
+              <div className="text-xl font-semibold">{item.project_name}</div>
+              <div className="text-gray-600">Khách hàng: {item.customer_name}</div>
+              <div className="text-gray-400">
+                Thời gian: {moment(item.start_date).format('DD/MM/YYYY')} -{" "}
+                {moment(item.end_date).format('DD/MM/YYYY')}
+              </div>
+              <div className="text-gray-400">Công nghệ: {item.technology}</div>
+              <div className="text-gray-400">Team: {item.team_number}</div>
+              <div className="text-gray-400">Vị trí: {item.location}</div>
+              <div className="text-gray-400">Nhiệm vụ: {item.mission}</div>
+              {item.project_link && (
+                <a
+                  href={item.project_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 mt-4"
+                >
+                  Liên kết dự án
+                </a>
+              )}
+            </div>
+            {/* Hiển thị ảnh nếu có */}
+            {item.project_image && (
+              <Image
+                preview={true}
+                src={item.project_image}
+                alt="Project"
+                className="w-full h-auto rounded-md mt-4 shadow-lg"
+              />
+            )}
+          </Space>
+        </Card>
+      ))}
+    </div>
+
+    <div className="space-y-4">
+      <div className="font-medium bg-primaryColor rounded-md p-2">Khóa học</div>
+      {candidateDetail?.courses?.map((item, index) => (
+        <Card key={index} className="p-4 shadow-lg">
+          <Space className="flex items-center justify-between" size={16}>
+            <div>
+              <div className="text-xl font-semibold">{item.course_name}</div>
+              <div className="text-gray-600">{item.organization_name}</div>
+              <div className="text-gray-400">
+                Thời gian: {moment(item.start_date).format('DD/MM/YYYY')} -{" "}
+                {moment(item.end_date).format('DD/MM/YYYY')}
+              </div>
+              {item.course_link && (
+                <a
+                  href={item.course_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 mt-4"
+                >
+                  Liên kết khóa học
+                </a>
+              )}
+            </div>
+            {/* Hiển thị ảnh nếu có */}
+            {item.course_image && (
+              <Image
+              width={100}
+              height={100}
+                preview={true}
+                src={item.course_image}
+                alt="Course"
+                className="w-full h-auto rounded-md mt-4 shadow-lg"
+              />
+            )}
+          </Space>
+        </Card>
+      ))}
+      <Button onClick={()=>downloadCV(candidateDetail?._id)}>Download cv</Button>
+    </div>
       </div>
     </div>
   );

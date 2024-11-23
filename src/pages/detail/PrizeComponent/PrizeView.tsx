@@ -128,7 +128,9 @@ const onUpdate = async()=>{
     const params={
         ...values,
         date_of_receipt:dateOfReceipt.toDate(),
-        user_id:userDetail._id
+        user_id:userDetail._id,
+        prize_image:imgUrl ? imgUrl :null,
+        prize_link:link ? link :null
     }
     
     const res = await PRIZE_API.update(selectedId,params,userDetail.accessToken)
