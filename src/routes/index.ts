@@ -12,6 +12,8 @@ import UserDetail from '../pages/detail/UserDetail';
 import Profile from '../pages/detail/Profile/Profile';
 import ManagePage from '../pages/employer/manage/ManagePage';
 import DashBoard from '../pages/dashboard';
+import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
+import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
 interface IRoute {
     path: string;
     page: ComponentType ;
@@ -84,8 +86,21 @@ export const routes: IRoute[] = [
         isShowFooter:false
     },
     {
+        path:'/upload-cv',
+        page: UploadPDF,
+        isShowHeader:true,
+        isShowFooter:false
+    },
+    {
+        path:'/profile-cv',
+        page: ProfileCV,
+        isShowHeader:true,
+        isShowFooter:false
+    },
+    {
         path: '*',
         page: NotFound,
         isShowHeader: false,
     },
+    
 ];

@@ -100,7 +100,7 @@ const DashboardCandidate = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-8 overflow-auto">
-        {currentTab === 'overview' && <OverViewCandidate />}
+        {currentTab === 'overview' && <OverViewCandidate userDetail={user} />}
         {currentTab === 'appliedJobs' && <Applied />}
         {currentTab === 'favoriteJobs' && <FavoriteJob />}
         {currentTab === 'jobAlert' && <AlertJob />}

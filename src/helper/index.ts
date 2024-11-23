@@ -45,11 +45,17 @@ export const itemsIcon = [
     amount: "7,532",
   },
 ];
-
 export const menuHeader = [
   {
     name: "Home",
     path: "/",
+    color:"#5E6670",
+    colorHover:"#205faf"
+    
+  },
+  {
+    name: "Profile & CV",
+    path: "/profile-cv",
     color:"#5E6670",
     colorHover:"#205faf"
     

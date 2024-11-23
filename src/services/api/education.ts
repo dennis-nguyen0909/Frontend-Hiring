@@ -9,3 +9,4 @@ export const CERTIFICATE = `certificates`
 export const PRIZE = `prizes`
 export const COURSE = `courses`
 export const PROJECT = `projects`
+export const CV = `cvs`

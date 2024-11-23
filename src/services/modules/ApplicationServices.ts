@@ -81,6 +81,40 @@ export const API_APPLICATION = {
     if (resData.data) return resData.data;
     return null;
   },
+  getCountAppliedCandidate: async (userId:string,accessToken: string) => {
+    const resData = await axiosInstance.get(`${APPLICATIONS}/applied/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (resData.data) return resData.data;
+    return null;
+  },
+  getRecentlyAppliedCandidate: async (candidateId :string,limit:string,accessToken: string) => {
+    const resData = await axiosInstance.get(`${APPLICATIONS}/recently-applied/${candidateId}?limit=${limit}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (resData.data) return resData.data;
+    return null;
+  },
+  getAllRecentlyAppliedCandidate: async (params:any,accessToken: string) => {
+    const resData = await axiosInstance.get(`${APPLICATIONS}/recently-applied-candidate`, {
+      params: {
+        ...params
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (resData.data) return resData.data;
+    return null;
+  },
+  
 
   
 };

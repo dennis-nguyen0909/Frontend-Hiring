@@ -145,6 +145,9 @@ const Profile = () => {
         break;
     }
   };
+  const handleNavigatePDF = () => {
+    navigate("/upload-cv");
+  }
 
   return (
     <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto mt-10 py-2 gap-5 ">
@@ -211,11 +214,11 @@ const Profile = () => {
         {/* Profile Info */}
         <div className="pt-16 space-y-4">
           <div className="flex justify-between items-start">
-            <h1 className="text-2xl font-bold">Minh Duy</h1>
+            <h1 className="text-2xl font-bold">{userDetail?.full_name}</h1>
             <div className="flex gap-2">
-              <Button className="flex items-center gap-2">
+              <Button onClick={handleNavigatePDF} className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
-                Tải xuống PDF
+                Tải lên PDF
               </Button>
               <Button className="flex items-center gap-2">
                 <Share2 className="h-4 w-4" />

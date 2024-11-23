@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Form,
   Input,
@@ -8,13 +7,15 @@ import {
   Switch,
   notification,
 } from "antd";
-import avtDefault from "../../assets/avatars/avatar-default.jpg";
+import avtDefault from "../../../assets/avatars/avatar-default.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { CheckCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import "./styles.css";
+// import "./styles.css";
 import { useNavigate } from "react-router-dom";
-import * as userServices from "../../services/modules/userServices";
-import { updateUser } from "../../redux/slices/userSlices";
+import * as userServices from "../../../services/modules/userServices";
+import { updateUser } from "../../../redux/slices/userSlices";
+import ListCV from "./ListCv";
+import ProfileCard from "./ProfileCard";
 interface updateUserDto {
   full_name: string;
   address: string;
@@ -26,7 +27,7 @@ type InputValuesProps = {
   address: string;
   phoneNumber: string;
 };
-const UserDetail = () => {
+const ProfileCV = () => {
   const [form] = Form.useForm();
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -102,67 +103,12 @@ const UserDetail = () => {
     }
   };
   return (
-    <div className="px-primaryx2 bg-[#f0f0f0] flex h-screen py-2">
+    <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto py-2">
       <div className="w-2/3 bg-white h-fit p-6 shadow-md mr-[50px] rounded-2xl mt-10">
-        <h1 className="text-lg font-bold mb-4">Cài đặt thông tin cá nhân</h1>
-        <div className="mb-2 text-sm">
-          <span className="text-red-500">*</span> Các thông tin bắt buộc
-        </div>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          initialValues={{
-            fullName: userDetail?.full_name || "",
-            phoneNumber: userDetail?.phone || "",
-            address: userDetail?.address || "",
-          }}
-        >
-          <Form.Item
-            label="Họ tên"
-            name="fullName"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập họ tên!",
-              },
-            ]}
-          >
-            <Input placeholder="Nhập họ tên" />
-          </Form.Item>
-
-          <Form.Item
-            label="Số điện thoại"
-            name="phoneNumber"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập số điện thoại!",
-              },
-              {
-                pattern: /^[0-9]+$/,
-                message: "Số điện thoại không hợp lệ!",
-              },
-            ]}
-          >
-            <Input placeholder="Nhập số điện thoại" />
-          </Form.Item>
-
-          <Form.Item label="Địa chỉ" name="address">
-            <Input placeholder="Nhập địa chỉ" />
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              className="!bg-primaryColor w-[100px]"
-              type="primary"
-              size="large"
-              htmlType="submit"
-            >
-              Lưu
-            </Button>
-          </Form.Item>
-        </Form>
+      <div className="space-y-8">
+      <ListCV />
+      <ProfileCard userDetail={userDetail} />
+    </div>
       </div>
 
       <div className="w-1/3 bg-white h-auto rounded-2xl px-8 py-4  mt-10">
@@ -243,4 +189,4 @@ const UserDetail = () => {
   );
 };
 
-export default UserDetail;
+export default ProfileCV;
