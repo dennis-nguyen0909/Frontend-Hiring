@@ -2,7 +2,9 @@ import { Checkbox, Form, Input, InputNumber, notification } from "antd";
 import * as userServices from '../../../../services/modules/userServices';
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-const ExperienceNumberCandidate = () => {
+const ExperienceNumberCandidate = (
+  {refetch}
+) => {
   const [form] = Form.useForm();  // Đảm bảo khai báo form đúng cách
   const userDetail = useSelector(state=>state.user)
 

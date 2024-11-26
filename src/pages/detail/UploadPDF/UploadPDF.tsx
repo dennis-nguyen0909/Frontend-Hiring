@@ -14,6 +14,7 @@ export default function UploadPDF() {
     const [fileUrl,setFileUrl]=useState<string>('')
     const [fileName,setFileName]=useState<string>('')
     const [publicId,setPublicId]=useState<string>('')
+    const [bytes,setBytes]=useState<number>(0)
   const props: UploadProps = {
     name: 'file',
     multiple: false,
@@ -25,6 +26,7 @@ export default function UploadPDF() {
         setFileUrl(info.file.response.data.url)
         setPublicId(info.file.response.data.result.public_id)
         setFileName(info.file.response.data.originalName)
+        setBytes(info.file.response.data.result.bytes)
         message.success(`${info.file.name} đã được tải lên thành công.`)
       } else if (status === 'error') {
         notification.error({
@@ -45,7 +47,8 @@ export default function UploadPDF() {
             user_id:userDetail._id,
             cv_name:fileName,
             cv_link:fileUrl,
-            public_id:publicId
+            public_id:publicId,
+            bytes:bytes
         }
         const res = await CV_API.create(params,userDetail.access_token);
         if(res.data){

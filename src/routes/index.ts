@@ -80,7 +80,7 @@ export const routes: IRoute[] = [
         isShowHeader:true
     },
     {
-        path:'/dashboard',
+        path:'/dashboard/:id',
         page: DashBoard,
         isShowHeader:true,
         isShowFooter:false

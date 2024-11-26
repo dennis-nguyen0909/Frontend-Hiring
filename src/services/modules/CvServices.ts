@@ -47,13 +47,17 @@ export const CV_API = {
     if (res.data) return res.data;
     return null;
   },
-  deleteByUser: async (id:string ,accessToken: string) => {
-    const res = await axiosInstance.delete(`${CV}/${id}`,{
+  deleteManyCVByUser: async (ids: Array<string>, accessToken: string) => {
+    const res = await axiosInstance({
+      method: 'delete',
+      url: `${CV}`,
+      data: { ids },
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
       withCredentials: true,
     });
+  
     if (res.data) return res.data;
     return null;
   },

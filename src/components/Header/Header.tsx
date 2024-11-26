@@ -131,6 +131,15 @@ const Header: React.FC = () => {
       </div>
     </div>
   );
+  const handleClick = (item)=>{
+    console.log("item",item)
+    // navigate(`${item.path}`)
+    if(item.name === "Dashboard"){
+      navigate(`/dashboard/${user?._id}`)
+    }else{
+      navigate(`${item.path}`)
+    }
+  }
 
   return (
     <header>
@@ -147,7 +156,7 @@ const Header: React.FC = () => {
             return (
               <li key={idx}>
                 <div
-                  onClick={() => navigate(`${item.path}`)}
+                  onClick={() => handleClick(item)}
                   className="text-white text-text-primary transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
                 >
                   {item.name}

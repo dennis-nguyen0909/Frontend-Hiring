@@ -11,17 +11,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { resetUser } from '../../../redux/slices/userSlices'
 const DashboardCandidate = () => {
-  // State to track the current active tab
   const [currentTab, setCurrentTab] = useState('overview')
     const user = useSelector(state => state.user)
     const navigate = useNavigate();
     const dispatch = useDispatch();
-  // Handle tab click
   const handleTabClick = (tab) => {
     setCurrentTab(tab)
   }
   const handleLogout = async () => {
-    // Gọi API đăng xuất ở đây
     try {
       // Giả sử có một hàm API để đăng xuất
       const res = await authServices.logout(user.access_token);

@@ -1,7 +1,8 @@
-import { Button, Table } from "antd";
+import { Avatar, Button, Table } from "antd";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useEffect, useState } from "react";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
+import { BadgeDollarSign } from "lucide-react";
 
 const OverViewCandidate = ({ userDetail }) => {
   const recentlyAppliedColumns = [
@@ -10,15 +11,20 @@ const OverViewCandidate = ({ userDetail }) => {
       dataIndex: 'job',
       key: 'job',
       render: (text, record) => (
-        <div className="flex items-center">
-          <div className={`w-10 h-10 rounded-lg mr-3 flex items-center justify-center text-white ${record.bgColor}`}>
-            {record.icon}
-          </div>
+        <div className="flex items-center gap-2">
+          <Avatar shape="square" className="shadow-lg"  size={45} src={record.icon} />
           <div>
-            <div className="font-semibold">{text}</div>
+              <div className="font-semibold">{text}</div>
             <div className="text-gray-500 text-sm">
-              <span className="mr-2">{record.location}</span>
-              <span>{record.salary}</span>
+              {record.is_negotiable ?(
+                <div className="flex items-center gap-1">
+                  <span className="mr-2">{record.location}</span>
+                  <BadgeDollarSign size={16} />
+                  <span>Thỏa thuận</span>
+                  </div>
+              ):(
+                <span>{record.salary}</span>
+              )}
             </div>
           </div>
         </div>
@@ -67,13 +73,15 @@ const OverViewCandidate = ({ userDetail }) => {
       const formattedData = res.data.map(item => ({
         key: item._id,
         job: item.job_id.title,
-        location: `${item.job_id.address}`,
+        location: `${item?.job_id?.city_id?.name}`,
         salary: item.job_id.salary_range ? `$${item.job_id.salary_range.min || 0} - $${item.job_id.salary_range.max || 0}` : 'Negotiable',
         dateApplied: new Date(item.applied_date).toLocaleString(),
         status: item.status.charAt(0).toUpperCase() + item.status.slice(1),
         bgColor: 'bg-green-500',
-        icon: 'Up',
+        icon: item?.employer_id?.avatar_company,
+        is_negotiable:item.job_id.is_negotiable
       }));
+      console.log("res.data",res.data)
       setJobsApplied(formattedData);
     }
     setLoading(false);

@@ -80,7 +80,7 @@ export const menuHeader = [
   },
   {
     name: "Dashboard",
-    path: "/dashboard",
+    path: "/dashboard/:id",
     color:"#5E6670",
     colorHover:"#205faf"
   },

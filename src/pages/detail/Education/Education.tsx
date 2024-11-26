@@ -27,7 +27,7 @@ interface typePostEducation {
   _id: string;
 }
 
-const EducationComponent = () => {
+const EducationComponent = ({ refetch }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [isCurrentlyStudying, setIsCurrentlyStudying] = useState(false);
@@ -45,6 +45,9 @@ const EducationComponent = () => {
     try {
       const res = await EducationApi.getEducationById(id, access_token);
       setEducation(res.data);
+      if (refetch) { // Kiểm tra xem refetch có tồn tại không
+        refetch(); // Gọi refetch để làm mới dữ liệu
+      }
     } catch (error) {
       notification.error({
         message: "Notification",

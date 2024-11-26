@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Meta } from "../../../../types";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import moment from "moment";
+import { MapPin } from "lucide-react";
 interface Applied {
   _id:string;
   user_id:any;
@@ -30,12 +31,15 @@ const Applied = () => {
           <div
             className={`flex items-center justify-center mr-5`}
           >
-            <Avatar className="w-20 h-20"  src={record?.employer_id?.avatar_company} />
+            <Avatar  size={45} shape="square"  src={record?.employer_id?.avatar_company} />
           </div>
-          <div>
+          <div className="flex flex-col">
             <div className="font-semibold">{record?.job_id?.title}</div>
             <div className="text-gray-500 text-sm">
+              <div className="flex items-center gap-1">
+              <MapPin size={16} />
               <span className="mr-2">{record?.job_id?.city_id.name}</span>
+              </div>
               <span>{record.salary}</span>
             </div>
             <span

@@ -31,7 +31,7 @@ import ProjectComponent from "../ProjectComponent/ProjectComponent";
 import PrizeView from "../PrizeComponent/PrizeView";
 import CourseView from "../CourseComponent/CourseComponent";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
-const Profile = () => {
+const ProfileComponentSetting = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
   const fileInputAvtRef = useRef(null);
@@ -150,83 +150,10 @@ const Profile = () => {
     refetch
   } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   return (
-    <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto mt-10 py-2 gap-5 ">
-      <Col span={16} className="max-w-3xl mx-auto p-4 space-y-6 rounded-xl">
-        <div
-          className="relative "
-          onMouseEnter={() => setVisible(true)}
-          onMouseLeave={() => setVisible(false)}
-        >
-          <div
-            className={`h-[250px] rounded-t-lg ${
-              coverImage
-                ? "bg-cover bg-center"
-                : "bg-gradient-to-r from-[#d3464f] to-[#e57373]"
-            }`}
-            style={coverImage ? { backgroundImage: `url(${coverImage})` } : {}}
-          />
-          {visible && (
-            <Button
-              onClick={handleOpenFile}
-              size="small"
-              icon={<Camera size={12} />}
-              className="absolute top-4 left-4 text-[12px] bg-gray-200 bg-opacity-50 "
-            >
-              Cập nhật ảnh bìa
-            </Button>
-          )}
-          <input
-            className="hidden "
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChangeBackground}
-          />
-          <input
-            className="hidden "
-            type="file"
-            ref={fileInputAvtRef}
-            onChange={handleFileChangeAvatar}
-          />
-        </div>
-        <div
-          className="absolute top-[170px] left-[40px]  flex items-end space-x-4"
-          onMouseEnter={() => setVisibleInAvatar(true)}
-          onMouseLeave={() => setVisibleInAvatar(false)}
-        >
-          <Avatar
-            src={userDetail?.avatar || avtDefault}
-            className="w-32 h-32 border-4 border-white"
-          />
-
-          {visibleInAvatar && (
-            <Button
-              onClick={handleOpenFileAvt}
-              size="small"
-              icon={<Camera size={12} />}
-              className="absolute bottom-0 right-0 bg-gray-200 bg-opacity-50 text-[12px]"
-            >
-              Upload
-            </Button>
-          )}
-        </div>
-
+    <div className="">
+      <Col span={24} className="max-w-3xl mx-auto p-4 space-y-6 rounded-xl">
+    
         <div className="pt-16 space-y-4">
-          <div className="flex justify-between items-start">
-            <h1 className="text-2xl font-bold">{userDetail?.full_name}</h1>
-            <div className="flex gap-2">
-              <Button
-                onClick={handleNavigatePDF}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Tải lên PDF
-              </Button>
-              <Button className="flex items-center gap-2">
-                <Share2 className="h-4 w-4" />
-                Chia sẻ profile
-              </Button>
-            </div>
-          </div>
 
           <Card className="p-6 space-y-4">
             <h2 className="font-semibold">Mức độ hoàn thành hồ sơ</h2>
@@ -297,83 +224,8 @@ const Profile = () => {
           <ProjectComponent />
         </div>
       </Col>
-      <Col className="w-1/4 bg-white h-fit rounded-2xl px-8 py-4 ">
-        <div className="flex justify-around items-center gap-5">
-          <div>
-            <Avatar size={70} src={userDetail?.avatar || avtDefault} />
-          </div>
-          <div className="text-[12px]">
-            <p>Chào bạn trở lại</p>
-            <b>{userDetail?.full_name}</b>
-            <div className="bg-[#7b8381] px-1 py-1 rounded-sm text-white text-[12px] w-fit">
-              <p>Tài khoản đã xác thực</p>
-            </div>
-          </div>
-        </div>
-        <Divider />
-        <div>
-          <Switch
-            className="custom-switch"
-            onChange={(checked) => onChangeSwitch(checked, "isSearchJobStatus")}
-            size="default"
-            value={userDetail?.is_search_jobs_status}
-          />
-          <span className="ml-2 text-[12px] font-semibold text-grayPrimary">
-            Đang Tắt tìm việc
-          </span>
-          <div className=" mt-2 text-[12px] text-grayPrimary">
-            Bật tìm việc giúp hồ sơ của bạn nổi bật hơn và được chú ý nhiều hơn
-            trong danh sách tìm kiếm của NTD.
-          </div>
-        </div>
-        <div className="mt-8">
-          <Switch
-            className="custom-switch"
-            onChange={(checked) =>
-              onChangeSwitch(checked, "allowProfilesToSearch")
-            }
-            size="default"
-          />
-          <span className="ml-2 text-[12px] font-semibold text-grayPrimary">
-            Cho phép NTD tìm kiếm hồ sơ
-          </span>
-          <div className=" mt-2 text-[12px] text-grayPrimary">
-            Khi có cơ hội việc làm phù hợp, NTD sẽ liên hệ và trao đổi với bạn
-            qua:
-          </div>
-          <div className="mt-2">
-            <div>
-              <CheckCircleOutlined />
-              <span className="ml-2 text-[12px] font-light text-grayPrimary ">
-                Nhắn tin qua Top Connect trên HireDev
-              </span>
-            </div>
-            <div>
-              <CheckCircleOutlined />
-              <span className="ml-2 text-[12px] font-light text-grayPrimary ">
-                Email và Số điện thoại của bạn
-              </span>
-            </div>
-          </div>
-        </div>
-        <Divider />
-        <div>
-          <div className=" mt-2 text-[12px] text-grayPrimary">
-            <InfoCircleOutlined /> Bạn cần hoàn thiện trên 70% TopCV Profile để
-            bắt đầu tiếp cận với nhà tuyển dụng
-          </div>
-          <div className="mt-2">
-            <Button
-              onClick={() => navigate(`/profile/${userDetail._id}`)}
-              className="!border-primaryColor !text-primaryColor !hover:text-primaryColor !hover:border-primaryColor"
-            >
-              Cập nhật Profile
-            </Button>
-          </div>
-        </div>
-      </Col>
     </div>
   );
 };
 
-export default Profile;
+export default ProfileComponentSetting;
