@@ -3,6 +3,7 @@ import React from "react";
 import defaultImage from "../../assets/images/company/default.png";
 import { CircleDollarSign, DollarSign, Heart, MapPin } from "lucide-react";
 import { convertHtmlToText } from "../../untils";
+import { useNavigate } from "react-router-dom";
 
 interface IJobItemProps {
   item: any;
@@ -10,8 +11,9 @@ interface IJobItemProps {
 }
 
 const JobItem = ({ item }: IJobItemProps) => {
+  const navigate = useNavigate()
   return (
-    <div className="bg-white flex h-[130px] rounded-lg shadow-md overflow-hidden">
+    <div onClick={()=>navigate(`/job-information/${item._id}`)} className="bg-white flex h-[130px] rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg">
       {/* Left Content */}
       <div className="flex items-center justify-center pl-4">
         <Image

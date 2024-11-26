@@ -20,23 +20,18 @@ export const JobApi = {
       return null;
     }
   },
-  getAllJobRecent: async (data: { pageSize: number; [key: string]: any },user_id:string) => {
-    try {
-      const resData = await axiosInstance.get('/jobs/recent', {
-        params: {
-          pageSize: data.pageSize,   // Truyền pageSize vào query
-          ...data,            
-          user_id:user_id            // Truyền tất cả các tham số còn lại (bao gồm filter, location, sort, ...)
-        },
-        withCredentials: true,
-      });
-
-      if (resData) return resData.data;
-      return null;
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-      return null;
-    }
+  getAllJobRecent: async (params:any,accessToken: string) => {
+    const resData = await axiosInstance.get(`${'/jobs/recent'}`, {
+      params: {
+        ...params
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (resData.data) return resData.data;
+    return null;
   },
 
 
@@ -130,11 +125,10 @@ export const JobApi = {
       return null;
     }
   },
-  getJobByEmployerID: async (userId: string, params:any,accessToken: string) => {
+  getJobByEmployerID: async ( params:any,accessToken: string) => {
     try {
       const resData = await axiosInstance.get('/jobs', {
         params: {
-          user_id:userId,
           ...params
         },
         headers: {
@@ -148,5 +142,18 @@ export const JobApi = {
       console.error("Error updating job:", error);
       return null;
     }
+  },
+  getAllJobsQuery: async (params:any,accessToken: string) => {
+    const resData = await axiosInstance.get(`${'/jobs'}`, {
+      params: {
+        ...params
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (resData.data) return resData.data;
+    return null;
   },
 };

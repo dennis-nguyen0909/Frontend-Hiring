@@ -134,15 +134,17 @@ export default function MyJobEmployer() {
   
   const handleGetMyJob = async ({ current=1, pageSize=10 }:{ current?: number; pageSize?: number }) => {
     const params = {
-      current,    // Trang hiện tại
-      pageSize,   // Số lượng phần tử mỗi trang
+      current,
+      pageSize,
+      query:{
+        user_id:userDetail?._id
+      } 
     };
     
     try {
       // Gọi API với các tham số phân trang
-      const res = await JobApi.getJobByEmployerID(userDetail._id, params, userDetail.access_token);
+      const res = await JobApi.getJobByEmployerID(params, userDetail.access_token);
       if (res.data) {
-        // Cập nhật dữ liệu công việc và thông tin phân trang
         setListMyJobs(res.data.items); // Giả sử bạn có state `jobs` để lưu danh sách công việc
         console.log("duydeptrai",res.data)
         setMeta(res.data.meta);  // Giả sử bạn có state `meta` để lưu thông tin phân trang

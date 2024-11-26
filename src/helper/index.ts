@@ -62,7 +62,7 @@ export const menuHeader = [
   },
   {
     name: "Jobs",
-    path: "/find-job",
+    path: "/jobs",
     color:"#5E6670",
     colorHover:"#205faf"
   },

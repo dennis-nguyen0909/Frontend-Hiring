@@ -14,6 +14,7 @@ import ManagePage from '../pages/employer/manage/ManagePage';
 import DashBoard from '../pages/dashboard';
 import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
 import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
+import JobDetail from '../pages/JobDetail/JobDetail';
 interface IRoute {
     path: string;
     page: ComponentType ;
@@ -77,6 +78,11 @@ export const routes: IRoute[] = [
     {
         path:'/employer/:id',
         page: ManagePage,
+        isShowHeader:true
+    },
+    {
+        path:'/job-information/:id',
+        page: JobDetail,
         isShowHeader:true
     },
     {

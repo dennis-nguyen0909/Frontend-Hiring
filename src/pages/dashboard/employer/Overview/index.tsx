@@ -100,6 +100,7 @@ const OverviewEmployer = () => {
         params,
         userDetail?.access_token
       );
+      console.log("duydeptrai res",res)
       if (res.data) {
         setMetaSaveCandidate(res.data.meta);
       }
@@ -109,7 +110,14 @@ const OverviewEmployer = () => {
   };
   const handleGetAllJobRecent =async ({current=1,pageSize=10})=>{
     try {
-      const res = await JobApi.getAllJobRecent({pageSize:pageSize,current:current},userDetail?._id);
+      const params ={
+        current,
+        pageSize,
+        query:{
+          user_id:userDetail?._id
+        }
+      }
+      const res = await JobApi.getAllJobRecent(params,userDetail?._id);
       console.log("res",res)
       if(res.data){
         setJobRecents(res.data.items)
@@ -156,24 +164,30 @@ const OverviewEmployer = () => {
   }, [countJobActive]); // Khi countJobActive thay đổi, bắt đầu đếm lại
 
   useEffect(() => {
-    if (metaSaveCandidate.total === 0) return; 
+    // If the count is 0, do not start the interval
+    if (metaSaveCandidate.count === 0) {
+      setCountSaveCandidate(0); // Set count to 0 directly when there's no count
+      return; // Exit early if count is 0
+    }
+  
     let start = 1; 
-    const end = metaSaveCandidate.total;
+    const end = metaSaveCandidate.count;
     const duration = 500;
-
+  
     const intervalTime = duration / (end - start);
-
+  
     const interval = setInterval(() => {
       start += 1;
       setCountSaveCandidate(start);
+  
       if (start >= end) {
-        clearInterval(interval); // Dừng interval khi đếm đến cuối
+        clearInterval(interval); // Stop interval once it reaches the end
       }
     }, intervalTime);
-
-    // Cleanup interval khi component unmount hoặc countJobActive thay đổi
+  
+    // Cleanup interval on unmount or when metaSaveCandidate.count changes
     return () => clearInterval(interval);
-  }, [metaSaveCandidate.total]); // Khi countJobActive thay đổi, bắt đầu đếm lại
+  }, [metaSaveCandidate.count]); 
   return (
     <div>
       <div className="mb-8 flex flex-col gap-1">

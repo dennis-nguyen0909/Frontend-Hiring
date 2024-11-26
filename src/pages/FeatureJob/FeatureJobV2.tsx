@@ -52,9 +52,9 @@ const FeatureJobV2 = () => {
 
   useEffect(()=>{
     if(selectedDistrict.trim()==='' && selectedCity.trim() !==''){
-      handleGetAllJobs({city_id:selectedCity});
+      handleGetAllJobs({query:{city_id:selectedCity}});
     }else{
-      handleGetAllJobs({district_id:selectedDistrict})
+      handleGetAllJobs({query:{district_id:selectedDistrict}})
     }
   },[selectedCity,selectedDistrict])
 
