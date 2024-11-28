@@ -1,3 +1,4 @@
+import { notification } from "antd";
 import { axiosInstance } from "../config/axiosInterceptor";
 
 // Định nghĩa một đối tượng JobApi
@@ -122,6 +123,13 @@ export const JobApi = {
       return null;
     } catch (error) {
       console.error("Error updating job:", error);
+      error?.response?.data?.message.map((item)=>{
+        notification.error({
+          message:'Thông báo',
+          description:item
+  
+        })
+      })
       return null;
     }
   },

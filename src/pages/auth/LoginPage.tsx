@@ -298,7 +298,7 @@ const LoginPage = () => {
         <img
           src={logo}
           alt="Logo"
-          className="w-[1000px] h-[1000px] position-absolute"
+          className="  position-absolute h-auto"
         />
         <p className="absolute font-normal text-3xl text-white bottom-[250px] left-[100px]">
           Over 1,75,324 candidates

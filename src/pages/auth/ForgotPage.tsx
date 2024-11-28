@@ -111,7 +111,7 @@ const ForgotPage = () => {
                 <div className="flex align-center justify-center">{renderFormCreate()}</div>
             </div>
             <div className="flex flex-col gap-[100px] h-screen w-2/4 relative">
-                <img src={logo} alt="" className="w-[1000px] h-[1000px] position-absolute" />
+                <img src={logo} alt="" className="  position-absolute h-auto" />
                 <p className="absolute font-normal text-3xl text-white bottom-[250px] left-[100px]">Over 1,75,324 candidates<br /> waiting for good employers.</p>
                 <div className="absolute flex gap-[80px] bottom-[100px] left-[100px] justify-between">
                 {itemsIcon.map((item)=> {

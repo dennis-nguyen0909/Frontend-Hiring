@@ -241,7 +241,7 @@ const onUpdate = async (id:string) => {
           Tải CV lên
         </Button>
       </div>
-      <div className="flex flex-wrap justify-between items-center">
+      <div className="flex gap-10 flex-wrap">
         {listCv.map((cv) => (
           <div key={cv._id} className="w-[300px] ">
             <CVCard handleShare={handleShare} cv={cv} userDetail={userDetail} onDelete={()=>onDelete(cv._id)} onUpdate={()=>onUpdate(cv._id)} />

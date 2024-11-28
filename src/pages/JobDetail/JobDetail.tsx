@@ -1,13 +1,14 @@
-import { Button, Card, Tabs, Tag, Typography, Image } from "antd";
+import { Button, Card, Tabs, Tag, Typography, Image, notification } from "antd";
 import { ShareAltOutlined } from "@ant-design/icons";
-import { Book } from "lucide-react";
+import { Book, Heart, Share } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { USER_API } from "../../services/modules/userServices";
 import { useSelector } from "react-redux";
 import { JobApi } from "../../services/modules/jobServices";
 import { useEffect, useState } from "react";
 import moment from "moment";
-
+import './styles.css'
+import { API_APPLICATION } from "../../services/modules/ApplicationServices";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 interface JobDetail {
@@ -59,7 +60,28 @@ export default function JobDetail() {
   useEffect(() => {
     handleGetDetail();
   }, []);
-  console.log("jobDetail", jobDetail);
+  const handleApplied = async() => {
+    if(userDetail?.access_token){
+      const params={
+        user_id:userDetail._id,
+        employer_id:jobDetail?.user_id?._id,
+        job_id:jobDetail?._id
+      }
+      const res = await API_APPLICATION.createApplication(params,userDetail?.access_token);
+      console.log("res",res)
+      console.log("res",jobDetail)
+      if(res.data){
+        notification.success({
+          message:"Thông báo",
+          description:'Ứng tuyển thành công'
+        })
+        handleGetDetail();
+      }
+    }else{
+      navigate('/login')
+    }
+  };
+  const handleCreateCV = () => {};
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Header Section */}
@@ -121,6 +143,7 @@ export default function JobDetail() {
                 Ngày đăng {moment(jobDetail?.posted_date).format("DD/MM/yyyy")}
               </Text>
             </div>
+
             {userDetail?.access_token ? (
               <></>
             ) : (
@@ -147,9 +170,32 @@ export default function JobDetail() {
             )}
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button type="text" icon={<Book className="text-xl" />} />
-          <Button type="text" icon={<ShareAltOutlined className="text-xl" />} />
+        <div className="flex  gap-2 flex-col gap-4">
+          <div className="flex space-x-4 justify-end">
+            <div className="hover:scale-110 transform transition-transform duration-200 cursor-pointer">
+              <Heart />
+            </div>
+            <div className="hover:scale-110 transform transition-transform duration-200 cursor-pointer">
+              <Share />
+            </div>
+          </div>
+
+          {jobDetail?.candidate_ids.includes(userDetail?._id) ? (
+            <Button  disabled className="py-5 px-6 rounded-full">Đã ứng tuyển</Button>
+          ):(
+            <Button
+    className="!bg-primaryColorH   text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-primaryColorDark transition-all duration-300"
+    onClick={handleApplied}
+  >
+    Ứng tuyển ngay
+  </Button>
+          )}
+  <Button
+    className="!bg-black  text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-gray-300 transition-all duration-300"
+    onClick={handleCreateCV}
+  >
+    Tạo CV để ứng tuyển
+  </Button>
         </div>
       </div>
 
@@ -186,14 +232,14 @@ export default function JobDetail() {
                     </ul>
                   </section>
 
-                    <section>
-                      <Title level={5}>Trách nhiệm công việc</Title>
-                      <ul className="list-disc pl-5 space-y-2">
-                        {jobDetail?.job_responsibilities.map((item, idx) => {
-                          return <li key={idx}>{item.responsibility}</li>;
-                        })}
-                      </ul>
-                    </section>
+                  <section>
+                    <Title level={5}>Trách nhiệm công việc</Title>
+                    <ul className="list-disc pl-5 space-y-2">
+                      {jobDetail?.job_responsibilities.map((item, idx) => {
+                        return <li key={idx}>{item.responsibility}</li>;
+                      })}
+                    </ul>
+                  </section>
 
                   <section>
                     <Title level={5}>Kỹ năng & Chuyên môn</Title>
@@ -213,13 +259,13 @@ export default function JobDetail() {
                     </div>
                   </section>
                   <section>
-                      <Title level={5}>Phúc lợi dành cho bạn</Title>
-                      <ul className="list-disc pl-5 space-y-2">
-                        {jobDetail?.benefit.map((item, idx) => {
-                          return <li key={idx}>{item}</li>;
-                        })}
-                      </ul>
-                    </section>
+                    <Title level={5}>Phúc lợi dành cho bạn</Title>
+                    <ul className="list-disc pl-5 space-y-2">
+                      {jobDetail?.benefit.map((item, idx) => {
+                        return <li key={idx}>{item}</li>;
+                      })}
+                    </ul>
+                  </section>
                 </div>
               </TabPane>
               <TabPane tab="Giới thiệu về công ty" key="2">
@@ -286,23 +332,23 @@ export default function JobDetail() {
             </div>
           </Card>
 
-            <Card title="Các công nghệ sử dụng">
-              <div className="flex flex-wrap gap-2">
-                {jobDetail?.skills.map((skill, index) => (
-                  <Tag color="blue" key={index}>
-                    {skill.name}
-                  </Tag>
-                ))}
-              </div>
-            </Card>
+          <Card title="Các công nghệ sử dụng">
+            <div className="flex flex-wrap gap-2">
+              {jobDetail?.skills.map((skill, index) => (
+                <Tag color="blue" key={index}>
+                  {skill.name}
+                </Tag>
+              ))}
+            </div>
+          </Card>
 
-            <Card title="Quy trình phỏng vấn">
-              <ul className="list-disc pl-5 space-y-2">
-                {jobDetail?.interview_process?.map((item, idx) => {
-                  return <li key={idx}>{item.process}</li>;
-                })}
-              </ul>
-            </Card>
+          <Card title="Quy trình phỏng vấn">
+            <ul className="list-disc pl-5 space-y-2">
+              {jobDetail?.interview_process?.map((item, idx) => {
+                return <li key={idx}>{item.process}</li>;
+              })}
+            </ul>
+          </Card>
         </div>
       </div>
     </div>

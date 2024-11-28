@@ -12,6 +12,7 @@ import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import { BookOpen, Briefcase, Pencil } from "lucide-react";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import { SkillApi } from "../../../services/modules/skillServices";
+import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 const { TextArea } = Input;
 
 interface SkillProps {
@@ -52,7 +53,7 @@ const SkillComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
@@ -73,12 +74,14 @@ const SkillComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
   };
-
+  const {
+    handleUpdateProfile
+  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   useEffect(() => {
     handleGetSkillByUserId();
   }, []);
@@ -96,14 +99,16 @@ const SkillComponent = () => {
       if (res.data) {
         await handleGetSkillByUserId();
         notification.success({
-          message: "Notification",
+          message: "Thông báo",
           description: "Thêm Thành công",
         });
+        
         closeModal();
+        await handleUpdateProfile();
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
       closeModal();
@@ -115,14 +120,16 @@ const SkillComponent = () => {
       if(res.data){
         await handleGetSkillByUserId();
         notification.success({
-          message:'Notification',
+          message:'Thông báo',
           description:'Xóa thanh cong'
         })
         closeModal();
+        await handleUpdateProfile();
+
       }
     } catch (error) {
       notification.error({
-        message:'Notification',
+        message:'Thông báo',
         description:error.message
       })
     }
@@ -135,14 +142,16 @@ const SkillComponent = () => {
       if(res.data){
         await handleGetSkillByUserId();
         notification.success({
-          message:'Notification',
+          message:'Thông báo',
           description:'Cập nhật thành công'
         })
         closeModal();
+        await handleUpdateProfile();
+
       }
     } catch (error) {
       notification.error({
-        message:'Notification',
+        message:'Thông báo',
         description:error.message
       })
     }

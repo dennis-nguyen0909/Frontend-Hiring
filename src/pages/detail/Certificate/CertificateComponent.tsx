@@ -15,9 +15,7 @@ import { useSelector } from "react-redux";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import {
   BookOpen,
-  Briefcase,
   CheckCircle,
-  Pencil,
   XCircle,
 } from "lucide-react";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
@@ -25,6 +23,7 @@ import UploadForm from "../../../components/ui/UploadForm/UploadForm";
 import { CERTIFICATE_API } from "../../../services/modules/CertificateServices";
 import moment from "moment";
 import { MediaApi } from "../../../services/modules/mediaServices";
+import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 const { TextArea } = Input;
 
 interface Certificate {
@@ -65,7 +64,9 @@ const CertificateComponent = () => {
     setSelectedId("");
     setActionType("");
   };
-
+  const {
+    handleUpdateProfile
+  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   const handleGetSkillByUserId = async ({ current = 1, pageSize = 10 }) => {
     const params = {
       current,
@@ -82,7 +83,7 @@ const CertificateComponent = () => {
   };
 
   useEffect(() => {
-    handleGetSkillByUserId({});
+      handleGetSkillByUserId({});
   }, []);
 
   const handleGetDetailCertificate = async () => {
@@ -140,8 +141,9 @@ const CertificateComponent = () => {
         message: "Thông báo",
         description: "thành công",
       });
-      handleGetSkillByUserId({});
+       await handleGetSkillByUserId({});
       closeModal();
+      await handleUpdateProfile();
     } else {
       notification.error({
         message: "Thông báo",
@@ -157,8 +159,10 @@ const CertificateComponent = () => {
                 message: "Thông báo",
                 description: "Xóa thành công",
               });
-              handleGetSkillByUserId({})
+               await handleGetSkillByUserId({})
               closeModal();
+      await handleUpdateProfile();
+
         }
     } catch (error) {
         notification.error({
@@ -181,8 +185,10 @@ const CertificateComponent = () => {
           message: "Thông báo",
           description: "Cập nhật thành công",
         });
-        handleGetSkillByUserId({})
+         await handleGetSkillByUserId({})
         closeModal();
+      await handleUpdateProfile();
+
       }
     } catch (error) {
         notification.error({

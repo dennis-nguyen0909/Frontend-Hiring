@@ -1,18 +1,26 @@
 // src/services/educationService.ts
+import { notification } from "antd";
 import { APPLICATIONS } from "../api/education"; // Đảm bảo APPLICATIONS chứa đúng URL của endpoint
 import { axiosInstance } from "../config/axiosInterceptor"; // Cấu hình axios
 
 // Định nghĩa EducationApi và hàm postEducation
 export const API_APPLICATION = {
   createApplication: async (data: any, accessToken: string) => {
-    const res = await axiosInstance.post(`${APPLICATIONS}`, data, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      withCredentials: true,
-    });
-    if (res.data) return res.data;
-    return null;
+    try {
+      const res = await axiosInstance.post(`${APPLICATIONS}`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      });
+      if (res.data) return res.data;
+      return null;
+    } catch (error) {
+      notification.error({
+        message:'Thông báo',
+        description:error.response.data.message
+      })
+    }
   },
   getApplicationById: async (id: string, accessToken: string) => {
     const res = await axiosInstance.get(`${APPLICATIONS}/${id}`, {

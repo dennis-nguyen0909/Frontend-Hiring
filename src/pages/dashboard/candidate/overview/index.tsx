@@ -3,8 +3,18 @@ import { API_APPLICATION } from "../../../../services/modules/ApplicationService
 import { useEffect, useState } from "react";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import { BadgeDollarSign } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
+
 
 const OverViewCandidate = ({ userDetail }) => {
+  const navigate = useNavigate();
+  const {
+    data: caculateProfile,
+    isLoading,
+    error,
+    refetch
+  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   const recentlyAppliedColumns = [
     {
       title: 'Job',
@@ -60,7 +70,6 @@ const OverViewCandidate = ({ userDetail }) => {
   const handleGetAppliedUser = async () => {
     const res = await API_APPLICATION.getCountAppliedCandidate(userDetail?._id, userDetail?.access_token);
     if (res.data) {
-      console.log("res.data",res.data)
       setEndValue(+res.data);
       setCountApplied(0);
     }
@@ -81,7 +90,6 @@ const OverViewCandidate = ({ userDetail }) => {
         icon: item?.employer_id?.avatar_company,
         is_negotiable:item.job_id.is_negotiable
       }));
-      console.log("res.data",res.data)
       setJobsApplied(formattedData);
     }
     setLoading(false);
@@ -112,36 +120,39 @@ const OverViewCandidate = ({ userDetail }) => {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-1">Hello, {userDetail?.full_name}</h1>
-      <p className="text-gray-500 mb-6">Here is your daily activities and job alerts</p>
+      <h1 className="text-2xl font-semibold mb-1">Xin chào, {userDetail?.full_name}</h1>
+      <p className="text-gray-500 mb-6">Đây là hoạt động hàng ngày và thông báo công việc của bạn</p>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-blue-50 p-4 rounded-lg">
           <div className="text-3xl font-bold">{countApplied || 0}</div>
-          <div className="text-blue-600">Applied jobs</div>
+          <div className="text-blue-600">Việc làm ứng tuyển</div>
         </div>
         <div className="bg-yellow-50 p-4 rounded-lg">
           <div className="text-3xl font-bold">238</div>
-          <div className="text-yellow-600">Favorite jobs</div>
+          <div className="text-yellow-600">Việc làm yêu thích</div>
         </div>
         <div className="bg-green-50 p-4 rounded-lg">
-          <div className="text-3xl font-bold">574</div>
-          <div className="text-green-600">Job Alerts</div>
+          <div className="text-3xl font-bold">0</div>
+          <div className="text-green-600">Thông báo việc làm</div>
         </div>
       </div>
 
       {/* Profile Alert */}
-      <div className="bg-red-100 p-4 rounded-lg flex items-center mb-6">
-        <img src="/placeholder.svg?height=40&width=40" alt="Profile" className="w-10 h-10 rounded-full mr-4" />
-        <div className="flex-1">
-          <h3 className="font-semibold text-red-700">Your profile editing is not completed.</h3>
-          <p className="text-red-600">Complete your profile editing & build your custom Resume</p>
-        </div>
-        <Button type="primary" className="bg-white text-red-500 border-red-500 hover:bg-red-50">
-          Edit Profile →
-        </Button>
-      </div>
+      {+caculateProfile < 100 && (
+         <div className="bg-red-100 p-4 rounded-lg flex items-center mb-6">
+         <Avatar size={50} src={userDetail?.avatar} />
+         <div className="flex-1 ml-3">
+           <h3 className="font-semibold text-red-700">Việc chỉnh sửa hồ sơ của bạn chưa hoàn tất.</h3>
+           <p className="text-red-600">Hoàn tất chỉnh sửa hồ sơ của bạn và xây dựng Sơ yếu lý lịch tùy chỉnh của bạn</p>
+         </div>
+         <Button onClick={() => navigate(`/profile/${userDetail._id}`)} type="primary" className="bg-white text-red-500 border-red-500 hover:bg-red-50">
+           Cập nhật ngay
+         </Button>
+       </div>
+      ) }
+     
 
       {/* Recently Applied Jobs */}
       <div className="bg-white rounded-lg shadow">

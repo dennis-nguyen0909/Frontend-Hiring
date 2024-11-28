@@ -69,10 +69,6 @@ const ApplicationCard = ({
           user_id?.access_token
         );
         if (res.data) {
-          //   notification.success({
-          //     message: "Notification",
-          //     description: "Xóa thành cong",
-          //   })
           handleFetchData();
         }
       } else {
@@ -82,10 +78,6 @@ const ApplicationCard = ({
           user_id?.access_token
         );
         if (res.data) {
-          //   notification.success({
-          //     message: "Notification",
-          //     description: "Cập nhật thành công",
-          //   })
           handleFetchData();
         }
       }
@@ -110,6 +102,16 @@ const ApplicationCard = ({
         })
     }
   };
+  
+  const onDownloadCvCandidate = ()=>{
+    const{primary_cv_id}=user_id
+    const link = document.createElement("a");
+    link.href = primary_cv_id.cv_link;
+    link.download = primary_cv_id.cv_name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
   const isSaved = save_candidates && save_candidates.includes(user_id?._id);
   return (
     <Card className={`mb-4 ${className}`}>
@@ -167,7 +169,7 @@ const ApplicationCard = ({
           </div>
         </div>
       </div>
-      <Button icon={<DownloadOutlined />} className="w-full mt-4">
+      <Button onClick={onDownloadCvCandidate} icon={<DownloadOutlined />} className="w-full mt-4 !border-black !text-black !hover:text-primaryColor">
         Download CV
       </Button>
     </Card>

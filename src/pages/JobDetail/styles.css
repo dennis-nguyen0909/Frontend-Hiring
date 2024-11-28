@@ -1,0 +1,8 @@
+/* :where(
+    .css-dev-only-do-not-override-14qglws
+  ).ant-btn-default.ant-btn-outlined:not(:disabled):not(
+    .ant-btn-disabled
+  ):hover {
+  border-color: transparent !important;
+  color: white !important;
+} */

@@ -10,6 +10,7 @@ import { COURSE_API } from '../../../services/modules/CourseServices';
 import Course from './Course';
 import { BookOpen } from 'lucide-react';
 import TextArea from 'antd/es/input/TextArea';
+import useCalculateUserProfile from '../../../hooks/useCaculateProfile';
 
 interface Course {
     _id: string;
@@ -31,6 +32,7 @@ export default function CourseView() {
     const [visible, setVisible] = useState(false);
     const [link, setLink] = useState<string>('');
     const [selectedId, setSelectedId] = useState<string>('');
+   const {handleUpdateProfile}= useCalculateUserProfile(userDetail?._id,userDetail?.access_token)
 
     const handleGetCoursesByUserId = async ({ current = 1, pageSize = 10 }) => {
         try {
@@ -118,8 +120,9 @@ export default function CourseView() {
                 message: "Notification",
                 description: 'Thêm Khóa học thành công'
             });
+            await handleGetCoursesByUserId({});
             closeModal();
-            handleGetCoursesByUserId({});
+            await handleUpdateProfile();
         }
     };
 
@@ -149,8 +152,10 @@ export default function CourseView() {
                     message: "Notification",
                     description: 'Cập nhật thành công'
                 });
+               await handleGetCoursesByUserId({});
                 closeModal();
-                handleGetCoursesByUserId({});
+            await handleUpdateProfile();
+
             }
         } catch (error) {
                 notification.error({
@@ -167,8 +172,10 @@ export default function CourseView() {
                     message: "Notification",
                     description:'Xóa thông báo'
                 })
+                await handleGetCoursesByUserId({})
                 closeModal();
-                handleGetCoursesByUserId({})
+            await handleUpdateProfile();
+
             }
         }catch(error){
             notification.error({

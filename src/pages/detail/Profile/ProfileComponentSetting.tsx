@@ -32,123 +32,16 @@ import PrizeView from "../PrizeComponent/PrizeView";
 import CourseView from "../CourseComponent/CourseComponent";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 const ProfileComponentSetting = () => {
-  const dispatch = useDispatch();
-  const fileInputRef = useRef(null);
-  const fileInputAvtRef = useRef(null);
   const userDetail = useSelector((state) => state.user);
-  const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
   const [visibleInAvatar, setVisibleInAvatar] = useState(false);
   const [coverImage, setCoverImage] = useState(userDetail?.background || null);
-  const uploadFileToMedia = async (file: File) => {
-    try {
-      const res = await MediaApi.postMedia(file, userDetail.access_token);
-      return res;
-    } catch (error) {
-      notification.error({
-        message: "Notification",
-        description: error.message,
-      });
-    }
-  };
 
-  const handleOpenFile = () => {
-    fileInputRef.current.click();
-  };
 
-  const handleOpenFileAvt = () => {
-    fileInputAvtRef.current.click();
-  };
 
-  const updateUserApi = async (params) => {
-    try {
-      const res = await userServices.updateUser(params);
-      if (res.data) {
-        dispatch(
-          updateUser({ ...res.data, access_token: userDetail.access_token })
-        );
-        notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
-        });
-      }
-    } catch (error) {
-      notification.error({
-        message: "Thông báo",
-        description: error.message,
-      });
-    }
-  };
 
-  const handleFileChangeBackground = async (e) => {
-    // Chuyển sang async để chờ kết quả upload
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        // Upload file lên server và lấy URL trả về
-        const res = await uploadFileToMedia(file); // Thêm await vào đây để chờ kết quả từ API
-        if (res?.data?.url) {
-          // Cập nhật ảnh bìa trên giao diện người dùng
-          setCoverImage(URL.createObjectURL(file)); // Sử dụng URL của file local
-
-          // Cập nhật thông tin người dùng với ảnh bìa mới
-          const updatedUserDetail = {
-            id: userDetail._id,
-            background: res?.data?.url, // Cập nhật ảnh bìa mới từ server
-          };
-
-          await updateUserApi(updatedUserDetail);
-        }
-      } catch (error) {
-        console.error("Error handling file change:", error);
-      }
-    }
-  };
-  const handleFileChangeAvatar = async (e) => {
-    // Chuyển sang async để chờ kết quả upload
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await uploadFileToMedia(file);
-        if (res?.data?.url) {
-          const updatedUserDetail = {
-            id: userDetail._id,
-            avatar: res?.data?.url,
-          };
-
-          await updateUserApi(updatedUserDetail);
-        }
-      } catch (error) {
-        console.error("Error handling file change:", error);
-      }
-    }
-  };
-  const onChangeSwitch = async (checked: boolean, type: string) => {
-    switch (type) {
-      case "allowProfilesToSearch":
-        break;
-      case "isSearchJobStatus":
-        // eslint-disable-next-line no-case-declarations
-        const params = {
-          id: userDetail._id,
-          is_search_jobs_status: checked,
-        };
-        await updateUserApi(params);
-        break;
-      default:
-        break;
-    }
-  };
-  const handleNavigatePDF = () => {
-    navigate("/upload-cv");
-  };
-  console.log()
   const {
-    data: caculateProfile,
-    isLoading,
-    error,
-    refetch
-  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+    data: caculateProfile  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   return (
     <div className="">
       <Col span={24} className="max-w-3xl mx-auto p-4 space-y-6 rounded-xl">
@@ -207,15 +100,15 @@ const ProfileComponentSetting = () => {
             </div>
           </Card>
 
-          <ExperienceNumberCandidate refetch={refetch} />
+          <ExperienceNumberCandidate  />
           {/* Education Section */}
-          <EducationComponent refetch={refetch} />
+          <EducationComponent  />
           {/* Experience Section */}
-          <ExperienceComponent />
+          <ExperienceComponent   />
           {/* Skill Section */}
-          <SkillComponent />
+          <SkillComponent  />
           {/* Certificate */}
-          <CertificateComponent />
+          <CertificateComponent  />
           {/* Prize */}
           <PrizeView />
           {/* Course */}

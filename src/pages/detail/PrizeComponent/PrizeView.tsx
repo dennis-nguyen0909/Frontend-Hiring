@@ -9,6 +9,7 @@ import TextArea from 'antd/es/input/TextArea';
 import UploadForm from '../../../components/ui/UploadForm/UploadForm';
 import moment from 'moment';
 import { MediaApi } from '../../../services/modules/mediaServices';
+import useCalculateUserProfile from '../../../hooks/useCaculateProfile';
 interface Prize {
     _id: string;
     user_id: string;
@@ -27,6 +28,9 @@ export default function PrizeView() {
     const [visible, setVisible] = useState(false);
     const [link,setLink]=useState<string>('')
     const [selectedId,setSelectedId]=useState<string >('')
+    const {
+      handleUpdateProfile
+    } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   const handleGetPrizesByUserId = async ({current=1,pageSize=10}) => {
     try {
         const params = {
@@ -103,8 +107,10 @@ const onSubmit = async(values:any)=>{
             message: "Notification",
             description:'Thêm Giải thưởng thành công'
         })
+        await handleGetPrizesByUserId({})
         closeModal();
-        handleGetPrizesByUserId({})
+        await handleUpdateProfile();
+
     }
 }
 
@@ -139,8 +145,9 @@ const onUpdate = async()=>{
             message: "Notification",
             description:'Cập nhật giải thưởng'
         })
+        await handleGetPrizesByUserId({})
         closeModal();
-        handleGetPrizesByUserId({})
+        await handleUpdateProfile();
     }
 }
 
@@ -151,8 +158,10 @@ const onDelete = async()=>{
             message: "Notification",
             description:'Xóa thành công'
         })
+        await handleGetPrizesByUserId({})
         closeModal();
-        handleGetPrizesByUserId({})
+        await handleUpdateProfile();
+
     }
 }
 

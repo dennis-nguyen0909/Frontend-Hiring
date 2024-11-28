@@ -24,6 +24,7 @@ import { LineChart, ProjectorIcon } from "lucide-react";
 import { PROJECT_API } from "../../../services/modules/ProjectServices";
 import moment from "moment";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
+import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 interface Project {
   _id: string;
   user_id: string;
@@ -50,6 +51,8 @@ const ProjectComponent = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedId, setSelectedId] = useState<string>("");
   const [loading,setLoading]=useState<boolean>(false)
+  const {handleUpdateProfile}= useCalculateUserProfile(userDetail?._id,userDetail?.access_token)
+
   const handleGetProjectsByUserId = async ({ current = 1, pageSize = 10 }) => {
     try {
       const params = {
@@ -89,9 +92,10 @@ const ProjectComponent = () => {
           message: "Thành công",
           description: "Thêm dự án thành công",
         });
+        await handleGetProjectsByUserId({});
+        closeModal();
+        await handleUpdateProfile();
       }
-      handleGetProjectsByUserId({});
-      closeModal();
     } catch (error) {
       notification.error({
         message: "Thông báo",
@@ -112,7 +116,6 @@ const ProjectComponent = () => {
   const onFileChange = async (file: any) => {
     try {
         setLoading(true)
-        console.log("file",file)
       const res = await MediaApi.postMedia(file, userDetail?.access_token);
       if (res.data.url) {
         setImgUrl(res.data.url);
@@ -139,8 +142,10 @@ const ProjectComponent = () => {
             message: "Notification",
             description: "Cập nhật danh sách",
           });
-          handleGetProjectsByUserId({});
+         await  handleGetProjectsByUserId({});
           closeModal();
+        await handleUpdateProfile();
+
         }
     }catch (error) {
         notification.error({
@@ -149,7 +154,6 @@ const ProjectComponent = () => {
         })
     }
   };
-  console.log("selectedId",selectedId)
   const handletGetDetail = async (id:string) => {
     try {
       const res = await PROJECT_API.findById(id,userDetail.access_token)
@@ -192,7 +196,10 @@ const ProjectComponent = () => {
             message: "Notification",
             description:'Xóa dự án'
         })
-        handleGetProjectsByUserId({})
+        await handleGetProjectsByUserId({})
+        closeModal();
+        await handleUpdateProfile();
+
       }
     } catch (error) {
         notification.error({

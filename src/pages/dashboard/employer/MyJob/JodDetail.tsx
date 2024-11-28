@@ -30,6 +30,7 @@ export default function JobDetail({
   idJob,
   handleChangeHome,
 }: IPropsJobDetail) {
+  const userDetail = useSelector((state) => state.user);
   const [jobDetail, setJobDetail] = useState<any>(null);
   const [form] = Form.useForm();
   const [experienceInput, setExperienceInput] = useState("");
@@ -37,10 +38,9 @@ export default function JobDetail({
   const [content, setContent] = useState("");
   const [benefitInput, setBenefitInput] = useState("");
   const [benefitList, setBenefitList] = useState([]);
-  const [city, setCity] = useState("");
-  const [district, setDistrict] = useState("");
-  const [ward, setWard] = useState("");
-  const userDetail = useSelector((state) => state.user);
+  const [city, setCity] = useState(jobDetail?.city_id?._id || "");
+  const [district, setDistrict] = useState(jobDetail?.district_id?._id || "");
+  const [ward, setWard] = useState( jobDetail?.ward_id?._id ||"");
   const [expireDate, setExpireDate] = useState("");
   const [listSkills, setListSkills] = useState<ListSkillsFormData[]>([]);
   const [meta, setMeta] = useState<Meta>({
@@ -77,7 +77,6 @@ export default function JobDetail({
   };
   const handleGetJobDetail = async () => {
     const res = await JobApi.getJobById(idJob, userDetail.access_token);
-    console.log("resdadada,", res);
     if (res?.data) {
       let applicationMethod = "";
       let applicationLink = "";
@@ -95,15 +94,15 @@ export default function JobDetail({
       }
       form.setFieldsValue({
         ...res.data,
-        city: res.data.city_id,
-        district: res.data.district_id,
-        ward: res.data.ward_id,
         min_salary: res.data.salary_range.min,
         max_salary: res.data.salary_range.max,
         applicationMethod: applicationMethod,
         applicationLink: applicationLink,
         setExpireDate: moment(res.data.expire_date).format("YYYY-MM-DD"),
       });
+      setCity(res.data.city_id._id)
+      setDistrict(res.data.district_id._id)
+      setWard(res.data.ward_id._id)
       const formattedExpireDate = moment(res.data.expire_date).format('YYYY-MM-DD');
       setExpireDate(formattedExpireDate); 
       setIsNegotiable(res.data.is_negotiable);
@@ -226,6 +225,9 @@ export default function JobDetail({
         layout="vertical"
         className=" mx-auto"
         onFinish={handleSubmit}
+        initialValues={{
+          city:jobDetail?.city_id
+        }}
       >
         {/* Job Title */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
@@ -333,8 +335,6 @@ export default function JobDetail({
                 mode="multiple" // Cho phép chọn nhiều kỹ năng
                 style={{ width: "100%" }}
                 onChange={(value) => {
-                  console.log("Selected skills:", value);
-                  console.log("Selected skills:", listSkills);
                 }}
               >
                 {listSkills.map((skill) => (

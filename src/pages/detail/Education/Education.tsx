@@ -16,6 +16,7 @@ import moment from "moment";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import { BookOpen, Pencil, School } from "lucide-react";
 import { updateUser } from "../../../redux/slices/userSlices";
+import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 const { TextArea } = Input;
 
 interface typePostEducation {
@@ -27,7 +28,7 @@ interface typePostEducation {
   _id: string;
 }
 
-const EducationComponent = ({ refetch }) => {
+const EducationComponent = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [isCurrentlyStudying, setIsCurrentlyStudying] = useState(false);
@@ -40,14 +41,14 @@ const EducationComponent = ({ refetch }) => {
   const userDetail = useSelector((state) => state.user);
   const dispatch =useDispatch()
   const [actionType, setActionType] = useState<string>("create");
-
+  const {
+    handleUpdateProfile
+  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+  console.log("userDetail",userDetail)
   const handleGetEducation = async (id: string, access_token: string) => {
     try {
       const res = await EducationApi.getEducationById(id, access_token);
       setEducation(res.data);
-      if (refetch) { // Kiểm tra xem refetch có tồn tại không
-        refetch(); // Gọi refetch để làm mới dữ liệu
-      }
     } catch (error) {
       notification.error({
         message: "Notification",
@@ -84,7 +85,6 @@ const EducationComponent = ({ refetch }) => {
     major,
     start_date,
     end_date,
-    idx,
     id,
   }: {
     school: string;
@@ -158,9 +158,11 @@ const EducationComponent = ({ refetch }) => {
             description: "Xóa thành công!",
           });
           await handleGetEducationByUserId();
+          
           closeModal();
           setSelectedEducationId("");
           setEducation(null);
+          await handleUpdateProfile()
         }
       }
     } catch (error) {
@@ -189,6 +191,7 @@ const EducationComponent = ({ refetch }) => {
             message: "Thông báo",
             description: "Cập nhật thành công",
           });
+          await handleUpdateProfile()
         }
       }
     } catch (error) {
@@ -215,12 +218,11 @@ const EducationComponent = ({ refetch }) => {
           message: "Thông báo",
           description: "Tạo thành công!",
         });
-        // Gọi API để lấy danh sách học vấn mới
-        await handleGetEducationByUserId();  // Đảm bảo gọi API lấy danh sách học vấn sau khi tạo thành công
-        dispatch(updateUser({ ...userDetail, ...res?.data, access_token: user.access_token }));
+        await handleGetEducationByUserId();
         closeModal();
         setSelectedEducationId("");
         setEducation(null);
+        await handleUpdateProfile()
       }
     } catch (error) {
       notification.error({

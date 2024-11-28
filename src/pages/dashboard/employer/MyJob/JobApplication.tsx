@@ -16,7 +16,7 @@ import { API_APPLICATION } from "../../../../services/modules/ApplicationService
 import { useSelector } from "react-redux";
 import GeneralModal from "../../../../components/ui/GeneralModal/GeneralModal";
 import ApplicationCard from "../Application/ApplicationCard";
-import { ArrowLeft, ChevronLeft, ChevronsLeft } from "lucide-react";
+import { ChevronsLeft } from "lucide-react";
 
 const { Title, Text } = Typography;
 interface IPropJobApplication {

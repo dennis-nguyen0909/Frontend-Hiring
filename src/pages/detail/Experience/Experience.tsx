@@ -18,6 +18,7 @@ import { BookOpen, Briefcase, Pencil } from "lucide-react";
 import { ExperienceApi } from "../../../services/modules/experienceServices";
 import { MediaApi } from "../../../services/modules/mediaServices";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
+import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 const { TextArea } = Input;
 
 interface WorkExperienceProps {
@@ -68,7 +69,9 @@ const ExperienceComponent = () => {
     setActionType("")
   };
 
-
+  const {
+    handleUpdateProfile
+  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token)
   const handleDeleteManyExperience = async (ids:Array<string>,accessToken:string)=>{
     try {
         const res = await ExperienceApi.deleteManyExperience(ids,accessToken);
@@ -113,11 +116,12 @@ const ExperienceComponent = () => {
     
     const res = await handleCreateWorkExperience(params, userDetail.access_token);
     if(res.data){
-      handleGetWorkExperiencesByUser();
+     await handleGetWorkExperiencesByUser();
       notification.success({
         message: "Notification",
         description: "Thêm kinh nghiệm thành công!",
       })
+    await handleUpdateProfile();
       closeModal();
     }else{
       notification.error({
@@ -200,6 +204,8 @@ const ExperienceComponent = () => {
         description:'Xóa thành công'
       })
       closeModal();
+    await handleUpdateProfile();
+
     }else{
       notification.error({
         message:'Notification',
@@ -225,6 +231,8 @@ const ExperienceComponent = () => {
         description:'Cập nhật thành công'
       })
       closeModal();
+    await handleUpdateProfile();
+
     }else{
       notification.error({
         message:'Notification',
