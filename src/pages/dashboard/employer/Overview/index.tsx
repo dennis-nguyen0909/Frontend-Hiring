@@ -12,6 +12,7 @@ import { Meta } from "../../../../types";
 import { calculateTimeRemaining, defaultMeta } from "../../../../untils";
 import { JobApi } from "../../../../services/modules/jobServices";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
+import './styles.css'
 const { Text, Title } = Typography;
 const OverviewEmployer = () => {
   const columns = [
@@ -211,14 +212,14 @@ const OverviewEmployer = () => {
           <div className="text-3xl font-bold">{countSaveCandidate}</div>
           <div className="flex items-center gap-2">
             <SaveOutlined />
-            <span>Saved Candidates</span>
+            <span>Lưu ứng viên</span>
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
-          <p className="mb-0">Recently Posted Jobs</p>
+          <p className="mb-0">Công việc đăng gần đây</p>
           <Button type="link">View all</Button>
         </div>
         <Table

@@ -105,8 +105,17 @@ const ApplicationCard = ({
   
   const onDownloadCvCandidate = ()=>{
     const{primary_cv_id}=user_id
+    const cvLinkIds = applied?.cv_ids && applied?.cv_ids[0]
     const link = document.createElement("a");
-    link.href = primary_cv_id.cv_link;
+    console.log(cvLinkIds)
+    console.log(primary_cv_id)
+    if(!primary_cv_id || cvLinkIds){
+      notification.error({
+        message:'Thông báo',
+        description:'Ứng viên chưa cập nhật CV'
+      })
+    }
+    link.href = primary_cv_id.cv_link || cvLinkIds ;
     link.download = primary_cv_id.cv_name;
     document.body.appendChild(link);
     link.click();

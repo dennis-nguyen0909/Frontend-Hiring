@@ -44,7 +44,6 @@ const EducationComponent = () => {
   const {
     handleUpdateProfile
   } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
-  console.log("userDetail",userDetail)
   const handleGetEducation = async (id: string, access_token: string) => {
     try {
       const res = await EducationApi.getEducationById(id, access_token);

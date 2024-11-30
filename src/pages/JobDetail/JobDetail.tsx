@@ -1,5 +1,5 @@
 import { Button, Card, Tabs, Tag, Typography, Image, notification } from "antd";
-import { ShareAltOutlined } from "@ant-design/icons";
+import { HeartFilled, HeartOutlined, ShareAltOutlined } from "@ant-design/icons";
 import { Book, Heart, Share } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { USER_API } from "../../services/modules/userServices";
@@ -7,8 +7,9 @@ import { useSelector } from "react-redux";
 import { JobApi } from "../../services/modules/jobServices";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import './styles.css'
+import "./styles.css";
 import { API_APPLICATION } from "../../services/modules/ApplicationServices";
+import { API_FAVORITE_JOB } from "../../services/modules/FavoriteJobServices";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 interface JobDetail {
@@ -48,6 +49,8 @@ export default function JobDetail() {
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [jobDetail, setJobDetail] = useState<JobDetail>();
+  const [like, setLike] = useState<any>();
+  const url = useParams();
   const { id } = useParams();
   const handleGetDetail = async () => {
     try {
@@ -59,29 +62,77 @@ export default function JobDetail() {
   };
   useEffect(() => {
     handleGetDetail();
+    getFavoriteJobDetailByUserId();
   }, []);
-  const handleApplied = async() => {
-    if(userDetail?.access_token){
-      const params={
-        user_id:userDetail._id,
-        employer_id:jobDetail?.user_id?._id,
-        job_id:jobDetail?._id
-      }
-      const res = await API_APPLICATION.createApplication(params,userDetail?.access_token);
-      console.log("res",res)
-      console.log("res",jobDetail)
-      if(res.data){
+  const handleApplied = async () => {
+    if (userDetail?.access_token) {
+      const params = {
+        user_id: userDetail._id,
+        employer_id: jobDetail?.user_id?._id,
+        job_id: jobDetail?._id,
+      };
+      
+      const res = await API_APPLICATION.createApplication(
+        params,
+        userDetail?.access_token
+      );
+      console.log("res", res);
+      console.log("res", jobDetail);
+      if (res.data) {
         notification.success({
-          message:"Thông báo",
-          description:'Ứng tuyển thành công'
-        })
+          message: "Thông báo",
+          description: "Ứng tuyển thành công",
+        });
         handleGetDetail();
       }
-    }else{
-      navigate('/login')
+    } else {
+      navigate("/login");
     }
   };
-  const handleCreateCV = () => {};
+  const handleCreateCV = () => {
+    navigate("/profile-cv");
+  };
+  const getFavoriteJobDetailByUserId = async () => {
+    try {
+      const params = {
+        user_id: userDetail?._id,
+        job_id: url?.id,
+      };
+      const res = await API_FAVORITE_JOB.getFavoriteJobDetailByUserId(
+        params,
+        userDetail?.access_token
+      );
+      if (res.data) {
+        setLike(res.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const onLike = async () => {
+    try {
+      const params = {
+        user_id: userDetail?._id,
+        job_id: jobDetail?._id,
+      };
+      const res = await API_FAVORITE_JOB.createFavoriteJobs(
+        params,
+        userDetail?.access_token
+      );
+      console.log("res",res)
+      if (+res.statusCode === 201) {
+        // Update the local state after successful like operation
+        setLike((prevLike) => ({
+          ...prevLike,
+          _id: prevLike?._id ? null : res?.data?._id, // Toggle the like status
+        }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  console.log("lasdas",like)
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Header Section */}
@@ -119,7 +170,7 @@ export default function JobDetail() {
                 </svg>
               </div>
               <Text className="text-gray-600 text-base leading-relaxed">
-                {`${jobDetail?.address ? +`${jobDetail?.address},` : ""}${
+                {`${jobDetail?.address ? `${jobDetail?.address}, ` : ""}${
                   jobDetail?.ward_id?.name
                 } ,${jobDetail?.district_id?.name} ,${
                   jobDetail?.city_id?.name
@@ -170,10 +221,10 @@ export default function JobDetail() {
             )}
           </div>
         </div>
-        <div className="flex  gap-2 flex-col gap-4">
+        <div className="flex  flex-col gap-4">
           <div className="flex space-x-4 justify-end">
             <div className="hover:scale-110 transform transition-transform duration-200 cursor-pointer">
-              <Heart />
+              {like?._id ?     <HeartFilled onClick={onLike} style={{ color: "red", fontSize: "24px" }} /> : <HeartOutlined onClick={onLike}  style={{ fontSize: "24px" }}  />}
             </div>
             <div className="hover:scale-110 transform transition-transform duration-200 cursor-pointer">
               <Share />
@@ -181,21 +232,23 @@ export default function JobDetail() {
           </div>
 
           {jobDetail?.candidate_ids.includes(userDetail?._id) ? (
-            <Button  disabled className="py-5 px-6 rounded-full">Đã ứng tuyển</Button>
-          ):(
+            <Button disabled className="py-5 px-6 rounded-full">
+              Đã ứng tuyển
+            </Button>
+          ) : (
             <Button
-    className="!bg-primaryColorH   text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-primaryColorDark transition-all duration-300"
-    onClick={handleApplied}
-  >
-    Ứng tuyển ngay
-  </Button>
+              className="!bg-primaryColorH   text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-primaryColorDark transition-all duration-300"
+              onClick={handleApplied}
+            >
+              Ứng tuyển ngay
+            </Button>
           )}
-  <Button
-    className="!bg-black  text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-gray-300 transition-all duration-300"
-    onClick={handleCreateCV}
-  >
-    Tạo CV để ứng tuyển
-  </Button>
+          <Button
+            className="!bg-black  text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-gray-300 transition-all duration-300"
+            onClick={handleCreateCV}
+          >
+            Tạo CV để ứng tuyển
+          </Button>
         </div>
       </div>
 
@@ -313,21 +366,37 @@ export default function JobDetail() {
                 <Text className="text-gray-500 block">
                   Năm kinh nghiệm tối thiểu
                 </Text>
-                <Text strong>Từ {jobDetail?.min_experience} năm</Text>
+                {!jobDetail?.min_experience ? (
+                  <Text strong>Không yêu cầu</Text>
+                ) : (
+                  <Text strong>Từ {jobDetail?.min_experience} năm</Text>
+                )}
               </div>
               <div>
                 <Text className="text-gray-500 block">Cấp bậc</Text>
-                <Text strong>{jobDetail?.level.toLocaleUpperCase()}</Text>
+                {!jobDetail?.level ? (
+                  <Text strong>Không yêu cầu</Text>
+                ) : (
+                  <Text strong>{jobDetail?.level.toLocaleUpperCase()}</Text>
+                )}
               </div>
               <div>
                 <Text className="text-gray-500 block">Loại hình</Text>
-                <Text strong>
-                  {jobDetail?.type_of_work?.toLocaleUpperCase()}
-                </Text>
+                {!jobDetail?.type_of_work ? (
+                  <Text strong>Không yêu cầu</Text>
+                ) : (
+                  <Text strong>
+                    {jobDetail?.type_of_work.toLocaleUpperCase()}
+                  </Text>
+                )}
               </div>
               <div>
                 <Text className="text-gray-500 block">Loại hợp đồng</Text>
-                <Text strong>{jobDetail?.job_type.toLocaleUpperCase()}</Text>
+                {!jobDetail?.job_type ? (
+                  <Text strong>Không yêu cầu</Text>
+                ) : (
+                  <Text strong>{jobDetail?.job_type.toLocaleUpperCase()}</Text>
+                )}
               </div>
             </div>
           </Card>
@@ -348,6 +417,9 @@ export default function JobDetail() {
                 return <li key={idx}>{item.process}</li>;
               })}
             </ul>
+            {!jobDetail?.interview_process.length > 0 && (
+              <Text strong>Không yêu cầu</Text>
+            )}
           </Card>
         </div>
       </div>

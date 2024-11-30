@@ -78,22 +78,25 @@ const OverViewCandidate = ({ userDetail }) => {
   const handleGetJobsAppliedRecent = async () => {
     setLoading(true);
     const res = await API_APPLICATION.getRecentlyAppliedCandidate(userDetail?._id, '10', userDetail?.access_token);
+    console.log("res duydeptrai",res)
     if (res.data) {
-      const formattedData = res.data.map(item => ({
-        key: item._id,
-        job: item.job_id.title,
+      const formattedData = res?.data?.map(item => ({
+        key: item?._id,
+        job: item?.job_id?.title,
         location: `${item?.job_id?.city_id?.name}`,
-        salary: item.job_id.salary_range ? `$${item.job_id.salary_range.min || 0} - $${item.job_id.salary_range.max || 0}` : 'Negotiable',
-        dateApplied: new Date(item.applied_date).toLocaleString(),
-        status: item.status.charAt(0).toUpperCase() + item.status.slice(1),
+        salary: item?.job_id?.salary_range ? `$${item?.job_id?.salary_range?.min || 0} - $${item?.job_id?.salary_range?.max || 0}` : 'Negotiable',
+        dateApplied: new Date(item?.applied_date)?.toLocaleString(),
+        status: item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
         bgColor: 'bg-green-500',
         icon: item?.employer_id?.avatar_company,
-        is_negotiable:item.job_id.is_negotiable
+        is_negotiable:item?.job_id?.is_negotiable
       }));
+      console.log("format",formattedData)
       setJobsApplied(formattedData);
+      setLoading(false);
     }
-    setLoading(false);
   };
+  console.log("applied",jobsApplied)
 
   useEffect(() => {
     handleGetJobsAppliedRecent();
@@ -157,7 +160,8 @@ const OverViewCandidate = ({ userDetail }) => {
       {/* Recently Applied Jobs */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Recently Applied</h2>
+          <h2 className="text-xl font-semibold"> Đã ứng tuyển gần đây</h2>
+          {/* Đã ứng tuyển gần đây */}
           <a href="#" className="text-blue-500 hover:underline">View all →</a>
         </div>
         <LoadingComponent isLoading={loading}>

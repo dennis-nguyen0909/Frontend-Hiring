@@ -147,60 +147,109 @@ export default function PostJob() {
   useEffect(() => {
     handleGetSkillByUser({ user_id: userDetail._id });
   }, []);
-  const handleSubmit = async (values: any) => {
-    const salaryRange = { min: values.min_salary, max: values.max_salary };
-    const ageRange = { min: values.min_age, max: values.max_age };
-    console.log("values", values);
-    let params = {
-      user_id: userDetail._id,
-      title: values.title,
-      description: content,
-      address: values.address,
-      city_id: city,
-      district_id: district,
-      ward_id: ward,
-      salary_range: salaryRange,
-      age_range: ageRange,
-      salary_type: values.salary_type,
-      job_type: values.job_type,
-      benefit: benefitList,
-      // time_work: values.time_work,
-      require_experience: experienceList,
-      skills: values.skills,
-      expire_date: expireDate,
-      level: values.level,
-      is_negotiable: values.is_negotiable,
-      type_money: values.type_money, //
-      degree: values.degree,
-      count_apply: values.count_apply,
-      apply_linkedin: "",
-      apply_website: "",
-      apply_email: "",
-      professional_skills: requirements,
-      general_requirements: values.general_requirements,
-      job_responsibilities: values.job_responsibilities,
-      interview_process: values.interview_process,
-      type_of_work: values.type_of_work,
-      min_experience: values.min_experience,
-    };
-    if (values.applicationMethod === "linkedin") {
-      params.apply_linkedin = values.applicationLink;
-    } else if (values.applicationMethod === "email") {
-      params.apply_email = values.applicationLink;
-    } else if (values.applicationMethod === "website") {
-      params.apply_website = values.applicationLink;
-    }
-    const res = await JobApi.postJob(params, userDetail.access_token);
-
-    if (res.data) {
-      notification.success({
-        message: "Success",
-        description: "Job posted successfully",
-      });
-    } else {
+  const handleFinishFailed = ({ errorFields }: any) => {
+    errorFields.forEach((field: any) => {
       notification.error({
-        message: "Error",
-        description: res.message,
+        message: "Thông báo",
+        description: field.errors[0], // Display the first validation error for each field
+      });
+    });
+  };
+  const handleSubmit = async (values: any) => {
+    try {
+      console.log("reqweqweq", !values.general_requirements.length);
+      if (!requirements.length) {
+        notification.error({
+          message: "Thông báo",
+          description: "Vui lòng nhập kỹ năng và chuyên môn",
+        });
+        return;
+      }
+
+      if (!values.general_requirements || !values.general_requirements.length) {
+        message.error('Vui lòng nhập yêu cầu chung')
+
+        // notification.error({
+        //   message: "Thông báo",
+        //   description: "Vui lòng nhập yêu cầu chung",
+        // });
+        return; // Nếu cần dừng thực hiện sau khi hiển thị thông báo
+      }
+      if (!values.job_responsibilities.length) {
+        message.error('Vui lòng nhập trách nhiệm công việc')
+        // notification.error({
+        //   message: "Thông báo",
+        //   description: "Vui lòng nhập trách nhiệm công việc",
+        // });
+        return;
+      }
+      if(!values.interview_process.length){
+        message.error('Vui lòng nhập quy trình phỏng vấn')
+
+        // notification.error({
+        //   message: "Thông báo",
+        //   description: "Vui lòng nhập quy trình phỏng vấn",
+        // });
+        return;
+      }
+      const salaryRange = { min: values.min_salary, max: values.max_salary };
+      const ageRange = { min: values.min_age, max: values.max_age };
+      let params = {
+        user_id: userDetail._id,
+        title: values.title,
+        description: content,
+        address: values.address,
+        city_id: city,
+        district_id: district,
+        ward_id: ward,
+        salary_range: salaryRange,
+        age_range: ageRange,
+        salary_type: values.salary_type,
+        job_type: values.job_type,
+        benefit: benefitList,
+        // time_work: values.time_work,
+        require_experience: experienceList,
+        level: values.level,
+        type_money: values.type_money, //
+        degree: values.degree,
+        expire_date: expireDate,
+        skills: values.skills,
+        is_negotiable: values.is_negotiable,
+        count_apply: values.count_apply,
+        apply_linkedin: "",
+        apply_website: "",
+        apply_email: "",
+        professional_skills: requirements,
+        general_requirements: values.general_requirements,
+        job_responsibilities: values.job_responsibilities,
+        interview_process: values.interview_process,
+        type_of_work: values.type_of_work,
+        min_experience: values.min_experience,
+      };
+      if (values.applicationMethod === "linkedin") {
+        params.apply_linkedin = values.applicationLink;
+      } else if (values.applicationMethod === "email") {
+        params.apply_email = values.applicationLink;
+      } else if (values.applicationMethod === "website") {
+        params.apply_website = values.applicationLink;
+      }
+      const res = await JobApi.postJob(params, userDetail.access_token);
+      if (res.data && +res.statusCode === 201) {
+        message.success('Tạo thành công')
+        // notification.success({
+        //   message: "Success",
+        //   description: "Job posted successfully",
+        // });
+      } else {
+        notification.error({
+          message: "Error",
+          description: res.message,
+        });
+      }
+    } catch (error) {
+      notification.error({
+        message: "Thông báo",
+        description: error,
       });
     }
   };
@@ -211,7 +260,11 @@ export default function PostJob() {
         form={form}
         layout="vertical"
         className="max-w-4xl mx-auto"
-        onFinish={handleSubmit}
+        onFinishFailed={handleFinishFailed}
+        onFinish={(values) => {
+          console.log("Form submitted with values: ", values);
+          handleSubmit(values);
+        }}
       >
         {/* Job Title */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
@@ -220,9 +273,11 @@ export default function PostJob() {
           <Form.Item
             label="Tiêu đề"
             name="title"
-            rules={[{ required: true, message: "Job title is required" }]}
+            rules={[
+              { required: true, message: "Tiêu đề công việc là bắt buộc" },
+            ]}
           >
-            <Input placeholder="Add job title, role, vacancies etc..." />
+            <Input placeholder="Thêm tiêu đề công việc ..." />
           </Form.Item>
         </div>
 
@@ -245,14 +300,14 @@ export default function PostJob() {
               rules={[
                 {
                   required: !isNegotiable,
-                  message: "Minimum salary is required",
+                  message: "Vui lòng nhập lương tối thiểu!",
                 },
               ]}
             >
               <InputNumber
                 prefix={<DollarOutlined />}
                 className="w-[300px]"
-                placeholder="Minimum salary..."
+                placeholder="Lương tối thiểu..."
                 addonAfter="USD"
                 disabled={isNegotiable}
               />
@@ -286,14 +341,14 @@ export default function PostJob() {
               rules={[
                 {
                   required: !isNegotiable,
-                  message: "Please select a salary type",
+                  message: "Vui lòng chọn loại trả lương",
                 },
               ]}
             >
               <Select placeholder="Select" disabled={isNegotiable}>
-                <Select.Option value="yearly">Yearly</Select.Option>
-                <Select.Option value="monthly">Monthly</Select.Option>
-                <Select.Option value="hourly">Hourly</Select.Option>
+                <Select.Option value="yearly">Theo tháng</Select.Option>
+                <Select.Option value="monthly">Theo năm</Select.Option>
+                <Select.Option value="hourly">Theo giờ</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item
@@ -316,7 +371,10 @@ export default function PostJob() {
         </div>
         <section>
           <section>
-            <Title level={5}>Kỹ năng & Chuyên môn</Title>
+            <Title level={5}>
+              <span style={{ color: "red" }}>*</span> <span> </span>
+              Kỹ năng & Chuyên môn
+            </Title>
 
             <div className="space-y-4">
               {requirements.map((section, index) => (
@@ -371,24 +429,24 @@ export default function PostJob() {
         </section>
         {/* Advanced Information */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Advanced Information</h2>
+          <h2 className="text-lg font-semibold mb-4">Thông tin nâng cao</h2>
           <Form.Item
             name="min_age"
             label="Tuổi tối thiểu"
             rules={[
               {
                 required: true,
-                message: "Please input the minimum age!",
+                message: "Vui lòng nhập tuổi tối thiểu",
               },
               {
                 type: "number",
                 min: 18,
                 max: 65,
-                message: "Age must be between 18 and 65!",
+                message: "Tuổi phải từ 18 đến 65",
               },
             ]}
           >
-            <InputNumber min={18} max={65} placeholder="Min Age" />
+            <InputNumber min={18} max={65} placeholder="Tuổi tối thiểu" />
           </Form.Item>
 
           <Form.Item
@@ -397,17 +455,17 @@ export default function PostJob() {
             rules={[
               {
                 required: true,
-                message: "Please input the maximum age!",
+                message: "Vui lòng nhập tuổi tối đa",
               },
               {
                 type: "number",
                 min: 18,
                 max: 65,
-                message: "Age must be between 18 and 65!",
+                message: "Tuổi phải từ 18 đến 65",
               },
             ]}
           >
-            <InputNumber min={18} max={65} placeholder="Max Age" />
+            <InputNumber min={18} max={65} placeholder="Tuổi tối đa" />
           </Form.Item>
           <div className="">
             <Form.Item
@@ -416,13 +474,13 @@ export default function PostJob() {
               rules={[
                 {
                   required: true,
-                  message: "Please select the required skills",
+                  message: "Vui lòng chọn kỹ năng yêu cầu",
                 },
               ]}
             >
               <Select
                 placeholder="Chọn kỹ năng"
-                mode="multiple" // Cho phép chọn nhiều kỹ năng
+                mode="multiple"
                 style={{ width: "100%" }}
                 onChange={(value) => {
                   console.log("Selected skills:", value);
@@ -443,16 +501,14 @@ export default function PostJob() {
               rules={[
                 {
                   required: true,
-                  message: "Please select the required education level",
+                  message: "Vui lòng chọn trình độ giáo dục",
                 },
               ]}
             >
               <Select placeholder="Select">
-                <Select.Option value="Bachelor">
-                  Bachelor's Degree
-                </Select.Option>
-                <Select.Option value="Master">Master's Degree</Select.Option>
-                <Select.Option value="PhD">PhD</Select.Option>
+                <Select.Option value="Bachelor">Bằng cử nhân</Select.Option>
+                <Select.Option value="Master">Bằng thạc sĩ</Select.Option>
+                <Select.Option value="PhD">Bằng tiến sĩ</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item
@@ -461,7 +517,7 @@ export default function PostJob() {
               rules={[
                 {
                   required: true,
-                  message: "Please select the experience level",
+                  message: "Vui lòng chọn mức độ kinh nghiệm",
                 },
               ]}
             >
@@ -471,48 +527,15 @@ export default function PostJob() {
                 <Select.Option value="senior">Senior</Select.Option>
               </Select>
             </Form.Item>
-            {/* <Form.List name="professional_skills">
-              {(fields, { add, remove }) => (
-                <>
-                  <label>Kỹ năng & Chuyên môn:</label>
-                  {fields.map((field, index) => (
-                    <Space
-                      key={field.key}
-                      style={{ display: "flex", marginBottom: 8 }}
-                      align="start"
-                    >
-                      <Form.Item
-                        {...field}
-                        name={[field.name, "skill"]}
-                        fieldKey={[field.fieldKey, "skill"]}
-                        rules={[
-                          { required: true, message: "Vui lòng nhập kỹ năng" },
-                        ]}
-                      >
-                        <Input placeholder="Kỹ năng" />
-                      </Form.Item>
-                      <MinusCircleOutlined onClick={() => remove(field.name)} />
-                    </Space>
-                  ))}
-                  <Form.Item>
-                    <Button
-                      type="dashed"
-                      onClick={() => add()}
-                      block
-                      icon={<PlusOutlined />}
-                    >
-                      Thêm Kỹ năng
-                    </Button>
-                  </Form.Item>
-                </>
-              )}
-            </Form.List> */}
 
             {/* Yêu cầu chung */}
             <Form.List name="general_requirements">
               {(fields, { add, remove }) => (
                 <>
-                  <label>Yêu cầu chung:</label>
+                  <label>
+                    <span style={{ color: "red" }}>*</span>
+                    Yêu cầu chung:
+                  </label>
                   {fields.map((field, index) => (
                     <Space
                       key={field.key}
@@ -551,7 +574,10 @@ export default function PostJob() {
             <Form.List name="job_responsibilities">
               {(fields, { add, remove }) => (
                 <>
-                  <label>Trách nhiệm công việc:</label>
+                  <label>
+                    <span style={{ color: "red" }}>*</span>
+                    Trách nhiệm công việc:
+                  </label>
                   {fields.map((field, index) => (
                     <Space
                       key={field.key}
@@ -589,21 +615,13 @@ export default function PostJob() {
             </Form.List>
 
             {/* Quy trình phỏng vấn */}
-            <Form.List name="interview_process"
-                    rules={[
-                      {
-                        validator: async (_, interviewProcess) => {
-                          console.log("interview_process",interview_process,_)
-                          if (!interviewProcess || interviewProcess.length === 0) {
-                            return Promise.reject(new Error('Vui lòng thêm quy trình phỏng vấn.'));
-                          }
-                        },
-                      },
-                    ]}
-            >
+            <Form.List name="interview_process">
               {(fields, { add, remove }) => (
                 <>
-                  <label>Quy trình phỏng vấn:</label>
+                  <label>
+                    <span style={{ color: "red" }}>*</span>
+                    Quy trình phỏng vấn:
+                  </label>
                   {fields.map((field, index) => (
                     <Space
                       key={field.key}
@@ -640,7 +658,7 @@ export default function PostJob() {
               )}
             </Form.List>
 
-            <Form.Item
+            {/* <Form.Item
               label="Kinh nghiệm bắt buộc"
               rules={[{ required: true, message: "Experience is required" }]}
             >
@@ -669,12 +687,14 @@ export default function PostJob() {
                   </Tag>
                 ))}
               </div>
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
               label="Loại hợp đồng"
               name="job_type"
-              rules={[{ required: true, message: "Please select a job type" }]}
+              rules={[
+                { required: true, message: "Vui lòng chọn loại hợp đồng" },
+              ]}
             >
               <Select placeholder="Select">
                 <Select.Option value="fulltime">Full Time</Select.Option>
@@ -691,13 +711,13 @@ export default function PostJob() {
               rules={[
                 {
                   required: true,
-                  message: "Please enter the number of vacancies",
+                  message: "Vui lòng nhập số lượng tuyển",
                 },
               ]}
             >
               <InputNumber
                 className="w-full"
-                placeholder="Number of positions..."
+                placeholder="Số lượng cho vị trí tuyển.."
               />
             </Form.Item>
 
@@ -705,12 +725,12 @@ export default function PostJob() {
               label="Ngày hết hạn"
               name="expire_date"
               rules={[
-                { required: true, message: "Please select an expiration date" },
+                { required: true, message: "Vui lòng chọn ngày hết hạn" },
               ]}
             >
               <Input
                 type="date"
-                onChange={(e) => setExpireDate(new Date(e.target.value))}
+                onChange={(e) => setExpireDate(e.target.value)}
               />
             </Form.Item>
           </div>
@@ -718,17 +738,17 @@ export default function PostJob() {
 
         {/* Location */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Location</h2>
+          <h2 className="text-lg font-semibold mb-4">Vị trí làm việc</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* City Field */}
             <Form.Item
               label="Thành phố"
               name="city"
-              rules={[{ required: true, message: "Please select a city" }]}
+              rules={[{ required: true, message: "Vui lòng chọn thành phố" }]}
             >
               <Select
-                placeholder="Select City"
+                placeholder="Chọn Thành Phố"
                 value={city}
                 onChange={handleCityChange}
                 loading={citiesLoading}
@@ -746,10 +766,10 @@ export default function PostJob() {
             <Form.Item
               label="Quận/Huyện"
               name="district"
-              rules={[{ required: true, message: "Please select a district" }]}
+              rules={[{ required: true, message: "Vui lòng chọn quận huyện" }]}
             >
               <Select
-                placeholder="Select District"
+                placeholder="Chọn Quận/Huyện"
                 value={district}
                 onChange={handleDistrictChange}
                 loading={districtLoading}
@@ -769,10 +789,10 @@ export default function PostJob() {
             <Form.Item
               label="Xã"
               name="ward"
-              rules={[{ required: true, message: "Please select a ward" }]}
+              rules={[{ required: true, message: "Vui lòng chọn xã" }]}
             >
               <Select
-                placeholder="Select Ward"
+                placeholder="Chọn xã..."
                 value={ward}
                 onChange={handleWardChange}
                 loading={wardsLoading}
@@ -787,7 +807,7 @@ export default function PostJob() {
 
             {/* Address Field */}
             <Form.Item label="Địa chỉ" name="address">
-              <Input placeholder="Enter full address" />
+              <Input placeholder="Vui lòng nhập địa chỉ" />
             </Form.Item>
           </div>
 
@@ -803,11 +823,11 @@ export default function PostJob() {
           <Form.Item
             label="Phúc lợi"
             rules={[
-              { required: true, message: "Please add at least one benefit" },
+              { required: true, message: "Vui lòng chọn ít nhất 1 lợi ích" },
             ]}
           >
             <Input
-              placeholder="Enter benefit and press Enter..."
+              placeholder="Vui lòng nhập phúc lợi cho ứng viên"
               value={benefitInput}
               onChange={(e) => setBenefitInput(e.target.value)}
               onPressEnter={handleAddBenefit}
@@ -834,12 +854,7 @@ export default function PostJob() {
             rules={[
               {
                 required: true,
-                message: "Please input the minimum experience!",
-              },
-              {
-                type: "number",
-                min: 2,
-                message: "Experience must be at least 2 years!",
+                message: "Vui lòng nhập kinh nghiệm tối thiểu",
               },
             ]}
           >
@@ -853,14 +868,18 @@ export default function PostJob() {
             rules={[
               {
                 required: true,
-                message: "Please select the job type!",
+                message: "Vui lòng chọn loại hình làm việc",
               },
             ]}
           >
-            <Select placeholder="Select Job Type">
-              <Select.Option value="in_office">In Office</Select.Option>
-              <Select.Option value="remote">Remote</Select.Option>
-              <Select.Option value="freelance">Freelance</Select.Option>
+            <Select placeholder="Chọn loại hình">
+              <Select.Option value="in_office">
+                In Office (Tại văn phòng)
+              </Select.Option>
+              <Select.Option value="remote">Remote (Từ xa)</Select.Option>
+              <Select.Option value="freelance">
+                Freelance (Làm trực tuyến)
+              </Select.Option>
             </Select>
           </Form.Item>
         </div>
@@ -869,10 +888,7 @@ export default function PostJob() {
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Mô tả công việc</h2>
 
-          <Form.Item
-            name="description"
-            rules={[{ required: true, message: "Job description is required" }]}
-          >
+          <Form.Item name="description">
             <Editor
               // apiKey={process.env.REACT_APP_TINYMCE_API_KEY} // Bạn có thể lấy API key miễn phí từ TinyMCE
               apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
@@ -897,14 +913,16 @@ export default function PostJob() {
 
         {/* Application Method */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Nộp đơn xin việc trên:</h2>
+          <h2 className="text-lg font-semibold mb-4">
+            Ứng tuyển công việc trên :
+          </h2>
 
           <Form.Item
             name="applicationMethod"
             rules={[
               {
                 required: true,
-                message: "Please select an application method",
+                message: "Vui lòng chọn loại nộp đơn xin việc",
               },
             ]}
           >
@@ -918,10 +936,13 @@ export default function PostJob() {
           <Form.Item
             name="applicationLink"
             rules={[
-              { required: true, message: "Please enter the application link" },
+              {
+                required: true,
+                message: "Vui lòng nhập liên kết đơn ứng tuyển",
+              },
             ]}
           >
-            <Input placeholder="Enter application URL or email" />
+            <Input placeholder="Vui lòng nhập URL hoặc Email" />
           </Form.Item>
         </div>
 

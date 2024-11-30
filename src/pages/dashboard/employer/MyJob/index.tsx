@@ -181,7 +181,7 @@ export default function MyJobEmployer() {
         <div className="p-6 border-b">
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-semibold">
-              My Jobs <span className="text-gray-400">({meta && meta.total})</span>
+              Công việc của tôi <span className="text-gray-400">({meta && meta.total})</span>
             </h1>
             <div className="flex gap-4">
               <Select

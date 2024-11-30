@@ -44,7 +44,6 @@ export default function CourseView() {
                 }
             };
             const res = await COURSE_API.getAll(params, userDetail.accessToken);
-            console.log("duydeptrai",res)
             if (res.data) {
                 
                 setCourses(res.data.items);

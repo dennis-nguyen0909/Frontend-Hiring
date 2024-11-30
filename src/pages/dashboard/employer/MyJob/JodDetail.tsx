@@ -8,9 +8,12 @@ import {
   Button,
   Tag,
   notification,
+  Space,
+  message,
+  Typography,
 } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
-import { DollarOutlined } from "@ant-design/icons";
+import { DollarOutlined, MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useCities } from "../../../../hooks/useCities";
 import { useDistricts } from "../../../../hooks/useDistricts";
@@ -21,7 +24,7 @@ import { EmployerSkillApi } from "../../../../services/modules/EmployerSkillServ
 import { Meta, ListSkillsFormData } from "../../../../types";
 import { ChevronsLeft } from "lucide-react";
 import moment from "moment";
-
+const { Title, Text } = Typography;
 interface IPropsJobDetail {
   idJob: string;
   handleChangeHome: () => void;
@@ -56,6 +59,46 @@ export default function JobDetail({
 
   const [isNegotiable, setIsNegotiable] = useState(false);
 
+  const [requirements, setRequirements] = useState([]);
+
+  const [newTitle, setNewTitle] = useState("");
+  const [newRequirement, setNewRequirement] = useState("");
+  const [currentSection, setCurrentSection] = useState(""); // Để theo dõi phần tựa đề hiện tại
+
+  // Thêm yêu cầu vào đúng tựa đề
+  const addRequirement = () => {
+    if (!newTitle || !newRequirement) {
+      message.error("Vui lòng nhập đủ tựa đề và yêu cầu");
+      return;
+    }
+
+    const newRequirements = [...requirements];
+
+    // Kiểm tra xem nhóm với tựa đề newTitle đã tồn tại hay chưa
+    const targetSection = newRequirements.find(
+      (section) => section.title === newTitle.trim()
+    );
+
+    if (targetSection) {
+      // Nếu tìm thấy nhóm tương ứng với tựa đề, thêm yêu cầu vào nhóm đó
+      targetSection.items.push(newRequirement);
+      setRequirements(newRequirements);
+    } else {
+      // Nếu không tìm thấy nhóm với tựa đề, tạo nhóm mới
+      newRequirements.push({ title: newTitle.trim(), items: [newRequirement] });
+      setRequirements(newRequirements);
+    }
+
+    // Reset lại input yêu cầu sau khi thêm
+    setNewRequirement("");
+    setCurrentSection(newTitle.trim()); // Cập nhật phần tựa đề hiện tại
+  };
+
+  // Hiển thị lại ô nhập tựa đề khi người dùng muốn chuyển tới tựa đề mới
+  const handleAddNewSection = () => {
+    setNewTitle(""); // Reset giá trị ô nhập tựa đề
+    setNewRequirement(""); // Reset giá trị ô nhập yêu cầu
+  };
   const handleNegotiableChange = (e) => {
     setIsNegotiable(e.target.checked);
   };
@@ -67,9 +110,9 @@ export default function JobDetail({
   };
   useEffect(() => {
     if (jobDetail?.city_id) {
-      setCity(jobDetail.city_id);
-      setDistrict(jobDetail.district_id);
-      setWard(jobDetail.ward_id);
+      setCity(jobDetail.city_id._id);
+      setDistrict(jobDetail.district_id._id);
+      setWard(jobDetail.ward_id._id);
     }
   }, [jobDetail]);
   const handleWardChange = (value) => {
@@ -78,9 +121,11 @@ export default function JobDetail({
   const handleGetJobDetail = async () => {
     const res = await JobApi.getJobById(idJob, userDetail.access_token);
     if (res?.data) {
+      console.log("duydeptrai trai",res.data)
+      console.log("duydeptrai trai1",res?.data?.skills)
       let applicationMethod = "";
       let applicationLink = "";
-
+      const skillIds = res.data.skills.map((skill) => skill._id);
       // Kiểm tra giá trị của apply_linkedin, apply_website, apply_email
       if (res.data.apply_linkedin && res.data.apply_linkedin !== "") {
         applicationMethod = "linkedin";
@@ -92,23 +137,29 @@ export default function JobDetail({
         applicationMethod = "company";
         applicationLink = res.data.apply_website;
       }
+      const formattedExpireDate = moment(res.data.expire_date).format('YYYY-MM-DD');
       form.setFieldsValue({
         ...res.data,
         min_salary: res.data.salary_range.min,
         max_salary: res.data.salary_range.max,
+        min_age:res.data.age_range.min,
+        max_age:res.data.age_range.max,
         applicationMethod: applicationMethod,
         applicationLink: applicationLink,
-        setExpireDate: moment(res.data.expire_date).format("YYYY-MM-DD"),
+        professional_skills:res.data.professional_skills,
+        city:res.data.city_id._id,
+        district:res.data.district_id._id,
+        ward:res.data.ward_id._id,
+        expire_date:formattedExpireDate,
+        skills:skillIds
       });
-      setCity(res.data.city_id._id)
-      setDistrict(res.data.district_id._id)
-      setWard(res.data.ward_id._id)
-      const formattedExpireDate = moment(res.data.expire_date).format('YYYY-MM-DD');
+      setRequirements(res.data.professional_skills)
       setExpireDate(formattedExpireDate); 
       setIsNegotiable(res.data.is_negotiable);
       setExperienceList(res.data.require_experience);
       setJobDetail(res.data);
       setBenefitList(res.data.benefit);
+      setListSkills([...res.data.skills])
     }
   };
   useEffect(() => {
@@ -122,6 +173,7 @@ export default function JobDetail({
     }
   };
 
+  console.log("adsdadasda",listSkills)
   const handleRemoveBenefit = (benefitToRemove) => {
     setBenefitList(
       benefitList.filter((benefit) => benefit !== benefitToRemove)
@@ -148,7 +200,7 @@ export default function JobDetail({
       params
     );
     if (res?.data) {
-      setListSkills(res?.data.items);
+      setListSkills(res.data.items);
       setMeta(res?.data.meta);
     }
   };
@@ -158,7 +210,34 @@ export default function JobDetail({
   }, []);
   const handleSubmit = async (values: any) => {
     const salaryRange = { min: values.min_salary, max: values.max_salary };
-
+    if (!requirements.length) {
+      notification.error({
+        message: "Thông báo",
+        description: "Vui lòng nhập kỹ năng và chuyên môn",
+      });
+      return;
+    }
+    if (!values.general_requirements.length) {
+      notification.error({
+        message: "Thông báo",
+        description: "Vui lòng nhập yêu cầu chung",
+      });
+      return;
+    }
+    if (!values.job_responsibilities.length) {
+      notification.error({
+        message: "Thông báo",
+        description: "Vui lòng nhập trách nhiệm công việc",
+      });
+      return;
+    }
+    if(!values.interview_process.length){
+      notification.error({
+        message: "Thông báo",
+        description: "Vui lòng nhập quy trình phỏng vấn",
+      });
+      return;
+    }
     let params = {
       user_id: userDetail._id,
       title: values.title,
@@ -183,12 +262,19 @@ export default function JobDetail({
       apply_linkedin: "",
       apply_website: "",
       apply_email: "",
+      professional_skills: requirements,
+      general_requirements: values.general_requirements,
+      job_responsibilities: values.job_responsibilities,
+      interview_process: values.interview_process,
+      type_of_work: values.type_of_work,
+      min_experience: values.min_experience,
     };
+    console.log("applicationMethod",values.applicationMethod)
     if (values.applicationMethod === "linkedin") {
       params.apply_linkedin = values.applicationLink;
     } else if (values.applicationMethod === "email") {
       params.apply_email = values.applicationLink;
-    } else if (values.applicationMethod === "website") {
+    } else if (values.applicationMethod === "company") {
       params.apply_website = values.applicationLink;
     }
     const res = await JobApi.updateJob(
@@ -209,7 +295,14 @@ export default function JobDetail({
       });
     }
   };
-
+  const handleFinishFailed = ({ errorFields }: any) => {
+    errorFields.forEach((field: any) => {
+      notification.error({
+        message: "Validation Error",
+        description: field.errors[0], // Display the first validation error for each field
+      });
+    });
+  };
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex items-center gap-4">
@@ -224,6 +317,7 @@ export default function JobDetail({
         form={form}
         layout="vertical"
         className=" mx-auto"
+        onFinishFailed={handleFinishFailed}
         onFinish={handleSubmit}
         initialValues={{
           city:jobDetail?.city_id
@@ -231,44 +325,44 @@ export default function JobDetail({
       >
         {/* Job Title */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Infomation</h2>
+          {/* <h2 className="text-lg font-semibold mb-4">Thông tin chi tiết</h2> */}
 
           <Form.Item
-            label="Job Title"
+            label="Tiêu đề công việc"
             name="title"
-            rules={[{ required: true, message: "Job title is required" }]}
+            rules={[{ required: true, message: "Tiêu đề công việc là bắt buộc" }]}
           >
-            <Input placeholder="Add job title, role, vacancies etc..." />
+            <Input placeholder="Thêm tiêu đề công việc ..." />
           </Form.Item>
         </div>
 
         {/* Salary */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Salary</h2>
+          <h2 className="text-lg font-semibold mb-4">Lương</h2>
 
           <div className="flex justify-between flex-col">
             {/* Negotiable Salary Checkbox */}
             <Form.Item name="is_negotiable" valuePropName="checked">
               <Checkbox onChange={handleNegotiableChange}>
-                Negotiable Salary (Lương thỏa thuận)
+                Lương thỏa thuận
               </Checkbox>
             </Form.Item>
 
             {/* Min Salary */}
             <Form.Item
-              label="Min Salary"
+              label="Lương tối thiểu"
               name="min_salary"
               rules={[
                 {
                   required: !isNegotiable,
-                  message: "Minimum salary is required",
+                  message: "Vui lòng nhập lương tối thiểu!",
                 },
               ]}
             >
               <InputNumber
                 prefix={<DollarOutlined />}
                 className="w-[300px]"
-                placeholder="Minimum salary..."
+                placeholder="Lương tối thiểu"
                 addonAfter="USD"
                 disabled={isNegotiable}
               />
@@ -276,7 +370,7 @@ export default function JobDetail({
 
             {/* Max Salary */}
             <Form.Item
-              label="Max Salary"
+              label="Lương tối đa"
               name="max_salary"
               rules={[
                 {
@@ -296,37 +390,146 @@ export default function JobDetail({
 
             {/* Salary Type */}
             <Form.Item
-              label="Salary Type"
+              label="Loại trả lương"
               name="salary_type"
               className="w-[300px]"
               rules={[
                 {
                   required: !isNegotiable,
-                  message: "Please select a salary type",
+                  message: "Vui lòng chọn loại trả lương",
                 },
               ]}
             >
               <Select placeholder="Select" disabled={isNegotiable}>
-                <Select.Option value="yearly">Yearly</Select.Option>
-                <Select.Option value="monthly">Monthly</Select.Option>
-                <Select.Option value="hourly">Hourly</Select.Option>
+                <Select.Option value="yearly">Theo tháng</Select.Option>
+                <Select.Option value="monthly">Theo năm</Select.Option>
+                <Select.Option value="hourly">Theo giờ</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="Loại tiền"
+              name="type_money"
+              className="w-[300px]"
+              rules={[
+                { required: true, message: "Please select a money type" },
+              ]}
+            >
+              <Select placeholder="Select money type">
+                <Select.Option value="USD">USD</Select.Option>
+                <Select.Option value="VIETNAM_DONG">
+                  Vietnamese Dong
+                </Select.Option>
+                <Select.Option value="EUR">EUR</Select.Option>
               </Select>
             </Form.Item>
           </div>
         </div>
+        <section>
+          <section>
+          <Title level={5}>
+            <span style={{ color: "red" }}>*</span> <span> </span>
+              Kỹ năng & Chuyên môn 
+            </Title>
 
+            <div className="space-y-4">
+              {requirements.map((section, index) => (
+                <div key={index}>
+                  <Text strong>{section.title}</Text>
+                  <ul className="list-disc pl-5 space-y-2">
+                    {section?.items?.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+
+              {/* Phần nhập liệu cho yêu cầu mới */}
+              <div>
+                <Space direction="vertical" size="large">
+                  <Input
+                    placeholder="Nhập tựa đề (ví dụ: 2 năm kinh nghiệm)"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Nhập yêu cầu"
+                    value={newRequirement}
+                    onChange={(e) => setNewRequirement(e.target.value)}
+                  />
+                  <Button type="primary" onClick={addRequirement}>
+                    Thêm yêu cầu
+                  </Button>
+                </Space>
+              </div>
+
+              {/* Hiển thị tựa đề hiện tại mà người dùng đang chỉnh sửa */}
+              {currentSection && (
+                <div style={{ marginTop: 20 }}>
+                  <Text strong>Đang chỉnh sửa phần: {currentSection}</Text>
+                </div>
+              )}
+
+              {/* Nút để thêm tựa đề mới */}
+              {newTitle && (
+                <Button
+                  type="default"
+                  onClick={handleAddNewSection}
+                  style={{ marginTop: 10 }}
+                >
+                  Thêm tựa đề mới
+                </Button>
+              )}
+            </div>
+          </section>
+        </section>
         {/* Advanced Information */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Advanced Information</h2>
+          <h2 className="text-lg font-semibold mb-4">Thông tin nâng cao</h2>
+          <Form.Item
+            name="min_age"
+            label="Tuổi tối thiểu"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập tuổi tối thiểu",
+              },
+              {
+                type: "number",
+                min: 18,
+                max: 65,
+                message: "Tuổi phải từ 18 đến 65",
+              },
+            ]}
+          >
+            <InputNumber min={18} max={65} placeholder="Tuổi tối thiểu" />
+          </Form.Item>
 
+          <Form.Item
+            name="max_age"
+            label="Tuổi tối đa"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập tuổi tối đa",
+              },
+              {
+                type: "number",
+                min: 18,
+                max: 65,
+                message: "Tuổi phải từ 18 đến 65",
+              },
+            ]}
+          >
+            <InputNumber min={18} max={65} placeholder="Tuổi tối đa" />
+          </Form.Item>
           <div className="">
             <Form.Item
-              label="Skills"
+              label="Kỹ năng yêu cầu"
               name="skills"
               rules={[
                 {
                   required: true,
-                  message: "Please select the required skills",
+                  message: "Vui lòng chọn kỹ năng yêu cầu",
                 },
               ]}
             >
@@ -351,16 +554,16 @@ export default function JobDetail({
               rules={[
                 {
                   required: true,
-                  message: "Please select the required education level",
+                  message: "Vui lòng chọn trình độ giáo dục",
                 },
               ]}
             >
               <Select placeholder="Select">
-                <Select.Option value="bachelor">
-                  Bachelor's Degree
+              <Select.Option value="Bachelor">
+                  Bằng cử nhân
                 </Select.Option>
-                <Select.Option value="master">Master's Degree</Select.Option>
-                <Select.Option value="phd">PhD</Select.Option>
+                <Select.Option value="Master">Bằng thạc sĩ</Select.Option>
+                <Select.Option value="PhD">Bằng tiến sĩ</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item
@@ -369,7 +572,7 @@ export default function JobDetail({
               rules={[
                 {
                   required: true,
-                  message: "Please select the experience level",
+                  message: "Vui lòng chọn mức độ kinh nghiệm",
                 },
               ]}
             >
@@ -379,7 +582,134 @@ export default function JobDetail({
                 <Select.Option value="senior">Senior</Select.Option>
               </Select>
             </Form.Item>
-            <Form.Item
+            <Form.List name="general_requirements">
+              {(fields, { add, remove }) => (
+                <>
+         <label>
+                    <span style={{ color: "red" }}>*</span>
+                    Yêu cầu chung: 
+                  </label>
+                  {fields.map((field, index) => (
+                    <Space
+                      key={field.key}
+                      style={{ display: "flex", marginBottom: 8 }}
+                      align="start"
+                    >
+                      <Form.Item
+                        {...field}
+                        name={[field.name, "requirement"]}
+                        fieldKey={[field.fieldKey, "requirement"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập yêu cầu chung",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Yêu cầu chung" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(field.name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Thêm Yêu cầu
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+            <Form.List name="job_responsibilities">
+              {(fields, { add, remove }) => (
+                <>
+    <label>
+                    <span style={{ color: "red" }}>*</span>
+                    Trách nhiệm công việc:
+                  </label>
+                  {fields.map((field, index) => (
+                    <Space
+                      key={field.key}
+                      style={{ display: "flex", marginBottom: 8 }}
+                      align="start"
+                    >
+                      <Form.Item
+                        {...field}
+                        name={[field.name, "responsibility"]}
+                        fieldKey={[field.fieldKey, "responsibility"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập trách nhiệm công việc",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Trách nhiệm công việc" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(field.name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Thêm Trách nhiệm công việc
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+            <Form.List name="interview_process"
+            >
+              {(fields, { add, remove }) => (
+                <>
+                  <label>
+                  <span style={{ color: "red" }}>*</span>
+                    Quy trình phỏng vấn:</label>
+                  {fields.map((field, index) => (
+                    <Space
+                      key={field.key}
+                      style={{ display: "flex", marginBottom: 8 }}
+                      align="start"
+                    >
+                      <Form.Item
+                        {...field}
+                        name={[field.name, "process"]}
+                        fieldKey={[field.fieldKey, "process"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng nhập quy trình phỏng vấn",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Quy trình phỏng vấn" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(field.name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Thêm Quy trình phỏng vấn
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+
+            {/* <Form.Item
               label="Experience"
               rules={[{ required: true, message: "Experience is required" }]}
             >
@@ -408,12 +738,13 @@ export default function JobDetail({
                   </Tag>
                 ))}
               </div>
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
-              label="Job Type"
+              label="Loại hợp đồng"
               name="job_type"
-              rules={[{ required: true, message: "Please select a job type" }]}
+              rules={[{ required: true, message: "Vui lòng chọn loại hợp đồng" }]}
+
             >
               <Select placeholder="Select">
                 <Select.Option value="fulltime">Full Time</Select.Option>
@@ -424,27 +755,27 @@ export default function JobDetail({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item
-              label="Count Apply"
+          <Form.Item
+              label="Số lượng tuyển"
               name="count_apply"
               rules={[
                 {
                   required: true,
-                  message: "Please enter the number of vacancies",
+                  message: "Vui lòng nhập số lượng tuyển",
                 },
               ]}
             >
               <InputNumber
                 className="w-full"
-                placeholder="Number of positions..."
+                placeholder="Số lượng cho vị trí tuyển.."
               />
             </Form.Item>
 
             <Form.Item
-              label="Expiration Date"
+              label="Ngày hết hạn tuyển"
               name="expire_date"
               rules={[
-                { required: true, message: "Please select an expiration date" },
+                { required: true, message: "Vui lòng chọn ngày hết hạn" },
               ]}
             >
               <Input
@@ -458,17 +789,19 @@ export default function JobDetail({
 
         {/* Location */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Location</h2>
+          <h2 className="text-lg font-semibold mb-4">Vị trí làm việc</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* City Field */}
             <Form.Item
-              label="City"
+              label="Thành phố"
               name="city"
-              rules={[{ required: true, message: "Please select a city" }]}
+              rules={[{ required: true, message: "Vui lòng chọn thành phố" }]}
+
             >
               <Select
-                placeholder="Select City"
+                     placeholder="Chọn Thành Phố"
+
                 value={city}
                 onChange={handleCityChange}
                 loading={citiesLoading}
@@ -484,12 +817,12 @@ export default function JobDetail({
 
             {/* District Field */}
             <Form.Item
-              label="District"
+              label="Quận/Huyện"
               name="district"
-              rules={[{ required: true, message: "Please select a district" }]}
+              rules={[{ required: true, message: "Vui lòng chọn quận huyện" }]}
             >
               <Select
-                placeholder="Select District"
+                placeholder="Chọn Quận/Huyện"
                 value={district}
                 onChange={handleDistrictChange}
                 loading={districtLoading}
@@ -507,12 +840,12 @@ export default function JobDetail({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Ward Field */}
             <Form.Item
-              label="Ward"
+              label="Xã"
               name="ward"
-              rules={[{ required: true, message: "Please select a ward" }]}
+              rules={[{ required: true, message: "Vui lòng chọn xã" }]}
             >
               <Select
-                placeholder="Select Ward"
+                placeholder="Chọn xã"
                 value={ward}
                 onChange={handleWardChange}
                 loading={wardsLoading}
@@ -527,7 +860,7 @@ export default function JobDetail({
 
             {/* Address Field */}
             <Form.Item label="Address" name="address">
-              <Input placeholder="Enter full address" />
+              <Input placeholder="Vui lòng nhập địa chỉ" />
             </Form.Item>
           </div>
 
@@ -538,22 +871,22 @@ export default function JobDetail({
 
         {/* Job Benefits */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Job Benefits</h2>
+          <h2 className="text-lg font-semibold mb-4">Phúc lợi cho ứng viên</h2>
 
           <Form.Item
             label="Benefits"
             rules={[
-              { required: true, message: "Please add at least one benefit" },
+              { required: true, message: "Vui lòng chọn ít nhất 1 lợi ích" },
             ]}
           >
             <Input
-              placeholder="Enter benefit and press Enter..."
+              placeholder="Vui lòng nhập phúc lợi cho ứng viên"
               value={benefitInput}
               onChange={(e) => setBenefitInput(e.target.value)}
               onPressEnter={handleAddBenefit}
             />
             <Button type="primary" onClick={handleAddBenefit} className="mt-2">
-              Add Benefit
+              Thêm
             </Button>
             <div className="mt-4">
               {benefitList.map((benefit, index) => (
@@ -568,11 +901,41 @@ export default function JobDetail({
               ))}
             </div>
           </Form.Item>
+
+          <Form.Item
+            name="min_experience"
+            label="Kinh nghiệm tối thiểu ( Năm )"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập kinh nghiệm tối thiểu",
+              }
+            ]}
+          >
+            <InputNumber min={2} placeholder="..." />
+          </Form.Item>
+
+          <Form.Item
+            name="type_of_work"
+            label="Loại hình làm việc"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn loại hình làm việc",
+              },
+            ]}
+          >
+            <Select placeholder="Chọn loại hình">
+              <Select.Option value="in_office">In Office (Tại văn phòng)</Select.Option>
+              <Select.Option value="remote">Remote (Từ xa)</Select.Option>
+              <Select.Option value="freelance">Freelance (Làm trực tuyến)</Select.Option>
+            </Select>
+          </Form.Item>
         </div>
 
         {/* Job Description */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Job Description</h2>
+          <h2 className="text-lg font-semibold mb-4">Mô tả công việc</h2>
 
           <Form.Item
             name="description"
@@ -602,14 +965,14 @@ export default function JobDetail({
 
         {/* Application Method */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Apply Job on:</h2>
+          <h2 className="text-lg font-semibold mb-4">Ứng tuyển công việc trên :</h2>
 
           <Form.Item
             name="applicationMethod"
             rules={[
               {
                 required: true,
-                message: "Please select an application method",
+                message: "Vui lòng chọn loại nộp đơn xin việc",
               },
             ]}
           >
@@ -623,10 +986,10 @@ export default function JobDetail({
           <Form.Item
             name="applicationLink"
             rules={[
-              { required: true, message: "Please enter the application link" },
+              { required: true, message: "Vui lòng nhập liên kết đơn ứng tuyển" },
             ]}
           >
-            <Input placeholder="Enter application URL or email" />
+            <Input placeholder="Vui lòng nhập URL hoặc Email" />
           </Form.Item>
         </div>
 

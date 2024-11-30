@@ -23,7 +23,7 @@ const IntroduceV2 = () => {
     try {
       const res = await JobApi.getAllJobsQuery(params, userDetail?._id); 
       const jobData = res?.data?.items || [];
-      setJobSuggestions(jobData.map((job) => job.title));
+      setJobSuggestions(jobData);
       console.log("res", res);
     } catch (error) {
       console.error("Error fetching jobs: ", error);
@@ -62,17 +62,25 @@ const IntroduceV2 = () => {
             <div className="relative w-full rounded-l-lg">
               <SearchOutlined className="absolute text-[24px] left-3 top-1/2 transform -translate-y-1/2 text-primaryColorH z-10" />
               <AutoComplete
-                className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg w-[80%]"
-                size="large"
-                placeholder="Job title, keyword, company"
-                style={{ marginLeft: "50px" }}
-                onSearch={(value) => setSearchValue(value)}
-                value={searchValue}
-                onChange={(value) => setSearchValue(value)}
-                options={jobSuggestions.map((item) => ({ value: item }))} 
-              >
-                <Input className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg" />
-              </AutoComplete>
+  className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg w-[80%]"
+  size="large"
+  placeholder="Job title, keyword, company"
+  style={{ marginLeft: "50px" }}
+  onSearch={(value) => setSearchValue(value)}
+  value={searchValue}
+  onChange={(value) => setSearchValue(value)}
+  onSelect={(value) => {
+    // Giả sử value là item.title, bạn cần tìm item tương ứng từ danh sách jobSuggestions
+    const selectedItem = jobSuggestions.find(item => item.title === value);
+    if (selectedItem) {
+      console.log('SELECTED',selectedItem._id); // In ra _id của item
+    }
+  }}
+  options={jobSuggestions.map((item) => ({ value: item.title }))} 
+>
+  <Input className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg" />
+</AutoComplete>
+
             </div>
 
             <div className="w-[1px] h-[40px] bg-gray-300 mx-2"></div>

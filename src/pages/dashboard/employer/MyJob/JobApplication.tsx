@@ -118,7 +118,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       <div className="mb-6 flex items-center justify-between">
         
         <Title level={2} className="m-0">
-          Job Applications
+          Đơn ứng tuyển
         </Title>
         <Space>
           <Button>Filter</Button>

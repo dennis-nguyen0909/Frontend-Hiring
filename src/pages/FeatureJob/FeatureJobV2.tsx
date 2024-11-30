@@ -1,16 +1,13 @@
-import { Button, Empty, Image, Pagination, Select } from "antd";
+import { Button, Empty, Image, Select } from "antd";
 import { useEffect, useState } from "react";
 import arrowRight from "../../assets/icons/arrowRight.png";
-import {
-  AlignLeftOutlined,
-  ArrowRightOutlined,
-} from "@ant-design/icons";
+import { AlignLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import LocationSlider from "../../components/LocationSlider/LocationSlider";
 import JobItem from "../../components/ui/JobItem";
 import { JobApi } from "../../services/modules/jobServices";
 import { CitiesAPI } from "../../services/modules/citiesServices";
 import { useSelector } from "react-redux";
-import { Meta } from "../../types";
+import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 
 
 const FeatureJobV2 = () => {
@@ -20,50 +17,61 @@ const FeatureJobV2 = () => {
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [meta, setMeta] = useState<Meta>({});
-  const [cities,setCities]=useState(null)
-  const userDetail = useSelector(state=>state.user)
-  const handleGetAllJobs = async (params?:any) => {
+  const [cities, setCities] = useState(null);
+  const userDetail = useSelector((state) => state.user);
+
+  const handleGetAllJobs = async ({ current = 1, pageSize = 10, query = {} }) => {
     try {
-      const res = await JobApi.getAllJobs({ pageSize: pageSize,current:currentPage,...params});
+      const params = {
+        current,
+        pageSize,
+        ...query,
+      };
+
+      const res = await JobApi.getAllJobs(params);
       if (res.data) {
         setJobs(res.data.items);
         setMeta(res.data.meta);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching jobs:", error);
     }
   };
-  const handleGetCities=async()=>{
+
+  const handleGetCities = async () => {
     try {
-      const res = await CitiesAPI.getCitiesByCode('79',userDetail.access_token);
-      if(res.data){
+      const res = await CitiesAPI.getCitiesByCode("79", userDetail.access_token);
+      if (res.data) {
         setCities(res.data);
       }
     } catch (error) {
-      console.error(error)
+      console.error("Error fetching cities:", error);
     }
-  }
-
+  };
 
   useEffect(() => {
     handleGetCities();
-    handleGetAllJobs();
+    handleGetAllJobs({});
   }, [pageSize, currentPage]);
 
-  useEffect(()=>{
-    if(selectedDistrict.trim()==='' && selectedCity.trim() !==''){
-      handleGetAllJobs({query:{city_id:selectedCity}});
-    }else{
-      handleGetAllJobs({query:{district_id:selectedDistrict}})
+  useEffect(() => {
+    let query = {};
+    if (selectedCity.trim() !== "") {
+      query.city_id = selectedCity;
     }
-  },[selectedCity,selectedDistrict])
+    if (selectedDistrict.trim() !== "") {
+      query.district_id = selectedDistrict;
+    }
+    handleGetAllJobs({query:query });
+  }, [selectedCity, selectedDistrict]);
 
   const handleChangeSelectedLocation = (location: string) => {
-    setSelectedCity(location); // Cập nhật state selectedCity
+    setSelectedCity(location);
   };
 
-  const onChangePanigation: PaginationProps["onChange"] = (page) => {
+  const onChangePagination = (page) => {
     setCurrentPage(page);
+    handleGetAllJobs({ current: page, pageSize });
   };
 
   const handleChangeFilter = (value: string) => {
@@ -106,7 +114,7 @@ const FeatureJobV2 = () => {
               dataCity={cities}
               selectedDistrict={selectedDistrict}
               setSelectedDistrict={setSelectedDistrict}
-              setSelectedCity={setSelectedCity} 
+              setSelectedCity={setSelectedCity}
               selectedCity={selectedCity}
               handleChangeSelectedLocation={handleChangeSelectedLocation}
             />
@@ -114,29 +122,26 @@ const FeatureJobV2 = () => {
         </div>
       </div>
 
-      {jobs?.length>0 ?(
+      {jobs?.length > 0 ? (
         <div className="grid grid-cols-3 gap-4">
-        {jobs?.map((job, idx) => (
-          <JobItem item={job} key={idx} />
-        ))}
-      </div>
-      ):
-      <div className="min-h-[300px] flex items-center justify-center">
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-    </div>
-      }
+          {jobs?.map((job, idx) => (
+            <JobItem item={job} key={idx} />
+          ))}
+        </div>
+      ) : (
+        <div className="min-h-[300px] flex items-center justify-center">
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        </div>
+      )}
 
-      <div className="flex justify-center mt-10">
-        {jobs.length>0 && <Pagination
-          current={currentPage}
-          onChange={onChangePanigation}
-          total={meta.total}
-        />}
-      </div>
+      <CustomPagination
+        currentPage={meta?.current_page}
+        total={meta?.total}
+        perPage={meta?.per_page}
+        onPageChange={onChangePagination}
+      />
     </div>
   );
 };
 
 export default FeatureJobV2;
-
-

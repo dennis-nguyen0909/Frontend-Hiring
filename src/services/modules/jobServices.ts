@@ -4,22 +4,18 @@ import { axiosInstance } from "../config/axiosInterceptor";
 // Định nghĩa một đối tượng JobApi
 export const JobApi = {
   // Phương thức GET để lấy tất cả công việc
-  getAllJobs: async (data: { pageSize: number; [key: string]: any }) => {
-    try {
-      const resData = await axiosInstance.get('/jobs', {
-        params: {
-          pageSize: data.pageSize,   // Truyền pageSize vào query
-          ...data,                   // Truyền tất cả các tham số còn lại (bao gồm filter, location, sort, ...)
-        },
-        withCredentials: true,
-      });
-
-      if (resData) return resData.data;
-      return null;
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-      return null;
-    }
+  getAllJobs: async (params:any,accessToken: string) => {
+    const resData = await axiosInstance.get(`${'/jobs'}`, {
+      params: {
+        ...params
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (resData.data) return resData.data;
+    return null;
   },
   getAllJobRecent: async (params:any,accessToken: string) => {
     const resData = await axiosInstance.get(`${'/jobs/recent'}`, {
@@ -164,4 +160,20 @@ export const JobApi = {
     if (resData.data) return resData.data;
     return null;
   },
+  toggleLikeJob: async (params: any,accessToken:string)=>{
+    try {
+      const res = await axiosInstance.post('/jobs/toggle-like', params, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      });
+
+      if (res.data) return res.data;
+      return null;
+    } catch (error) {
+      console.error("Error posting job:", error);
+      return null;
+    }
+  }
 };

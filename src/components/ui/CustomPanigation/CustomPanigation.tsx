@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pagination } from 'antd';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-
+import './styles.css'
 interface CustomPaginationProps {
   currentPage: number;
   total: number;
@@ -43,6 +43,7 @@ const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, total,
         textAlign: 'center',
         display: 'flex',
         justifyContent: 'center',
+        // marginBottom:'20px'
       }}
     />
   );
