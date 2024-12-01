@@ -2,7 +2,7 @@ import { ComponentType } from 'react';
 import HomePage from '../pages/home/HomePage';
 import LoginPage from '../pages/auth/LoginPage';
 import NotFound from '../components/NotFound/NotFound';
-import { JobPage } from '../pages/job/JobPage';
+
 import Register from '../pages/auth/RegisterPage';
 import AdminPage from '../pages/admin/AdminPage';
 import VerifyEmail from '../pages/auth/VerifyEmail';
@@ -15,6 +15,7 @@ import DashBoard from '../pages/dashboard';
 import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
 import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
 import JobDetail from '../pages/JobDetail/JobDetail';
+import JobPage from '../pages/job/JobPage';
 interface IRoute {
     path: string;
     page: ComponentType ;

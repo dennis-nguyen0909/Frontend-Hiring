@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Table, Button, notification, Popconfirm, Tooltip, Form, Input, Pagination } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { EmployerSkillApi } from '../../../services/modules/EmployerSkillServices'
 import { useSelector } from 'react-redux'
 import GeneralModal from '../../../components/ui/GeneralModal/GeneralModal'
 import DrawerGeneral from '../../../components/ui/GeneralDrawer/GeneralDrawer'
-import { Meta, SkillEmployerFormData } from '../../../types'
-import './styles.css'
+import { Meta, Level } from '../../../types'
 import CustomPagination from '../../../components/ui/CustomPanigation/CustomPanigation'
+import { CURRENCY_API } from '../../../services/modules/CurrenciesServices'
 
 
-export default function SkillEmployer() {
-  const [form] = Form.useForm<SkillEmployerFormData>()
+export default function CurrenciesComponent() {
+  const [form] = Form.useForm<Level>()
   const [visible, setVisible] = useState<boolean>(false)
   const [visibleDrawer, setVisibleDrawer] = useState<boolean>(false)
-  const [listSkills, setListSkills] = useState<SkillEmployerFormData[]>([])
-  const [selectedSkill, setSelectedSkill] = useState<SkillEmployerFormData | null>(null)
+  const [listLevels, setListLevels] = useState<Level[]>([])
+  const [selectedSkill, setSelectedSkill] = useState<Level | null>(null)
   const [meta, setMeta] = useState<Meta | null>({
     count: 0,
     current_page: 1,
@@ -27,9 +26,9 @@ export default function SkillEmployer() {
 
   const handleGetAllEmployerSkills = async (params?: any) => {
     try {
-      const res = await EmployerSkillApi.getSkillByUserId(userDetail.access_token, params)
+      const res = await CURRENCY_API.getAll(params,userDetail?.access_token)
       if (res.data) {
-        setListSkills(res.data.items)
+        setListLevels(res.data.items)
         setMeta(res.data.meta)
       }
     } catch (error) {
@@ -41,21 +40,21 @@ export default function SkillEmployer() {
     handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
   }, [])
 
-  const onFinish = async (values: SkillEmployerFormData) => {
-    const { name, description } = values
-    const res = await EmployerSkillApi.postSkill({ name, description, user_id: userDetail._id }, userDetail.access_token)
+  const onFinish = async (values) => {
+    const res = await CURRENCY_API.create({user_id: userDetail._id,...values}, userDetail.access_token)
     if (res.data) {
       notification.success({
-        message: "Notification",
-        description: "Them Thanh Cong!",
+        message: "Thông báo",
+        description: "Thêm thành công",
       })
+      form.resetFields()
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
       setVisible(false)
-      form.resetFields();
+      
     } else {
       notification.error({
-        message: "Notification",
-        description: "Them That Bai!",
+        message: "Thông báo",
+        description: "Thêm thất bại",
       })
     }
   }
@@ -67,33 +66,34 @@ export default function SkillEmployer() {
   }
 
   const handleUpdate = async (values: any) => {
-    const res = await EmployerSkillApi.updateSkill(selectedSkill?._id, values, userDetail.access_token)
+    const res = await CURRENCY_API.update(selectedSkill?._id, values, userDetail.access_token)
     if (res.data) {
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Cap Nhat Thanh Cong!",
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
       setVisibleDrawer(false)
+      form.resetFields()
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Cap Nhat That Bai!",
       })
     }
   }
 
   const handleDelete = async (record: any) => {
-    const res = await EmployerSkillApi.deleteManySkill([record._id], userDetail.access_token)
+    const res = await CURRENCY_API.deleteManyLevels([record._id], userDetail.access_token)
     if (res.data) {
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Xoa Thanh Cong!",
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Xoa That Bai!",
       })
     }
@@ -101,19 +101,29 @@ export default function SkillEmployer() {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Tên',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
+      title: 'Từ khóa',
+      dataIndex: 'key',
+      key: 'key',
+    },
+    {
+      title: 'Ký hiệu',
+      dataIndex: 'symbol',
+      key: 'symbol',
+    },
+    {
+      title: 'Mã',
+      dataIndex: 'code',
+      key: 'code',
     },
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: SkillEmployerFormData) => (
+      render: (text: any, record: Level) => (
         <div>
           <Tooltip title="Edit">
             <Button
@@ -140,6 +150,25 @@ export default function SkillEmployer() {
       ),
     },
   ]
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize('NFD') // Chuẩn hóa chuỗi, tách các ký tự có dấu
+      .replace(/[\u0300-\u036f]/g, '') // Xóa các dấu
+      .replace(/đ/g, 'd') // Chuyển 'đ' thành 'd'
+      .replace(/Đ/g, 'D'); // Chuyển 'Đ' thành 'D'
+  };
+  
+  const onValuesChange = (changedValues, allValues) => {
+    if (changedValues.name) {
+        // Loại bỏ dấu tiếng Việt, chuyển thành chữ thường và thay khoảng trắng bằng dấu gạch dưới
+        const key = removeVietnameseTones(changedValues.name)
+          .toLowerCase()
+          .replace(/\s+/g, '_'); // Thay thế khoảng trắng bằng dấu gạch dưới
+        form.setFieldsValue({
+          key: key,
+        });
+      }
+  };
 
   const onChange = async (pagination: any, filters: any, sorter: any) => {
     const currentPage = pagination.current;
@@ -160,7 +189,7 @@ export default function SkillEmployer() {
       </Button>
       <Table
     columns={columns}
-    dataSource={listSkills}
+    dataSource={listLevels}
     onChange={onChange}
     pagination={false}
     rowKey="id" 
@@ -177,27 +206,50 @@ export default function SkillEmployer() {
       />
   
       <GeneralModal
-        title="Add Skill"
+        title="Thêm loại tiền tệ"
         visible={visible}
         onCancel={() => setVisible(false)}
         onOk={() => setVisible(false)}
         renderBody={() => (
-          <Form form={form} name="skillEmployerForm" onFinish={onFinish} layout="vertical">
+            <Form
+            form={form}
+            onFinish={onFinish}
+            onValuesChange={onValuesChange} // Hàm theo dõi thay đổi giá trị
+            layout="vertical"
+          >
             <Form.Item
               name="name"
-              label="Name"
-              rules={[{ required: true, message: 'Please input the Name!' }]}
+              label="Tên loại tiền tệ"
+              rules={[{ required: true, message: 'Vui lòng nhập tên loại tiền tệ' }]}
             >
-              <Input placeholder="Enter Name" />
+              <Input placeholder="Ví dụ: Việt nam đồng" />
             </Form.Item>
-  
-            <Form.Item name="description" label="Description">
-              <Input.TextArea placeholder="Enter Description (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
+      
+            <Form.Item
+              name="key"
+              label="Key"
+            >
+              <Input disabled />
             </Form.Item>
-  
+      
+            <Form.Item
+              name="symbol"
+              label="Ký hiệu"
+              rules={[{ required: true, message: 'Vui lòng nhập ký hiệu!' }]}
+            >
+              <Input placeholder="Ví dụ: $, đ..." />
+            </Form.Item>
+
+            <Form.Item
+              name="code"
+              label="Code"
+              rules={[{ required: true, message: 'Vui lòng nhập code!' }]}
+            >
+              <Input placeholder="Ví dụ: USD, VND..." />
+            </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit" className="w-full !bg-primaryColor">
-                Submit
+                Lưu
               </Button>
             </Form.Item>
           </Form>
@@ -206,20 +258,47 @@ export default function SkillEmployer() {
   
       <DrawerGeneral
         visible={visibleDrawer}
-        onCancel={() => setVisibleDrawer(false)}
-        onOk={() => setVisibleDrawer(false)}
+        
+        onCancel={() => {
+          setVisibleDrawer(false);
+          form.resetFields();
+
+        }}
+        onOk={() => {
+          setVisibleDrawer(false);
+          form.resetFields();
+        }}
         renderBody={() => (
-          <Form form={form} name="skillEmployerForm" onFinish={handleUpdate} layout="vertical">
-            <Form.Item
+          <Form form={form} onFinish={handleUpdate}       onValuesChange={onValuesChange} layout="vertical">
+         <Form.Item
               name="name"
-              label="Name"
-              rules={[{ required: true, message: 'Please input the Name!' }]}
+              label="Tên loại tiền tệ"
+              rules={[{ required: true, message: 'Vui lòng nhập tên loại tiền tệ' }]}
             >
-              <Input placeholder="Enter Name" />
+              <Input placeholder="Ví dụ: Việt nam đồng" />
             </Form.Item>
-  
-            <Form.Item name="description" label="Description">
-              <Input.TextArea placeholder="Enter Description (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
+      
+            <Form.Item
+              name="key"
+              label="Key"
+            >
+              <Input disabled />
+            </Form.Item>
+      
+            <Form.Item
+              name="symbol"
+              label="Ký hiệu"
+              rules={[{ required: true, message: 'Vui lòng nhập ký hiệu!' }]}
+            >
+              <Input placeholder="Ví dụ: $, đ..." />
+            </Form.Item>
+
+            <Form.Item
+              name="code"
+              label="Code"
+              rules={[{ required: true, message: 'Vui lòng nhập code!' }]}
+            >
+              <Input placeholder="Ví dụ: USD, VND..." />
             </Form.Item>
   
             <Form.Item>
@@ -230,7 +309,7 @@ export default function SkillEmployer() {
           </Form>
         )}
         renderFooter={() => null}
-        renderTitle={() => 'Update Skill'}
+        renderTitle={() => 'Cập nhật'}
       />
     </>
   )

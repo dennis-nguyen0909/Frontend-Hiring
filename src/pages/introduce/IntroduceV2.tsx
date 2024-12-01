@@ -1,48 +1,73 @@
-import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
-import { AutoComplete, Button, Input } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { Button, Select } from "antd";
 import { useEffect, useState } from "react";
 import { JobApi } from "../../services/modules/jobServices";
 import { useSelector } from "react-redux";
 import { useDebounce } from "../../hooks/useDebounce";
+import { useNavigate } from "react-router-dom";
 
 const IntroduceV2 = () => {
   const [jobSuggestions, setJobSuggestions] = useState([]);
-  const [locationSuggestions, setLocationSuggestions] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(""); // Lưu trữ giá trị tìm kiếm
+  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
+  const [isLoading, setIsLoading] = useState(false); // Trạng thái loading để tránh gọi API nhiều lần
   const userDetail = useSelector((state) => state.user);
-  const debouncedSearchValue = useDebounce(searchValue, 500);
-  const handleJobSearch = async (value) => {
+  const debouncedSearchValue = useDebounce(searchValue, 500); // Áp dụng debounce với 500ms
+  const navigate = useNavigate();
+
+  // Hàm gọi API tìm kiếm công việc
+  const handleJobSearch = async (value, page = 1) => {
     const params = {
       query: {
         keyword: value,
       },
-      current: 1,
+      current: page,
       pageSize: 10,
     };
 
+    setIsLoading(true); // Bật trạng thái loading khi gọi API
+
     try {
-      const res = await JobApi.getAllJobsQuery(params, userDetail?._id); 
-      const jobData = res?.data?.items || [];
-      setJobSuggestions(jobData);
-      console.log("res", res);
+      const res = await JobApi.getAllJobsQuery(params, userDetail?._id);
+      if (page === 1) {
+        setJobSuggestions(res.data.items); // Nếu là trang đầu, thay thế toàn bộ kết quả
+      } else {
+        setJobSuggestions((prevJobs) => [...prevJobs, ...res.data.items]); // Nếu không, thêm các kết quả mới vào
+      }
+      setCurrentPage(page); // Cập nhật lại trang hiện tại
     } catch (error) {
       console.error("Error fetching jobs: ", error);
+    } finally {
+      setIsLoading(false); // Tắt trạng thái loading
     }
   };
 
   // Gọi handleJobSearch mỗi khi debouncedSearchValue thay đổi
   useEffect(() => {
     if (debouncedSearchValue) {
-      handleJobSearch(debouncedSearchValue);
+      handleJobSearch(debouncedSearchValue, 1); // Gọi API tìm kiếm khi có giá trị tìm kiếm
     } else {
-      setJobSuggestions([]);
+      setJobSuggestions([]); // Xóa gợi ý khi không có từ khóa
     }
   }, [debouncedSearchValue]);
 
-  // Hàm tìm kiếm gợi ý địa điểm
-  const handleLocationSearch = (value) => {
-    const locationData = ['New York', 'San Francisco', 'Los Angeles', 'Hanoi', 'Ho Chi Minh'];
-    setLocationSuggestions(locationData.filter((item) => item.toLowerCase().includes(value.toLowerCase())));
+  // Khi người dùng nhập tìm kiếm, cập nhật giá trị và kích hoạt debounce
+  const handleSearch = (value) => {
+    setSearchValue(value); // Cập nhật giá trị tìm kiếm
+  };
+
+  // Xử lý cuộn xuống và gọi API nếu đã cuộn tới cuối
+  const handleScroll = (e) => {
+    const bottom = e.target.scrollHeight === e.target.scrollTop + e.target.clientHeight;
+    if (bottom && !isLoading) {
+      // Nếu đã cuộn đến cuối, và không đang gọi API
+      handleJobSearch(debouncedSearchValue, currentPage + 1); // Gọi API để lấy trang kế tiếp
+    }
+  };
+
+  // Khi người dùng chọn công việc, chuyển hướng đến trang thông tin công việc
+  const handleChange = (value) => {
+    navigate(`/job-information/${value}`);
   };
 
   return (
@@ -50,10 +75,13 @@ const IntroduceV2 = () => {
       <div className="flex w-full flex-col h-auto">
         {/* Container */}
         <div className="w-full h-full flex items-center justify-center flex-col gap-4">
-          <h1 className="text-4xl text-black font-bold">Find Your Perfect Tech Job</h1>
+          <h1 className="text-4xl text-black font-bold">
+            Find Your Perfect Tech Job
+          </h1>
           <section className="text-center">
             Connect with top companies and build your career in tech
           </section>
+
           {/* Input Search */}
           <div
             className="flex items-center w-[90%] p-2 rounded-lg bg-white"
@@ -61,43 +89,32 @@ const IntroduceV2 = () => {
           >
             <div className="relative w-full rounded-l-lg">
               <SearchOutlined className="absolute text-[24px] left-3 top-1/2 transform -translate-y-1/2 text-primaryColorH z-10" />
-              <AutoComplete
-  className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg w-[80%]"
-  size="large"
-  placeholder="Job title, keyword, company"
-  style={{ marginLeft: "50px" }}
-  onSearch={(value) => setSearchValue(value)}
-  value={searchValue}
-  onChange={(value) => setSearchValue(value)}
-  onSelect={(value) => {
-    // Giả sử value là item.title, bạn cần tìm item tương ứng từ danh sách jobSuggestions
-    const selectedItem = jobSuggestions.find(item => item.title === value);
-    if (selectedItem) {
-      console.log('SELECTED',selectedItem._id); // In ra _id của item
-    }
-  }}
-  options={jobSuggestions.map((item) => ({ value: item.title }))} 
->
-  <Input className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg" />
-</AutoComplete>
-
+              <Select
+                className="border-0 focus:border-0 focus:ring-0 rounded-l-lg text-lg w-[80%]"
+                size="large"
+                placeholder="Job title, keyword, company"
+                style={{ marginLeft: "50px" }}
+                value={searchValue}
+                onChange={handleChange}
+                onSearch={handleSearch}
+                showSearch
+                filterOption={false}
+                loading={isLoading} // Hiển thị trạng thái loading khi gọi API
+                dropdownRender={(menu) => (
+                  <div onScroll={handleScroll}>
+                    {menu}
+                  </div>
+                )}
+              >
+                {jobSuggestions.map((job) => (
+                  <Select.Option key={job._id} value={job._id}>
+                    {job.title} - {job.user_id.company_name}
+                  </Select.Option>
+                ))}
+              </Select>
             </div>
 
             <div className="w-[1px] h-[40px] bg-gray-300 mx-2"></div>
-
-            <div className="relative w-full rounded-r-lg">
-              <EnvironmentOutlined className="absolute text-[24px] left-3 top-1/2 transform -translate-y-1/2 text-primaryColorH z-10" />
-              <AutoComplete
-                className="border-0 focus:border-0 focus:ring-0 rounded-r-lg text-lg w-[80%]"
-                size="large"
-                placeholder="Location, city"
-                style={{ marginLeft: "50px" }}
-                onSearch={handleLocationSearch}
-                options={locationSuggestions.map((item) => ({ value: item }))}
-              >
-                <Input className="border-0 focus:border-0 focus:ring-0 rounded-r-lg text-lg" />
-              </AutoComplete>
-            </div>
 
             <Button
               size="large"
@@ -105,9 +122,9 @@ const IntroduceV2 = () => {
               style={{
                 height: "50px",
                 borderRadius: "8px",
-                backgroundColor: '#d3464f',
-                color: 'white',
-              }} 
+                backgroundColor: "#d3464f",
+                color: "white",
+              }}
             >
               Find Job
             </Button>

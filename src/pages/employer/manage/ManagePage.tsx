@@ -6,8 +6,13 @@ import { Users } from 'lucide-react';
 import './styles.css'
 import TabCandidate from '../Tab/TabCandidate';
 import TabJobs from '../Tab/TabJobs';
-import { TAB_CANDIDATE, TAB_JOB, TAB_LEVEL, TAB_SKILL } from '../../../utils/role.utils';
+import { TAB_CANDIDATE, TAB_JOB, TAB_LEVEL, TAB_SKILL ,TAB_JOB_TYPE,TAB_JOB_CONTRACT_TYPE,TAB_DEGREE_TYPE,TAB_CURRENCY_TYPE} from '../../../utils/role.utils';
 import SkillEmployer from '../Skill/Skill';
+import SkillLevel from '../SkillLevel/SkillLevel';
+import JobTypeComponent from '../JobType/JobTypeComponent';
+import JobContractTypeComponent from '../JobContractType/JobContractTypeComponent';
+import DegreeTypeComponent from '../DegreeType/DegreeTypeComponent';
+import CurrenciesComponent from '../Currencies/CurrenciesComponent';
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
@@ -23,13 +28,15 @@ const items: MenuItem[] = [
   },
   {
     key: 'sub4',
-    label: 'Navigation Three',
+    label: 'Quản lý bài viết',
     icon: <SettingOutlined />,
     children: [
       { key: TAB_SKILL, label: 'Quản lý kỹ năng' },
       { key: TAB_LEVEL, label: 'Quản lý cấp độ' },
-      { key: '11', label: 'Option 11' },
-      { key: '12', label: 'Option 12' },
+      { key: TAB_JOB_TYPE, label: 'Quản lý loại công việc' },
+      { key: TAB_JOB_CONTRACT_TYPE, label: 'Quản lý loại hợp đồng' },
+      { key: TAB_DEGREE_TYPE, label: 'Quản lý loại bằng bằng cấp' },
+      { key: TAB_CURRENCY_TYPE, label: 'Quản lý loại tiền tệ' },
     ],
   },
 ];
@@ -80,7 +87,27 @@ const ManagePage: React.FC = () => {
       )}
       {current===TAB_LEVEL&& (
           <div className="h-full w-full">
-          LEVEL
+          <SkillLevel />
+        </div>
+      )}
+      {current===TAB_JOB_TYPE&& (
+          <div className="h-full w-full">
+          <JobTypeComponent />
+        </div>
+      )}
+      {current===TAB_JOB_CONTRACT_TYPE&& (
+          <div className="h-full w-full">
+          <JobContractTypeComponent />
+        </div>
+      )}
+       {current===TAB_DEGREE_TYPE&& (
+          <div className="h-full w-full">
+          <DegreeTypeComponent />
+        </div>
+      )}
+       {current===TAB_CURRENCY_TYPE&& (
+          <div className="h-full w-full">
+          <CurrenciesComponent />
         </div>
       )}
     </div>

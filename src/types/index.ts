@@ -28,6 +28,12 @@ export interface IBackendRes<T> {
     description?: string;
   }
 
+  export interface Level {
+    name: string;
+    key: string;
+    description: string;
+  }
+
   export interface City {
     _id: string;
     name: string;
