@@ -56,11 +56,8 @@ export default function JobDetail({
   const { cities, loading: citiesLoading } = useCities();
   const { districts, loading: districtLoading } = useDistricts(city);
   const { wards, loading: wardsLoading } = useWards(district);
-
   const [isNegotiable, setIsNegotiable] = useState(false);
-
   const [requirements, setRequirements] = useState([]);
-
   const [newTitle, setNewTitle] = useState("");
   const [newRequirement, setNewRequirement] = useState("");
   const [currentSection, setCurrentSection] = useState(""); // Để theo dõi phần tựa đề hiện tại
@@ -215,6 +212,7 @@ export default function JobDetail({
         message: "Thông báo",
         description: "Vui lòng nhập kỹ năng và chuyên môn",
       });
+      message.error("Vui lòng nhập kỹ năng và chuyên môn")
       return;
     }
     if (!values.general_requirements.length) {
@@ -222,6 +220,8 @@ export default function JobDetail({
         message: "Thông báo",
         description: "Vui lòng nhập yêu cầu chung",
       });
+      message.error("Vui lòng nhập yêu cầu chung")
+
       return;
     }
     if (!values.job_responsibilities.length) {
@@ -229,6 +229,8 @@ export default function JobDetail({
         message: "Thông báo",
         description: "Vui lòng nhập trách nhiệm công việc",
       });
+      message.error("Vui lòng nhập trách nhiệm công việc")
+
       return;
     }
     if(!values.interview_process.length){
@@ -236,6 +238,8 @@ export default function JobDetail({
         message: "Thông báo",
         description: "Vui lòng nhập quy trình phỏng vấn",
       });
+      message.error("Vui lòng nhập quy trình phỏng vấn")
+
       return;
     }
     let params = {
@@ -284,10 +288,11 @@ export default function JobDetail({
     );
 
     if (res.data) {
-      notification.success({
-        message: "Success",
-        description: "Update successfully",
-      });
+      // notification.success({
+      //   message: "Success",
+      //   description: "Update successfully",
+      // });
+      message.success("Update successfully")
     } else {
       notification.error({
         message: "Error",
@@ -301,6 +306,7 @@ export default function JobDetail({
         message: "Validation Error",
         description: field.errors[0], // Display the first validation error for each field
       });
+      message.error(field.errors[0])
     });
   };
   return (
@@ -939,7 +945,6 @@ export default function JobDetail({
 
           <Form.Item
             name="description"
-            rules={[{ required: true, message: "Job description is required" }]}
           >
             <Editor
               // apiKey={process.env.REACT_APP_TINYMCE_API_KEY} // Bạn có thể lấy API key miễn phí từ TinyMCE

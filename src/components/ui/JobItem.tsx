@@ -4,6 +4,7 @@ import defaultImage from "../../assets/images/company/default.png";
 import { CircleDollarSign, DollarSign, Heart, MapPin } from "lucide-react";
 import { convertHtmlToText } from "../../untils";
 import { useNavigate } from "react-router-dom";
+import { HeartFilled, HeartOutlined } from "@ant-design/icons";
 
 interface IJobItemProps {
   item: any;
@@ -55,8 +56,9 @@ const JobItem = ({ item }: IJobItemProps) => {
          )}
          </div>
          <div className="mr-2 transition-colors duration-200 hover:text-[#cf4850]">
-                <Heart size={18} className="cursor-pointer" />
-            </div>
+                {/* <Heart size={18} className="cursor-pointer" /> */}
+
+          </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { notification } from "antd";
+import { message, notification } from "antd";
 import { axiosInstance } from "../config/axiosInterceptor";
 
 // Định nghĩa một đối tượng JobApi
@@ -45,7 +45,11 @@ export const JobApi = {
       if (res.data) return res.data;
       return null;
     } catch (error) {
-      console.error("Error posting job:", error);
+      // notification.error({
+      //   message:"Thông báo",
+      //   description: error?.response?.data?.message
+      // })
+      message.error(error?.response?.data?.message)
       return null;
     }
   },
@@ -119,13 +123,15 @@ export const JobApi = {
       return null;
     } catch (error) {
       console.error("Error updating job:", error);
-      error?.response?.data?.message.map((item)=>{
-        notification.error({
-          message:'Thông báo',
-          description:item
+      message.error(error?.response?.data?.message)
+
+      // error?.response?.data?.message.map((item)=>{
+      //   notification.error({
+      //     message:'Thông báo',
+      //     description:item
   
-        })
-      })
+      //   })
+      // })
       return null;
     }
   },

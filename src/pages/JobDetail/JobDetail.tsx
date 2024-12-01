@@ -132,7 +132,7 @@ export default function JobDetail() {
     }
   };
   
-  console.log("lasdas",like)
+  console.log("lasdasjobDetail",jobDetail)
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Header Section */}
@@ -231,18 +231,22 @@ export default function JobDetail() {
             </div>
           </div>
 
-          {jobDetail?.candidate_ids.includes(userDetail?._id) ? (
-            <Button disabled className="py-5 px-6 rounded-full">
-              Đã ứng tuyển
-            </Button>
-          ) : (
-            <Button
-              className="!bg-primaryColorH   text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-primaryColorDark transition-all duration-300"
-              onClick={handleApplied}
-            >
-              Ứng tuyển ngay
-            </Button>
-          )}
+          {new Date(jobDetail?.expire_date) < new Date() ? (
+  <Button disabled className="py-5 px-6 rounded-full">
+    Đã hết hạn
+  </Button>
+) : jobDetail?.candidate_ids.includes(userDetail?._id) ? (
+  <Button disabled className="py-5 px-6 rounded-full">
+    Đã ứng tuyển
+  </Button>
+) : (
+  <Button
+    className="!bg-primaryColorH text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-primaryColorDark transition-all duration-300"
+    onClick={handleApplied}
+  >
+    Ứng tuyển ngay
+  </Button>
+)}
           <Button
             className="!bg-black  text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-gray-300 transition-all duration-300"
             onClick={handleCreateCV}

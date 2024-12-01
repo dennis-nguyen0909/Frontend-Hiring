@@ -234,7 +234,7 @@ export default function PostJob() {
         params.apply_website = values.applicationLink;
       }
       const res = await JobApi.postJob(params, userDetail.access_token);
-      if (res.data && +res.statusCode === 201) {
+      if (res?.data && +res.statusCode === 201) {
         message.success('Tạo thành công')
         // notification.success({
         //   message: "Success",
@@ -247,6 +247,7 @@ export default function PostJob() {
         });
       }
     } catch (error) {
+      console.log("errrr",error)
       notification.error({
         message: "Thông báo",
         description: error,
