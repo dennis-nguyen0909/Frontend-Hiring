@@ -76,6 +76,7 @@ export default function JobTypeComponent() {
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
       setVisibleDrawer(false)
+      form.resetFields()
     } else {
       notification.error({
         message: "Thông báo",
@@ -102,12 +103,17 @@ export default function JobTypeComponent() {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Tên',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Description',
+      title: 'Từ khóa',
+      dataIndex: 'key',
+      key: 'key',
+    },
+    {
+      title: 'Mô tả',
       dataIndex: 'description',
       key: 'description',
     },
@@ -238,19 +244,30 @@ export default function JobTypeComponent() {
   
       <DrawerGeneral
         visible={visibleDrawer}
-        onCancel={() => setVisibleDrawer(false)}
-        onOk={() => setVisibleDrawer(false)}
+        onCancel={() => {
+          setVisibleDrawer(false)
+          form.resetFields()
+        }}
+        onOk={() => {
+          setVisibleDrawer(false)
+          form.resetFields()
+        }}
         renderBody={() => (
-          <Form form={form} onFinish={handleUpdate} layout="vertical">
+          <Form form={form} onFinish={handleUpdate} onValuesChange={onValuesChange} layout="vertical">
             <Form.Item
               name="name"
-              label="Name"
+              label="Tên"
               rules={[{ required: true, message: 'Please input the Name!' }]}
             >
               <Input placeholder="Enter Name" />
             </Form.Item>
-  
-            <Form.Item name="description" label="Description">
+            <Form.Item
+              name="key"
+              label="Từ khóa"
+            >
+              <Input disabled />
+            </Form.Item>
+            <Form.Item name="description" label="Mô tả">
               <Input.TextArea placeholder="Enter Description (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
             </Form.Item>
   

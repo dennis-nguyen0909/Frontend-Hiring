@@ -16,44 +16,37 @@ import { useNavigationType } from "react-router-dom";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useSelector } from "react-redux";
 import { useCities } from "../../hooks/useCities";
+import { useLevels } from "../../hooks/useLevels";
+import { useContractType } from "../../hooks/useContractType";
 const { Option } = Select;
 
 export default function JobSearchPage() {
+  const { data: listLevels } = useLevels();
+  const { data: listContractTypes } = useContractType();
+  const contractTypeDefault = listContractTypes.filter(
+    (item) => item.key === "tat_ca_loai_hop_dong"
+  );
   const [jobSuggestions, setJobSuggestions] = useState([]);
   const [searchValue, setSearchValue] = useState(""); // Lưu trữ giá trị tìm kiếm
   const navigate = useNavigationType();
   const [searchCity, setSearchCity] = useState("all-locations"); // Lưu trữ giá trị tìm kiếm
-  const [searchContractJob, setSearchContractJob] = useState("all-contracts"); // Lưu trữ giá trị tìm kiếm
+  const [searchContractJob, setSearchContractJob] = useState(
+ "tat_ca_loai_hop_dong"
+  ); // Lưu trữ giá trị tìm kiếm
   const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-  const [searchLevels,setSearchLevels]=useState<string[]>(["all-levels"])
+  const [searchLevels, setSearchLevels] = useState<string[]>(["all_levels"]);
   const [isLoading, setIsLoading] = useState(false); // Trạng thái loading để tránh gọi API nhiều lần
   const userDetail = useSelector((state) => state.user);
   const debouncedSearchValue = useDebounce(searchValue, 500); // Áp dụng debounce với 500ms
   const { cities } = useCities();
-  const jobModes = [{
-    id:"all-contracts",
-    value:"Tất cả loại hợp đồng"
-  },{
-    id:"hybird",
-    value:"Hybrid"
-  }, {
-    id:'in_office',
-    value:"In-office"
-  }, {
-    id:"freelance",
-    value:"Freelance"
-  }, {
-    id:"remote",
-    value:"Remote"
-  }];
   // Hàm gọi API tìm kiếm công việc
-  const handleJobSearch = async (query:any, page = 1) => {
+  const handleJobSearch = async (query: any, page = 1) => {
     const params = {
       current: page,
       pageSize: 10,
-      query:{
-        ...query
-      }
+      query: {
+        ...query,
+      },
     };
 
     setIsLoading(true);
@@ -75,9 +68,9 @@ export default function JobSearchPage() {
 
   useEffect(() => {
     if (debouncedSearchValue) {
-        const query = {
-            keyword:debouncedSearchValue
-        }
+      const query = {
+        keyword: debouncedSearchValue,
+      };
       handleJobSearch(query, 1);
     } else {
       setJobSuggestions([]);
@@ -88,39 +81,41 @@ export default function JobSearchPage() {
     setSearchValue(value);
   };
 
-  const handleChange = (value:string) => {
+  const handleChange = (value: string) => {
     setSearchValue(value);
   };
   const onSearch = async () => {
-    console.log("search 1",searchValue);
-    console.log("search 2",searchCity);
-    console.log("search 3",searchContractJob);
-    console.log("search 4",searchLevels);
+    console.log("search 1", searchValue);
+    console.log("search 2", searchCity);
+    console.log("search 3", searchContractJob);
+    console.log("search 4", searchLevels);
     const query = {
-        title:searchValue,
-        city_id:{
-            codename:searchCity
-        },
-        type_of_work:searchCity,
-        level:searchLevels
-    }
+      title: searchValue,
+      city_id: {
+        codename: searchCity,
+      },
+      type_of_work: searchCity,
+      level: searchLevels,
+    };
     await handleJobSearch(query);
   };
-  const handleChangeCity = (value:string) => {
+  const handleChangeCity = (value: string) => {
     setSearchCity(value);
   };
+
   const handleChangeLevels = (value: string[]) => {
-    console.log("value", value);
-    setSearchLevels([...value])
+    console.log("vale", value);
+    setSearchLevels(value); // Cập nhật giá trị khi người dùng chọn cấp bậc
   };
-  const handleChangeContractJob =(value:string)=>[
-    setSearchContractJob(value)
-  ]
-  const onRemoveFilter  = ()=>{
-    setSearchCity("all-locations")
-    setSearchContractJob("all-contracts")
-    setSearchLevels(["all-levels"])
-  }
+  const handleChangeContractJob = (value: string) => {
+    console.log("vaueada", value);
+    setSearchContractJob(value);
+  };
+  const onRemoveFilter = () => {
+    setSearchCity("all-locations");
+    setSearchContractJob( "tat_ca_loai_hop_dong");
+    setSearchLevels(["all_levels"]);
+  };
 
   return (
     <div className="min-h-screen bg-[#fff7f5] p-4 mx-primaryx2">
@@ -169,41 +164,36 @@ export default function JobSearchPage() {
 
           <Select
             mode="multiple"
-            // defaultValue={["all-levels"]}
-            value={searchLevels}
+            value={searchLevels} // Đảm bảo giá trị được chọn đồng bộ với trạng thái
             style={{ width: 200 }}
             onChange={handleChangeLevels}
             placeholder="Chọn cấp bậc"
           >
-            <Option value="all-levels">
-              <Checkbox checked={true}>Tất cả cấp bậc</Checkbox>
-            </Option>
-            <Option value="intern">
-              <Checkbox>Intern</Checkbox>
-            </Option>
-            <Option value="fresher">
-              <Checkbox>Fresher</Checkbox>
-            </Option>
-            <Option value="middle">
-              <Checkbox>Middle</Checkbox>
-            </Option>
-            <Option value="junior">
-              <Checkbox>Junior</Checkbox>
-            </Option>
-            <Option value="senior">
-              <Checkbox>Senior</Checkbox>
-            </Option>
+            {listLevels.map((level) => {
+              return (
+                <Option key={level.key} value={level.key}>
+                  <Checkbox checked={searchLevels.includes(level.key)}>
+                    {level.name}
+                  </Checkbox>
+                </Option>
+              );
+            })}
           </Select>
-          <Select onChange={handleChangeContractJob} value={searchContractJob} style={{ width: 200 }}>
-            <Option value="all-job-type">Tất cả loại hợp đồng</Option>
-            {jobModes.map((item,idx)=>{
-                    return(
-                        <Option key={idx} value={item.id}>{item.value}</Option>
-                    )
+          <Select
+            onChange={handleChangeContractJob}
+            value={searchContractJob}
+            style={{ width: 200 }}
+          >
+            {listContractTypes.map((item, idx) => {
+              return (
+                <Option key={item.key} value={item.key}>
+                  {item.name}
+                </Option>
+              );
             })}
           </Select>
           <Button onClick={onRemoveFilter} className="flex items-center">
- Xóa bộ lọc
+            Xóa bộ lọc
           </Button>
         </div>
       </div>

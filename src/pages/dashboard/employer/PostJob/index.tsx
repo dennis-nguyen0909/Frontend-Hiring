@@ -26,6 +26,11 @@ import { JobApi } from "../../../../services/modules/jobServices";
 import { useSelector } from "react-redux";
 import { EmployerSkillApi } from "../../../../services/modules/EmployerSkillServices";
 import { Meta, ListSkillsFormData } from "../../../../types";
+import { useLevels } from "../../../../hooks/useLevels";
+import { useContractType } from "../../../../hooks/useContractType";
+import { useDegreeType } from "../../../../hooks/useDegreeType";
+import { useJobType } from "../../../../hooks/useJobType";
+import { useCurrency } from "../../../../hooks/useCurrency";
 const { Title, Text } = Typography;
 export default function PostJob() {
   const [form] = Form.useForm();
@@ -40,6 +45,11 @@ export default function PostJob() {
   const userDetail = useSelector((state) => state.user);
   const [expireDate, setExpireDate] = useState("");
   const [listSkills, setListSkills] = useState<ListSkillsFormData[]>([]);
+  const {data:listLevels}=useLevels();
+  const {data:listContractTypes}=useContractType();
+  const {data:listDegreeTypes}=useDegreeType();
+  const {data:listJobTypes}=useJobType();
+  const {data:listCurrencies} =useCurrency();
   const [meta, setMeta] = useState<Meta>({
     count: 0,
     current_page: 1,
@@ -255,6 +265,7 @@ export default function PostJob() {
     }
   };
 
+  console.log("duydeptrai",listDegreeTypes)
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <Form
@@ -361,11 +372,11 @@ export default function PostJob() {
               ]}
             >
               <Select placeholder="Select money type">
-                <Select.Option value="USD">USD</Select.Option>
-                <Select.Option value="VIETNAM_DONG">
-                  Vietnamese Dong
-                </Select.Option>
-                <Select.Option value="EUR">EUR</Select.Option>
+                {listCurrencies.map((currency)=>{
+                  return(
+                    <Select.Option value={currency.code}>{currency.code}</Select.Option>
+                  )
+                })}
               </Select>
             </Form.Item>
           </div>
@@ -507,25 +518,32 @@ export default function PostJob() {
               ]}
             >
               <Select placeholder="Select">
-                <Select.Option value="Bachelor">Bằng cử nhân</Select.Option>
-                <Select.Option value="Master">Bằng thạc sĩ</Select.Option>
-                <Select.Option value="PhD">Bằng tiến sĩ</Select.Option>
+                {listDegreeTypes.map((degree,idx)=>{
+                  return (
+                    <Select.Option key={degree.key} value={degree.key}>{degree.name}</Select.Option>
+                  )
+                })}
               </Select>
             </Form.Item>
             <Form.Item
-              label="Mức độ kinh nghiệm"
+              label="Cấp độ yêu cầu"
               name="level"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn mức độ kinh nghiệm",
+                  message: "Vui lòng chọn cấp độ yêu cầu",
                 },
               ]}
             >
               <Select placeholder="Select">
-                <Select.Option value="junior">Junior</Select.Option>
+              {listLevels.map((level,idx)=>{
+                return (
+                <Select.Option value={level.key}>{level.name}</Select.Option>
+                )
+              })}
+                {/* <Select.Option value="junior">Junior</Select.Option>
                 <Select.Option value="mid">Mid</Select.Option>
-                <Select.Option value="senior">Senior</Select.Option>
+                <Select.Option value="senior">Senior</Select.Option> */}
               </Select>
             </Form.Item>
 
@@ -698,9 +716,11 @@ export default function PostJob() {
               ]}
             >
               <Select placeholder="Select">
-                <Select.Option value="fulltime">Full Time</Select.Option>
-                <Select.Option value="parttime">Part Time</Select.Option>
-                <Select.Option value="contract">Contract</Select.Option>
+                {listContractTypes.map((type,idx)=>{
+                  return (
+                    <Select.Option key={type.key} value={type.key}>{type.name}</Select.Option>
+                  )
+                })}
               </Select>
             </Form.Item>
           </div>
@@ -874,13 +894,11 @@ export default function PostJob() {
             ]}
           >
             <Select placeholder="Chọn loại hình">
-              <Select.Option value="in_office">
-                In Office (Tại văn phòng)
-              </Select.Option>
-              <Select.Option value="remote">Remote (Từ xa)</Select.Option>
-              <Select.Option value="freelance">
-                Freelance (Làm trực tuyến)
-              </Select.Option>
+              {listJobTypes.map((jobType)=>{
+                return (
+                  <Select.Option key={jobType.key} value={jobType.key}>{jobType.name}</Select.Option>
+                )
+              })}
             </Select>
           </Form.Item>
         </div>

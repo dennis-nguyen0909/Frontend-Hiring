@@ -77,6 +77,7 @@ export default function DegreeTypeComponent() {
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
       setVisibleDrawer(false)
+      form.resetFields()
     } else {
       notification.error({
         message: "Thông báo",
@@ -103,12 +104,17 @@ export default function DegreeTypeComponent() {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Tên',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Description',
+      title: 'Từ khóa',
+      dataIndex: 'key',
+      key: 'key',
+    },
+    {
+      title: 'Mô tả',
       dataIndex: 'description',
       key: 'description',
     },
@@ -258,6 +264,13 @@ export default function DegreeTypeComponent() {
             >
               <Input placeholder="Enter Name" />
             </Form.Item>
+            <Form.Item
+              name="key"
+              label="Key"
+            >
+              <Input disabled />
+            </Form.Item>
+      
   
             <Form.Item name="description" label="Description">
               <Input.TextArea placeholder="Enter Description (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />

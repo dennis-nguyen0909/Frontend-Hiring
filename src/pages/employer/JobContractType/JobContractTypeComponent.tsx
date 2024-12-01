@@ -108,6 +108,11 @@ export default function JobContractTypeComponent() {
       key: 'name',
     },
     {
+      title: 'Key',
+      dataIndex: 'key',
+      key: 'key',
+    },
+    {
       title: 'Description',
       dataIndex: 'description',
       key: 'description',
@@ -242,26 +247,32 @@ export default function JobContractTypeComponent() {
         onCancel={() => {
           setVisibleDrawer(false);
           form.resetFields();
-
         }}
         onOk={() => {
           setVisibleDrawer(false);
           form.resetFields();
         }}
         renderBody={() => (
-          <Form form={form} onFinish={handleUpdate} layout="vertical">
+          <Form form={form} onFinish={handleUpdate} onValuesChange={onValuesChange} layout="vertical">
             <Form.Item
               name="name"
-              label="Name"
-              rules={[{ required: true, message: 'Please input the Name!' }]}
+              label="Tên loại hợp đồng"
+              rules={[{ required: true, message: 'Vui lòng nhập tên loại hợp đồng!' }]}
             >
-              <Input placeholder="Enter Name" />
+              <Input placeholder="Nhập tên ..." />
             </Form.Item>
-  
-            <Form.Item name="description" label="Description">
-              <Input.TextArea placeholder="Enter Description (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
+      
+            <Form.Item
+              name="key"
+              label="Key"
+            >
+              <Input disabled />
             </Form.Item>
-  
+      
+            <Form.Item name="description" label="Mô tả">
+              <Input.TextArea placeholder="Nhập mô tả.." autoSize={{ minRows: 3, maxRows: 6 }} />
+            </Form.Item>
+      
             <Form.Item>
               <Button type="primary" htmlType="submit" className="w-full !bg-primaryColor">
                 Submit

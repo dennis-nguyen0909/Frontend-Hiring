@@ -33,9 +33,9 @@ const items: MenuItem[] = [
     children: [
       { key: TAB_SKILL, label: 'Quản lý kỹ năng' },
       { key: TAB_LEVEL, label: 'Quản lý cấp độ' },
-      { key: TAB_JOB_TYPE, label: 'Quản lý loại công việc' },
+      { key: TAB_JOB_TYPE, label: 'Quản lý loại hình làm việc' },
       { key: TAB_JOB_CONTRACT_TYPE, label: 'Quản lý loại hợp đồng' },
-      { key: TAB_DEGREE_TYPE, label: 'Quản lý loại bằng bằng cấp' },
+      { key: TAB_DEGREE_TYPE, label: 'Quản lý loại bằng cấp' },
       { key: TAB_CURRENCY_TYPE, label: 'Quản lý loại tiền tệ' },
     ],
   },
