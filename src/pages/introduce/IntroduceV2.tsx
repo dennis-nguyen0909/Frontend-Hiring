@@ -1,21 +1,22 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Select } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Select, Spin } from "antd";
+import { useEffect, useRef, useState } from "react";
 import { JobApi } from "../../services/modules/jobServices";
 import { useSelector } from "react-redux";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "./SearchBar";
 
 const IntroduceV2 = () => {
   const [jobSuggestions, setJobSuggestions] = useState([]);
-  const [searchValue, setSearchValue] = useState(""); // Lưu trữ giá trị tìm kiếm
-  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-  const [isLoading, setIsLoading] = useState(false); // Trạng thái loading để tránh gọi API nhiều lần
+  const [searchValue, setSearchValue] = useState(""); 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false); // Tạo thêm biến cho trạng thái tải thêm
   const userDetail = useSelector((state) => state.user);
-  const debouncedSearchValue = useDebounce(searchValue, 500); // Áp dụng debounce với 500ms
+  const debouncedSearchValue = useDebounce(searchValue, 500); // Debounce cho search value
   const navigate = useNavigate();
 
-  // Hàm gọi API tìm kiếm công việc
   const handleJobSearch = async (value, page = 1) => {
     const params = {
       query: {
@@ -25,47 +26,61 @@ const IntroduceV2 = () => {
       pageSize: 10,
     };
 
-    setIsLoading(true); // Bật trạng thái loading khi gọi API
+    if (page === 1) {
+      setIsLoading(true); 
+    } else {
+      setIsLoadingMore(true); // Bắt đầu loading khi cuộn xuống
+    }
 
     try {
       const res = await JobApi.getAllJobsQuery(params, userDetail?._id);
       if (page === 1) {
-        setJobSuggestions(res.data.items); // Nếu là trang đầu, thay thế toàn bộ kết quả
+        setJobSuggestions(res.data.items); 
       } else {
-        setJobSuggestions((prevJobs) => [...prevJobs, ...res.data.items]); // Nếu không, thêm các kết quả mới vào
+        setJobSuggestions((prevJobs) => [...prevJobs, ...res.data.items]); 
       }
-      setCurrentPage(page); // Cập nhật lại trang hiện tại
+      setCurrentPage(page);
     } catch (error) {
       console.error("Error fetching jobs: ", error);
     } finally {
-      setIsLoading(false); // Tắt trạng thái loading
+      setIsLoading(false); 
+      setIsLoadingMore(false); // Kết thúc loading khi đã tải xong dữ liệu
     }
   };
 
-  // Gọi handleJobSearch mỗi khi debouncedSearchValue thay đổi
   useEffect(() => {
     if (debouncedSearchValue) {
-      handleJobSearch(debouncedSearchValue, 1); // Gọi API tìm kiếm khi có giá trị tìm kiếm
+      handleJobSearch(debouncedSearchValue, 1);
     } else {
-      setJobSuggestions([]); // Xóa gợi ý khi không có từ khóa
+      setJobSuggestions([]); 
+      handleJobSearch({}, 1);
     }
   }, [debouncedSearchValue]);
+  const dropdownRef = useRef(null);
 
-  // Khi người dùng nhập tìm kiếm, cập nhật giá trị và kích hoạt debounce
+  useEffect(() => {
+    if (dropdownRef.current) {
+      dropdownRef.current.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (dropdownRef.current) {
+        dropdownRef.current.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [dropdownRef, isLoading, isLoadingMore, currentPage]);
   const handleSearch = (value) => {
-    setSearchValue(value); // Cập nhật giá trị tìm kiếm
+    setSearchValue(value);
   };
 
-  // Xử lý cuộn xuống và gọi API nếu đã cuộn tới cuối
   const handleScroll = (e) => {
-    const bottom = e.target.scrollHeight === e.target.scrollTop + e.target.clientHeight;
-    if (bottom && !isLoading) {
-      // Nếu đã cuộn đến cuối, và không đang gọi API
-      handleJobSearch(debouncedSearchValue, currentPage + 1); // Gọi API để lấy trang kế tiếp
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const isBottom = scrollHeight - scrollTop === clientHeight;
+  
+    if (isBottom && !isLoadingMore && !isLoading) {
+      handleJobSearch(debouncedSearchValue, currentPage + 1);
     }
   };
 
-  // Khi người dùng chọn công việc, chuyển hướng đến trang thông tin công việc
   const handleChange = (value) => {
     navigate(`/job-information/${value}`);
   };
@@ -73,16 +88,10 @@ const IntroduceV2 = () => {
   return (
     <div className="h-auto bg-white px-4 md:px-primary pb-20 my-[150px]">
       <div className="flex w-full flex-col h-auto">
-        {/* Container */}
         <div className="w-full h-full flex items-center justify-center flex-col gap-4">
-          <h1 className="text-4xl text-black font-bold">
-            Find Your Perfect Tech Job
-          </h1>
-          <section className="text-center">
-            Connect with top companies and build your career in tech
-          </section>
-
-          {/* Input Search */}
+          <h1 className="text-4xl text-black font-bold">Find Your Perfect Tech Job</h1>
+          <section className="text-center">Connect with top companies and build your career in tech</section>
+        {/* <SearchBar /> */}
           <div
             className="flex items-center w-[90%] p-2 rounded-lg bg-white"
             style={{ border: "1px solid #ccc" }}
@@ -99,11 +108,16 @@ const IntroduceV2 = () => {
                 onSearch={handleSearch}
                 showSearch
                 filterOption={false}
-                loading={isLoading} // Hiển thị trạng thái loading khi gọi API
+                loading={isLoading}
                 dropdownRender={(menu) => (
-                  <div onScroll={handleScroll}>
-                    {menu}
-                  </div>
+                  <div ref={dropdownRef} onScroll={handleScroll}>
+          {menu}
+          {isLoadingMore && (
+            <div className="text-center p-2">
+              <Spin size="small" />
+            </div>
+          )}
+        </div>
                 )}
               >
                 {jobSuggestions.map((job) => (
@@ -136,3 +150,4 @@ const IntroduceV2 = () => {
 };
 
 export default IntroduceV2;
+

@@ -42,7 +42,6 @@ export default function JobContractTypeComponent() {
 
   const onFinish = async (values: Level) => {
     const { name, description,key } = values
-    console.log("values",values)
     const res = await JOB_CONTRACT_TYPE_API.create({ name, description, user_id: userDetail._id,key}, userDetail.access_token)
     if (res.data) {
 

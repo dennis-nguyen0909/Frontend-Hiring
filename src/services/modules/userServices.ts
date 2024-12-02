@@ -91,7 +91,21 @@ export const getDetailUser = async (id: string, access_token: string) => {
     },getDetailUser: async (id: string, access_token?: string) => {
       const resData = await axiosInstance.get(`/users/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`
+          Authorization: `Bearer ${access_token}`
+        },
+        withCredentials: true
+      });
+    
+      if (resData) return resData.data;
+      return null;
+    },
+    getAllCompany: async (params:any, access_token?: string) => {
+      const resData = await axiosInstance.get(`/users/company`, {
+        params:{
+          ...params
+        },
+        headers: {
+          Authorization: `Bearer ${access_token}`
         },
         withCredentials: true
       });

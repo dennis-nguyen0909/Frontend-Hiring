@@ -16,4 +16,5 @@ export const JOB_TYPE = `job-types`;
 export const JOB_CONTRACT_TYPE = `job-contracts`;
 export const DEGREE_TYPE = `degree-types`;
 export const CURRENCIES = `currencies`;
+export const ROLES = `role`;
 

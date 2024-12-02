@@ -166,6 +166,19 @@ export const JobApi = {
     if (resData.data) return resData.data;
     return null;
   },
+  findJobsByCompanyName: async (params:any,accessToken: string) => {
+    const resData = await axiosInstance.get(`${'/jobs/getJobSearchName'}`, {
+      params: {
+        ...params
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (resData.data) return resData.data;
+    return null;
+  },
   toggleLikeJob: async (params: any,accessToken:string)=>{
     try {
       const res = await axiosInstance.post('/jobs/toggle-like', params, {

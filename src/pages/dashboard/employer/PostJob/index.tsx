@@ -167,7 +167,6 @@ export default function PostJob() {
   };
   const handleSubmit = async (values: any) => {
     try {
-      console.log("reqweqweq", !values.general_requirements.length);
       if (!requirements.length) {
         notification.error({
           message: "Thông báo",
@@ -257,7 +256,7 @@ export default function PostJob() {
         });
       }
     } catch (error) {
-      console.log("errrr",error)
+      console.error("errrr",error)
       notification.error({
         message: "Thông báo",
         description: error,
@@ -265,7 +264,6 @@ export default function PostJob() {
     }
   };
 
-  console.log("duydeptrai",listDegreeTypes)
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <Form
@@ -274,7 +272,6 @@ export default function PostJob() {
         className="max-w-4xl mx-auto"
         onFinishFailed={handleFinishFailed}
         onFinish={(values) => {
-          console.log("Form submitted with values: ", values);
           handleSubmit(values);
         }}
       >
@@ -374,7 +371,7 @@ export default function PostJob() {
               <Select placeholder="Select money type">
                 {listCurrencies.map((currency)=>{
                   return(
-                    <Select.Option value={currency.code}>{currency.code}</Select.Option>
+                    <Select.Option value={currency._id}>{currency.code}</Select.Option>
                   )
                 })}
               </Select>
@@ -495,8 +492,6 @@ export default function PostJob() {
                 mode="multiple"
                 style={{ width: "100%" }}
                 onChange={(value) => {
-                  console.log("Selected skills:", value);
-                  console.log("Selected skills:", listSkills);
                 }}
               >
                 {listSkills.map((skill) => (
@@ -520,7 +515,7 @@ export default function PostJob() {
               <Select placeholder="Select">
                 {listDegreeTypes.map((degree,idx)=>{
                   return (
-                    <Select.Option key={degree.key} value={degree.key}>{degree.name}</Select.Option>
+                    <Select.Option key={degree.key} value={degree._id}>{degree.name}</Select.Option>
                   )
                 })}
               </Select>
@@ -538,12 +533,9 @@ export default function PostJob() {
               <Select placeholder="Select">
               {listLevels.map((level,idx)=>{
                 return (
-                <Select.Option value={level.key}>{level.name}</Select.Option>
+                <Select.Option value={level._id}>{level.name}</Select.Option>
                 )
               })}
-                {/* <Select.Option value="junior">Junior</Select.Option>
-                <Select.Option value="mid">Mid</Select.Option>
-                <Select.Option value="senior">Senior</Select.Option> */}
               </Select>
             </Form.Item>
 
@@ -718,7 +710,7 @@ export default function PostJob() {
               <Select placeholder="Select">
                 {listContractTypes.map((type,idx)=>{
                   return (
-                    <Select.Option key={type.key} value={type.key}>{type.name}</Select.Option>
+                    <Select.Option key={type.key} value={type._id}>{type.name}</Select.Option>
                   )
                 })}
               </Select>
@@ -896,7 +888,7 @@ export default function PostJob() {
             <Select placeholder="Chọn loại hình">
               {listJobTypes.map((jobType)=>{
                 return (
-                  <Select.Option key={jobType.key} value={jobType.key}>{jobType.name}</Select.Option>
+                  <Select.Option key={jobType.key} value={jobType._id}>{jobType.name}</Select.Option>
                 )
               })}
             </Select>

@@ -36,7 +36,7 @@ const onApplyNow = async(id)=>{
         <div className="flex items-center gap-3">
             <Avatar size={55} shape="square" src={record?.job_id?.user_id.avatar_company} />
           <div>
-            <div className="font-semibold">{record.job_id.title}</div>
+            <div className="font-semibold">{record?.job_id?.title}</div>
             <div className="text-gray-500 text-sm flex flex-col">
               <span className="mr-2">{record?.job_id?.district_id?.name + ", "+record?.job_id?.city_id?.name}</span>
               {record?.job_id?.is_negotiable  ? (

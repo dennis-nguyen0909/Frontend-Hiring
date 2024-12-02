@@ -28,7 +28,6 @@ const ContactForm = () => {
       const handleWardChange = (value) => {
         setWard(value);
       };
-    console.log("userDetail",userDetail)
   const handleSaveChanges = async(values:any) => {
     const params={
         phone:values.phone,
@@ -44,7 +43,7 @@ const ContactForm = () => {
                 dispatch(updateUser({...res.data}))
             }
     } catch (error) {
-        console.log("error",error)
+        console.error("error",error)
         notification.error({
             message:'Thông báo',
             description:error.response.message.data
@@ -53,7 +52,6 @@ const ContactForm = () => {
     // Handle save logic here
   };
   const [form ]=Form.useForm()
-  console.log("asdada",userDetail)
   const handleSavePassword = async()=>{
     const values = form.getFieldsValue();
     try {
@@ -62,7 +60,6 @@ const ContactForm = () => {
             ...values
         }
         const res = await USER_API.resetPassword(params,userDetail?._id)
-        console.log("res",res)
     } catch (error) {
         console.error(error)
     }

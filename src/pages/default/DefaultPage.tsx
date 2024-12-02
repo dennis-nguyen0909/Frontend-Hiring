@@ -4,32 +4,35 @@ import { useNavigate } from 'react-router-dom';
 import Footer from '../../components/Footer/Footer';
 
 interface DefaultPageProps {
-  children: React.ReactNode; // Nhận nội dung các trang con thông qua props
+  children: React.ReactNode;
+  showFooter?: boolean; // Đảm bảo showFooter có thể là optional
 }
 
-const DefaultPage: React.FC<DefaultPageProps> = ({ children,showFooter }) => {
+const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   const accessToken = localStorage.getItem('access_token');
   const navigate = useNavigate();
-  useEffect(()=>{
-    if(accessToken){
-      navigate('/')
-    }
-  },[accessToken])
-  return (
-    <div >
-      {/* Header có thể tái sử dụng trên nhiều trang */}
-      <Header />
 
-      {/* Nội dung của các trang sẽ được render tại đây */}
+  useEffect(() => {
+    if (accessToken) {
+      navigate('/');
+    }
+  }, [accessToken]);
+
+  // Scroll to top when the page is changed
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [children]); // Trigger scroll when children change
+  
+  return (
+    <div>
+      <Header />
       <main>
         {children}
       </main>
-
-      {/* Footer có thể tái sử dụng */}
-        
-        {showFooter && <Footer />}
+      {showFooter && <Footer />}
     </div>
   );
 };
 
 export default DefaultPage;
+

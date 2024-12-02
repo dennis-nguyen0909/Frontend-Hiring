@@ -13,7 +13,6 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
       candidateId,
       userDetail?.access_token
     );
-    console.log("duydeptri", res);
     if (res?.data?.items) {
       setCandidateDetail(res?.data?.items);
     }

@@ -84,7 +84,6 @@ useEffect(()=>{
   ]
 
   const onFinish = (values: any) => {
-    console.log('Form values:', values)
   }
   return (
     <div className="p-6 min-h-screen">

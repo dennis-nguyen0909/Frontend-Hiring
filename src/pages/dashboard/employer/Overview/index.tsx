@@ -22,10 +22,9 @@ const OverviewEmployer = () => {
       key: "title",
       render: (text: string, record: any) => (
         <div>
-          {console.log("reasdad",record)}
           <div className="font-medium">{text}</div>
           <div className="text-gray-500 text-sm">
-            {record?.job_type} • {calculateTimeRemaining(record?.expire_date)}
+            {record?.job_type.name} • {calculateTimeRemaining(record?.expire_date)}
           </div>
         </div>
       ),
@@ -41,7 +40,6 @@ const OverviewEmployer = () => {
           text={isActive ? "Active" : "Expired"}
           className="whitespace-nowrap"
           />
-          {console.log("record",isActive)}
           </>
       ),
     },
@@ -101,7 +99,6 @@ const OverviewEmployer = () => {
         params,
         userDetail?.access_token
       );
-      console.log("duydeptrai res",res)
       if (res.data) {
         setMetaSaveCandidate(res.data.meta);
       }
@@ -119,7 +116,6 @@ const OverviewEmployer = () => {
         }
       }
       const res = await JobApi.getAllJobRecent(params,userDetail?._id);
-      console.log("res",res)
       if(res.data){
         setJobRecents(res.data.items)
         setMetaJobRecents(res.data.meta)

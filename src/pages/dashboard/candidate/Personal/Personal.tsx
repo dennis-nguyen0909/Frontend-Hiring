@@ -51,7 +51,6 @@ const Personal = () => {
       },
     };
     const res = await CV_API.getAll(params, userDetail?.access_token);
-    console.log("res", res);
     if (res.data) {
       setListCv([...res.data.items]);
     }
@@ -98,7 +97,6 @@ const Personal = () => {
         [selectedId],
         userDetail?._id
       );
-      console.log("res", res);
       if (+res.statusCode === 200) {
         notification.success({
           message: "Thông báo",

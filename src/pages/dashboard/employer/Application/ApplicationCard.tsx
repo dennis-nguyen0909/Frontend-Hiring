@@ -107,8 +107,6 @@ const ApplicationCard = ({
     const{primary_cv_id}=user_id
     const cvLinkIds = applied?.cv_ids && applied?.cv_ids[0]
     const link = document.createElement("a");
-    console.log(cvLinkIds)
-    console.log(primary_cv_id)
     if(!primary_cv_id || cvLinkIds){
       notification.error({
         message:'Thông báo',

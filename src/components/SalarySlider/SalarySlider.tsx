@@ -45,7 +45,6 @@ export default function SliderSalary({
       setCurrentSelectedSalary(selectedSalary);
     }
   }, [selectedSalary]);
-  console.log("currentSelectedSalary",currentSelectedSalary)
   return (
     <div className="relative max-w-screen-lg">
       <div className="relative flex justify-between px-[40px]">

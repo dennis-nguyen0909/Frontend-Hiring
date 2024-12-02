@@ -17,7 +17,6 @@ const CompanyInfo = ()=>{
     const [isLoading,setIsLoading]=useState(false)
     const handleUploadFile =async (file:File,type:string)=>{
       setIsLoading(true)
-      console.log("file",file)
         if (file) {
           try {
             const res = await MediaApi.postMedia(file,userDetail.access_token); 
@@ -74,7 +73,6 @@ const CompanyInfo = ()=>{
       })
       dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
     }
-    console.log("values", values)
   }
   const handleReplaceLogo = () => {
     if (uploadRef.current) {
@@ -160,7 +158,6 @@ const CompanyInfo = ()=>{
         onChange={(e) => {
           // Xử lý sự kiện khi người dùng chọn file
           const file = e.target.files[0];
-          console.log("File selected:", file);
         }} 
       />
               </div>

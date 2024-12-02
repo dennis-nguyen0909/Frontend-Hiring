@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { menuHeader } from "../../helper";
 import "react-phone-input-2/lib/style.css";
-import { Avatar, Button, Divider, Image, Popover } from "antd";
+import { Avatar, Button, Divider, Image, Popover, Spin } from "antd";
 import avtDefault from "../../assets/avatars/avatar-default.jpg";
 import { useSelector } from "react-redux";
 import logo from "../../assets/logo/LogoH.png";
@@ -123,7 +123,7 @@ const Header: React.FC = () => {
   const content = (
     <div className="w-[400px]">
       <div className="flex items-center">
-        {renderAccountHeader(user?.role?.role_name)}
+        { user?.role?.role_name ? renderAccountHeader(user?.role?.role_name) : <Spin />}
       </div>
       <Divider />
       <div className="menu-setting">
@@ -132,7 +132,6 @@ const Header: React.FC = () => {
     </div>
   );
   const handleClick = (item)=>{
-    console.log("item",item)
     // navigate(`${item.path}`)
     if(item.name === "Dashboard"){
       navigate(`/dashboard/${user?._id}`)

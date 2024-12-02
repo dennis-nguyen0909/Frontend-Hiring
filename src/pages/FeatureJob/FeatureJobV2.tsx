@@ -111,7 +111,6 @@ const FeatureJobV2 = () => {
   }) => {
     setSelectedSalary(salaryRange);
     let query: any = {};
-    console.log("salaryRange", salaryRange);
     // Kiểm tra nếu chọn tất cả
     if (salaryRange === "all") {
       query = {}; // Không thêm filter về salary

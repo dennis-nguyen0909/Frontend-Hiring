@@ -28,7 +28,6 @@ export default function AccountSettingEmployer() {
       }
       try {
         const res = await userServices.updateUser(params);
-        console.log("messages",res)
         if(res.data){
           notification.success({
             message: "Notification",
@@ -37,7 +36,6 @@ export default function AccountSettingEmployer() {
           dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
         }
       } catch (error) {
-        console.log("messages",error)
         notification.error({
           message: "Notification",
           description: error.message
@@ -49,7 +47,6 @@ export default function AccountSettingEmployer() {
   const handleChangePassword = () => {
     passwordForm.validateFields().then(async(values) => {
       message.success('Password changed successfully')
-      console.log("values",values)
       try {
         
         const res = await userServices.USER_API.resetPassword({
@@ -69,7 +66,6 @@ export default function AccountSettingEmployer() {
             description: res.response.data.message
           })
         }
-        console.log("duytest",res.response.data)
       } catch (error) {
         
       }

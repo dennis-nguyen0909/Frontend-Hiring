@@ -142,7 +142,6 @@ const Profile = () => {
   const handleNavigatePDF = () => {
     navigate("/upload-cv");
   };
-  console.log()
   const {
     data: caculateProfile,
     isLoading,

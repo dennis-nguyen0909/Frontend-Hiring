@@ -71,8 +71,6 @@ export default function SavedCandidate() {
 
   const renderItem = (item)=>{
     const {candidate,isActive}=item
-    console.log("duydeptrai",candidate)
-    console.log("duydeptrai",item)
     return (
       <List.Item
       key={candidate._id}

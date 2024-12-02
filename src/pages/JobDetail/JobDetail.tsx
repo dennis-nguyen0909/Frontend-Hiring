@@ -1,8 +1,19 @@
-import { Button, Card, Tabs, Tag, Typography, Image, notification } from "antd";
-import { HeartFilled, HeartOutlined, ShareAltOutlined } from "@ant-design/icons";
-import { Book, Heart, Share } from "lucide-react";
+import {
+  Button,
+  Card,
+  Tabs,
+  Tag,
+  Typography,
+  Image,
+  notification,
+  Modal,
+  Select,
+  Form,
+  message,
+} from "antd";
+import { HeartFilled, HeartOutlined } from "@ant-design/icons";
+import { Share } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { USER_API } from "../../services/modules/userServices";
 import { useSelector } from "react-redux";
 import { JobApi } from "../../services/modules/jobServices";
 import { useEffect, useState } from "react";
@@ -10,6 +21,9 @@ import moment from "moment";
 import "./styles.css";
 import { API_APPLICATION } from "../../services/modules/ApplicationServices";
 import { API_FAVORITE_JOB } from "../../services/modules/FavoriteJobServices";
+import TextArea from "antd/es/input/TextArea";
+import { CV_API } from "../../services/modules/CvServices";
+import { useForm } from "antd/es/form/Form";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 interface JobDetail {
@@ -49,9 +63,14 @@ export default function JobDetail() {
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [jobDetail, setJobDetail] = useState<JobDetail>();
+  const [cvUser, setCvUser] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [like, setLike] = useState<any>();
+  const [selectedCV,setSelectedCV]=useState<string>('')
   const url = useParams();
   const { id } = useParams();
+  const [coverLetter, setCoverLetter] = useState<string>("");
+  const [form]=useForm()
   const handleGetDetail = async () => {
     try {
       const res = await JobApi.getJobById(id + "", userDetail?.access_token);
@@ -60,30 +79,65 @@ export default function JobDetail() {
       }
     } catch (error) {}
   };
+  const handleCvChange = (value)=>{
+    setSelectedCV(value)
+  }
+  const handleGetCV = async () => {
+    try {
+      const params = {
+        current: 1,
+        pageSize: 30,
+        query: {
+          user_id: userDetail?._id,
+        },
+      };
+      const res = await CV_API.getAll(params, userDetail?.access_token);
+      if (res.data) {
+        setCvUser(res.data.items);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
+    handleGetCV();
     handleGetDetail();
     getFavoriteJobDetailByUserId();
   }, []);
-  const handleApplied = async () => {
+  const handleOpenModel = async () => {
+    setIsModalOpen(true);
+  };
+
+  const onAppliedJob = async () => {
+    if(selectedCV.trim() === ""){
+      message.error("Vui lòng chọn cv!")
+      return;
+    }
+    if(coverLetter.trim() === ""){
+      message.error("Vui lòng nhập thư ứng tuyển!")
+      return;
+    }
+
     if (userDetail?.access_token) {
       const params = {
         user_id: userDetail._id,
         employer_id: jobDetail?.user_id?._id,
         job_id: jobDetail?._id,
+        cover_letter: coverLetter,
+        cv_id:selectedCV
       };
-      
+
       const res = await API_APPLICATION.createApplication(
         params,
         userDetail?.access_token
       );
-      console.log("res", res);
-      console.log("res", jobDetail);
       if (res.data) {
         notification.success({
           message: "Thông báo",
           description: "Ứng tuyển thành công",
         });
         handleGetDetail();
+        setIsModalOpen(false)
       }
     } else {
       navigate("/login");
@@ -119,7 +173,6 @@ export default function JobDetail() {
         params,
         userDetail?.access_token
       );
-      console.log("res",res)
       if (+res.statusCode === 201) {
         // Update the local state after successful like operation
         setLike((prevLike) => ({
@@ -131,8 +184,7 @@ export default function JobDetail() {
       console.error(error);
     }
   };
-  
-  console.log("lasdasjobDetail",jobDetail)
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Header Section */}
@@ -224,7 +276,14 @@ export default function JobDetail() {
         <div className="flex  flex-col gap-4">
           <div className="flex space-x-4 justify-end">
             <div className="hover:scale-110 transform transition-transform duration-200 cursor-pointer">
-              {like?._id ?     <HeartFilled onClick={onLike} style={{ color: "red", fontSize: "24px" }} /> : <HeartOutlined onClick={onLike}  style={{ fontSize: "24px" }}  />}
+              {like?._id ? (
+                <HeartFilled
+                  onClick={onLike}
+                  style={{ color: "red", fontSize: "24px" }}
+                />
+              ) : (
+                <HeartOutlined onClick={onLike} style={{ fontSize: "24px" }} />
+              )}
             </div>
             <div className="hover:scale-110 transform transition-transform duration-200 cursor-pointer">
               <Share />
@@ -232,21 +291,21 @@ export default function JobDetail() {
           </div>
 
           {new Date(jobDetail?.expire_date) < new Date() ? (
-  <Button disabled className="py-5 px-6 rounded-full">
-    Đã hết hạn
-  </Button>
-) : jobDetail?.candidate_ids.includes(userDetail?._id) ? (
-  <Button disabled className="py-5 px-6 rounded-full">
-    Đã ứng tuyển
-  </Button>
-) : (
-  <Button
-    className="!bg-primaryColorH text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-primaryColorDark transition-all duration-300"
-    onClick={handleApplied}
-  >
-    Ứng tuyển ngay
-  </Button>
-)}
+            <Button disabled className="py-5 px-6 rounded-full">
+              Đã hết hạn
+            </Button>
+          ) : jobDetail?.candidate_ids.includes(userDetail?._id) ? (
+            <Button disabled className="py-5 px-6 rounded-full">
+              Đã ứng tuyển
+            </Button>
+          ) : (
+            <Button
+              className="!bg-primaryColorH text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-primaryColorDark transition-all duration-300"
+              onClick={handleOpenModel}
+            >
+              Ứng tuyển ngay
+            </Button>
+          )}
           <Button
             className="!bg-black  text-white font-semibold py-5 px-6 rounded-full shadow-md hover:bg-gray-300 transition-all duration-300"
             onClick={handleCreateCV}
@@ -381,7 +440,9 @@ export default function JobDetail() {
                 {!jobDetail?.level ? (
                   <Text strong>Không yêu cầu</Text>
                 ) : (
-                  <Text strong>{jobDetail?.level.toLocaleUpperCase()}</Text>
+                  <Text strong>
+                    {jobDetail?.level?.name.toLocaleUpperCase()}
+                  </Text>
                 )}
               </div>
               <div>
@@ -390,7 +451,7 @@ export default function JobDetail() {
                   <Text strong>Không yêu cầu</Text>
                 ) : (
                   <Text strong>
-                    {jobDetail?.type_of_work.toLocaleUpperCase()}
+                    {jobDetail?.type_of_work?.name.toLocaleUpperCase()}
                   </Text>
                 )}
               </div>
@@ -399,7 +460,9 @@ export default function JobDetail() {
                 {!jobDetail?.job_type ? (
                   <Text strong>Không yêu cầu</Text>
                 ) : (
-                  <Text strong>{jobDetail?.job_type.toLocaleUpperCase()}</Text>
+                  <Text strong>
+                    {jobDetail?.job_type?.name.toLocaleUpperCase()}
+                  </Text>
                 )}
               </div>
             </div>
@@ -427,6 +490,62 @@ export default function JobDetail() {
           </Card>
         </div>
       </div>
+      <Modal
+        title={`Apply Job: ${jobDetail?.title}`}
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={false}
+      >
+         <Form form={form}layout="vertical">
+      <div className="space-y-4 py-4">
+        {/* CV Selection */}
+        <div>
+          <Form.Item
+            label={'Chọn cv'}
+            name="cv"
+            rules={[{ required: true, message: 'Vui lòng chọn một CV!' }]}
+          >
+            <Select
+              className="w-full"
+              placeholder="Select..."
+              onChange={handleCvChange}
+              value={selectedCV}
+            >
+              {cvUser.map((cv) => (
+                <Select.Option key={cv?._id} value={cv?._id}>
+                  {cv?.cv_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </div>
+
+        {/* Cover Letter */}
+        <div>
+          <Form.Item
+            label={'Thư giới thiệu'}
+            name="coverLetter"
+            rules={[{ required: true, message: 'Vui lòng nhập thư giới thiệu!' }]}
+          >
+            <TextArea
+              value={coverLetter}
+              onChange={(e) => setCoverLetter(e.target.value)}
+              rows={4}
+              placeholder="Write down your biography here. Let the employers know who you are..."
+              className="w-full"
+            />
+          </Form.Item>
+        </div>
+      </div>
+
+      <Button
+        type="primary"
+        onClick={onAppliedJob}
+      >
+        Apply Now
+      </Button>
+    </Form>
+      </Modal>
     </div>
   );
 }

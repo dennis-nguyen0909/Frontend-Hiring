@@ -22,7 +22,6 @@ export const useLevels = (page: number = 1, pageSize: number = 10) => {
       try {
         setLoading(true);
         const response = await Level_API.getAll({ page, pageSize },user?.access_token);
-        console.log("response",response)
         setData(response.data.items);
         setMeta(response.data.meta)
       } catch (err) {

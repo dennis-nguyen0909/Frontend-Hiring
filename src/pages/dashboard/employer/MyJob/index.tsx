@@ -20,7 +20,7 @@ export default function MyJobEmployer() {
         <div>
           <div className="font-medium">{text}</div>
           <div className="text-gray-500 text-sm">
-            {record.job_type} • {new Date(record.expire_date).toLocaleDateString()}
+            {record.job_type.name} • {new Date(record.expire_date).toLocaleDateString()}
           </div>
         </div>
       ),
@@ -109,7 +109,6 @@ export default function MyJobEmployer() {
   const [currentMenu,setCurrentMenu]=useState<string>(MY_JOB_HOME);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const handleOnChangeMenu = async(e,record)=>{
-    console.log('duydeptrai',e,record)
     if(e.key === MARK_AS_EXPIRED){
       const res = await  JobApi.updateJob(record._id,{is_active:true},userDetail.access_token)
       if(res.data){
@@ -146,7 +145,6 @@ export default function MyJobEmployer() {
       const res = await JobApi.getJobByEmployerID(params, userDetail.access_token);
       if (res.data) {
         setListMyJobs(res.data.items); // Giả sử bạn có state `jobs` để lưu danh sách công việc
-        console.log("duydeptrai",res.data)
         setMeta(res.data.meta);  // Giả sử bạn có state `meta` để lưu thông tin phân trang
       }
     } catch (error) {
@@ -157,12 +155,10 @@ export default function MyJobEmployer() {
   useEffect(()=>{
     handleGetMyJob({current:1,pageSize:10});
   },[])
-  console.log("listMyJobs",listMyJobs)
   const handleToggleActiveJob = async(job: Job, checked: boolean) => {
     const params = {
         is_active: checked,
     }
-    console.log("is_active",params)
     const res = await JobApi.updateJob(job._id,params,userDetail.access_token)
     if(res.data){
       notification.success({
@@ -173,7 +169,6 @@ export default function MyJobEmployer() {
 
     }
   }
-  console.log("selectedJob",listMyJobs)
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {!selectedJob &&currentMenu===MY_JOB_HOME && (

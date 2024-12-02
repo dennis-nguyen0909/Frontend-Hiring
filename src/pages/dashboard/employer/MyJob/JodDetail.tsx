@@ -24,6 +24,11 @@ import { EmployerSkillApi } from "../../../../services/modules/EmployerSkillServ
 import { Meta, ListSkillsFormData } from "../../../../types";
 import { ChevronsLeft } from "lucide-react";
 import moment from "moment";
+import { useCurrency } from "../../../../hooks/useCurrency";
+import { useLevels } from "../../../../hooks/useLevels";
+import { useContractType } from "../../../../hooks/useContractType";
+import { useDegreeType } from "../../../../hooks/useDegreeType";
+import { useJobType } from "../../../../hooks/useJobType";
 const { Title, Text } = Typography;
 interface IPropsJobDetail {
   idJob: string;
@@ -46,6 +51,11 @@ export default function JobDetail({
   const [ward, setWard] = useState( jobDetail?.ward_id?._id ||"");
   const [expireDate, setExpireDate] = useState("");
   const [listSkills, setListSkills] = useState<ListSkillsFormData[]>([]);
+  const {data:listLevels}=useLevels();
+  const {data:listContractTypes}=useContractType();
+  const {data:listDegreeTypes}=useDegreeType();
+  const {data:listJobTypes}=useJobType();
+  const {data:listCurrencies} =useCurrency();
   const [meta, setMeta] = useState<Meta>({
     count: 0,
     current_page: 1,
@@ -118,8 +128,6 @@ export default function JobDetail({
   const handleGetJobDetail = async () => {
     const res = await JobApi.getJobById(idJob, userDetail.access_token);
     if (res?.data) {
-      console.log("duydeptrai trai",res.data)
-      console.log("duydeptrai trai1",res?.data?.skills)
       let applicationMethod = "";
       let applicationLink = "";
       const skillIds = res.data.skills.map((skill) => skill._id);
@@ -148,7 +156,12 @@ export default function JobDetail({
         district:res.data.district_id._id,
         ward:res.data.ward_id._id,
         expire_date:formattedExpireDate,
-        skills:skillIds
+        skills:skillIds,
+        type_money: res.data.type_money._id,
+        degree: res.data.degree._id,
+        level: res.data.level._id,
+        job_type:res.data.job_type._id,
+        type_of_work:res.data.type_of_work._id,
       });
       setRequirements(res.data.professional_skills)
       setExpireDate(formattedExpireDate); 
@@ -170,7 +183,6 @@ export default function JobDetail({
     }
   };
 
-  console.log("adsdadasda",listSkills)
   const handleRemoveBenefit = (benefitToRemove) => {
     setBenefitList(
       benefitList.filter((benefit) => benefit !== benefitToRemove)
@@ -273,7 +285,6 @@ export default function JobDetail({
       type_of_work: values.type_of_work,
       min_experience: values.min_experience,
     };
-    console.log("applicationMethod",values.applicationMethod)
     if (values.applicationMethod === "linkedin") {
       params.apply_linkedin = values.applicationLink;
     } else if (values.applicationMethod === "email") {
@@ -421,11 +432,11 @@ export default function JobDetail({
               ]}
             >
               <Select placeholder="Select money type">
-                <Select.Option value="USD">USD</Select.Option>
-                <Select.Option value="VIETNAM_DONG">
-                  Vietnamese Dong
-                </Select.Option>
-                <Select.Option value="EUR">EUR</Select.Option>
+                {listCurrencies.map((currency)=>{
+                  return(
+                    <Select.Option key={currency._id} value={currency._id}>{currency.code}</Select.Option>
+                  )
+                })}
               </Select>
             </Form.Item>
           </div>
@@ -555,7 +566,7 @@ export default function JobDetail({
             </Form.Item>
 
             <Form.Item
-              label="Education"
+              label="Giáo dục"
               name="degree"
               rules={[
                 {
@@ -565,29 +576,32 @@ export default function JobDetail({
               ]}
             >
               <Select placeholder="Select">
-              <Select.Option value="Bachelor">
-                  Bằng cử nhân
-                </Select.Option>
-                <Select.Option value="Master">Bằng thạc sĩ</Select.Option>
-                <Select.Option value="PhD">Bằng tiến sĩ</Select.Option>
+                {listDegreeTypes.map((degree,idx)=>{
+                  return (
+                    <Select.Option key={degree.key} value={degree._id}>{degree.name}</Select.Option>
+                  )
+                })}
               </Select>
             </Form.Item>
             <Form.Item
-              label="Experience Level"
+              label="Cấp độ yêu cầu"
               name="level"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn mức độ kinh nghiệm",
+                  message: "Vui lòng chọn cấp độ yêu cầu",
                 },
               ]}
             >
               <Select placeholder="Select">
-                <Select.Option value="junior">Junior</Select.Option>
-                <Select.Option value="mid">Mid</Select.Option>
-                <Select.Option value="senior">Senior</Select.Option>
+              {listLevels.map((level,idx)=>{
+                return (
+                <Select.Option value={level._id}>{level.name}</Select.Option>
+                )
+              })}
               </Select>
             </Form.Item>
+
             <Form.List name="general_requirements">
               {(fields, { add, remove }) => (
                 <>
@@ -715,47 +729,19 @@ export default function JobDetail({
               )}
             </Form.List>
 
-            {/* <Form.Item
-              label="Experience"
-              rules={[{ required: true, message: "Experience is required" }]}
-            >
-              <Input
-                placeholder="Enter experience and press Enter..."
-                value={experienceInput}
-                onChange={(e) => setExperienceInput(e.target.value)}
-                onPressEnter={handleAddExperience}
-              />
-              <Button
-                type="primary"
-                onClick={handleAddExperience}
-                className="mt-2"
-              >
-                Add Experience
-              </Button>
-              <div className="mt-4">
-                {experienceList.map((exp, index) => (
-                  <Tag
-                    key={index}
-                    closable
-                    onClose={() => handleRemoveExperience(exp)}
-                    className="m-1"
-                  >
-                    {exp}
-                  </Tag>
-                ))}
-              </div>
-            </Form.Item> */}
-
-            <Form.Item
+<Form.Item
               label="Loại hợp đồng"
               name="job_type"
-              rules={[{ required: true, message: "Vui lòng chọn loại hợp đồng" }]}
-
+              rules={[
+                { required: true, message: "Vui lòng chọn loại hợp đồng" },
+              ]}
             >
               <Select placeholder="Select">
-                <Select.Option value="fulltime">Full Time</Select.Option>
-                <Select.Option value="parttime">Part Time</Select.Option>
-                <Select.Option value="contract">Contract</Select.Option>
+                {listContractTypes.map((type,idx)=>{
+                  return (
+                    <Select.Option key={type.key} value={type._id}>{type.name}</Select.Option>
+                  )
+                })}
               </Select>
             </Form.Item>
           </div>
@@ -932,9 +918,12 @@ export default function JobDetail({
             ]}
           >
             <Select placeholder="Chọn loại hình">
-              <Select.Option value="in_office">In Office (Tại văn phòng)</Select.Option>
-              <Select.Option value="remote">Remote (Từ xa)</Select.Option>
-              <Select.Option value="freelance">Freelance (Làm trực tuyến)</Select.Option>
+
+              {listJobTypes?.map((jobType)=>{
+                return (
+                  <Select.Option key={jobType._id} value={jobType._id}>{jobType.name}</Select.Option>
+                )
+              })}
             </Select>
           </Form.Item>
         </div>

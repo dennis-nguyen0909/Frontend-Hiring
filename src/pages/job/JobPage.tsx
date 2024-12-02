@@ -7,69 +7,69 @@ import {
   Switch,
   Image,
   Checkbox,
+  Empty,
 } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
 import { Bookmark } from "lucide-react";
 import { useEffect, useState } from "react";
 import { JobApi } from "../../services/modules/jobServices";
-import { useNavigationType } from "react-router-dom";
+import { useNavigate, useNavigationType } from "react-router-dom";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useSelector } from "react-redux";
 import { useCities } from "../../hooks/useCities";
 import { useLevels } from "../../hooks/useLevels";
 import { useContractType } from "../../hooks/useContractType";
+import { Meta } from "../../types";
+import LoadingComponent from "../../components/Loading/LoadingComponent";
+import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
+import JobCard from "./Card";
 const { Option } = Select;
-
 export default function JobSearchPage() {
   const { data: listLevels } = useLevels();
   const { data: listContractTypes } = useContractType();
-  const contractTypeDefault = listContractTypes.filter(
-    (item) => item.key === "tat_ca_loai_hop_dong"
-  );
   const [jobSuggestions, setJobSuggestions] = useState([]);
-  const [searchValue, setSearchValue] = useState(""); // Lưu trữ giá trị tìm kiếm
-  const navigate = useNavigationType();
-  const [searchCity, setSearchCity] = useState("all-locations"); // Lưu trữ giá trị tìm kiếm
+  const [searchValue, setSearchValue] = useState("");
+  const navigate = useNavigate();
+  const [searchCity, setSearchCity] = useState("all-locations");
   const [searchContractJob, setSearchContractJob] = useState(
- "tat_ca_loai_hop_dong"
-  ); // Lưu trữ giá trị tìm kiếm
-  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
+    "tat_ca_loai_hop_dong"
+  );
+  const [meta, setMeta] = useState<Meta>({});
+  const [listJobs, setListJobs] = useState<[]>([]);
   const [searchLevels, setSearchLevels] = useState<string[]>(["all_levels"]);
-  const [isLoading, setIsLoading] = useState(false); // Trạng thái loading để tránh gọi API nhiều lần
+  const [isLoadingJob, setIsLoadingJob] = useState<boolean>(false);
   const userDetail = useSelector((state) => state.user);
-  const debouncedSearchValue = useDebounce(searchValue, 500); // Áp dụng debounce với 500ms
+  const debouncedSearchValue = useDebounce(searchValue, 500);
   const { cities } = useCities();
-  // Hàm gọi API tìm kiếm công việc
-  const handleJobSearch = async (query: any, page = 1) => {
+
+  const handleJobSearch = async (query?: any, current = 1, pageSize = 10) => {
     const params = {
-      current: page,
-      pageSize: 10,
+      current: current,
+      pageSize: pageSize,
       query: {
         ...query,
       },
     };
 
-    setIsLoading(true);
-
     try {
-      const res = await JobApi.getAllJobsQuery(params, userDetail?._id);
-      if (page === 1) {
+      setIsLoadingJob(true);
+      const res = await JobApi.findJobsByCompanyName(params, userDetail?._id);
+      if (res.data) {
         setJobSuggestions(res.data.items);
-      } else {
-        setJobSuggestions((prevJobs) => [...prevJobs, ...res.data.items]);
+        setListJobs(res.data.items);
+        setMeta(res.data.meta);
       }
-      setCurrentPage(page);
+      setIsLoadingJob(false);
     } catch (error) {
       console.error("Error fetching jobs: ", error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingJob(false);
     }
   };
 
   useEffect(() => {
     if (debouncedSearchValue) {
       const query = {
-        keyword: debouncedSearchValue,
+        title: debouncedSearchValue,
       };
       handleJobSearch(query, 1);
     } else {
@@ -77,6 +77,9 @@ export default function JobSearchPage() {
     }
   }, [debouncedSearchValue]);
 
+  useEffect(() => {
+    handleJobSearch();
+  }, []);
   const handleSearch = (value) => {
     setSearchValue(value);
   };
@@ -85,17 +88,13 @@ export default function JobSearchPage() {
     setSearchValue(value);
   };
   const onSearch = async () => {
-    console.log("search 1", searchValue);
-    console.log("search 2", searchCity);
-    console.log("search 3", searchContractJob);
-    console.log("search 4", searchLevels);
     const query = {
       title: searchValue,
       city_id: {
         codename: searchCity,
       },
-      type_of_work: searchCity,
-      level: searchLevels,
+      job_type: searchContractJob,
+      level: searchLevels[0],
     };
     await handleJobSearch(query);
   };
@@ -104,17 +103,17 @@ export default function JobSearchPage() {
   };
 
   const handleChangeLevels = (value: string[]) => {
-    console.log("vale", value);
     setSearchLevels(value); // Cập nhật giá trị khi người dùng chọn cấp bậc
   };
   const handleChangeContractJob = (value: string) => {
-    console.log("vaueada", value);
     setSearchContractJob(value);
   };
   const onRemoveFilter = () => {
     setSearchCity("all-locations");
-    setSearchContractJob( "tat_ca_loai_hop_dong");
+    setSearchContractJob("tat_ca_loai_hop_dong");
     setSearchLevels(["all_levels"]);
+    setSearchValue("")
+    handleJobSearch()
   };
 
   return (
@@ -136,11 +135,11 @@ export default function JobSearchPage() {
             onSearch={handleSearch}
             showSearch
             filterOption={false}
-            loading={isLoading} // Hiển thị trạng thái loading khi gọi API
+            loading={isLoadingJob} // Hiển thị trạng thái loading khi gọi API
           >
-            {jobSuggestions.map((job) => (
-              <Select.Option key={job._id} value={job.title}>
-                {job.title} - {job.user_id.company_name}
+            {jobSuggestions?.map((job) => (
+              <Select.Option key={job?._id} value={job?.title}>
+                {job?.title} - {job?.user_id?.company_name}
               </Select.Option>
             ))}
           </Select>
@@ -228,42 +227,41 @@ export default function JobSearchPage() {
           </div>
 
           {/* Job Cards */}
-          <div className="space-y-4">
-            <JobCard
-              company="MBBANK"
-              logo="/placeholder.svg?height=60&width=60"
-              title="Kỹ Sư Phát Triển BackEnd - Khối Công nghệ thông tin (HCLT.03)"
-              location="Quận Cầu Giấy, Hà Nội"
-              tags={["Oracle", "Java", "PostgreSQL", "Spring Boot", "Kafka"]}
-              level="Junior, Middle, Senior"
-              postedDays={3}
-              description={[
-                "Trải nghiệm Thu nhập hấp dẫn với gói đãi ngộ toàn diện:",
-                "Thưởng tháng lương 13; Thưởng thành tích 06 tháng; 1 năm ; Thưởng các...",
-                "Du lịch nghỉ dưỡng hàng năm, Khám sức khỏe định kì; Gói bảo hiểm sức...",
-              ]}
-            />
-
-            <JobCard
-              company="Sacombank"
-              logo="/placeholder.svg?height=60&width=60"
-              title="CHUYÊN VIÊN TÍCH HỢP HỆ THỐNG (JAVA DEVELOPER / ENGINEE..."
-              location="Quận 3, Hồ Chí Minh"
-              tags={["Java", "Back-End", "Oracle Middleware"]}
-              level="Fresher, Trưởng Nhóm, Junior, Middle, Senior"
-              postedDays={3}
-              isHot={true}
-              description={[
-                "Chế độ Lương và thu nhập hấp dẫn: các khoản thưởng vào nhiều dịp Lễ, Tết...",
-                "Được đào tạo nghiệp vụ, kiến thức công việc liên quan;",
-                "Cơ hội nghề nghiệp & lộ trình thăng tiến rõ ràng;",
-              ]}
-            />
-          </div>
+          <LoadingComponent isLoading={isLoadingJob}>
+            <div className="space-y-4">
+              {listJobs.length > 0 ? (
+                listJobs?.map((item) => {
+                  return (
+                    <JobCard
+                      id={item._id}
+                      company={item?.user_id?.company_name}
+                      logo={item?.user_id?.avatar_company}
+                      title={item?.title}
+                      location={
+                        item?.ward_id?.name +
+                        ", " +
+                        item?.district_id?.name +
+                        ", " +
+                        item?.city_id?.name
+                      }
+                      // tags={item.skills}
+                      level={item?.level?.name?.toUpperCase()}
+                      postedDays={item.createdAt}
+                      description={item?.benefit}
+                      type_of_work={item?.type_of_work}
+                      skills={item?.skills}
+                    />
+                  );
+                })
+              ) : (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </div>
+          </LoadingComponent>
         </div>
 
         {/* Sidebar */}
-        <div className="w-80">
+        {/* <div className="w-80">
           <Card className="bg-white">
             <h2 className="text-lg font-medium mb-4">Tiêu điểm</h2>
             <div className="space-y-4">
@@ -278,80 +276,27 @@ export default function JobSearchPage() {
               />
             </div>
           </Card>
-        </div>
+        </div> */}
       </div>
+     {listJobs.length >0 &&  <CustomPagination
+        currentPage={meta.current_page}
+        total={meta.total}
+        perPage={meta.per_page}
+        onPageChange={(current, pageSize) => {
+            const query = {
+              title: searchValue,
+              city_id: {
+                codename: searchCity,
+              },
+              job_type: searchContractJob,
+              level: searchLevels[0],
+            };
+            handleJobSearch(query, current, pageSize);
+        }}
+      />}
     </div>
   );
 }
-
-function JobCard({
-  company,
-  logo,
-  title,
-  location,
-  tags,
-  level,
-  postedDays,
-  isHot = false,
-  description,
-}) {
-  return (
-    <Card className="relative bg-white shadow-sm hover:shadow-md transition-shadow">
-      {isHot && (
-        <div className="absolute top-4 right-4">
-          <Tag color="red" className="font-bold">
-            HOT JOB
-          </Tag>
-        </div>
-      )}
-      <div className="flex gap-4">
-        <Image
-          src={logo}
-          alt={company}
-          width={60}
-          height={60}
-          className="rounded"
-        />
-        <div className="flex-1">
-          <div className="flex justify-between items-start">
-            <h3 className="font-medium text-red-600 hover:underline cursor-pointer">
-              {title}
-            </h3>
-            <Bookmark className="text-gray-400 text-xl" />
-          </div>
-          <div className="text-sm text-gray-600 mb-2">{company}</div>
-          <div className="text-sm mb-2 flex items-center gap-1">
-            <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
-            {location} (In Office)
-          </div>
-          <div className="text-sm mb-2">
-            <span className="font-medium">Đăng nhập để xem mức lương</span> •{" "}
-            {level}
-          </div>
-          <ul className="list-disc list-inside text-sm text-gray-600 mb-2">
-            {description.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-          <div className="flex gap-2 flex-wrap mb-2">
-            {tags.map((tag) => (
-              <Tag
-                key={tag}
-                className="bg-blue-50 text-blue-600 border-blue-100"
-              >
-                {tag}
-              </Tag>
-            ))}
-          </div>
-          <div className="text-sm text-gray-500">
-            Đăng {postedDays} ngày trước
-          </div>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
 function FeaturedCompany({
   name,
   logo,

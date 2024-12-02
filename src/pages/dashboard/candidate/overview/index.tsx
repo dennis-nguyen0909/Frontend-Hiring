@@ -78,7 +78,6 @@ const OverViewCandidate = ({ userDetail }) => {
   const handleGetJobsAppliedRecent = async () => {
     setLoading(true);
     const res = await API_APPLICATION.getRecentlyAppliedCandidate(userDetail?._id, '10', userDetail?.access_token);
-    console.log("res duydeptrai",res)
     if (res.data) {
       const formattedData = res?.data?.map(item => ({
         key: item?._id,
@@ -91,12 +90,10 @@ const OverViewCandidate = ({ userDetail }) => {
         icon: item?.employer_id?.avatar_company,
         is_negotiable:item?.job_id?.is_negotiable
       }));
-      console.log("format",formattedData)
       setJobsApplied(formattedData);
       setLoading(false);
     }
   };
-  console.log("applied",jobsApplied)
 
   useEffect(() => {
     handleGetJobsAppliedRecent();
