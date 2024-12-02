@@ -42,7 +42,7 @@ const ForgotPage = () => {
                 {/* header */}
                 <div className="flex items-center justify-start mt-10  gap-2">
                     <Image src={icon} preview={false} />
-                    <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">MyJob</h1>
+                    <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">HireDev</h1>
                 </div>
                 <div className="flex gap-10 items-center header justify-between mt-[200px]">
                     <div>

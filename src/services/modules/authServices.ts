@@ -5,11 +5,17 @@ import { LoginData, RegisterData, VerifyCode } from '../types';
 
 export const login = async (data: LoginData) => {
   try {
-    const response = await axiosInstance.post('/auth/login', data,{
-      withCredentials:true
-    }); 
+    const response = await axiosInstance.post('/auth/login', data, {
+      withCredentials: true,
+    });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response && error.response.status === 403 && error.response.data.message === 'User not active') {
+      // Bắt lỗi từ UserNotActiveException
+      throw new Error(`User not active: ID ${error.response.data.userId}`);
+    }
+    
+    // Các lỗi khác
     throw new Error(error.response?.data?.message || 'Đăng nhập thất bại');
   }
 };

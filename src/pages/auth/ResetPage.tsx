@@ -88,7 +88,7 @@ const ResetPage = () => {
       <div className="w-full flex justify-center items-center flex-col fixed">
         <div className="flex items-center justify-start mt-10 gap-2 ">
           <Image src={logo} preview={false} />
-          <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">MyJob</h1>
+          <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">HireDev</h1>
 
         </div>
       </div>

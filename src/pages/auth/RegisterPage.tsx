@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Checkbox, Image, Input, notification, Select, Form } from "antd";
 import logo from '../../assets/images/logo.png';
 import icon from '../../assets/icons/logo.png';
@@ -9,6 +9,7 @@ import LoadingComponent from "../../components/Loading/LoadingComponent";
 import { itemsIcon } from "../../helper";
 import facebook from '../../assets/icons/fb.png'
 import google from '../../assets/icons/gg.png'
+import { useSelector } from "react-redux";
 const LoginPage = () => {
     const [fullName, setFullName] = useState<string>('');
     const [username, setUsername] = useState<string>('');
@@ -18,6 +19,14 @@ const LoginPage = () => {
     const [role, setRole] = useState<string>('USER');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigate = useNavigate();
+    const user = useSelector((state: any) => state.user);
+
+    // Redirect to home if the user is already logged in
+    useEffect(() => {
+        if (user?.access_token) {
+            navigate('/');
+        }
+    }, [user]);
 
     const handleNextRegister = () => {
         navigate('/login');
@@ -64,12 +73,12 @@ const LoginPage = () => {
                 initialValues={{ role }}
             >
                 {/* header */}                
-                <div className="flex items-center justify-start mt-10 gap-2">
+                <div className="flex items-center justify-start  gap-2">
                     <Image src={icon} preview={false} />
-                    <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">MyJob</h1>
+                    <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">HireDev</h1>
 
                 </div>
-                <div className="flex gap-10 items-center header justify-between mt-[200px]">
+                <div className="flex gap-10 items-center header justify-between mt-[150px]">
                     <div>
                         <h1 className="font-medium text-3xl">Create account.</h1>
                         <div className="mt-2">
@@ -77,7 +86,7 @@ const LoginPage = () => {
                             <span onClick={handleNextRegister} className="text-blue-500 cursor-pointer"> Log In</span>
                         </div>
                     </div>
-                    <Form.Item name="role">
+                    <Form.Item className="w-[200px]" name="role">
                         <Select
                             value={role}
                             onChange={(value) => setRole(value)}

@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
+  DatePicker,
   Dropdown,
   Empty,
   Form,
   Input,
   Menu,
+  message,
   Radio,
   Space,
+  TimePicker,
   Typography,
 } from "antd";
 import { DownloadOutlined, EllipsisOutlined } from "@ant-design/icons";
@@ -17,6 +20,10 @@ import { useSelector } from "react-redux";
 import GeneralModal from "../../../../components/ui/GeneralModal/GeneralModal";
 import ApplicationCard from "../Application/ApplicationCard";
 import { ChevronsLeft } from "lucide-react";
+import { useForm } from "antd/es/form/Form";
+import { USER_API } from "../../../../services/modules/userServices";
+import moment from "moment";
+import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
 
 const { Title, Text } = Typography;
 interface IPropJobApplication {
@@ -41,6 +48,9 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   const userDetail = useSelector((state) => state.user);
   const [applications, setApplications] = useState<Application[]>([]);
   const [visibleEdit, setVisibleEdit] = useState<boolean>(false);
+  const [visibleEmail, setVisibleEmail] = useState<boolean>(false);
+  const [selectedApplied, setSelectedApplie] = useState<any>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [meta, setMeta] = useState<Meta>({
     count: 0,
     current_page: 1,
@@ -76,6 +86,104 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       </Form>
     );
   };
+
+  const onFinish = async (values: any) => {
+    setIsLoading(true)
+    const params = {
+      ...values,
+      interviewDate: moment(values.interviewDate).format("DD/MM/YYYY"),
+      interviewTime: moment(values.interviewTime).format(" HH:mm:ss"),
+    };
+    const res = await USER_API.employerSendMailtoCandidate(
+      params,
+      userDetail?.access_token
+    );
+    if (+res.statusCode === 201) {
+      setVisibleEmail(false);
+      setSelectedApplie({});
+      message.success("Gửi email thành công!");
+    }
+    setIsLoading(false)
+  };
+  const [form] = useForm();
+  const handleOpenModalEmail = (applied: any) => {
+    setVisibleEmail(true);
+    setSelectedApplie(applied);
+  };
+
+  console.log("userDetail", userDetail);
+  console.log("userDetail title", selectedApplied?.job_id?.title);
+  const renderBodyEmail = () => {
+    return (
+     <LoadingComponentSkeleton isLoading={isLoading}>
+       <Form
+        form={form}
+        onFinish={onFinish}
+        initialValues={{
+          recruiterCompany: userDetail?.company_name,
+          recruiterEmail: userDetail?.email,
+          candidateName: selectedApplied?.user_id?.full_name,
+          jobTitle: selectedApplied?.job_id?.title,
+          candidateEmail: selectedApplied?.user_id?.email,
+        }}
+        layout="vertical"
+      >
+        <Form.Item label="Company Name" name="recruiterCompany">
+          <Input placeholder="Enter company name" disabled />
+        </Form.Item>
+        <Form.Item label="Recruiter Email" name="recruiterEmail">
+          <Input type="email" placeholder="Enter recruiter email" disabled />
+        </Form.Item>
+
+        <Form.Item label="Candidate Name" name="candidateName">
+          <Input placeholder="Enter candidate name" disabled />
+        </Form.Item>
+
+        <Form.Item label="Candidate Email" name="candidateEmail">
+          <Input placeholder="Enter candidate name" disabled />
+        </Form.Item>
+
+        <Form.Item label="Job Title" name="jobTitle">
+          <Input placeholder="Enter job title" disabled />
+        </Form.Item>
+
+        <Form.Item
+          label="Interview Date"
+          name="interviewDate"
+          rules={[
+            { required: true, message: "Please select the interview date!" },
+          ]}
+        >
+          <DatePicker style={{ width: "100%" }} />
+        </Form.Item>
+
+        <Form.Item
+          label="Interview Time"
+          name="interviewTime"
+          rules={[
+            { required: true, message: "Please select the interview time!" },
+          ]}
+        >
+          <TimePicker style={{ width: "100%" }} format="HH:mm" />
+        </Form.Item>
+
+        <Form.Item
+          label="Interview Location"
+          name="interviewLocation"
+          rules={[
+            { required: true, message: "Please input the interview location!" },
+          ]}
+        >
+          <Input placeholder="Enter interview location" />
+        </Form.Item>
+
+        <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+          Generate Email
+        </Button>
+      </Form>
+     </LoadingComponentSkeleton>
+    );
+  };
   const handleGetJobByEmployer = async ({ current = 1, pageSize = 10 }) => {
     const params = {
       current, // Trang hiện tại
@@ -102,8 +210,12 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   return (
     <div className="p-6">
       <div className="mb-6 text-sm text-gray-500">
-      {/* <ChevronLeft /> */}
-      <ChevronsLeft  className="cursor-pointer hover:text-primaryColor rounded-full" onClick={handleChangeHome} size={40} />
+        {/* <ChevronLeft /> */}
+        <ChevronsLeft
+          className="cursor-pointer hover:text-primaryColor rounded-full"
+          onClick={handleChangeHome}
+          size={40}
+        />
         {/* <span className="hover:text-gray-700 cursor-pointer">Home</span>
         {" / "}
         <span className="hover:text-gray-700 cursor-pointer">Job</span>
@@ -116,7 +228,6 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       </div>
 
       <div className="mb-6 flex items-center justify-between">
-        
         <Title level={2} className="m-0">
           Đơn ứng tuyển
         </Title>
@@ -141,20 +252,24 @@ const JobApplication: React.FC<IPropJobApplication> = ({
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
-          {applications.length>0 ? applications?.map((applied) => {
-            return (
-              <>
-                {applied.status === "pending" && (
-                  <ApplicationCard
-                    applied={applied}
-                    handleFetchData={() =>
-                      handleGetJobByEmployer({ current: 1, pageSize: 10 })
-                    }
-                  />
-                )}
-              </>
-            );
-          }) :(<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />)}
+          {applications.length > 0 ? (
+            applications?.map((applied) => {
+              return (
+                <>
+                  {applied.status === "pending" && (
+                    <ApplicationCard
+                      applied={applied}
+                      handleFetchData={() =>
+                        handleGetJobByEmployer({ current: 1, pageSize: 10 })
+                      }
+                    />
+                  )}
+                </>
+              );
+            })
+          ) : (
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          )}
         </div>
 
         <div>
@@ -197,6 +312,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
               <>
                 {applied.status === "accepted" && (
                   <ApplicationCard
+                    handleOpenModalEmail={handleOpenModalEmail}
                     applied={applied}
                     handleFetchData={() =>
                       handleGetJobByEmployer({ current: 1, pageSize: 10 })
@@ -214,6 +330,13 @@ const JobApplication: React.FC<IPropJobApplication> = ({
         renderBody={renderEdit}
         visible={visibleEdit}
         onCancel={() => setVisibleEdit(false)}
+      />
+      <GeneralModal
+        title="Gửi email"
+        onOk={() => setVisibleEmail(false)}
+        renderBody={renderBodyEmail}
+        visible={visibleEmail}
+        onCancel={() => setVisibleEmail(false)}
       />
     </div>
   );

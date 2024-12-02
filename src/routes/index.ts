@@ -16,6 +16,7 @@ import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
 import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
 import JobDetail from '../pages/JobDetail/JobDetail';
 import JobPage from '../pages/job/JobPage';
+import AccountSetup from '../pages/auth/Account/SetupEmployer';
 interface IRoute {
     path: string;
     page: ComponentType ;
@@ -102,6 +103,12 @@ export const routes: IRoute[] = [
         path:'/profile-cv',
         page: ProfileCV,
         isShowHeader:true,
+        isShowFooter:false
+    },
+    {
+        path:'/account-setup',
+        page: AccountSetup,
+        isShowHeader:false,
         isShowFooter:false
     },
     {

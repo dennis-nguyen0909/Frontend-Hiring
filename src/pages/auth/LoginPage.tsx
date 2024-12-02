@@ -28,6 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { getDetailUser, login, retryActive, verifyCode } from "../../services";
 import { updateUser } from "../../redux/slices/userSlices";
+import { USER_API } from "../../services/modules/userServices";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -41,6 +42,9 @@ const LoginPage = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState<string>("");
 
+  const handleCheckActiveUser=async()=>{
+    con
+  }
   useEffect(() => {
     if (user?.access_token) {
       try {
@@ -93,12 +97,26 @@ const LoginPage = () => {
       } else {
         message.success(res.message[0]);
       }
-    } catch (error) {
-      notification.error({
-        message: "Login failed",
-        description: error.message,
-      })
-      console.error("Login failed:", error);
+    } catch (error: any) {
+      // Kiểm tra xem error.message có chứa userId không
+      if (error.message.includes('User not active') && error.message.includes('ID')) {
+        const userId = error.message.split('ID ')[1]; // Lấy userId từ error.message
+        if (userId) {
+          navigate('/verify', {
+            state: {
+              email: values.email,
+              userId: userId,
+            },
+          });
+          const res = await retryActive(values.email);
+          console.log("Res",res)
+        }
+      } else {
+        notification.error({
+          message: "Login failed",
+          description: error.message,
+        });
+      }
     }
   };
   const next = () => {
@@ -127,7 +145,7 @@ const LoginPage = () => {
             onClick={() => navigate("/")}
             className="font-medium text-2xl cursor-pointer"
           >
-            MyJob
+            HireDev
           </h1>
         </div>
         {/* Header */}

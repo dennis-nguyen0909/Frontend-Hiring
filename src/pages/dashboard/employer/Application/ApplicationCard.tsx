@@ -26,12 +26,14 @@ interface IPropsApplicationCard {
   applied: any;
   handleFetchData: () => void;
   className?: any;
+  handleOpenModalEmail:()=>void;
 }
 
 const ApplicationCard = ({
   applied,
   handleFetchData,
   className,
+  handleOpenModalEmail
 }: IPropsApplicationCard) => {
   const { user_id, applied_date, job_id,save_candidates } = applied;
     const userDetail = useSelector(state=>state.user)
@@ -179,6 +181,7 @@ const ApplicationCard = ({
       <Button onClick={onDownloadCvCandidate} icon={<DownloadOutlined />} className="w-full mt-4 !border-black !text-black !hover:text-primaryColor">
         Download CV
       </Button>
+      {applied.status === 'accepted' && <Button onClick={()=>handleOpenModalEmail(applied)}>Gửi email</Button>}
     </Card>
   );
 };

@@ -1,6 +1,6 @@
 import { Button, Image, Input, notification } from "antd";
 import React, { useState } from "react";
-import logo from '../../assets/icons/logo.png';
+import logo from '../../assets/logo/LogoH.png';
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -75,8 +75,8 @@ const VerifyEmail = () => {
     <div>
       <div className="w-full flex justify-center items-center flex-col fixed">
         <div className="flex items-center justify-start mt-10 gap-2 ">
-          <Image src={logo} preview={false} />
-          <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">MyJob</h1>
+          <Image width={40} height={40} src={logo} preview={false} />
+          <h1 onClick={()=>navigate("/")} className="font-medium text-2xl cursor-pointer">HireDev</h1>
         </div>
       </div>
       <div className="w-[500px] flex items-center justify-center h-screen" style={{ width: "100%" }}>
