@@ -26,7 +26,13 @@ export default function JobContractTypeComponent() {
 
   const handleGetAllEmployerSkills = async (params?: any) => {
     try {
-      const res = await JOB_CONTRACT_TYPE_API.getAll(params,userDetail?.access_token)
+      const newParams={
+        ...params,
+        query:{
+          user_id:userDetail?._id
+        }
+      }
+      const res = await JOB_CONTRACT_TYPE_API.getAll(newParams,userDetail?.access_token)
       if (res.data) {
         setListLevels(res.data.items)
         setMeta(res.data.meta)
@@ -202,7 +208,7 @@ export default function JobContractTypeComponent() {
       />
   
       <GeneralModal
-        title="Thêm loại công việc"
+        title="Thêm loại hợp đồng"
         visible={visible}
         onCancel={() => setVisible(false)}
         onOk={() => setVisible(false)}

@@ -98,7 +98,10 @@ const LoginPage = () => {
       setIsLoading(true)
       // await new Promise(resolve => setTimeout(resolve, 3000))
       const { email, password } = values;
+      console.log("duydeptrai",values)
+
       const res = await login({ username: email, password });
+      console.log("duydeptrai",res)
       if (res.data.user) {
         const { access_token} = res.data.user;
         const decoded = jwtDecode(access_token);

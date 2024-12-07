@@ -19,6 +19,7 @@ import * as userServices from '../../../services/modules/userServices'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { updateUser } from '../../../redux/slices/userSlices'
+import { TAB_CURRENCY_TYPE, TAB_DEGREE_TYPE, TAB_JOB_CONTRACT_TYPE, TAB_JOB_TYPE, TAB_LEVEL, TAB_SKILL } from '../../../utils/role.utils'
 
 const { Sider, Content } = Layout
 const { Title, Text } = Typography
@@ -37,6 +38,19 @@ export default function DashBoardEmployer() {
     { key: '6', icon: <DollarOutlined />, label: 'Plans & Billing' },
     // { key: '7', icon: <BankOutlined />, label: 'All Companies' },
     { key: '8', icon: <SettingOutlined />, label: 'Settings' },
+    {
+      key: 'sub4',
+      label: 'Quản lý bài viết',
+      icon: <SettingOutlined />,
+      children: [
+        { key: TAB_SKILL, label: 'Quản lý kỹ năng' },
+        { key: TAB_LEVEL, label: 'Quản lý cấp độ' },
+        { key: TAB_JOB_TYPE, label: 'Quản lý loại hình làm việc' },
+        { key: TAB_JOB_CONTRACT_TYPE, label: 'Quản lý loại hợp đồng' },
+        { key: TAB_DEGREE_TYPE, label: 'Quản lý loại bằng cấp' },
+        { key: TAB_CURRENCY_TYPE, label: 'Quản lý loại tiền tệ' },
+      ],
+    },
   ]
 
 const handleCollapse = async (collapsed: boolean) => {
@@ -56,12 +70,13 @@ useEffect(()=>{
 },[userDetail?.toggle_dashboard])
 
   return (
-    <Layout className="min-h-screen">
+    <Layout className="min-h-screen 123">
       <Sider 
         collapsible 
         collapsed={collapsed} 
         onCollapse={(collapsed) => handleCollapse(collapsed)}
         className="bg-white"
+        width={250}
       >
         <div className="p-4 text-xl font-bold text-center border-b">
           {!collapsed && "EMPLOYERS DASHBOARD"}

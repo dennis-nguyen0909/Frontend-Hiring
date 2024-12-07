@@ -1,5 +1,7 @@
 import { message, notification } from "antd";
 import { axiosInstance } from "../config/axiosInterceptor";
+import axios from "axios";
+import { axiosPythonInstance } from "../config/axiosPythonInstance";
 
 // Định nghĩa một đối tượng JobApi
 export const JobApi = {
@@ -186,6 +188,25 @@ export const JobApi = {
           Authorization: `Bearer ${accessToken}`,
         },
         withCredentials: true,
+      });
+
+      if (res.data) return res.data;
+      return null;
+    } catch (error) {
+      console.error("Error posting job:", error);
+      return null;
+    }
+  },
+  getJobSuggestions: async (params: any,userId:string,accessToken:string)=>{
+    try {
+      const res = await axios.get(`http://127.0.0.1:5000/suggests/67455668d5e90f4464930e1e`,{
+        params: {
+          ...params
+        },
+        headers: {  
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: false
       });
 
       if (res.data) return res.data;

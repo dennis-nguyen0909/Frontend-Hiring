@@ -26,7 +26,13 @@ export default function CurrenciesComponent() {
 
   const handleGetAllEmployerSkills = async (params?: any) => {
     try {
-      const res = await CURRENCY_API.getAll(params,userDetail?.access_token)
+      const newParams={
+        ...params,
+        query:{
+          user_id:userDetail?._id
+        }
+      }
+      const res = await CURRENCY_API.getAll(newParams,userDetail?.access_token)
       if (res.data) {
         setListLevels(res.data.items)
         setMeta(res.data.meta)

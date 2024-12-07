@@ -31,6 +31,12 @@ import { useContractType } from "../../../../hooks/useContractType";
 import { useDegreeType } from "../../../../hooks/useDegreeType";
 import { useJobType } from "../../../../hooks/useJobType";
 import { useCurrency } from "../../../../hooks/useCurrency";
+import GeneralModal from "../../../../components/ui/GeneralModal/GeneralModal";
+import { DEGREE_TYPE_API } from "../../../../services/modules/DegreeTypeService";
+import { Level_API } from "../../../../services/modules/LevelServices";
+import { JOB_CONTRACT_TYPE_API } from "../../../../services/modules/JobContractTypeService";
+import { JOB_TYPE_API } from "../../../../services/modules/JobTypeServices";
+import { CURRENCY_API } from "../../../../services/modules/CurrenciesServices";
 const { Title, Text } = Typography;
 export default function PostJob() {
   const [form] = Form.useForm();
@@ -43,13 +49,15 @@ export default function PostJob() {
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
   const userDetail = useSelector((state) => state.user);
+  const [typeModal, setTypeModal] = useState<string>("");
   const [expireDate, setExpireDate] = useState("");
   const [listSkills, setListSkills] = useState<ListSkillsFormData[]>([]);
-  const {data:listLevels}=useLevels();
-  const {data:listContractTypes}=useContractType();
-  const {data:listDegreeTypes}=useDegreeType();
-  const {data:listJobTypes}=useJobType();
-  const {data:listCurrencies} =useCurrency();
+  const { data: listLevels, refreshData: refreshLevel } = useLevels(1, 30);
+  const { data: listContractTypes, refreshData: refreshContractType } =
+    useContractType(1, 30);
+  const { data: listDegreeTypes, refreshData } = useDegreeType(1, 30); // Lấy dữ liệu từ hook
+  const { data: listJobTypes,refreshData:refreshJobType } = useJobType(1,30);
+  const { data: listCurrencies,refreshData:refreshMoneyType } = useCurrency(1,30);
   const [meta, setMeta] = useState<Meta>({
     count: 0,
     current_page: 1,
@@ -93,27 +101,22 @@ export default function PostJob() {
   const handleEditorChange = (newContent) => {
     setContent(newContent);
   };
-  const handleAddExperience = () => {
-    if (experienceInput.trim()) {
-      setExperienceList([...experienceList, experienceInput]);
-      setExperienceInput("");
-    }
-  };
-  const handleRemoveExperience = (removedExperience) => {
-    setExperienceList(
-      experienceList.filter((exp) => exp !== removedExperience)
-    );
-  };
+
   const handleGetSkillByUser = async (params: any) => {
+    const newParams = {
+      ...params,
+      pageSize: 30,
+    };
     const res = await EmployerSkillApi.getSkillByUserId(
       userDetail.access_token,
-      params
+      newParams
     );
     if (res?.data) {
       setListSkills(res?.data.items);
       setMeta(res?.data.meta);
     }
   };
+
   const [requirements, setRequirements] = useState([]);
 
   const [newTitle, setNewTitle] = useState("");
@@ -122,6 +125,7 @@ export default function PostJob() {
 
   // Thêm yêu cầu vào đúng tựa đề
   const addRequirement = () => {
+    setCurrentSection("");
     if (!newTitle || !newRequirement) {
       message.error("Vui lòng nhập đủ tựa đề và yêu cầu");
       return;
@@ -165,6 +169,48 @@ export default function PostJob() {
       });
     });
   };
+  // SKILLS
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newSkill, setNewSkill] = useState("");
+
+  const handleSkillChange = (value) => {
+    setSelectedSkills(value);
+  };
+
+  const handleAddNewSkill = async () => {
+    const res = await EmployerSkillApi.postSkill(
+      { name: newSkill, user_id: userDetail._id },
+      userDetail.access_token
+    );
+    if (res.data) {
+      notification.success({
+        message: "Notification",
+        description: "Them Thanh Cong!",
+      });
+      handleGetSkillByUser({});
+      setIsModalVisible(false);
+    } else {
+      notification.error({
+        message: "Notification",
+        description: "Them That Bai!",
+      });
+    }
+  };
+
+  const handleOpenModal = (type: string) => {
+    setTypeModal(type);
+    setIsModalVisible(true);
+  };
+  const [formEducation] = Form.useForm();
+  const [formLevel] = Form.useForm();
+  const [formContractType] = Form.useForm();
+  const [formJobType] = Form.useForm();
+  const [formMoneyType]=Form.useForm()
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setNewSkill("");
+  };
   const handleSubmit = async (values: any) => {
     try {
       if (!requirements.length) {
@@ -176,24 +222,24 @@ export default function PostJob() {
       }
 
       if (!values.general_requirements || !values.general_requirements.length) {
-        message.error('Vui lòng nhập yêu cầu chung')
+        message.error("Vui lòng nhập yêu cầu chung");
 
         // notification.error({
         //   message: "Thông báo",
         //   description: "Vui lòng nhập yêu cầu chung",
         // });
-        return; // Nếu cần dừng thực hiện sau khi hiển thị thông báo
+        return;
       }
       if (!values.job_responsibilities.length) {
-        message.error('Vui lòng nhập trách nhiệm công việc')
+        message.error("Vui lòng nhập trách nhiệm công việc");
         // notification.error({
         //   message: "Thông báo",
         //   description: "Vui lòng nhập trách nhiệm công việc",
         // });
         return;
       }
-      if(!values.interview_process.length){
-        message.error('Vui lòng nhập quy trình phỏng vấn')
+      if (!values.interview_process.length) {
+        message.error("Vui lòng nhập quy trình phỏng vấn");
 
         // notification.error({
         //   message: "Thông báo",
@@ -244,7 +290,7 @@ export default function PostJob() {
       }
       const res = await JobApi.postJob(params, userDetail.access_token);
       if (res?.data && +res.statusCode === 201) {
-        message.success('Tạo thành công')
+        message.success("Tạo thành công");
         // notification.success({
         //   message: "Success",
         //   description: "Job posted successfully",
@@ -256,7 +302,7 @@ export default function PostJob() {
         });
       }
     } catch (error) {
-      console.error("errrr",error)
+      console.error("errrr", error);
       notification.error({
         message: "Thông báo",
         description: error,
@@ -264,6 +310,375 @@ export default function PostJob() {
     }
   };
 
+  const onFinish = async (values) => {
+    const { name, description, key } = values;
+    const res = await DEGREE_TYPE_API.create(
+      { name, description, user_id: userDetail._id, key },
+      userDetail.access_token
+    );
+    if (res.data) {
+      notification.success({
+        message: "Thông báo",
+        description: "Thêm thành công",
+      });
+      refreshData();
+      handleCloseModal();
+      formEducation.resetFields();
+    } else {
+      notification.error({
+        message: "Thông báo",
+        description: "Thêm thất bại",
+      });
+    }
+  };
+  const onFinishLevel = async (values) => {
+    const { name, description, key } = values;
+    const res = await Level_API.create(
+      { name, description, user_id: userDetail._id, key },
+      userDetail.access_token
+    );
+    if (res.data) {
+      notification.success({
+        message: "Thông báo",
+        description: "Thêm thành công",
+      });
+      refreshLevel();
+      handleCloseModal();
+      formLevel.resetFields();
+    } else {
+      notification.error({
+        message: "Thông báo",
+        description: "Thêm thất bại",
+      });
+    }
+  };
+  const onFinishContractType = async (values) => {
+    const { name, description, key } = values;
+    const res = await JOB_CONTRACT_TYPE_API.create(
+      { name, description, user_id: userDetail._id, key },
+      userDetail.access_token
+    );
+    if (res.data) {
+      notification.success({
+        message: "Thông báo",
+        description: "Thêm thành công",
+      });
+      refreshContractType();
+      handleCloseModal();
+      formContractType.resetFields()
+
+    } else {
+      notification.error({
+        message: "Thông báo",
+        description: "Thêm thất bại",
+      });
+    }
+  };
+  const onFinishJobType= async(values)=>{
+    const { name, description,key } = values
+    const res = await JOB_TYPE_API.create({ name, description, user_id: userDetail._id,key}, userDetail.access_token)
+    if (res.data) {
+
+      notification.success({
+        message: "Thông báo",
+        description: "Thêm thành công",
+      })
+      refreshJobType()
+      handleCloseModal();
+      formJobType.resetFields();
+      
+    } else {
+      notification.error({
+        message: "Thông báo",
+        description: "Thêm thất bại",
+      })
+    }
+  }
+  const onFinishMoneyType = async(values)=>{
+    const res = await CURRENCY_API.create({user_id: userDetail._id,...values}, userDetail.access_token)
+    if (res.data) {
+      notification.success({
+        message: "Thông báo",
+        description: "Thêm thành công",
+      })
+      refreshMoneyType()
+      handleCloseModal()
+      formMoneyType.resetFields()
+    } else {
+      notification.error({
+        message: "Thông báo",
+        description: "Thêm thất bại",
+      })
+    }
+  }
+  const renderBody = (type: string) => {
+    switch (type) {
+      case "add-skill":
+        return (
+          <>
+            <Space direction="vertical" style={{ width: "100%" }}>
+              <Input
+                placeholder="Nhập tên kỹ năng"
+                value={newSkill}
+                onChange={(e) => setNewSkill(e.target.value)}
+              />
+            </Space>
+            <div className="flex justify-between items-center mt-10">
+              <Button key="cancel" onClick={handleCloseModal}>
+                Hủy
+              </Button>
+              ,
+              <Button key="submit" type="primary" onClick={handleAddNewSkill}>
+                Thêm kỹ năng
+              </Button>
+            </div>
+          </>
+        );
+      case "add-education":
+        return (
+          <>
+            <Form
+              onFinish={onFinish}
+              onValuesChange={(changedValues, values) =>
+                onValuesChange(changedValues, values, formEducation)
+              }
+              form={formEducation}
+            >
+              <Form.Item
+                name="name"
+                label="Tên giáo dục"
+                rules={[
+                  { required: true, message: "Vui lòng nhập tên cấp độ!" },
+                ]}
+              >
+                <Input placeholder="Nhập tên ..." />
+              </Form.Item>
+
+              <Form.Item name="key" label="Key">
+                <Input disabled />
+              </Form.Item>
+
+              <Form.Item name="description" label="Mô tả">
+                <Input.TextArea
+                  placeholder="Nhập mô tả.."
+                  autoSize={{ minRows: 3, maxRows: 6 }}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="w-full !bg-primaryColor"
+                >
+                  Lưu
+                </Button>
+              </Form.Item>
+            </Form>
+          </>
+        );
+      case "add-levels":
+        return (
+          <>
+            <Form
+              form={formLevel}
+              onFinish={onFinishLevel}
+              onValuesChange={(changedValues, allValues) =>
+                onValuesChange(changedValues, allValues, formLevel)
+              } // Hàm theo dõi thay đổi giá trị
+              layout="vertical"
+            >
+              <Form.Item
+                name="name"
+                label="Tên cấp độ"
+                rules={[
+                  { required: true, message: "Vui lòng nhập tên cấp độ!" },
+                ]}
+              >
+                <Input placeholder="Nhập tên ..." />
+              </Form.Item>
+
+              <Form.Item name="key" label="Key">
+                <Input disabled />
+              </Form.Item>
+
+              <Form.Item name="description" label="Mô tả">
+                <Input.TextArea
+                  placeholder="Nhập mô tả.."
+                  autoSize={{ minRows: 3, maxRows: 6 }}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="w-full !bg-primaryColor"
+                >
+                  Lưu
+                </Button>
+              </Form.Item>
+            </Form>
+          </>
+        );
+      case "add_job_contract_type":
+        return (
+          <>
+            <Form
+              form={formContractType}
+              onFinish={onFinishContractType}
+              onValuesChange={(changedValues, allValues) =>
+                onValuesChange(changedValues, allValues, formContractType)
+              } // Hàm theo dõi thay đổi giá trị
+              layout="vertical"
+            >
+              <Form.Item
+                name="name"
+                label="Tên loại hợp đồng"
+                rules={[
+                  { required: true, message: "Vui lòng nhập tên cấp độ!" },
+                ]}
+              >
+                <Input placeholder="Nhập tên ..." />
+              </Form.Item>
+
+              <Form.Item name="key" label="Key">
+                <Input disabled />
+              </Form.Item>
+
+              <Form.Item name="description" label="Mô tả">
+                <Input.TextArea
+                  placeholder="Nhập mô tả.."
+                  autoSize={{ minRows: 3, maxRows: 6 }}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="w-full !bg-primaryColor"
+                >
+                  Lưu
+                </Button>
+              </Form.Item>
+            </Form>
+          </>
+        );
+      case "add_job_type":
+        return (
+          <>
+            <Form
+              form={formJobType}
+              onFinish={onFinishJobType}
+              onValuesChange={(changedValues, allValues) =>
+                onValuesChange(changedValues, allValues, formJobType)
+              } // Hàm theo dõi thay đổi giá trị
+              layout="vertical"
+            >
+              <Form.Item
+                name="name"
+                label="Tên loại hình làm việc"
+                rules={[
+                  { required: true, message: "Vui lòng nhập loại hình làm việc!" },
+                ]}
+              >
+                <Input placeholder="Nhập tên ..." />
+              </Form.Item>
+
+              <Form.Item name="key" label="Key">
+                <Input disabled />
+              </Form.Item>
+
+              <Form.Item name="description" label="Mô tả">
+                <Input.TextArea
+                  placeholder="Nhập mô tả.."
+                  autoSize={{ minRows: 3, maxRows: 6 }}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="w-full !bg-primaryColor"
+                >
+                  Lưu
+                </Button>
+              </Form.Item>
+            </Form>
+          </>
+        );
+      case "add-money-type":
+        return (
+          <>
+          <Form
+            form={formMoneyType}
+            onFinish={onFinishMoneyType}
+            onValuesChange={(changedValues,allValues)=>onValuesChange(changedValues,allValues,formMoneyType)} // Hàm theo dõi thay đổi giá trị
+            layout="vertical"
+          >
+            <Form.Item
+              name="name"
+              label="Tên loại tiền tệ"
+              rules={[{ required: true, message: 'Vui lòng nhập tên loại tiền tệ' }]}
+            >
+              <Input placeholder="Ví dụ: Việt nam đồng" />
+            </Form.Item>
+      
+            <Form.Item
+              name="key"
+              label="Key"
+            >
+              <Input disabled />
+            </Form.Item>
+      
+            <Form.Item
+              name="symbol"
+              label="Ký hiệu"
+              rules={[{ required: true, message: 'Vui lòng nhập ký hiệu!' }]}
+            >
+              <Input placeholder="Ví dụ: $, đ..." />
+            </Form.Item>
+
+            <Form.Item
+              name="code"
+              label="Code"
+              rules={[{ required: true, message: 'Vui lòng nhập code!' }]}
+            >
+              <Input placeholder="Ví dụ: USD, VND..." />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" className="w-full !bg-primaryColor">
+                Lưu
+              </Button>
+            </Form.Item>
+          </Form>
+          </>
+        );
+      default:
+        break;
+    }
+  };
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD") // Chuẩn hóa chuỗi, tách các ký tự có dấu
+      .replace(/[\u0300-\u036f]/g, "") // Xóa các dấu
+      .replace(/đ/g, "d") // Chuyển 'đ' thành 'd'
+      .replace(/Đ/g, "D"); // Chuyển 'Đ' thành 'D'
+  };
+
+  const onValuesChange = (changedValues, allValues, formField) => {
+    if (changedValues.name) {
+      // Loại bỏ dấu tiếng Việt, chuyển thành chữ thường và thay khoảng trắng bằng dấu gạch dưới
+      const key = removeVietnameseTones(changedValues.name)
+        .toLowerCase()
+        .replace(/\s+/g, "_"); // Thay thế khoảng trắng bằng dấu gạch dưới
+      formField?.setFieldsValue({
+        key: key,
+      });
+    }
+  };
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <Form
@@ -369,73 +784,93 @@ export default function PostJob() {
               ]}
             >
               <Select placeholder="Select money type">
-                {listCurrencies.map((currency)=>{
-                  return(
-                    <Select.Option value={currency._id}>{currency.code}</Select.Option>
-                  )
+                {listCurrencies.map((currency) => {
+                  return (
+                    <Select.Option value={currency._id}>
+                      {currency.code}
+                    </Select.Option>
+                  );
                 })}
+                 <Select.Option key="add-money-type" value="add-money-type" disabled>
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() => handleOpenModal("add-money-type")}
+                    style={{ width: "100%" }}
+                  >
+                    Thêm loại tiền
+                  </Button>
+                </Select.Option>
               </Select>
             </Form.Item>
           </div>
         </div>
-        <section>
-          <section>
-            <Title level={5}>
-              <span style={{ color: "red" }}>*</span> <span> </span>
-              Kỹ năng & Chuyên môn
-            </Title>
+        <section className="p-6 bg-white rounded-lg shadow-md mb-4">
+          <Title level={5} className="text-xl font-semibold">
+            <span className="text-red-500">*</span> Kỹ năng & Chuyên môn
+          </Title>
 
-            <div className="space-y-4">
-              {requirements.map((section, index) => (
-                <div key={index}>
-                  <Text strong>{section.title}</Text>
-                  <ul className="list-disc pl-5 space-y-2">
-                    {section.items.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-
-              {/* Phần nhập liệu cho yêu cầu mới */}
-              <div>
-                <Space direction="vertical" size="large">
-                  <Input
-                    placeholder="Nhập tựa đề (ví dụ: 2 năm kinh nghiệm)"
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                  />
-                  <Input
-                    placeholder="Nhập yêu cầu"
-                    value={newRequirement}
-                    onChange={(e) => setNewRequirement(e.target.value)}
-                  />
-                  <Button type="primary" onClick={addRequirement}>
-                    Thêm yêu cầu
-                  </Button>
-                </Space>
+          <div className="space-y-6">
+            {requirements.map((section, index) => (
+              <div key={index}>
+                <Text strong className="text-lg">
+                  {section.title}
+                </Text>
+                <ul className="list-disc pl-6 space-y-2 mt-2">
+                  {section.items.map((item, idx) => (
+                    <li key={idx} className="text-gray-700">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
+            ))}
 
-              {/* Hiển thị tựa đề hiện tại mà người dùng đang chỉnh sửa */}
-              {currentSection && (
-                <div style={{ marginTop: 20 }}>
-                  <Text strong>Đang chỉnh sửa phần: {currentSection}</Text>
-                </div>
-              )}
-
-              {/* Nút để thêm tựa đề mới */}
-              {newTitle && (
+            {/* Phần nhập liệu cho yêu cầu mới */}
+            <div className="mt-6">
+              <Space direction="vertical" size="large" className="w-full">
+                <Input
+                  placeholder="Nhập tựa đề (ví dụ: 2 năm kinh nghiệm)"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="shadow-sm rounded-md border-gray-300"
+                />
+                <Input
+                  placeholder="Nhập yêu cầu"
+                  value={newRequirement}
+                  onChange={(e) => setNewRequirement(e.target.value)}
+                  className="shadow-sm rounded-md border-gray-300"
+                />
                 <Button
-                  type="default"
-                  onClick={handleAddNewSection}
-                  style={{ marginTop: 10 }}
+                  type="primary"
+                  onClick={addRequirement}
+                  className="w-full py-2 mt-4"
                 >
-                  Thêm tựa đề mới
+                  Thêm yêu cầu
                 </Button>
-              )}
+              </Space>
             </div>
-          </section>
+
+            {/* Hiển thị tựa đề hiện tại mà người dùng đang chỉnh sửa */}
+            {currentSection && (
+              <div className="mt-4 text-gray-600">
+                <Text strong>Đang chỉnh sửa phần: {currentSection}</Text>
+              </div>
+            )}
+
+            {/* Nút để thêm tựa đề mới */}
+            {newTitle && (
+              <Button
+                type="default"
+                onClick={handleAddNewSection}
+                className="mt-4 w-full py-2"
+              >
+                Thêm tựa đề mới
+              </Button>
+            )}
+          </div>
         </section>
+
         {/* Advanced Information */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Thông tin nâng cao</h2>
@@ -491,14 +926,26 @@ export default function PostJob() {
                 placeholder="Chọn kỹ năng"
                 mode="multiple"
                 style={{ width: "100%" }}
-                onChange={(value) => {
-                }}
+                value={selectedSkills}
+                onChange={handleSkillChange}
               >
                 {listSkills.map((skill) => (
                   <Select.Option key={skill._id} value={skill._id}>
                     {skill.name}
                   </Select.Option>
                 ))}
+
+                {/* Hiển thị dấu + nếu chưa có kỹ năng nào được chọn */}
+                <Select.Option key="add-skill" value="add-skill" disabled>
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() => handleOpenModal("add-skill")}
+                    style={{ width: "100%" }}
+                  >
+                    Thêm kỹ năng mới
+                  </Button>
+                </Select.Option>
               </Select>
             </Form.Item>
 
@@ -512,14 +959,29 @@ export default function PostJob() {
                 },
               ]}
             >
-              <Select placeholder="Select">
-                {listDegreeTypes.map((degree,idx)=>{
-                  return (
-                    <Select.Option key={degree.key} value={degree._id}>{degree.name}</Select.Option>
-                  )
-                })}
+              <Select placeholder="Select" className="w-full">
+                {listDegreeTypes.map((degree) => (
+                  <Select.Option key={degree._id} value={degree._id}>
+                    {degree.name}
+                  </Select.Option>
+                ))}
+                <Select.Option
+                  key="add-education"
+                  value="add-education"
+                  disabled
+                >
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() => handleOpenModal("add-education")}
+                    className="w-full text-blue-500 hover:bg-blue-100 mt-2"
+                  >
+                    Thêm giáo dục
+                  </Button>
+                </Select.Option>
               </Select>
             </Form.Item>
+
             <Form.Item
               label="Cấp độ yêu cầu"
               name="level"
@@ -531,11 +993,23 @@ export default function PostJob() {
               ]}
             >
               <Select placeholder="Select">
-              {listLevels.map((level,idx)=>{
-                return (
-                <Select.Option value={level._id}>{level.name}</Select.Option>
-                )
-              })}
+                {listLevels.map((level, idx) => {
+                  return (
+                    <Select.Option value={level._id}>
+                      {level.name}
+                    </Select.Option>
+                  );
+                })}
+                <Select.Option key="add-levels" value="add-levels" disabled>
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() => handleOpenModal("add-levels")}
+                    className="w-full text-blue-500 hover:bg-blue-100 mt-2"
+                  >
+                    Thêm cấp độ
+                  </Button>
+                </Select.Option>
               </Select>
             </Form.Item>
 
@@ -668,38 +1142,6 @@ export default function PostJob() {
                 </>
               )}
             </Form.List>
-
-            {/* <Form.Item
-              label="Kinh nghiệm bắt buộc"
-              rules={[{ required: true, message: "Experience is required" }]}
-            >
-              <Input
-                placeholder="Enter experience and press Enter..."
-                value={experienceInput}
-                onChange={(e) => setExperienceInput(e.target.value)}
-                onPressEnter={handleAddExperience}
-              />
-              <Button
-                type="primary"
-                onClick={handleAddExperience}
-                className="mt-2"
-              >
-                Thêm
-              </Button>
-              <div className="mt-4">
-                {experienceList.map((exp, index) => (
-                  <Tag
-                    key={index}
-                    closable
-                    onClose={() => handleRemoveExperience(exp)}
-                    className="m-1"
-                  >
-                    {exp}
-                  </Tag>
-                ))}
-              </div>
-            </Form.Item> */}
-
             <Form.Item
               label="Loại hợp đồng"
               name="job_contract_type"
@@ -708,11 +1150,27 @@ export default function PostJob() {
               ]}
             >
               <Select placeholder="Select">
-                {listContractTypes.map((type,idx)=>{
+                {listContractTypes.map((type, idx) => {
                   return (
-                    <Select.Option key={type.key} value={type._id}>{type.name}</Select.Option>
-                  )
+                    <Select.Option key={type.key} value={type._id}>
+                      {type.name}
+                    </Select.Option>
+                  );
                 })}
+                <Select.Option
+                  key="add_job_contract_type"
+                  value="add_job_contract_type"
+                  disabled
+                >
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() => handleOpenModal("add_job_contract_type")}
+                    className="w-full text-blue-500 hover:bg-blue-100 mt-2"
+                  >
+                    Thêm loại hợp đồng
+                  </Button>
+                </Select.Option>
               </Select>
             </Form.Item>
           </div>
@@ -886,11 +1344,23 @@ export default function PostJob() {
             ]}
           >
             <Select placeholder="Chọn loại hình">
-              {listJobTypes.map((jobType)=>{
+              {listJobTypes.map((jobType) => {
                 return (
-                  <Select.Option key={jobType.key} value={jobType._id}>{jobType.name}</Select.Option>
-                )
+                  <Select.Option key={jobType.key} value={jobType._id}>
+                    {jobType.name}
+                  </Select.Option>
+                );
               })}
+              <Select.Option key="add_job_type" value="add_job_type" disabled>
+                <Button
+                  type="dashed"
+                  icon={<PlusOutlined />}
+                  onClick={() => handleOpenModal("add_job_type")}
+                  className="w-full text-blue-500 hover:bg-blue-100 mt-2"
+                >
+                  Thêm loại hình làm việc
+                </Button>
+              </Select.Option>
             </Select>
           </Form.Item>
         </div>
@@ -965,6 +1435,13 @@ export default function PostJob() {
           </Button>
         </Form.Item>
       </Form>
+      <GeneralModal
+        title="Thêm"
+        visible={isModalVisible}
+        onCancel={handleCloseModal}
+        renderBody={() => renderBody(typeModal)}
+        // footer={false}
+      />
     </div>
   );
 }

@@ -26,7 +26,13 @@ export default function DegreeTypeComponent() {
 
   const handleGetAllEmployerSkills = async (params?: any) => {
     try {
-      const res = await DEGREE_TYPE_API.getAll(params,userDetail?.access_token)
+      const newParams={
+        ...params,
+        query:{
+          user_id:userDetail?._id
+        }
+      }
+      const res = await DEGREE_TYPE_API.getAll(newParams,userDetail?.access_token)
       if (res.data) {
         setListLevels(res.data.items)
         setMeta(res.data.meta)
@@ -203,7 +209,7 @@ export default function DegreeTypeComponent() {
       />
   
       <GeneralModal
-        title="Thêm loại công việc"
+        title="Thêm loại bằng cấp"
         visible={visible}
         onCancel={() => setVisible(false)}
         onOk={() => setVisible(false)}

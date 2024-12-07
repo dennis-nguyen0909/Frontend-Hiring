@@ -441,63 +441,70 @@ export default function JobDetail({
             </Form.Item>
           </div>
         </div>
-        <section>
-          <section>
-          <Title level={5}>
-            <span style={{ color: "red" }}>*</span> <span> </span>
-              Kỹ năng & Chuyên môn 
-            </Title>
+        <section className="p-6 bg-white rounded-lg shadow-md mb-4">
+          <Title level={5} className="text-xl font-semibold">
+            <span className="text-red-500">*</span> Kỹ năng & Chuyên môn
+          </Title>
 
-            <div className="space-y-4">
-              {requirements.map((section, index) => (
-                <div key={index}>
-                  <Text strong>{section.title}</Text>
-                  <ul className="list-disc pl-5 space-y-2">
-                    {section?.items?.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-
-              {/* Phần nhập liệu cho yêu cầu mới */}
-              <div>
-                <Space direction="vertical" size="large">
-                  <Input
-                    placeholder="Nhập tựa đề (ví dụ: 2 năm kinh nghiệm)"
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                  />
-                  <Input
-                    placeholder="Nhập yêu cầu"
-                    value={newRequirement}
-                    onChange={(e) => setNewRequirement(e.target.value)}
-                  />
-                  <Button type="primary" onClick={addRequirement}>
-                    Thêm yêu cầu
-                  </Button>
-                </Space>
+          <div className="space-y-6">
+            {requirements.map((section, index) => (
+              <div key={index}>
+                <Text strong className="text-lg">
+                  {section.title}
+                </Text>
+                <ul className="list-disc pl-6 space-y-2 mt-2">
+                  {section.items.map((item, idx) => (
+                    <li key={idx} className="text-gray-700">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
+            ))}
 
-              {/* Hiển thị tựa đề hiện tại mà người dùng đang chỉnh sửa */}
-              {currentSection && (
-                <div style={{ marginTop: 20 }}>
-                  <Text strong>Đang chỉnh sửa phần: {currentSection}</Text>
-                </div>
-              )}
-
-              {/* Nút để thêm tựa đề mới */}
-              {newTitle && (
+            {/* Phần nhập liệu cho yêu cầu mới */}
+            <div className="mt-6">
+              <Space direction="vertical" size="large" className="w-full">
+                <Input
+                  placeholder="Nhập tựa đề (ví dụ: 2 năm kinh nghiệm)"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="shadow-sm rounded-md border-gray-300"
+                />
+                <Input
+                  placeholder="Nhập yêu cầu"
+                  value={newRequirement}
+                  onChange={(e) => setNewRequirement(e.target.value)}
+                  className="shadow-sm rounded-md border-gray-300"
+                />
                 <Button
-                  type="default"
-                  onClick={handleAddNewSection}
-                  style={{ marginTop: 10 }}
+                  type="primary"
+                  onClick={addRequirement}
+                  className="w-full py-2 mt-4"
                 >
-                  Thêm tựa đề mới
+                  Thêm yêu cầu
                 </Button>
-              )}
+              </Space>
             </div>
-          </section>
+
+            {/* Hiển thị tựa đề hiện tại mà người dùng đang chỉnh sửa */}
+            {currentSection && (
+              <div className="mt-4 text-gray-600">
+                <Text strong>Đang chỉnh sửa phần: {currentSection}</Text>
+              </div>
+            )}
+
+            {/* Nút để thêm tựa đề mới */}
+            {newTitle && (
+              <Button
+                type="default"
+                onClick={handleAddNewSection}
+                className="mt-4 w-full py-2"
+              >
+                Thêm tựa đề mới
+              </Button>
+            )}
+          </div>
         </section>
         {/* Advanced Information */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
