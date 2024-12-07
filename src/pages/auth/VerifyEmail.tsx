@@ -1,30 +1,57 @@
 import { Button, Image, Input, notification } from "antd";
-import React, { useState } from "react";
+import { useState } from "react";
 import logo from '../../assets/logo/LogoH.png';
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { getDetailUser, verifyCode } from "../../services";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { useDispatch } from "react-redux";
 import { updateUser } from "../../redux/slices/userSlices";
+import LoadingComponent from "../../components/Loading/LoadingComponent";
 const VerifyEmail = () => {
   const [codeId, setCodeId] = useState<string>('');
-  const user = useSelector(state=> state.user)
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch =useDispatch();
+  const [isLoading,setIsLoading]=useState<boolean>(false)
+  const dispatch = useDispatch()
   const { email, userId } = location.state || {};
-
+  const handleGetDetailUser = async (id: JwtPayload, access_token: string) => {
+    try {
+        const refresh_token = localStorage.getItem("refresh_token") || '';
+        const res = await getDetailUser(id.sub + "", access_token);
+        if(res.data.items){
+          dispatch(
+              updateUser({
+                  ...res?.data.items,
+                  access_token: access_token,
+                  refresh_token: refresh_token,
+              })
+          );
+          navigate("/",{
+            state:{
+              userId:res?.data?.item?._id
+            }
+          });
+          localStorage.setItem("access_token", access_token);
+          localStorage.setItem("refresh_token", refresh_token);
+        }
+    } catch (error) {
+        notification.error({
+            message: "Failed to fetch user details",
+            description: error.message,
+        });
+    }
+};
   const onSubmitVerify = async () => {
     try {
+      setIsLoading(true)
       const response = await verifyCode({ id: userId, code_id: codeId });
       if (response?.data) {
-        const {access_token,refresh_token}=response.data
-        localStorage.setItem('access_token',access_token);
-        localStorage.setItem('refresh_token',refresh_token);
-        navigate('/');
-        const decodeId = jwtDecode(access_token);
-        handleGetDetailUser(decodeId,access_token)
+        const {access_token}=response.data
+        const decoded = jwtDecode(access_token);
+        if (decoded?.sub) {
+         await handleGetDetailUser(decoded, access_token);
+        }
       }else{
         notification.error({
           message: "Notification",
@@ -36,15 +63,12 @@ const VerifyEmail = () => {
         message: "Notification",
         description: error.message,
       })
+    }finally{
+      setIsLoading(false)
     }
   };
 
-  const handleGetDetailUser =async (id:JwtPayload,access_token:string)=>{
-    const storage = localStorage.getItem('refresh_token');
-    const res = await getDetailUser(id.sub+"", access_token); 
-    dispatch(updateUser({ ...res?.data.items, access_token: access_token, refresh_token: storage }));
-  }
-
+  
   const renderFormVerify = () => {
     return (
       <div className="flex flex-col gap-5">
@@ -57,12 +81,14 @@ const VerifyEmail = () => {
         <div>
           <Input value={codeId} size="large" placeholder="Verification Code" onChange={(e) => setCodeId(e.target.value)} />
         </div>
-        <div className="flex flex-col gap-5 mt-5 justify-center items-center">
-          <Button onClick={onSubmitVerify} className="bg-primaryBlue text-white text-bold w-full" size="large" style={{ backgroundColor: "#0f65cc" }}>
-            Verify my Account
-            <ArrowRightOutlined style={{ fontSize: '18px', fontWeight: 'bold' }} />
-          </Button>
-        </div>
+        <LoadingComponent isLoading={isLoading}>
+          <div className="flex flex-col gap-5 mt-5 justify-center items-center">
+            <Button onClick={onSubmitVerify} className="bg-primaryBlue text-white text-bold w-full" size="large" style={{ backgroundColor: "#0f65cc" }}>
+              Verify my Account
+              <ArrowRightOutlined style={{ fontSize: '18px', fontWeight: 'bold' }} />
+            </Button>
+          </div>
+        </LoadingComponent>
         <div className="text-center">
           <span>Didn’t receive any code?</span>
           <span className="text-blue-500"> Resend</span>

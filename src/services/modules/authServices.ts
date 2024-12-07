@@ -35,7 +35,7 @@ export const verifyCode = async (data: VerifyCode) => {
     const response = await axiosInstance.post('/auth/verify', data);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Đăng ký thất bại');
+    throw new Error(error.response?.data?.message);
   }
 };
 

@@ -44,7 +44,7 @@ interface JobDetail {
   is_active: boolean;
   is_expired: boolean;
   is_negotiable: boolean;
-  job_type: string;
+  job_contract_type: string;
   level: string;
   posted_date: string;
   require_experience: string[];
@@ -451,17 +451,17 @@ export default function JobDetail() {
                   <Text strong>Không yêu cầu</Text>
                 ) : (
                   <Text strong>
-                    {jobDetail?.type_of_work?.name.toLocaleUpperCase()}
+                    {/* {jobDetail?.type_of_work?.name.toLocaleUpperCase()} */}
                   </Text>
                 )}
               </div>
               <div>
                 <Text className="text-gray-500 block">Loại hợp đồng</Text>
-                {!jobDetail?.job_type ? (
+                {!jobDetail?.job_contract_type ? (
                   <Text strong>Không yêu cầu</Text>
                 ) : (
                   <Text strong>
-                    {jobDetail?.job_type?.name.toLocaleUpperCase()}
+                    {jobDetail?.job_contract_type?.name.toLocaleUpperCase()}
                   </Text>
                 )}
               </div>

@@ -125,7 +125,14 @@ const Profile = () => {
   };
   const onChangeSwitch = async (checked: boolean, type: string) => {
     switch (type) {
-      case "allowProfilesToSearch":
+      case "is_suggestion_job":
+         // eslint-disable-next-line no-case-declarations
+         const param = {
+          id: userDetail._id,
+          is_suggestion_job: checked,
+        };
+        await updateUserApi(param);
+
         break;
       case "isSearchJobStatus":
         // eslint-disable-next-line no-case-declarations
@@ -329,12 +336,14 @@ const Profile = () => {
           <Switch
             className="custom-switch"
             onChange={(checked) =>
-              onChangeSwitch(checked, "allowProfilesToSearch")
+              onChangeSwitch(checked, "is_suggestion_job")
             }
+            value={userDetail?.is_suggestion_job}
+
             size="default"
           />
           <span className="ml-2 text-[12px] font-semibold text-grayPrimary">
-            Cho phép NTD tìm kiếm hồ sơ
+            Bật gợi ý việc làm
           </span>
           <div className=" mt-2 text-[12px] text-grayPrimary">
             Khi có cơ hội việc làm phù hợp, NTD sẽ liên hệ và trao đổi với bạn

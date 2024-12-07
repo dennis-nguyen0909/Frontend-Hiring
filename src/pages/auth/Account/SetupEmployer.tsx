@@ -1,103 +1,80 @@
-import { useEffect, useState } from "react";
-import { Button, Progress } from "antd";
-import CompanyInfo from "./CompanyInfo";
-import FoundingInfo from "./FoundingInfo";
-import SocialLinks from "./SocialLinks";
-import Contact from "./Contact";
+import { Avatar } from "antd";
 import Completed from "./Completed";
-import { USER_API } from "../../../services/modules/userServices";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-
-export default function AccountSetup() {
-  const [activeTab, setActiveTab] = useState("company");
-  const userDetail = useSelector(state=>state.user)
-  const [checkField,setCheckField]=useState()
-  const handleTabChange = (id: string) => {
-    setActiveTab(id);
-    handleCheckUpdate();
-  };
-  const navigate =useNavigate()
-  const handleComplete = () => {
-    setActiveTab("completed");
-  };
-  const tabs = [
-    { id: "company", label: "Company Info", content: <CompanyInfo handleTabChange={handleTabChange} /> },
-    { id: "founding", label: "Founding Info", content: <FoundingInfo  handleTabChange={handleTabChange}  /> },
-    { id: "social", label: "Social Media Profile", content: <SocialLinks  handleTabChange={handleTabChange} /> },
-    {
-      id: "contact",
-      label: "Contact",
-      content: <Contact handleTabChange={handleTabChange} />,
-    },
-  ];
-
+import logo from "../../../assets/logo/LogoH.png";
+export default function AccountSetup({ tabs, activeTab }) {
   const progress = (tabs.findIndex((tab) => tab.id === activeTab) + 1) * 25;
 
-  
-  const handleCheckUpdate = async () => {
-    if (userDetail?.role?.role_name === "EMPLOYER") {
-      try {
-        if (userDetail?._id && userDetail?.access_token) {
-          const res = await USERs_API.checkUpdateCompany(userDetail?._id, userDetail?.access_token);
-          if (res.data) {
-            const { company_info, contact, founding_info, social_info } = res.data.progress_setup;
-            setCheckField(res.data.progress_setup);
-
-            // Check for incomplete setup and update activeTab accordingly
-            if (!company_info) {
-              setActiveTab("company");
-            } else if (!founding_info) {
-              setActiveTab("founding");
-            } else if (!social_info) {
-              setActiveTab("social");
-            } else if (!contact) {
-              setActiveTab("contact");
-            } else {
-              navigate("/");
-            }
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-  useEffect(() => {
-    if (userDetail && userDetail._id && userDetail.access_token) {
-      handleCheckUpdate();
-    }
-  }, [userDetail]);
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      {activeTab !== "completed" && (
-        <>
-          <div className="bg-white p-6 shadow-sm">
-            <h1 className="text-2xl font-semibold">Account Setup</h1>
-            <Progress percent={progress} showInfo={false} className="mt-4" />
+    <div>
+      <div className="max-w-7xl mx-auto bg-white ">
+        {/* Logo */}
+        <div className="mb-5">
+          <div className="flex items-center gap-2">
+            {/* <div className="w-8 h-8 bg-primaryColor rounded-lg" /> */}
+            <Avatar shape="square" src={logo} />
+            <span className="text-2xl font-semibold text-[#38151d]">
+              HireDev
+            </span>
           </div>
-          <div className="flex justify-around bg-white p-4 border-b">
-            {tabs.map((tab) => (
-              <Button
-                key={tab.id}
-                type={activeTab === tab.id ? "primary" : "default"}
-                onClick={() => handleTabChange(tab.id)}
-                disabled={tab.id === "company" && checkField?.company_info || tab.id === "founding" && checkField?.founding_info ||  tab.id === "social" && checkField?.social_info ||  tab.id === "contact" && checkField?.contact }
-              >
-                {tab.label}
-              </Button>
-            ))}
+        </div>
+
+        {/* Progress Steps */}
+        {activeTab !== "completed" && (
+          <div className="mb-16">
+            <div className="flex justify-between items-center relative px-8">
+              {tabs.map((tab, index) => {
+                const isCompleted =
+                  index <= tabs.findIndex((tab) => tab.id === activeTab); // So sánh vị trí của tab hiện tại với các tab khác
+                return (
+                  <div
+                    key={tab.id}
+                    className="flex flex-col items-center z-10 w-48"
+                  >
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center mb-3 text-base
+          ${
+            activeTab === tab.id
+              ? "bg-primaryColor text-white"
+              : isCompleted
+              ? "bg-primaryColor text-white"
+              : "bg-gray-200 text-gray-500"
+          }`} // Điều kiện tô nền cho các tab đã hoàn thành
+                    >
+                      {index + 1}
+                    </div>
+                    <span
+                      className={`text-sm ${
+                        activeTab === tab.id
+                          ? "text-primaryColor"
+                          : isCompleted
+                          ? "text-primaryColor"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {tab.label}
+                    </span>
+                  </div>
+                );
+              })}
+              {/* Progress line */}
+              <div className="absolute top-3 left-[10%] right-[10%] h-[3px] bg-gray-200 -z-0">
+                <div
+                  className="h-full bg-primaryColor transition-all duration-300"
+                  style={{
+                    width: `${progress}%`,
+                  }}
+                />
+              </div>
+            </div>
           </div>
-        </>
-      )}
-      <div className="p-6">
-        {activeTab === "completed" ? (
-          <Completed />
-        ) : (
-          tabs.find((tab) => tab.id === activeTab)?.content
         )}
+
+        {/* Content */}
+
+        {/* Tab Content */}
+        <div className="mt-8">
+            <div>{tabs.find((tab) => tab.id === activeTab)?.content}</div>
+        </div>
       </div>
     </div>
   );

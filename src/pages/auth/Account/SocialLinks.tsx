@@ -20,16 +20,22 @@ const SocialLinks = ({handleTabChange}) => {
   };
 
   const onUpdate = async () => {
-    let params;
-     socialLinks.map((social) =>{
-      params={
-        user_id: userDetail?._id,
-        type: social?.type,
-        url: social?.url,
-      }
-     });
-
+    if(socialLinks.length<0){
+      notification.error({
+        message:"Thông báo",
+        description:"Vui lòng chọn link"
+      })
+      return;
+    }
     try {
+      let params;
+       socialLinks.map((social) =>{
+        params={
+          user_id: userDetail?._id,
+          type: social?.type,
+          url: social?.url,
+        }
+       });
       const res = await SOCIAL_LINK_API.create(params, userDetail?.access_token);
       if (res.data) {
         notification.success({
@@ -43,6 +49,7 @@ const SocialLinks = ({handleTabChange}) => {
         message: "Lỗi",
         description: "Có lỗi xảy ra, vui lòng thử lại",
       });
+      return ;
     }
   };
 
@@ -101,9 +108,6 @@ const SocialLinks = ({handleTabChange}) => {
       </Button>
 
       <div className="flex justify-between">
-        <Button disabled size="large">
-          Previous
-        </Button>
         <Button onClick={onUpdate} type="primary" size="large" className="px-8">
           Save & Next
         </Button>

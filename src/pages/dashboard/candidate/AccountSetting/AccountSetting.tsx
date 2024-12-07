@@ -1,23 +1,25 @@
 import { Form, Input, Select, Button, Checkbox, Space, Switch, notification, message } from 'antd';
 import { PhoneOutlined, EnvironmentOutlined, MailOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCities } from '../../../../hooks/useCities';
 import { useDistricts } from '../../../../hooks/useDistricts';
 import { useWards } from '../../../../hooks/useWards';
 import { USER_API } from '../../../../services/modules/userServices';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../../../redux/slices/userSlices';
+import { useNavigate } from 'react-router-dom';
 
 const ContactForm = () => {
     const userDetail = useSelector(state=>state.user)
-    const [city, setCity] = useState( userDetail.city_id._id || "");
+    const [city, setCity] = useState( userDetail?.city_id?._id || "");
     const dispatch =useDispatch()
-    const [district, setDistrict] = useState( userDetail.district_id._id ||"");
-    const [ward, setWard] = useState(userDetail.ward_id._id||"");
+    const [district, setDistrict] = useState( userDetail?.district_id?._id ||"");
+    const [ward, setWard] = useState(userDetail?.ward_id?._id||"");
     const { cities, loading: citiesLoading } = useCities();
     const { districts, loading: districtLoading } = useDistricts(city);
     const { wards, loading: wardsLoading } = useWards(district);
+    const navigate = useNavigate();
     const handleCityChange = (value) => {
         setCity(value);
       };
@@ -34,7 +36,8 @@ const ContactForm = () => {
         id:userDetail?._id,
         district_id:district,
         city_id:city,
-        ward_id:ward
+        ward_id:ward,
+        address:values.address
     }
     try {
         const res = await USER_API.updateUser(params);
@@ -72,12 +75,12 @@ const ContactForm = () => {
     initialValues={{
         email: userDetail?.email,
         phone:userDetail?.phone,
-        role:userDetail?.role.role_name,
-        city:userDetail?.city_id.name,
-        district:userDetail?.district_id.name,
-        ward:userDetail?.ward_id.name,
+        role:userDetail?.role?.role_name,
+        city:userDetail?.city_id?.name,
+        district:userDetail?.district_id?.name,
+        ward:userDetail?.ward_id?.name,
         address:userDetail?.address,
-        location:userDetail?.city_id.name +' , '+ userDetail?.district_id.name +' , '+userDetail?.ward_id.name
+        location:userDetail?.city_id?.name +' , '+ userDetail?.district_id?.name +' , '+userDetail?.ward_id?.name
 
         // location:
     }}

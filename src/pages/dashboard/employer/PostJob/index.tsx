@@ -214,7 +214,7 @@ export default function PostJob() {
         salary_range: salaryRange,
         age_range: ageRange,
         salary_type: values.salary_type,
-        job_type: values.job_type,
+        job_contract_type: values.job_contract_type,
         benefit: benefitList,
         // time_work: values.time_work,
         require_experience: experienceList,
@@ -232,7 +232,7 @@ export default function PostJob() {
         general_requirements: values.general_requirements,
         job_responsibilities: values.job_responsibilities,
         interview_process: values.interview_process,
-        type_of_work: values.type_of_work,
+        job_type: values.job_type,
         min_experience: values.min_experience,
       };
       if (values.applicationMethod === "linkedin") {
@@ -702,7 +702,7 @@ export default function PostJob() {
 
             <Form.Item
               label="Loại hợp đồng"
-              name="job_type"
+              name="job_contract_type"
               rules={[
                 { required: true, message: "Vui lòng chọn loại hợp đồng" },
               ]}
@@ -876,7 +876,7 @@ export default function PostJob() {
 
           {/* Thêm trường Loại hình công việc */}
           <Form.Item
-            name="type_of_work"
+            name="job_type"
             label="Loại hình làm việc"
             rules={[
               {

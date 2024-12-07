@@ -1,5 +1,5 @@
 import { UploadOutlined } from "@ant-design/icons";
-import { Avatar, Button, Form, Input, notification } from "antd";
+import { Avatar, Button, Form, Input, message, notification } from "antd";
 import Dragger from "antd/es/upload/Dragger";
 import { Editor } from "@tinymce/tinymce-react";
 import { useForm } from "antd/es/form/Form";
@@ -19,6 +19,15 @@ const CompanyInfo = ({handleTabChange}) => {
   const [isLoadingBanner, setIsLoadingBanner] = useState<boolean>(false);
 
   const onFinish = async(values: any) => {
+    if (!userDetail?.avatar_company && !values.logo) {
+      message.error("Please upload a logo before proceeding.");
+      return;
+    }
+  
+    if (!userDetail?.banner_company && !values.banner) {
+      message.error("Please upload a banner before proceeding.");
+      return;
+    }
     const params = {
         id:userDetail?._id,
         company_name:values.company_name,
@@ -26,10 +35,6 @@ const CompanyInfo = ({handleTabChange}) => {
     }
     const update = await USER_API.updateUser(params);
     if (update.data) {
-    //   notification.success({
-    //     message: "Thông báo",
-    //     description: "Cập nhật thành công",
-    //   });
       form.setFieldsValue({
         company_name:update?.data?.company_name,
         description:update?.data?.description,
@@ -92,14 +97,12 @@ const CompanyInfo = ({handleTabChange}) => {
         }
       }
     } else if (info.file.status === "error") {
-      console.log("File upload failed:", info.file);
+      console.error("File upload failed:", info.file);
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-lg font-semibold mb-6">Logo & Banner Image</h2>
-
+    <div className="">
       <div className="grid md:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -160,7 +163,6 @@ const CompanyInfo = ({handleTabChange}) => {
           )}
         </div>
       </div>
-
       <Form
         onFinish={onFinish}
         form={form}
@@ -206,7 +208,7 @@ const CompanyInfo = ({handleTabChange}) => {
             />
           </Form.Item>
         </div>
-        <Button htmlType="submit" type="primary" size="large" className="px-8">
+        <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
           Save & Next
         </Button>
       </Form>

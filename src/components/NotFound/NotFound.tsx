@@ -8,9 +8,9 @@ export default function NotFound() {
 
   const handleGoBack = () => {
     if (window.history.length > 2) {
-      navigate(-1)  // Go back to the previous page in history
+      navigate(-1) 
     } else {
-      navigate("/")  // Navigate to the home page if no history is available
+      navigate("/")  
     }
   }
 

@@ -86,11 +86,11 @@ const onApplyNow = async(id)=>{
       salary: job.job_id.salary_range ? `${job.job_id.salary_range.min}-${job.job_id.salary_range.max}` : "Negotiable",
       jobExpire: job.job_id.is_expired ? "Expired" : null,
       bgColor: "bg-gray-200", // Set default background color or customize
-      icon: job.job_id.title.charAt(0), // First letter of job title
-      jobType: job.job_id.job_type,  // Full time, part time etc.
-      jobTypeBg: job.job_id.job_type === "fulltime" ? "bg-blue-100" : "bg-green-100",
-      jobTypeColor: job.job_id.job_type === "fulltime" ? "text-blue-600" : "text-green-600",
-      isExpired: job.job_id.is_expired,
+      icon: job?.job_id?.title.charAt(0), // First letter of job title
+      jobType: job?.job_id?.job_contract_type,  // Full time, part time etc.
+      jobTypeBg: job?.job_id?.job_contract_type === "fulltime" ? "bg-blue-100" : "bg-green-100",
+      jobTypeColor: job?.job_id?.job_contract_type === "fulltime" ? "text-blue-600" : "text-green-600",
+      isExpired: job.job_id?.is_expired,
     }));
   };
 

@@ -115,7 +115,6 @@ function App() {
                   element={
                     <Layout showFooter={route.isShowFooter !== false}>
                       {route.isPrivate ? (
-                        // You can handle authentication logic here
                         <NotFound />
                       ) : (
                         <Page />

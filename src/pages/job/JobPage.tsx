@@ -93,7 +93,7 @@ export default function JobSearchPage() {
       city_id: {
         codename: searchCity,
       },
-      job_type: searchContractJob,
+      job_contract_type: searchContractJob,
       level: searchLevels[0],
     };
     await handleJobSearch(query);
@@ -288,7 +288,7 @@ export default function JobSearchPage() {
               city_id: {
                 codename: searchCity,
               },
-              job_type: searchContractJob,
+              job_contract_type: searchContractJob,
               level: searchLevels[0],
             };
             handleJobSearch(query, current, pageSize);

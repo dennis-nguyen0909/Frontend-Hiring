@@ -170,6 +170,7 @@ const FoundingInfo = ({handleTabChange}) => {
         <label className="block mb-2">Company Vision</label>
         <Editor
           value={companyVision}
+          apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
           onEditorChange={(content) => setCompanyVision(content)}
           init={{
             height: 200,

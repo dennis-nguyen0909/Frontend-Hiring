@@ -66,7 +66,7 @@ export interface IBackendRes<T> {
     district_id: District;        // Thông tin quận
     expire_date: string;          // Ngày hết hạn công việc (ISO string)
     image: string;                // Đường dẫn ảnh công việc (nếu có)
-    job_type: string;             // Loại công việc (vd: fulltime)
+    job_contract_type: string;             // Loại công việc (vd: fulltime)
     level: string;                // Cấp bậc công việc (vd: junior)
     require_experience: string[]; // Kinh nghiệm yêu cầu (mảng chuỗi)
     requirement: string[];        // Các yêu cầu khác (mảng chuỗi)

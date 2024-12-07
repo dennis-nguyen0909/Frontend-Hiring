@@ -29,6 +29,7 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { getDetailUser, login, retryActive, verifyCode } from "../../services";
 import { updateUser } from "../../redux/slices/userSlices";
 import { USER_API } from "../../services/modules/userServices";
+import LoadingComponent from "../../components/Loading/LoadingComponent";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const LoginPage = () => {
   const [current, setCurrent] = useState(0);
   const dispatch = useDispatch();
   const [email, setEmail] = useState<string>("");
+  const[isLoading,setIsLoading]=useState<boolean>(false)
 
   const handleCheckActiveUser=async()=>{
     con
@@ -58,39 +60,51 @@ const LoginPage = () => {
         localStorage.removeItem("token");
       }
     }
-  }, [navigate, user]);
+  }, [user.access_token]);
 
   const handleNavigateRegister = () => {
     navigate("/register");
   };
 
   const handleGetDetailUser = async (id: JwtPayload, access_token: string) => {
-    const storage = localStorage.getItem("refresh_token");
-    const res = await getDetailUser(id.sub + "", access_token);
-    dispatch(
-      updateUser({
-        ...res?.items,
-        access_token: access_token,
-        refresh_token: storage,
-      })
-    );
-  };
-
+    try {
+        const refresh_token = localStorage.getItem("refresh_token") || '';
+        const res = await getDetailUser(id.sub + "", access_token);
+        if(res.data.items){
+          dispatch(
+              updateUser({
+                  ...res?.data.items,
+                  access_token: access_token,
+                  refresh_token: refresh_token,
+              })
+          );
+          navigate("/",{
+            state:{
+              userId:res?.data?.item?._id
+            }
+          });
+          localStorage.setItem("access_token", access_token);
+          localStorage.setItem("refresh_token", refresh_token);
+        }
+    } catch (error) {
+        notification.error({
+            message: "Failed to fetch user details",
+            description: error.message,
+        });
+    }
+};
   const handleLogin = async (values: { email: string; password: string }) => {
     try {
+      setIsLoading(true)
+      // await new Promise(resolve => setTimeout(resolve, 3000))
       const { email, password } = values;
-      // Gọi hàm login từ authService với email và password
       const res = await login({ username: email, password });
       if (res.data.user) {
-        const { access_token, refresh_token } = res.data.user;
-  
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("refresh_token", refresh_token);
+        const { access_token} = res.data.user;
         const decoded = jwtDecode(access_token);
         if (decoded?.sub) {
-          handleGetDetailUser(decoded, access_token);
+         await handleGetDetailUser(decoded, access_token);
         }
-        navigate("/");
       } else if (+res.error_code === 400) {
         setIsActiveUser(true);
         setModalVisible(true);
@@ -109,7 +123,6 @@ const LoginPage = () => {
             },
           });
           const res = await retryActive(values.email);
-          console.log("Res",res)
         }
       } else {
         notification.error({
@@ -117,6 +130,8 @@ const LoginPage = () => {
           description: error.message,
         });
       }
+    }finally{
+      setIsLoading(false)
     }
   };
   const next = () => {
@@ -209,6 +224,8 @@ const LoginPage = () => {
               Forget password?
             </span>
           </div>
+         <div className="w-full">
+         <LoadingComponent  isLoading={isLoading}>
           <div className="flex flex-col  mt-5 justify-center items-center">
             <Button
               type="primary"
@@ -223,6 +240,8 @@ const LoginPage = () => {
               />
             </Button>
           </div>
+          </LoadingComponent>
+         </div>
         </Form>
         <div className="flex items-center justify-center mt-3 text-gray-500">
           <hr className="w-full h-0.95 bg-gray-500" />

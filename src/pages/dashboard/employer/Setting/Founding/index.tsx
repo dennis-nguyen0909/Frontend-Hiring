@@ -170,6 +170,7 @@ useEffect(()=>{
               <div className="mb-6">
                 <label className="block mb-2">Company Vision</label>
                 <Editor
+              apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
                   value={companyVision}
                   onEditorChange={(content) => setCompanyVision(content)}
                   init={{

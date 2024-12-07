@@ -30,7 +30,6 @@ const userDetail=useSelector(state=>state.user)
   const [form]=useForm()
 
   const onFinish =async(values:any)=>{
-    console.log("dadasdada",values)
     const params = {
       id:userDetail?._id,
       city_id:values.city,
@@ -149,17 +148,9 @@ const userDetail=useSelector(state=>state.user)
         </div>
 
         <div className="mt-8 flex justify-between">
-          <Button disabled size="large">
-            Previous
-          </Button>
-          <Button
-            htmlType="submit"
-            type="primary"
-            size="large"
-            className="px-8"
-          >
-            Finish Editing
-          </Button>
+        <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+          Save & Next
+        </Button>
         </div>
       </Form>
     </div>

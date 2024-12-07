@@ -1,14 +1,12 @@
-import { ArrowRightOutlined } from "@ant-design/icons";
 import { Button } from "antd"
 import { CheckIcon } from "lucide-react"
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+interface ICompletedProps {
+  handleCompleted:()=>void;
+}
+const Completed = ({handleCompleted}:ICompletedProps) => {
 
-const Completed = () => {
-  const userDetail = useSelector(state=>state.user)
-  const navigate = useNavigate()
     return (
-      <div className="bg-white min-h-[calc(100vh-theme(spacing.32))] flex flex-col items-center justify-center p-6">
+      <div className="bg-white flex flex-col items-center justify-center p-6">
         <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-8">
           <CheckIcon className="w-10 h-10 text-blue-500" />
         </div>
@@ -24,13 +22,13 @@ const Completed = () => {
         </p>
         
         <div className="flex gap-4">
-          <Button onClick={()=>navigate(`/dashboard/${userDetail?._id}`)} size="large">
-            View Dashboard
+          <Button onClick={handleCompleted} size="large">
+            Get Start
           </Button>
-          <Button onClick={()=>navigate(`/dashboard/${userDetail?._id}`)} type="primary" size="large" className="flex items-center">
+          {/* <Button onClick={()=>navigate(`/dashboard/${userDetail?._id}`)} type="primary" size="large" className="flex items-center">
             Post Job
             <ArrowRightOutlined className="ml-2" />
-          </Button>
+          </Button> */}
         </div>
       </div>
     )

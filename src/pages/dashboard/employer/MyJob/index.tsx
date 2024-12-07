@@ -20,7 +20,7 @@ export default function MyJobEmployer() {
         <div>
           <div className="font-medium">{text}</div>
           <div className="text-gray-500 text-sm">
-            {record.job_type.name} • {new Date(record.expire_date).toLocaleDateString()}
+            {/* {record?.job_contract_type?.name} • {new Date(record.expire_date).toLocaleDateString()} */}
           </div>
         </div>
       ),

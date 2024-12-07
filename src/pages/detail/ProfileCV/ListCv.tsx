@@ -32,6 +32,7 @@ const CVCard = ({ cv, userDetail,onDelete,onUpdate,handleShare }: { cv: CV; user
         const link = document.createElement('a');
         link.href = cv?.cv_link;
         link.download = cv?.cv_name;
+        console.log("linknknknknk",cv)
         link.click();
     }
   return (

@@ -160,8 +160,8 @@ export default function JobDetail({
         type_money: res.data.type_money._id,
         degree: res.data.degree._id,
         level: res.data.level._id,
+        job_contract_type:res?.data?.job_contract_type?._id,
         job_type:res.data.job_type._id,
-        type_of_work:res.data.type_of_work._id,
       });
       setRequirements(res.data.professional_skills)
       setExpireDate(formattedExpireDate); 
@@ -264,7 +264,7 @@ export default function JobDetail({
       ward_id: ward,
       salary_range: salaryRange,
       salary_type: values.salary_type,
-      job_type: values.job_type,
+      job_contract_type: values.job_contract_type,
       benefit: benefitList,
       // time_work: values.time_work, 
       require_experience: experienceList,
@@ -731,7 +731,7 @@ export default function JobDetail({
 
 <Form.Item
               label="Loại hợp đồng"
-              name="job_type"
+              name="job_contract_type"
               rules={[
                 { required: true, message: "Vui lòng chọn loại hợp đồng" },
               ]}
@@ -908,7 +908,7 @@ export default function JobDetail({
           </Form.Item>
 
           <Form.Item
-            name="type_of_work"
+            name="job_type"
             label="Loại hình làm việc"
             rules={[
               {

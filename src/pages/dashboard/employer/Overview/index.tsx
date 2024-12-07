@@ -24,7 +24,7 @@ const OverviewEmployer = () => {
         <div>
           <div className="font-medium">{text}</div>
           <div className="text-gray-500 text-sm">
-            {record?.job_type.name} • {calculateTimeRemaining(record?.expire_date)}
+            {record?.job_contract_type?.name} • {calculateTimeRemaining(record?.expire_date)}
           </div>
         </div>
       ),
