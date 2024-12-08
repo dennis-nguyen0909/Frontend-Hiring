@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { Meta } from "../../../../types";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import moment from "moment";
-import { MapPin } from "lucide-react";
+import { Circle, CircleCheck, CircleX, MapPin } from "lucide-react";
+import { capitalizeFirstLetter } from "../../../../untils";
 interface Applied {
   _id:string;
   user_id:any;
@@ -63,7 +64,13 @@ const Applied = () => {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
-      render: (text) => <span className="text-green-500">✓ {text}</span>,
+      render: (text) => (
+        <div className="flex items-center gap-2" >
+          {console.log("text",text)}
+        <span>{text === 'pending' ? <Circle size={16} className="text-orange-400"/> : text==='rejected' ?<CircleX  className="text-red-500" size={16}/> :<CircleCheck size={16} className="text-green-500" />}</span>
+        <span className={`${text === 'pending' ? "text-orange-400" : text === 'rejected' ? 'text-red-500' :"text-green-500"}`}>  {capitalizeFirstLetter(text)} {console.log("text",text)}</span>
+        </div >
+      )
     },
     {
       title: "ACTION",

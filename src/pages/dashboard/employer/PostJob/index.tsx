@@ -791,7 +791,7 @@ export default function PostJob() {
                     </Select.Option>
                   );
                 })}
-                 <Select.Option key="add-money-type" value="add-money-type" disabled>
+                 {/* <Select.Option key="add-money-type" value="add-money-type" disabled>
                   <Button
                     type="dashed"
                     icon={<PlusOutlined />}
@@ -800,7 +800,7 @@ export default function PostJob() {
                   >
                     Thêm loại tiền
                   </Button>
-                </Select.Option>
+                </Select.Option> */}
               </Select>
             </Form.Item>
           </div>
@@ -965,7 +965,7 @@ export default function PostJob() {
                     {degree.name}
                   </Select.Option>
                 ))}
-                <Select.Option
+                {/* <Select.Option
                   key="add-education"
                   value="add-education"
                   disabled
@@ -978,7 +978,7 @@ export default function PostJob() {
                   >
                     Thêm giáo dục
                   </Button>
-                </Select.Option>
+                </Select.Option> */}
               </Select>
             </Form.Item>
 
@@ -1000,7 +1000,7 @@ export default function PostJob() {
                     </Select.Option>
                   );
                 })}
-                <Select.Option key="add-levels" value="add-levels" disabled>
+                {/* <Select.Option key="add-levels" value="add-levels" disabled>
                   <Button
                     type="dashed"
                     icon={<PlusOutlined />}
@@ -1009,7 +1009,7 @@ export default function PostJob() {
                   >
                     Thêm cấp độ
                   </Button>
-                </Select.Option>
+                </Select.Option> */}
               </Select>
             </Form.Item>
 
@@ -1157,7 +1157,7 @@ export default function PostJob() {
                     </Select.Option>
                   );
                 })}
-                <Select.Option
+                {/* <Select.Option
                   key="add_job_contract_type"
                   value="add_job_contract_type"
                   disabled
@@ -1170,7 +1170,7 @@ export default function PostJob() {
                   >
                     Thêm loại hợp đồng
                   </Button>
-                </Select.Option>
+                </Select.Option> */}
               </Select>
             </Form.Item>
           </div>
@@ -1351,7 +1351,7 @@ export default function PostJob() {
                   </Select.Option>
                 );
               })}
-              <Select.Option key="add_job_type" value="add_job_type" disabled>
+              {/* <Select.Option key="add_job_type" value="add_job_type" disabled>
                 <Button
                   type="dashed"
                   icon={<PlusOutlined />}
@@ -1360,7 +1360,7 @@ export default function PostJob() {
                 >
                   Thêm loại hình làm việc
                 </Button>
-              </Select.Option>
+              </Select.Option> */}
             </Select>
           </Form.Item>
         </div>

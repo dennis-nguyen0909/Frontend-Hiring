@@ -28,9 +28,6 @@ export default function SkillLevel() {
     try {
       const newParams={
         ...params,
-        query:{
-          user_id:userDetail?._id
-        }
       }
       const res = await Level_API.getAll(newParams,userDetail?.access_token)
       if (res.data) {

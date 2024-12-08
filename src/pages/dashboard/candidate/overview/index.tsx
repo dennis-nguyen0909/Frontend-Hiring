@@ -2,7 +2,7 @@ import { Avatar, Button, Table } from "antd";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useEffect, useState } from "react";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
-import { BadgeDollarSign } from "lucide-react";
+import { BadgeDollarSign, Circle, CircleCheck, CircleX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
 
@@ -50,7 +50,10 @@ const OverViewCandidate = ({ userDetail }) => {
       dataIndex: 'status',
       key: 'status',
       render: (text) => (
-        <span className="text-green-500">✓ {text}</span>
+        <div className="flex items-center gap-2" >
+        <span>{text === 'Pending' ? <Circle size={16} className="text-orange-400"/> : text==='Rejected' ?<CircleX  className="text-red-500" size={16}/> :<CircleCheck size={16} className="text-green-500" />}</span>
+        <span className={`${text === 'Pending' ? "text-orange-400" : text === 'Rejected' ? 'text-red-500' :"text-green-500"}`}>  {text} {console.log("text",text)}</span>
+        </div >
       ),
     },
     {
@@ -90,6 +93,7 @@ const OverViewCandidate = ({ userDetail }) => {
         icon: item?.employer_id?.avatar_company,
         is_negotiable:item?.job_id?.is_negotiable
       }));
+      console.log("re.data",res)
       setJobsApplied(formattedData);
       setLoading(false);
     }
@@ -141,13 +145,13 @@ const OverViewCandidate = ({ userDetail }) => {
 
       {/* Profile Alert */}
       {+caculateProfile < 100 && (
-         <div className="bg-red-100 p-4 rounded-lg flex items-center mb-6">
+         <div className="bg-[#e05051] p-4 rounded-lg flex items-center mb-6">
          <Avatar size={50} src={userDetail?.avatar} />
          <div className="flex-1 ml-3">
-           <h3 className="font-semibold text-red-700">Việc chỉnh sửa hồ sơ của bạn chưa hoàn tất.</h3>
-           <p className="text-red-600">Hoàn tất chỉnh sửa hồ sơ của bạn và xây dựng Sơ yếu lý lịch tùy chỉnh của bạn</p>
+           <h3 className="font-semibold text-white">Việc chỉnh sửa hồ sơ của bạn chưa hoàn tất.</h3>
+           <p className="text-white">Hoàn tất chỉnh sửa hồ sơ của bạn và xây dựng Sơ yếu lý lịch tùy chỉnh của bạn</p>
          </div>
-         <Button onClick={() => navigate(`/profile/${userDetail._id}`)} type="primary" className="bg-white text-red-500 border-red-500 hover:bg-red-50">
+         <Button onClick={() => navigate(`/profile/${userDetail._id}`)} type="primary" className="!bg-white !text-[#e05051] !border-red-500 !hover:bg-red-50">
            Cập nhật ngay
          </Button>
        </div>
@@ -162,7 +166,7 @@ const OverViewCandidate = ({ userDetail }) => {
           <a href="#" className="text-blue-500 hover:underline">View all →</a>
         </div>
         <LoadingComponent isLoading={loading}>
-        <Table columns={recentlyAppliedColumns} dataSource={jobsApplied} pagination={false} />
+         <Table columns={recentlyAppliedColumns} dataSource={jobsApplied} pagination={false} />
 
         </LoadingComponent>
       </div>

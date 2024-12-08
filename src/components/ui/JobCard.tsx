@@ -6,6 +6,7 @@ import bagIcon from "../../assets/icons/bagFeatured.png";
 import bookmark from "../../assets/images/company/bookmark.png";
 import defaultImage from "../../assets/images/company/default.png";
 import { ArrowRightOutlined } from "@ant-design/icons";
+import { formatCurrency } from "../../untils";
 
 const JobCard = ({ job }) => {
   const [isHover, setIsHover] = useState<boolean>(false);
@@ -52,7 +53,7 @@ const JobCard = ({ job }) => {
                 src={dollarIcon}
                 preview={false}
               />
-              {job?.salary_range.min} - {job?.salary_range.max}
+            {formatCurrency(job?.salary_range?.min)}{job?.type_money?.symbol} - {formatCurrency(job?.salary_range?.max)}{job?.type_money?.symbol}
             </p>
             <p className="flex items-center gap-1 text-sm">
               <Image

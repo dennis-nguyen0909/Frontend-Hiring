@@ -3,6 +3,8 @@ import { JobCard } from './JobCard'
 import { JobApi } from '../../../services/modules/jobServices'
 import { useSelector } from 'react-redux'
 import { Job, Meta } from '../../../types'
+import CustomPagination from '../../../components/ui/CustomPanigation/CustomPanigation'
+import { current } from '@reduxjs/toolkit'
 
 export default function SuggestionJob() {
   const [jobsSuggests, setJobSuggests] = useState<[]>([])
@@ -15,7 +17,7 @@ export default function SuggestionJob() {
     ))
   }
 
-  const getJobSuggestions = async (current = 1, pageSize = 10) => {
+  const getJobSuggestions = async (current = 1, pageSize = 12) => {
     try {
       const params = { current, pageSize }
       const res = await JobApi.getJobSuggestions(params, userDetail._id, userDetail?.access_token)
@@ -39,11 +41,11 @@ export default function SuggestionJob() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Featured job</h1>
-        <a href="#" className="text-blue-500 hover:text-blue-600 flex items-center gap-1">
+        <h1 className="text-2xl font-bold text-gray-900">Gợi ý việc làm</h1>
+        {/* <a href="#" className="text-blue-500 hover:text-blue-600 flex items-center gap-1">
           View All
           <span className="text-lg">→</span>
-        </a>
+        </a> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -56,6 +58,13 @@ export default function SuggestionJob() {
           />
         ))}
       </div>
+
+      <CustomPagination
+        currentPage={meta.current_page}
+        total={meta.total}
+        perPage={meta.per_page}
+        onPageChange={(current,pageSize)=>getJobSuggestions(current,pageSize)}
+      />
     </div>
   )
 }

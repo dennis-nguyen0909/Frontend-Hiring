@@ -199,7 +199,7 @@ export const JobApi = {
   },
   getJobSuggestions: async (params: any,userId:string,accessToken:string)=>{
     try {
-      const res = await axios.get(`http://127.0.0.1:5000/suggests/67455668d5e90f4464930e1e`,{
+      const res = await axios.get(`http://127.0.0.1:5000/suggests/${userId}`,{
         params: {
           ...params
         },

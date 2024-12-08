@@ -27,7 +27,7 @@ export const useJobType = (page: number = 1, pageSize: number = 10) => {
         {
           page,
           pageSize,
-          query: { user_id: user._id },
+          // query: { user_id: user._id },
         },
         user?.access_token
       );

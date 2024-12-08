@@ -20,6 +20,8 @@ import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { updateUser } from '../../../redux/slices/userSlices'
 import { TAB_CURRENCY_TYPE, TAB_DEGREE_TYPE, TAB_JOB_CONTRACT_TYPE, TAB_JOB_TYPE, TAB_LEVEL, TAB_SKILL } from '../../../utils/role.utils'
+import SkillLevel from '../../employer/SkillLevel/SkillLevel'
+import SkillEmployer from '../../employer/Skill/Skill'
 
 const { Sider, Content } = Layout
 const { Title, Text } = Typography
@@ -44,11 +46,6 @@ export default function DashBoardEmployer() {
       icon: <SettingOutlined />,
       children: [
         { key: TAB_SKILL, label: 'Quản lý kỹ năng' },
-        { key: TAB_LEVEL, label: 'Quản lý cấp độ' },
-        { key: TAB_JOB_TYPE, label: 'Quản lý loại hình làm việc' },
-        { key: TAB_JOB_CONTRACT_TYPE, label: 'Quản lý loại hợp đồng' },
-        { key: TAB_DEGREE_TYPE, label: 'Quản lý loại bằng cấp' },
-        { key: TAB_CURRENCY_TYPE, label: 'Quản lý loại tiền tệ' },
       ],
     },
   ]
@@ -63,6 +60,7 @@ const handleCollapse = async (collapsed: boolean) => {
   dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
 }
 
+console.log("TAB_SKILL",currentTab)
 useEffect(()=>{
   if(userDetail?.toggle_dashboard){
     setCollapsed(userDetail?.toggle_dashboard)
@@ -113,6 +111,9 @@ useEffect(()=>{
           )}
           {currentTab === '5' && (
             <SavedCandidate />
+          )}
+          {currentTab === TAB_SKILL && (
+             <SkillEmployer />
           )}
         </Content>
       </Layout>

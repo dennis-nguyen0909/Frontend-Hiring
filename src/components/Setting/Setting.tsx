@@ -59,8 +59,8 @@ const Setting = () => {
     ];
 
     const settingsItemsEmployeer = [
-      { icon: <User className="w-5 h-5 text-primaryColor" />, text: "Cài đặt thông tin cá nhân", action: (navigate) => navigate(`/setting-profile/${user._id}`) },
-      { icon:  <SquareKanban className="w-5 h-5 text-primaryColor"  />, text: "Quản lý nhà tuyển dụng", action: (navigate) => navigate(`/employer/${user._id}`) },
+      // { icon: <User className="w-5 h-5 text-primaryColor" />, text: "Cài đặt thông tin cá nhân", action: (navigate) => navigate(`/setting-profile/${user._id}`) },
+      // { icon:  <SquareKanban className="w-5 h-5 text-primaryColor"  />, text: "Quản lý nhà tuyển dụng", action: (navigate) => navigate(`/employer/${user._id}`) },
       { icon: <LogOut className="w-5 h-5 text-primaryColor" />, text: "Đăng xuất", action: handleLogout }, 
 
 

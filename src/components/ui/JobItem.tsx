@@ -2,7 +2,7 @@ import { Image } from "antd";
 import React from "react";
 import defaultImage from "../../assets/images/company/default.png";
 import { CircleDollarSign, DollarSign, Heart, MapPin } from "lucide-react";
-import { convertHtmlToText } from "../../untils";
+import { convertHtmlToText, formatCurrency } from "../../untils";
 import { useNavigate } from "react-router-dom";
 import { HeartFilled, HeartOutlined } from "@ant-design/icons";
 
@@ -45,13 +45,12 @@ const JobItem = ({ item }: IJobItemProps) => {
          ):(
           <div className="flex items-center">
           <span className="text-sm text-gray-500">
-            {item.salary_range.min}
+          {formatCurrency(item.salary_range.min)}{item?.type_money?.symbol}
           </span>
           <span className="text-sm text-gray-500"> - </span>
           <span className="text-sm text-gray-500">
-            {item.salary_range.max}
+          {formatCurrency(item?.salary_range?.max)}{item?.type_money?.symbol}
           </span>
-          <DollarSign size={14} className="text-gray-500" />
         </div>
          )}
          </div>

@@ -25,9 +25,9 @@ export const useDegreeType = (page: number = 1, pageSize: number = 10) => {
       const response = await DEGREE_TYPE_API.getAll({
         page,
         pageSize,
-        query: {
-          user_id: user?._id,
-        },
+        // query: {
+        //   user_id: user?._id,
+        // },
       }, user?.access_token);
       return response.data; // Trả về dữ liệu từ API
     },

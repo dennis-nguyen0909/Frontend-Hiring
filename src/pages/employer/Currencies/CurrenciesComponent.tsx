@@ -11,6 +11,7 @@ import { CURRENCY_API } from '../../../services/modules/CurrenciesServices'
 
 export default function CurrenciesComponent() {
   const [form] = Form.useForm<Level>()
+  const [formUpdate]=Form.useForm();
   const [visible, setVisible] = useState<boolean>(false)
   const [visibleDrawer, setVisibleDrawer] = useState<boolean>(false)
   const [listLevels, setListLevels] = useState<Level[]>([])
@@ -28,9 +29,6 @@ export default function CurrenciesComponent() {
     try {
       const newParams={
         ...params,
-        query:{
-          user_id:userDetail?._id
-        }
       }
       const res = await CURRENCY_API.getAll(newParams,userDetail?.access_token)
       if (res.data) {
@@ -68,7 +66,7 @@ export default function CurrenciesComponent() {
   const handleOpenDrawer = (record: any) => {
     setSelectedSkill(record)
     setVisibleDrawer(true)
-    form.setFieldsValue(record)
+    formUpdate.setFieldsValue(record)
   }
 
   const handleUpdate = async (values: any) => {
@@ -80,7 +78,7 @@ export default function CurrenciesComponent() {
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
       setVisibleDrawer(false)
-      form.resetFields()
+      formUpdate.resetFields()
     } else {
       notification.error({
         message: "Thông báo",
@@ -164,13 +162,13 @@ export default function CurrenciesComponent() {
       .replace(/Đ/g, 'D'); // Chuyển 'Đ' thành 'D'
   };
   
-  const onValuesChange = (changedValues, allValues) => {
+  const onValuesChange = (changedValues, allValues,formField) => {
     if (changedValues.name) {
         // Loại bỏ dấu tiếng Việt, chuyển thành chữ thường và thay khoảng trắng bằng dấu gạch dưới
         const key = removeVietnameseTones(changedValues.name)
           .toLowerCase()
           .replace(/\s+/g, '_'); // Thay thế khoảng trắng bằng dấu gạch dưới
-        form.setFieldsValue({
+          formField.setFieldsValue({
           key: key,
         });
       }
@@ -220,7 +218,7 @@ export default function CurrenciesComponent() {
             <Form
             form={form}
             onFinish={onFinish}
-            onValuesChange={onValuesChange} // Hàm theo dõi thay đổi giá trị
+            onValuesChange={(changedValues,allValues)=>onValuesChange(changedValues,allValues,form)} // Hàm theo dõi thay đổi giá trị
             layout="vertical"
           >
             <Form.Item
@@ -267,15 +265,15 @@ export default function CurrenciesComponent() {
         
         onCancel={() => {
           setVisibleDrawer(false);
-          form.resetFields();
+          formUpdate.resetFields();
 
         }}
         onOk={() => {
           setVisibleDrawer(false);
-          form.resetFields();
+          formUpdate.resetFields();
         }}
         renderBody={() => (
-          <Form form={form} onFinish={handleUpdate}       onValuesChange={onValuesChange} layout="vertical">
+          <Form form={formUpdate} onFinish={handleUpdate}       onValuesChange={(changedValues,allValues)=>onValuesChange(changedValues,allValues,formUpdate)} layout="vertical">
          <Form.Item
               name="name"
               label="Tên loại tiền tệ"

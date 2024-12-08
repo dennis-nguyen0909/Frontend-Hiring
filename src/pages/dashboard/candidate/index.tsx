@@ -45,7 +45,7 @@ const DashboardCandidate = () => {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
-        <div className="p-4 text-xl font-bold border-b">CANDIDATE DASHBOARD</div>
+        <div className="p-4 text-xl font-bold border-b text-center">CANDIDATE DASHBOARD</div>
         <nav className="mt-4">
           <a 
             href="#"

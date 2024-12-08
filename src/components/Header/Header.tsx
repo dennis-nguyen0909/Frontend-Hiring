@@ -143,12 +143,12 @@ const Header: React.FC = () => {
   return (
     <header>
       <div
-        className=" justify-between items-center px-primary w-full py-3 sticky hidden md:flex"
+        className=" justify-between items-center px-primary w-full sticky hidden md:flex"
         style={{ backgroundColor: "black" }}
       >
         <div className="flex justify-center items-center">
           <Image src={logo} preview={false} width={64} height={64} />
-          <p className="text-white text-3xl font-bold">HireDev</p>
+          <p className="text-white  font-bold">HireDev</p>
         </div>
         <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap">
           {menuHeader.map((item, idx) => {
@@ -156,7 +156,7 @@ const Header: React.FC = () => {
               <li key={idx}>
                 <div
                   onClick={() => handleClick(item)}
-                  className="text-white text-text-primary transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+                  className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
                 >
                   {item.name}
                 </div>
