@@ -20,38 +20,43 @@ const SocialLinks = ({handleTabChange}) => {
   };
 
   const onUpdate = async () => {
-    if(socialLinks.length<0){
+    if (socialLinks.length <= 0) {
       notification.error({
-        message:"Thông báo",
-        description:"Vui lòng chọn link"
-      })
+        message: "Thông báo",
+        description: "Vui lòng chọn link",
+      });
       return;
     }
+  
     try {
-      let params;
-       socialLinks.map((social) =>{
-        params={
+      const requests = socialLinks.map((social) => {
+        const params = {
           user_id: userDetail?._id,
           type: social?.type,
           url: social?.url,
-        }
-       });
-      const res = await SOCIAL_LINK_API.create(params, userDetail?.access_token);
-      if (res.data) {
+        };
+        return SOCIAL_LINK_API.create(params, userDetail?.access_token);
+      });
+  
+      // Sử dụng Promise.all để chờ tất cả các API hoàn thành
+      const results = await Promise.all(requests);
+  
+      // Kiểm tra kết quả của tất cả các lần gọi API
+      if (results.every((res) => res.data)) {
         notification.success({
           message: "Thông báo",
           description: "Thành công",
         });
-        handleTabChange("contact")
+        handleTabChange("contact");
       }
     } catch (error) {
       notification.error({
         message: "Lỗi",
         description: "Có lỗi xảy ra, vui lòng thử lại",
       });
-      return ;
     }
   };
+  
 
   return (
     <div className="bg-white rounded-lg shadow p-6">

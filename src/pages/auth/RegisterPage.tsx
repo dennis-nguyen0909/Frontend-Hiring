@@ -7,9 +7,11 @@ import {
   notification,
   Select,
   Form,
+  Card,
+  Avatar,
 } from "antd";
 import logo from "../../assets/images/logo.png";
-import icon from "../../assets/icons/logo.png";
+import icon from "../../assets/logo/LogoH.png";
 import {
   ArrowRightOutlined,
   EyeFilled,
@@ -22,6 +24,8 @@ import { itemsIcon } from "../../helper";
 import facebook from "../../assets/icons/fb.png";
 import google from "../../assets/icons/gg.png";
 import { useSelector } from "react-redux";
+import { Building, User } from "lucide-react";
+import { capitalizeFirstLetter } from "../../untils";
 const LoginPage = () => {
   const [fullName, setFullName] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -32,7 +36,20 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const user = useSelector((state: any) => state.user);
+  const [selectedType, setSelectedType] = useState<"user" | "employer" | null>(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
+  useEffect(() => {
+    if (selectedType) {
+      setIsTransitioning(true)
+      const timer = setTimeout(() => setIsTransitioning(false), 300)
+      return () => clearTimeout(timer)
+    }
+  }, [selectedType])
+
+  const handleTypeSelect = (type: "user" | "employer") => {
+    setSelectedType(type)
+  }
   useEffect(() => {
     if (user?.access_token) {
       navigate("/");
@@ -46,7 +63,8 @@ const LoginPage = () => {
   const handleSubmit = async (values: any) => {
     try {
       setIsLoading(true);
-      const { fullName, username, email, password, role } = values;
+      const { fullName, username, email, password } = values;
+      const role = selectedType?.toUpperCase()
       const res = await authServices.register({
         full_name: fullName,
         username,
@@ -85,14 +103,14 @@ const LoginPage = () => {
   const renderFormCreate = () => {
     return (
       <Form
-        className="w-[500px]"
+        className="w-[500px] mt-5"
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{ role }}
       >
         {/* header */}
-        <div className="flex items-center justify-start  gap-2">
-          <Image src={icon} preview={false} />
+        <div className="flex items-center justify-start gap-2">
+          <Avatar shape="square" src={icon} />
           <h1
             onClick={() => navigate("/")}
             className="font-medium text-2xl cursor-pointer"
@@ -100,34 +118,40 @@ const LoginPage = () => {
             HireDev
           </h1>
         </div>
-        <div className="flex gap-10 items-center header justify-between mt-[150px]">
-          <div>
-            <h1 className="font-medium text-3xl">Create account.</h1>
-            <div className="mt-2">
-              <span className="text-gray-500 text-1xl">
-                Already have an account?
-              </span>
-              <span
-                onClick={handleNextRegister}
-                className="text-blue-500 cursor-pointer"
-              >
-                {" "}
-                Log In
-              </span>
-            </div>
+
+        <Card className=" bg-gray-50 border-0 mt-10">
+        <h2 className="text-center text-gray-500 text-lg mb-4">CREATE ACCOUNT AS A</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <div
+            className={`p-1 bg-white rounded-lg border cursor-pointer flex items-center gap-3 ${
+              selectedType === "user" ? "ring-2 ring-blue-500" : "hover:bg-gray-50"
+            }`}
+            style={{
+              transform: isTransitioning && selectedType === "user" ? "scale(1.05)" : "scale(1)",
+              opacity: isTransitioning && selectedType !== "user" ? 0.5 : 1,
+              transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out"
+            }}
+            onClick={() => handleTypeSelect("user")}
+          >
+            <User className="w-6 h-6 text-gray-600" />
+            <span className="text-lg text-gray-600">Candidate</span>
           </div>
-          <Form.Item className="w-[200px]" name="role">
-            <Select
-              value={role}
-              onChange={(value) => setRole(value)}
-              placeholder="Select a role"
-              options={[
-                { value: "EMPLOYER", label: "Employer" },
-                { value: "USER", label: "User" },
-              ]}
-            />
-          </Form.Item>
+          <div
+            className={`p-1 bg-[#0A2647] rounded-lg cursor-pointer flex items-center gap-3 ${
+              selectedType === "employer" ? "ring-2 ring-blue-500" : "hover:bg-[#0A2647]/90"
+            }`}
+            style={{
+              transform: isTransitioning && selectedType === "employer" ? "scale(1.05)" : "scale(1)",
+              opacity: isTransitioning && selectedType !== "employer" ? 0.5 : 1,
+              transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out"
+            }}
+            onClick={() => handleTypeSelect("employer")}
+          >
+            <Building className="w-6 h-6 text-white" />
+            <span className="text-lg text-white">Employers</span>
+          </div>
         </div>
+      </Card>
         {/* body */}
         <div className="flex flex-col mt-5">
           <div className="flex gap-5 justify-between">
@@ -292,12 +316,12 @@ const LoginPage = () => {
   return (
     <div className="flex justify-between items-center overflow-hidden">
       <div className="flex flex-col gap-[100px] h-screen w-3/6 pl-[150px]">
-        <div className="flex align-center justify-center">
+        <div className="flex align-center justify-center ">
           {renderFormCreate()}
         </div>
       </div>
       <div className="flex flex-col gap-[100px] h-screen w-2/4 relative">
-        <img src={logo} alt="" className=" position-absolute h-auto" />
+        <img src={logo} alt="" className="fixed h-full" />
         <p className="absolute font-normal text-3xl text-white bottom-[250px] left-[100px]">
           Over 1,75,324 candidates
           <br /> waiting for good employers.

@@ -59,5 +59,18 @@ export const SOCIAL_LINK_API = {
     if (res.data) return res.data;
     return null;
   },
+  getAll:async (params:any,accessToken:string)=>{
+    const res = await axiosInstance.get(`${SOCIAL_LINKS}`,{
+      params: {
+        ...params
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (res.data) return res.data;
+    return null;
+  }
   
 };

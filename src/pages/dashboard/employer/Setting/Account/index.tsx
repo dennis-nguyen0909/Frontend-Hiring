@@ -1,9 +1,6 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import { Tabs, Form, Input, Button, Select, Modal, message, notification } from 'antd'
 import { UserOutlined, GlobalOutlined, WifiOutlined, SettingOutlined, MailOutlined, EyeOutlined, EyeInvisibleOutlined, DeleteOutlined } from '@ant-design/icons'
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'
 import { useSelector } from 'react-redux'
 import * as userServices from '../../../../../services/modules/userServices'
 import { useDispatch } from 'react-redux'
