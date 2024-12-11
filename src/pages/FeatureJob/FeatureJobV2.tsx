@@ -9,6 +9,7 @@ import { CitiesAPI } from "../../services/modules/citiesServices";
 import { useSelector } from "react-redux";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 import SliderSalary from "../../components/SalarySlider/SalarySlider";
+import { JobCard } from "../home/SuggestionJob/JobCard";
 
 const FeatureJobV2 = () => {
   const [jobs, setJobs] = useState([]);
@@ -231,7 +232,8 @@ const FeatureJobV2 = () => {
       {jobs?.length > 0 ? (
         <div className="grid grid-cols-3 gap-4">
           {jobs.map((job, idx) => (
-            <JobItem item={job} key={idx} />
+            // <JobItem item={job} key={idx} />
+            <JobCard key={job?._id} job={job} />
           ))}
         </div>
       ) : (

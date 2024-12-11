@@ -1,14 +1,14 @@
-import { Checkbox, Form, Input, InputNumber, notification } from "antd";
+import { Checkbox, Form, InputNumber, notification, Button, Row, Col } from "antd";
 import * as userServices from "../../../../services/modules/userServices";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
+
 const ExperienceNumberCandidate = () => {
   const [form] = Form.useForm(); // Đảm bảo khai báo form đúng cách
   const userDetail = useSelector((state) => state.user);
-  const {
-    handleUpdateProfile
-  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+  const { handleUpdateProfile } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+
   const onFinish = async (values: any) => {
     const params = {
       ...values,
@@ -18,7 +18,7 @@ const ExperienceNumberCandidate = () => {
     if (res.data) {
       notification.success({
         message: "Notification",
-        description: "Cập nhật thống tin năm kinh nghiệm",
+        description: "Cập nhật thông tin năm kinh nghiệm",
       });
       await handleUpdateProfile();
     } else {
@@ -38,56 +38,72 @@ const ExperienceNumberCandidate = () => {
   }, []);
 
   return (
-    <Form form={form} onFinish={onFinish}>
-      <h1>Số năm kinh nghiệm</h1>
-
-      <Form.Item
-        label="Không có kinh nghiệm"
-        name="no_experience"
-        valuePropName="checked"
+    <div style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Số năm kinh nghiệm</h1>
+      
+      <Form
+        form={form}
+        onFinish={onFinish}
+        layout="vertical"
+        style={{ maxWidth: '600px', margin: '0 auto' }} // Căn giữa form
       >
-        <Checkbox>Không có kinh nghiệm</Checkbox>
-      </Form.Item>
+        <Form.Item
+          label="Không có kinh nghiệm"
+          name="no_experience"
+          valuePropName="checked"
+        >
+          <Checkbox>Không có kinh nghiệm</Checkbox>
+        </Form.Item>
 
-      <Form.Item
-        label="Số tháng kinh nghiệm"
-        name="total_experience_months"
-        rules={[
-          {
-            required: !form.getFieldValue("no_experience"),
-            message: "Vui lòng nhập số tháng kinh nghiệm",
-          },
-        ]}
-      >
-        <InputNumber
-          min={0}
-          max={1000}
-          placeholder="Nhập số tháng kinh nghiệm"
-          style={{ width: "100%" }}
-        />
-      </Form.Item>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Số tháng kinh nghiệm"
+              name="total_experience_months"
+              rules={[
+                {
+                  required: !form.getFieldValue("no_experience"),
+                  message: "Vui lòng nhập số tháng kinh nghiệm",
+                },
+              ]}
+            >
+              <InputNumber
+                min={0}
+                max={1000}
+                placeholder="Nhập số tháng"
+                style={{ width: "100%" }}
+              />
+            </Form.Item>
+          </Col>
 
-      <Form.Item
-        label="Số năm kinh nghiệm"
-        name="total_experience_years"
-        rules={[
-          {
-            required:
-              form.getFieldValue("total_experience_months") === undefined,
-            message: "Vui lòng nhập số năm kinh nghiệm",
-          },
-        ]}
-      >
-        <InputNumber
-          min={0}
-          max={100}
-          placeholder="Nhập số năm kinh nghiệm"
-          style={{ width: "100%" }}
-        />
-      </Form.Item>
+          <Col span={12}>
+            <Form.Item
+              label="Số năm kinh nghiệm"
+              name="total_experience_years"
+              rules={[
+                {
+                  required: form.getFieldValue("total_experience_months") === undefined,
+                  message: "Vui lòng nhập số năm kinh nghiệm",
+                },
+              ]}
+            >
+              <InputNumber
+                min={0}
+                max={100}
+                placeholder="Nhập số năm"
+                style={{ width: "100%" }}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-      <button type="submit">Submit</button>
-    </Form>
+        <Form.Item style={{ textAlign: 'center' }}>
+          <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: '20px' }}>
+            Cập nhật
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
   );
 };
 

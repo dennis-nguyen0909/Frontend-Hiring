@@ -19,29 +19,47 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { CV_API } from "../../../../services/modules/CvServices";
-import PDFViewer from "../../../../components/PDFViewer/PDFViewer";
 import { USER_API } from "../../../../services/modules/userServices";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../../../redux/slices/userSlices";
 import { useNavigate } from "react-router-dom";
+import { useCities } from "../../../../hooks/useCities";
+import { useDistricts } from "../../../../hooks/useDistricts";
+import { useWards } from "../../../../hooks/useWards";
 interface CV {
-  _id: string; // ID của CV
-  user_id: string; // ID của người dùng
-  cv_name: string; // Tên của CV (tên file)
-  cv_link: string; // Link tải CV
-  public_id: string; // Public ID của CV trên cloud storage
-  createdAt: string; // Thời gian tạo CV (dưới dạng ISO string)
-  updatedAt: string; // Thời gian cập nhật CV (dưới dạng ISO string)
+  _id: string; 
+  user_id: string; 
+  cv_name: string; 
+  cv_link: string;
+  public_id: string;
+  createdAt: string;
+  updatedAt: string; 
 }
 
 const Personal = () => {
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string>("");
   const [listCv, setListCv] = useState<CV[]>([]);
   const userDetail = useSelector((state) => state.user);
-  const dispatch = useDispatch()
-  const [iframeSrc, setIframeSrc] = useState(""); // Sử dụng state này để lưu file PDF link
+  const dispatch = useDispatch();
+  const [iframeSrc, setIframeSrc] = useState("");
+  const [city, setCity] = useState( userDetail?.city_id?._id || "");
+  const [district, setDistrict] = useState( userDetail?.district_id?._id ||"");
+  const [ward, setWard] = useState(userDetail?.ward_id?._id||"");
+  const { cities, loading: citiesLoading } = useCities();
+  const { districts, loading: districtLoading } = useDistricts(city);
+  const { wards, loading: wardsLoading } = useWards(district);
+  const handleCityChange = (value) => {
+      setCity(value);
+    };
+    const handleDistrictChange = (value) => {
+      setDistrict(value);
+    };
+  
+    const handleWardChange = (value) => {
+      setWard(value);
+    };
   const handleGetCVbyUser = async (current = 1, pageSize = 10) => {
     const params = {
       current,
@@ -67,12 +85,21 @@ const Personal = () => {
     const params = {
       ...values,
       id: userDetail?._id,
+      city_id:city,
+      district_id:district,
+      ward_id:ward
     };
     const res = await USER_API.updateUser(params);
-    if(res.data){
-      dispatch(updateUser({ ...res?.data, access_token: userDetail?.access_token, refresh_token: userDetail?.refresh_token }));
+    if (res.data) {
+      dispatch(
+        updateUser({
+          ...res?.data,
+          access_token: userDetail?.access_token,
+          refresh_token: userDetail?.refresh_token,
+        })
+      );
+      message.success("Changes saved successfully");
     }
-    message.success("Changes saved successfully");
   };
 
   const handleFileUpload = (info) => {
@@ -123,9 +150,13 @@ const Personal = () => {
         onFinish={handleSaveChanges}
         initialValues={{
           full_name: userDetail?.full_name,
-          introduce:userDetail?.introduce,
-          port_folio:userDetail?.port_folio,
-          gender:userDetail?.gender
+          introduce: userDetail?.introduce,
+          port_folio: userDetail?.port_folio,
+          gender: userDetail?.gender,
+          city:userDetail?.city_id?.name,
+          district:userDetail?.district_id?.name,
+          ward:userDetail?.ward_id?.name,
+          address:userDetail?.address
         }}
       >
         <div className="">
@@ -162,59 +193,133 @@ const Personal = () => {
             )}
           </div>
           <Form.Item
-  label="Họ và tên"
-  name="full_name"
-  rules={[{ required: true, message: "Please enter your full name" }]}
-  style={{ width: '500px' }} // Thiết lập chiều rộng cố định hoặc tùy chỉnh
->
-  <Input placeholder="Enter your full name" />
-</Form.Item>
-<Form.Item
- style={{ width: '500px' }}
-        name="gender"
-        label="Giới tính"
-        rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}
-      >
-        <Select placeholder="Chọn giới tính">
-          <Select.Option value={0}>Nam</Select.Option>
-          <Select.Option value={1}>Nữ</Select.Option>
-          <Select.Option value={2}>Không xác định</Select.Option>
-        </Select>
-      </Form.Item>
-<Form.Item
-  label="Giới thiệu"
-  name="introduce"
-  rules={[{ required: true, message: "Please input your introduction!" }]}
-  style={{ marginBottom: '20px', width: '800px' }} // Chiều rộng cố định cho TextArea
->
-  <Input.TextArea
-    placeholder="Enter your introduction"
-    autoSize={{ minRows: 3, maxRows: 6 }}
-    showCount
-    maxLength={200}
-    style={{ borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
-  />
-</Form.Item>
+            label="Họ và tên"
+            name="full_name"
+            rules={[{ required: true, message: "Please enter your full name" }]}
+            style={{ width: "500px" }} // Thiết lập chiều rộng cố định hoặc tùy chỉnh
+          >
+            <Input placeholder="Enter your full name" />
+          </Form.Item>
+          <Form.Item
+            style={{ width: "500px" }}
+            name="gender"
+            label="Giới tính"
+            rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+          >
+            <Select placeholder="Chọn giới tính">
+              <Select.Option value={0}>Nam</Select.Option>
+              <Select.Option value={1}>Nữ</Select.Option>
+              <Select.Option value={2}>Không xác định</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Giới thiệu"
+            name="introduce"
+            rules={[
+              { required: true, message: "Please input your introduction!" },
+            ]}
+            style={{ marginBottom: "20px", width: "800px" }} // Chiều rộng cố định cho TextArea
+          >
+            <Input.TextArea
+              placeholder="Enter your introduction"
+              autoSize={{ minRows: 3, maxRows: 6 }}
+              showCount
+              maxLength={200}
+              style={{
+                borderRadius: "8px",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+              }}
+            />
+          </Form.Item>
 
-<Form.Item
-  label="Port Folio"
-  name="port_folio"
-  rules={[
-    {
-      type: "url",
-      message: "Please enter a valid URL",
-    },
-  ]}
-  className="col-span-1 md:col-span-2"
-  style={{ width: '500px' }} // Thiết lập chiều rộng cố định cho Input
->
-  <Input
-    prefix={<LinkOutlined className="site-form-item-icon" />}
-    placeholder="Website URL..."
-  />
-</Form.Item>
-
+          <Form.Item
+            label="Port Folio"
+            name="port_folio"
+            rules={[
+              {
+                type: "url",
+                message: "Please enter a valid URL",
+              },
+            ]}
+            className="col-span-1 md:col-span-2"
+            style={{ width: "500px" }} // Thiết lập chiều rộng cố định cho Input
+          >
+            <Input
+              prefix={<LinkOutlined className="site-form-item-icon" />}
+              placeholder="Website URL..."
+            />
+          </Form.Item>
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* City Field */}
+            <Form.Item
+              label="Thành phố"
+              name="city"
+              rules={[{ required: true, message: "Vui lòng chọn thành phố" }]}
+            >
+              <Select
+                placeholder="Chọn Thành Phố"
+                value={city}
+                onChange={handleCityChange}
+                loading={citiesLoading}
+              >
+                {/* Render city options dynamically from the hook */}
+                {cities.map((cityItem) => (
+                  <Select.Option key={cityItem._id} value={cityItem._id}>
+                    {cityItem.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            {/* District Field */}
+            <Form.Item
+              label="Quận/Huyện"
+              name="district"
+              rules={[{ required: true, message: "Vui lòng chọn quận huyện" }]}
+            >
+              <Select
+                placeholder="Chọn Quận/Huyện"
+                value={district}
+                onChange={handleDistrictChange}
+                loading={districtLoading}
+              >
+                {/* Render city options dynamically from the hook */}
+                {districts.map((district) => (
+                  <Select.Option key={district._id} value={district._id}>
+                    {district.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Ward Field */}
+            <Form.Item
+              label="Xã"
+              name="ward"
+              rules={[{ required: true, message: "Vui lòng chọn xã" }]}
+            >
+              <Select
+                placeholder="Chọn xã..."
+                value={ward}
+                onChange={handleWardChange}
+                loading={wardsLoading}
+              >
+                {wards.map((ward) => (
+                  <Select.Option key={ward._id} value={ward._id}>
+                    {ward.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            {/* Address Field */}
+            <Form.Item label="Địa chỉ" name="address">
+              <Input placeholder="Vui lòng nhập địa chỉ" />
+            </Form.Item>
+          </div>
         <Form.Item>
           <Button
             type="primary"
@@ -266,7 +371,7 @@ const Personal = () => {
         ))}
         <div className="bg-white border-2 border-dashed border-gray-300 p-4 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-500 transition-colors">
           <PlusOutlined className="text-2xl mr-2" />
-          <div onClick={()=>navigate('/upload-cv')}>
+          <div onClick={() => navigate("/upload-cv")}>
             <div className="font-medium">Add CV/Resume</div>
             <div className="text-sm text-gray-500">
               Browse file or drop here, only pdf

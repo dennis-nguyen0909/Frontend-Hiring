@@ -39,7 +39,9 @@ export function JobCard({ job, onSave }: JobCardProps) {
           <div>
             <div>
              <h3 className="text-lg font-semibold text-gray-900">{job?.title}</h3>
+             {job?.similarity && 
              <span className="text-[11px] text-gray-500 flex items-center gap-1">Phù hợp với kỹ năng của bạn {formatPercentage(job?.similarity)}</span>
+             }
             </div>
 
             <div className="flex items-center gap-2 mt-2">

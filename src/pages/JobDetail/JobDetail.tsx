@@ -13,7 +13,7 @@ import {
 } from "antd";
 import { HeartFilled, HeartOutlined } from "@ant-design/icons";
 import { Share } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { JobApi } from "../../services/modules/jobServices";
 import { useEffect, useState } from "react";
@@ -24,6 +24,7 @@ import { API_FAVORITE_JOB } from "../../services/modules/FavoriteJobServices";
 import TextArea from "antd/es/input/TextArea";
 import { CV_API } from "../../services/modules/CvServices";
 import { useForm } from "antd/es/form/Form";
+import parse from 'html-react-parser';
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 interface JobDetail {
@@ -387,35 +388,49 @@ export default function JobDetail() {
               <TabPane tab="Giới thiệu về công ty" key="2">
                 <div className="space-y-4">
                   <Paragraph>
-                    CA ADVANCE là một trong những công ty con của tập đoàn Cyber
-                    Agent, hiện đang rất phát triển tại Nhật Bản. Năm 2014, CA
-                    ADVANCE đã đặt chi nhánh nước ngoài đầu tiên tại Thành phố
-                    Hồ Chí Minh – Việt Nam.
+                    {parse(jobDetail?.user_id?.description || '') }
                   </Paragraph>
-                  <div className="grid grid-cols-3 gap-4">
-                    <Image
-                      src="/placeholder.svg"
-                      alt="Company image 1"
-                      width={300}
-                      height={200}
-                      className="rounded"
-                    />
-                    <Image
-                      src="/placeholder.svg"
-                      alt="Company image 2"
-                      width={300}
-                      height={200}
-                      className="rounded"
-                    />
-                    <Image
-                      src="/placeholder.svg"
-                      alt="Company image 3"
-                      width={300}
-                      height={200}
-                      className="rounded"
-                    />
+                  {jobDetail?.user_id?.organization?.company_vision &&  <Paragraph>
+                    {parse(jobDetail?.user_id?.organization?.company_vision || '') }
+                  </Paragraph>}
+                  <div>Năm thành lập: {jobDetail?.user_id?.organization?.year_of_establishment}</div>
+                <div>Loại ngành nghề: {jobDetail?.user_id?.organization?.industry_type}</div>
+                <div>Số lượng nhân sự: {jobDetail?.user_id?.organization?.team_size}</div>
+                  <div>
+                    <div>Liên kết của công ty</div>
+                    <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+                    {jobDetail?.user_id?.social_links?.map((link, idx) => (
+                      <li key={idx}>
+                        <a  target="_blank" href={`${link.url}`}>{link.type}</a>
+                      </li>
+                    ))}
+                </ul>
                   </div>
+                  {/* <div className="grid grid-cols-3 gap-4">
+                    <Image
+                      src={`${jobDetail?.user_id?.avatar_company}`}
+                      alt="Company image 1"
+                      width={200}
+                      height={200}
+                      className="rounded"
+                    />
+                    <Image
+                      src={`${jobDetail?.user_id?.avatar_company}`}
+                      alt="Company image 2"
+                      width={200}
+                      height={200}
+                      className="rounded"
+                    />
+                    <Image
+                      src={`${jobDetail?.user_id?.avatar_company}`}
+                      alt="Company image 3"
+                      width={200}
+                      height={200}
+                      className="rounded"
+                    />
+                  </div> */}
                 </div>
+              
               </TabPane>
             </Tabs>
           </Card>

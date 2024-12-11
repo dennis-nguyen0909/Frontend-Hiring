@@ -10,30 +10,29 @@ const SocialEmployer = () => {
   // State lưu các social links và tiểu sử
   const [socialLinks, setSocialLinks] = useState([
   ]);
+// Cập nhật handleSocialLinkChange để chắc chắn giá trị được cập nhật đúng
+const handleSocialLinkChange = (index, field, value) => {
+  const updatedLinks = [...socialLinks];
+  updatedLinks[index][field] = value;
 
-  // Hàm cập nhật từng link
-  const handleSocialLinkChange = (index, field, value) => {
-    const updatedLinks = [...socialLinks];
-    updatedLinks[index][field] = value;
+  // Đảm bảo là nếu link đã tồn tại thì cập nhật hasChanged
+  if (updatedLinks[index].isExisting) {
+    updatedLinks[index].hasChanged = true;
+  } else {
+    updatedLinks[index].hasChanged = true;
+    updatedLinks[index].isExisting = false; // Đánh dấu là link mới
+  }
 
-    // Đánh dấu link đã thay đổi nếu nó đã tồn tại
-    if (updatedLinks[index].isExisting) {
-      updatedLinks[index].hasChanged = true;
-    }
+  setSocialLinks(updatedLinks);
+};
 
-    setSocialLinks(updatedLinks);
-  };
 
   // Thêm một link mới
   const addNewSocialLink = () => {
     setSocialLinks([...socialLinks, { type: "", url: "" }]);
   };
 
-  // Xóa một link
-  const removeSocialLink = (index) => {
-    const updatedLinks = socialLinks.filter((_, i) => i !== index);
-    setSocialLinks(updatedLinks);
-  };
+
 
   // Lấy các social links hiện tại từ server
   const handleGetSocialLinks = async (current = 1, pageSize = 10) => {
@@ -78,7 +77,7 @@ const SocialEmployer = () => {
     try {
       // Lọc ra những social links cần tạo mới hoặc đã thay đổi
       const requests = socialLinks
-        .filter((social) => !social.isExisting || social.hasChanged) // Chỉ tạo hoặc cập nhật link mới hoặc đã thay đổi
+        .filter((social) => social.hasChanged || !social.isExisting)
         .map((social) => {
           const params = {
             user_id: userDetail?._id,
@@ -87,7 +86,7 @@ const SocialEmployer = () => {
           };
           return SOCIAL_LINK_API.create(params, userDetail?.access_token); // Gọi API tạo mới hoặc cập nhật
         });
-
+        console.log("social",socialLinks)
       // Nếu có yêu cầu nào cần thực hiện
       if (requests.length > 0) {
         const results = await Promise.all(requests);
@@ -112,7 +111,16 @@ const SocialEmployer = () => {
       });
     }
   };
-
+const onDeleted = async(id)=>{
+  const res = await SOCIAL_LINK_API.deleteMany([id],userDetail?.access_token);
+  if(+res.statusCode === 200){
+    notification.success({
+      message:"Thông báo",
+      description:"Xóa thành công"
+    })
+    handleGetSocialLinks()
+  }
+}
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Social Links</h2>
@@ -146,7 +154,7 @@ const SocialEmployer = () => {
             <Button
               type="text"
               icon={<CloseOutlined />}
-              onClick={() => removeSocialLink(index)}
+              onClick={() => onDeleted(link?._id)}
             />
           </div>
         </div>

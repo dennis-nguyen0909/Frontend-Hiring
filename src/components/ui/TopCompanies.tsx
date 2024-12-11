@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { Satellite } from "lucide-react";
 import { Meta } from "../../types";
 import { ROLE_API } from "../../services/modules/RoleServices";
+import { Button } from "antd";
 const TopCompanies = () => {
     const [companies,setCompanies]=useState([]);
     const [roleEmployer,setRoleEmployer]=useState()
@@ -23,7 +24,7 @@ const TopCompanies = () => {
             console.error(error)
         }
     }
-    const handleGetAllCompanys = async (query?:any,current=1,pageSize=10) => {
+    const handleGetAllCompanys = async (query?:any,current=1,pageSize=12) => {
         try {
             const params={
                 current,
@@ -53,7 +54,7 @@ const TopCompanies = () => {
       }, [roleEmployer?.role_name]);
       const renderCompanies = ()=>{
             return (
-                <div className="mt-[50px] flex flex-wrap gap-3 justify-between ">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {companies?.map((item,idx)=>{
                         return (
                             <CompanyCard item={item} key={idx}/>
@@ -64,12 +65,15 @@ const TopCompanies = () => {
       }
     return(
         <>
-            <div className="h-screen px-5 md:px-primary"> 
+            <div className="h-full px-5 md:px-primary"> 
                 <div>
                     <h1 className="text-textBlack text-3xl font-medium">Top Companies</h1>
                 </div>
-                <div>
+                <div className="mt-5 mb-5">
                     {renderCompanies()}
+                </div>
+                <div className="flex items-center justify-center mb-5">
+                    <Button>Xem thêm</Button>
                 </div>
             </div>  
         </>

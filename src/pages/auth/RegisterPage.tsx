@@ -36,20 +36,22 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const user = useSelector((state: any) => state.user);
-  const [selectedType, setSelectedType] = useState<"user" | "employer" | null>(null)
-  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [selectedType, setSelectedType] = useState<"user" | "employer" | null>(
+    null
+  );
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     if (selectedType) {
-      setIsTransitioning(true)
-      const timer = setTimeout(() => setIsTransitioning(false), 300)
-      return () => clearTimeout(timer)
+      setIsTransitioning(true);
+      const timer = setTimeout(() => setIsTransitioning(false), 300);
+      return () => clearTimeout(timer);
     }
-  }, [selectedType])
+  }, [selectedType]);
 
   const handleTypeSelect = (type: "user" | "employer") => {
-    setSelectedType(type)
-  }
+    setSelectedType(type);
+  };
   useEffect(() => {
     if (user?.access_token) {
       navigate("/");
@@ -64,7 +66,7 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       const { fullName, username, email, password } = values;
-      const role = selectedType?.toUpperCase()
+      const role = selectedType?.toUpperCase();
       const res = await authServices.register({
         full_name: fullName,
         username,
@@ -120,38 +122,53 @@ const LoginPage = () => {
         </div>
 
         <Card className=" bg-gray-50 border-0 mt-10">
-        <h2 className="text-center text-gray-500 text-lg mb-4">CREATE ACCOUNT AS A</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div
-            className={`p-1 bg-white rounded-lg border cursor-pointer flex items-center gap-3 ${
-              selectedType === "user" ? "ring-2 ring-blue-500" : "hover:bg-gray-50"
-            }`}
-            style={{
-              transform: isTransitioning && selectedType === "user" ? "scale(1.05)" : "scale(1)",
-              opacity: isTransitioning && selectedType !== "user" ? 0.5 : 1,
-              transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out"
-            }}
-            onClick={() => handleTypeSelect("user")}
-          >
-            <User className="w-6 h-6 text-gray-600" />
-            <span className="text-lg text-gray-600">Candidate</span>
+          <h2 className="text-center text-gray-500 text-lg mb-4">
+            CREATE ACCOUNT AS A
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div
+              className={`p-1 bg-white rounded-lg border cursor-pointer flex items-center gap-3 ${
+                selectedType === "user"
+                  ? "ring-2 ring-blue-500"
+                  : "hover:bg-gray-50"
+              }`}
+              style={{
+                transform:
+                  isTransitioning && selectedType === "user"
+                    ? "scale(1.05)"
+                    : "scale(1)",
+                opacity: isTransitioning && selectedType !== "user" ? 0.5 : 1,
+                transition:
+                  "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+              }}
+              onClick={() => handleTypeSelect("user")}
+            >
+              <User className="w-6 h-6 text-gray-600" />
+              <span className="text-lg text-gray-600">Candidate</span>
+            </div>
+            <div
+              className={`p-1 bg-[#0A2647] rounded-lg cursor-pointer flex items-center gap-3 ${
+                selectedType === "employer"
+                  ? "ring-2 ring-blue-500"
+                  : "hover:bg-[#0A2647]/90"
+              }`}
+              style={{
+                transform:
+                  isTransitioning && selectedType === "employer"
+                    ? "scale(1.05)"
+                    : "scale(1)",
+                opacity:
+                  isTransitioning && selectedType !== "employer" ? 0.5 : 1,
+                transition:
+                  "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+              }}
+              onClick={() => handleTypeSelect("employer")}
+            >
+              <Building className="w-6 h-6 text-white" />
+              <span className="text-lg text-white">Employers</span>
+            </div>
           </div>
-          <div
-            className={`p-1 bg-[#0A2647] rounded-lg cursor-pointer flex items-center gap-3 ${
-              selectedType === "employer" ? "ring-2 ring-blue-500" : "hover:bg-[#0A2647]/90"
-            }`}
-            style={{
-              transform: isTransitioning && selectedType === "employer" ? "scale(1.05)" : "scale(1)",
-              opacity: isTransitioning && selectedType !== "employer" ? 0.5 : 1,
-              transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out"
-            }}
-            onClick={() => handleTypeSelect("employer")}
-          >
-            <Building className="w-6 h-6 text-white" />
-            <span className="text-lg text-white">Employers</span>
-          </div>
-        </div>
-      </Card>
+        </Card>
         {/* body */}
         <div className="flex flex-col mt-5">
           <div className="flex gap-5 justify-between">
@@ -252,6 +269,18 @@ const LoginPage = () => {
               I've read and agree with your{" "}
               <span className="text-blue-500">Terms of Services</span>
             </Checkbox>
+            <div className="mt-2">
+              <span className="text-gray-500 text-1xl">
+                Already have an account?
+              </span>
+              <span
+                onClick={handleNextRegister}
+                className="text-blue-500 cursor-pointer"
+              >
+                {" "}
+                Log In
+              </span>
+            </div>
           </Form.Item>
         </div>
         <LoadingComponent isLoading={isLoading}>

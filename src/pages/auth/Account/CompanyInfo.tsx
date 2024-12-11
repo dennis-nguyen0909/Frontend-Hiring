@@ -28,6 +28,7 @@ const CompanyInfo = ({handleTabChange}) => {
       message.error("Please upload a banner before proceeding.");
       return;
     }
+    console.log("values",values)
     const params = {
         id:userDetail?._id,
         company_name:values.company_name,

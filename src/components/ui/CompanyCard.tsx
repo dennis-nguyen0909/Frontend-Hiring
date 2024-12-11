@@ -1,10 +1,15 @@
 import { Button, Image } from 'antd'
 import avtDefault from '../../assets/images/company/default.png'
 import locationIcon from '../../assets/icons/location.png'
+import { useNavigate } from 'react-router-dom'
 
 const CompanyCard = ({ item }) => {
+  const navigate = useNavigate()
+  const handleNavigate=()=>{
+    navigate(`/employer-detail/${item?._id}`)
+  }
   return (
-    <div className="w-full md:w-[300px] h-[200px] rounded-xl flex flex-col justify-between p-4 " style={{ border: '1px solid #ccc' }}>
+    <div className="w-full md:w-[400px] h-[180px] rounded-xl flex flex-col justify-between p-4 " style={{ border: '1px solid #ccc' }}>
       <div className="flex items-center gap-[10px] mt-[20px] flex-1
       ">
         <Image className="rounded-lg" width={50} height={50} src={item?.avatar_company || avtDefault} preview={false} />
@@ -20,7 +25,7 @@ const CompanyCard = ({ item }) => {
         </div>
       </div>
       <div className="flex justify-center ">
-        <Button size='large' style={{backgroundColor:"#E7F0FA"}} className="text-primaryBlue border-none w-full  font-semibold rounded-sm">Open Position</Button>
+        <Button onClick={handleNavigate} size='large' style={{backgroundColor:"#E7F0FA"}} className="text-primaryBlue w-full  font-semibold !rounded-2xl border-none">Open Position</Button>
       </div>
     </div>
   )

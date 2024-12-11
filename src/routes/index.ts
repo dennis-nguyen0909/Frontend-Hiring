@@ -2,7 +2,6 @@ import { ComponentType } from 'react';
 import HomePage from '../pages/home/HomePage';
 import LoginPage from '../pages/auth/LoginPage';
 import NotFound from '../components/NotFound/NotFound';
-
 import Register from '../pages/auth/RegisterPage';
 import AdminPage from '../pages/admin/AdminPage';
 import VerifyEmail from '../pages/auth/VerifyEmail';
@@ -14,9 +13,9 @@ import ManagePage from '../pages/employer/manage/ManagePage';
 import DashBoard from '../pages/dashboard';
 import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
 import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
+import JobSearchPage from '../pages/job/JobPage';
 import JobDetail from '../pages/JobDetail/JobDetail';
-import JobPage from '../pages/job/JobPage';
-import AccountSetup from '../pages/auth/Account/SetupEmployer';
+import EmployerDetail from '../pages/EmployerDetail/EmployerDetail';
 interface IRoute {
     path: string;
     page: ComponentType ;
@@ -44,7 +43,7 @@ export const routes: IRoute[] = [
     },
     {
         path: '/jobs',
-        page: JobPage,
+        page: JobSearchPage,
         isShowHeader: true,
     },
     {
@@ -56,6 +55,11 @@ export const routes: IRoute[] = [
         path:'/verify',
         page:VerifyEmail,
         isShowHeader:false
+    },
+    {
+        path:'/job-information/:id',
+        page: JobDetail,
+        isShowHeader:true
     },
     {
         path:'/forgot-password',
@@ -83,8 +87,8 @@ export const routes: IRoute[] = [
         isShowHeader:true
     },
     {
-        path:'/job-information/:id',
-        page: JobDetail,
+        path:'/employer-detail/:id',
+        page: EmployerDetail,
         isShowHeader:true
     },
     {
@@ -103,12 +107,6 @@ export const routes: IRoute[] = [
         path:'/profile-cv',
         page: ProfileCV,
         isShowHeader:true,
-        isShowFooter:false
-    },
-    {
-        path:'/account-setup',
-        page: AccountSetup,
-        isShowHeader:false,
         isShowFooter:false
     },
     {

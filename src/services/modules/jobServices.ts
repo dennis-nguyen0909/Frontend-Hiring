@@ -215,5 +215,24 @@ export const JobApi = {
       console.error("Error posting job:", error);
       return null;
     }
+  },
+  getJobSuggestsByCity: async (params: any,userId:string,accessToken:string)=>{
+    try {
+      const res = await axios.get(`http://127.0.0.1:5000/suggests_by_city/${userId}`,{
+        params: {
+          ...params
+        },
+        headers: {  
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: false
+      });
+
+      if (res.data) return res.data;
+      return null;
+    } catch (error) {
+      console.error("Error posting job:", error);
+      return null;
+    }
   }
 };
