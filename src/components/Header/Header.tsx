@@ -154,12 +154,28 @@ const Header: React.FC = () => {
           {menuHeader.map((item, idx) => {
             return (
               <li key={idx}>
-                <div
+                {item.candidate === true ? (
+                  <div
                   onClick={() => handleClick(item)}
                   className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
                 >
                   {item.name}
                 </div>
+                ):item.employer === true ? (
+                  <div
+                  onClick={() => handleClick(item)}
+                  className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+                >
+                  {item.name}
+                </div>
+                ):(
+                  <div
+                  onClick={() => handleClick(item)}
+                  className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+                >
+                  {item.name}
+                </div>
+                )}
               </li>
             );
           })}

@@ -9,11 +9,13 @@ import { Satellite } from "lucide-react";
 import { Meta } from "../../types";
 import { ROLE_API } from "../../services/modules/RoleServices";
 import { Button } from "antd";
+import { useNavigate } from "react-router-dom";
 const TopCompanies = () => {
     const [companies,setCompanies]=useState([]);
     const [roleEmployer,setRoleEmployer]=useState()
     const [meta,setMeta]=useState<Meta>({})
     const userDetail = useSelector(state=>state.user)
+    const navigate =useNavigate()
     const handleGetEmployerRole= async ()=>{
         try {
             const res = await ROLE_API.getEmployerRole(userDetail?.access_token);
@@ -73,7 +75,7 @@ const TopCompanies = () => {
                     {renderCompanies()}
                 </div>
                 <div className="flex items-center justify-center mb-5">
-                    <Button>Xem thêm</Button>
+                    <Button onClick={()=>navigate('/employers')}>Xem thêm</Button>
                 </div>
             </div>  
         </>

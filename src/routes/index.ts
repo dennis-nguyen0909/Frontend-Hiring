@@ -16,6 +16,8 @@ import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
 import JobSearchPage from '../pages/job/JobPage';
 import JobDetail from '../pages/JobDetail/JobDetail';
 import EmployerDetail from '../pages/EmployerDetail/EmployerDetail';
+import AboutPage from '../pages/about';
+import EmployeesPage from '../pages/PageEmployers';
 interface IRoute {
     path: string;
     page: ComponentType ;
@@ -108,6 +110,18 @@ export const routes: IRoute[] = [
         page: ProfileCV,
         isShowHeader:true,
         isShowFooter:false
+    },
+    {
+        path:'/about',
+        page: AboutPage,
+        isShowHeader:true,
+        isShowFooter:true
+    },
+    {
+        path:'/employers',
+        page: EmployeesPage,
+        isShowHeader:true,
+        isShowFooter:true
     },
     {
         path: '*',

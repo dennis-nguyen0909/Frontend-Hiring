@@ -3,6 +3,10 @@
   background-color: #d64453;
   border-color: #d64453;
 }
+
+.ant-pagination .ant-pagination-item {
+  border-radius: 50%;
+}
 .ant-pagination .ant-pagination-item-active a {
   color: white;
 }

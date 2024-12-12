@@ -50,39 +50,50 @@ export const menuHeader = [
     name: "Home",
     path: "/",
     color:"#5E6670",
-    colorHover:"#205faf"
-    
+    colorHover:"#205faf",
+    candidate:true,
+    employer:true
   },
   {
     name: "Profile & CV",
     path: "/profile-cv",
     color:"#5E6670",
-    colorHover:"#205faf"
+    colorHover:"#205faf",
+    candidate:true,
+    employer:false
     
   },
   {
     name: "Jobs",
     path: "/jobs",
     color:"#5E6670",
-    colorHover:"#205faf"
+    colorHover:"#205faf",
+    candidate:true,
+    employer:true
   },
   {
     name: "Companies",
     path: "/employers",
     color:"#5E6670",
-    colorHover:"#205faf"
+    colorHover:"#205faf",
+    candidate:true,
+    employer:true
   },
   {
     name: "About",
-    path: "/candidates",
+    path: "/about",
     color:"#5E6670",
-    colorHover:"#205faf"
+    colorHover:"#205faf",
+    candidate:true,
+    employer:true
   },
   {
     name: "Dashboard",
     path: "/dashboard/:id",
     color:"#5E6670",
-    colorHover:"#205faf"
+    colorHover:"#205faf",
+    candidate:true,
+    employer:true
   },
 ];
 

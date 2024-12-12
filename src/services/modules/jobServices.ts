@@ -91,12 +91,12 @@ export const JobApi = {
   },
 
   // Phương thức DELETE để xóa nhiều công việc
-  deleteManyJobs: async (ids: Array<string>, accessToken: string) => {
+  deleteManyJobs: async (ids: Array<string>,userId: string,accessToken: string) => {
     try {
       const res = await axiosInstance({
         method: 'delete',
         url: '/jobs',
-        data: { ids },
+        data: { ids,user_id:userId },
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

@@ -7,6 +7,7 @@ export const TAB_SKILL='SKILL';
 export const TAB_LEVEL='LEVEL';
 export const PROMOTE_JOB='PROMOTE_JOB';
 export const VIEW_DETAIL='VIEW_DETAIL';
+export const DELETE='DELETE';
 export const VIEW_DETAIL_APPLICATION='VIEW_DETAIL_APPLICATION';
 export const MARK_AS_EXPIRED='MARK_AS_EXPIRED';
 export const MY_JOB_HOME='HOME';

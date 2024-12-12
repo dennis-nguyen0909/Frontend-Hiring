@@ -47,14 +47,14 @@ const Setting = () => {
     };
     const settingsItems = [
       { icon: <User className="w-5 h-5 text-primaryColor" />, text: "Cài đặt thông tin cá nhân", action: (navigate) => navigate(`/setting-profile/${user._id}`) },
-      { icon: <ArrowUpCircle className="w-5 h-5 text-primaryColor" />, text: "Nâng cấp tài khoản VIP", action: (navigate) => console.log("Nâng cấp tài khoản VIP") },
-      { icon: <Gift className="w-5 h-5 text-primaryColor" />, text: "Kích hoạt quà tặng", action: (navigate) => console.log("Kích hoạt quà tặng") },
+      // { icon: <ArrowUpCircle className="w-5 h-5 text-primaryColor" />, text: "Nâng cấp tài khoản VIP", action: (navigate) => console.log("Nâng cấp tài khoản VIP") },
+      // { icon: <Gift className="w-5 h-5 text-primaryColor" />, text: "Kích hoạt quà tặng", action: (navigate) => console.log("Kích hoạt quà tặng") },
       { icon: <User className="w-5 h-5 text-primaryColor" />, text: "Nhà tuyển dụng xem hồ sơ", action: (navigate) => console.log("Nhà tuyển dụng xem hồ sơ") },
       { icon: <Settings className="w-5 h-5 text-primaryColor" />, text: "Cài đặt gợi ý việc làm", action: (navigate) => console.log("Cài đặt gợi ý việc làm") },
-      { icon: <Bell className="w-5 h-5 text-primaryColor" />, text: "Cài đặt thông báo việc làm", action: (navigate) => console.log("Cài đặt thông báo việc làm") },
-      { icon: <Mail className="w-5 h-5 text-primaryColor" />, text: "Cài đặt nhận email", action: (navigate) => console.log("Cài đặt nhận email") },
-      { icon: <Lock className="w-5 h-5 text-primaryColor" />, text: "Cài đặt bảo mật", action: (navigate) => console.log("Cài đặt bảo mật") },
-      { icon: <Key className="w-5 h-5 text-primaryColor" />, text: "Đổi mật khẩu", action: (navigate) => console.log("Đổi mật khẩu") },
+      // { icon: <Bell className="w-5 h-5 text-primaryColor" />, text: "Cài đặt thông báo việc làm", action: (navigate) => console.log("Cài đặt thông báo việc làm") },
+      // { icon: <Mail className="w-5 h-5 text-primaryColor" />, text: "Cài đặt nhận email", action: (navigate) => console.log("Cài đặt nhận email") },
+      // { icon: <Lock className="w-5 h-5 text-primaryColor" />, text: "Cài đặt bảo mật", action: (navigate) => console.log("Cài đặt bảo mật") },
+      // { icon: <Key className="w-5 h-5 text-primaryColor" />, text: "Đổi mật khẩu", action: (navigate) => console.log("Đổi mật khẩu") },
       { icon: <LogOut className="w-5 h-5 text-primaryColor" />, text: "Đăng xuất", action: handleLogout }, 
     ];
 

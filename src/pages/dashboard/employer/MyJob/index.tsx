@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { Job, Meta } from '../../../../types'
 import CustomPagination from '../../../../components/ui/CustomPanigation/CustomPanigation'
-import { MARK_AS_EXPIRED, MY_JOB_HOME, PROMOTE_JOB, VIEW_DETAIL, VIEW_DETAIL_APPLICATION } from '../../../../utils/role.utils'
+import { DELETE, MARK_AS_EXPIRED, MY_JOB_HOME, PROMOTE_JOB, VIEW_DETAIL, VIEW_DETAIL_APPLICATION } from '../../../../utils/role.utils'
 import JobApplication from './JobApplication'
 import JobDetail from './JodDetail'
 
@@ -81,6 +81,7 @@ export default function MyJobEmployer() {
               items: [
                 { key: PROMOTE_JOB, label: 'Promote Job' },
                 { key: VIEW_DETAIL, label: 'View Detail' },
+                { key: DELETE, label: 'Delete' },
                 // { key: MARK_AS_EXPIRED, label: 'Mark as expired' },
               ],
               onClick:(e)=>handleOnChangeMenu(e,record)
@@ -115,6 +116,18 @@ export default function MyJobEmployer() {
         notification.success({
           message: "Success",
           description: "Job updated successfully"
+        })
+        handleGetMyJob({});
+      }
+      return;
+    }
+    if(e.key === DELETE){
+      const res = await JobApi.deleteManyJobs([record?._id],userDetail?._id,userDetail?.access_token);
+      console.log("res,res",res)
+      if(res.data){
+        notification.success({
+          message: "Success",
+          description: "Deleted successfully!"
         })
         handleGetMyJob({});
       }
