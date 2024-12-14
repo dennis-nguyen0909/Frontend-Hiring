@@ -12,13 +12,8 @@ import {
 import avtDefault from "../../../assets/avatars/avatar-default.jpg";
 import { updateUser } from "../../../redux/slices/userSlices";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Camera,
-  Download,
-  Pencil,
-  Share2,
-} from "lucide-react";
-import { useRef, useState } from "react";
+import { Camera, Download, Pencil, Share2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import * as userServices from "../../../services/modules/userServices";
 import { useNavigate } from "react-router-dom";
 import EducationComponent from "../Education/Education";
@@ -40,6 +35,13 @@ const Profile = () => {
   const [visible, setVisible] = useState(false);
   const [visibleInAvatar, setVisibleInAvatar] = useState(false);
   const [coverImage, setCoverImage] = useState(userDetail?.background || null);
+
+  useEffect(() => {
+    if (!userDetail?.access_token) {
+      navigate("/");
+      return;
+    }
+  }, [userDetail?.access_token]);
   const uploadFileToMedia = async (file: File) => {
     try {
       const res = await MediaApi.postMedia(file, userDetail.access_token);
@@ -126,8 +128,8 @@ const Profile = () => {
   const onChangeSwitch = async (checked: boolean, type: string) => {
     switch (type) {
       case "is_suggestion_job":
-         // eslint-disable-next-line no-case-declarations
-         const param = {
+        // eslint-disable-next-line no-case-declarations
+        const param = {
           id: userDetail._id,
           is_suggestion_job: checked,
         };
@@ -153,7 +155,7 @@ const Profile = () => {
     data: caculateProfile,
     isLoading,
     error,
-    refetch
+    refetch,
   } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   return (
     <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto mt-10 py-2 gap-5 ">
@@ -246,7 +248,6 @@ const Profile = () => {
                   "100%": "#52c41a",
                 }}
               />
-
             </div>
 
             <div className="flex items-center gap-4 p-4 border rounded-lg mt-5">
@@ -286,21 +287,25 @@ const Profile = () => {
             </div>
           </Card>
 
-          <ExperienceNumberCandidate refetch={refetch} />
-          {/* Education Section */}
-          <EducationComponent refetch={refetch} />
-          {/* Experience Section */}
-          <ExperienceComponent />
-          {/* Skill Section */}
-          <SkillComponent />
-          {/* Certificate */}
-          <CertificateComponent />
-          {/* Prize */}
-          <PrizeView />
-          {/* Course */}
-          <CourseView />
-          {/* Project */}
-          <ProjectComponent />
+          {userDetail?.access_token && (
+            <>
+              <ExperienceNumberCandidate />
+              {/* Education Section */}
+              <EducationComponent />
+              {/* Experience Section */}
+              <ExperienceComponent />
+              {/* Skill Section */}
+              <SkillComponent />
+              {/* Certificate */}
+              <CertificateComponent />
+              {/* Prize */}
+              <PrizeView />
+              {/* Course */}
+              <CourseView />
+              {/* Project */}
+              <ProjectComponent />
+            </>
+          )}
         </div>
       </Col>
       <Col className="w-1/4 bg-white h-fit rounded-2xl px-8 py-4 ">
@@ -335,11 +340,8 @@ const Profile = () => {
         <div className="mt-8">
           <Switch
             className="custom-switch"
-            onChange={(checked) =>
-              onChangeSwitch(checked, "is_suggestion_job")
-            }
+            onChange={(checked) => onChangeSwitch(checked, "is_suggestion_job")}
             value={userDetail?.is_suggestion_job}
-
             size="default"
           />
           <span className="ml-2 text-[12px] font-semibold text-grayPrimary">

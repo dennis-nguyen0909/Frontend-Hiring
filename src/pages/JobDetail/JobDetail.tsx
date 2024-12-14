@@ -105,7 +105,12 @@ export default function JobDetail() {
     handleGetDetail();
     getFavoriteJobDetailByUserId();
   }, []);
+
   const handleOpenModel = async () => {
+    if(!userDetail?.access_token){
+        navigate('/login')
+        return;
+    }
     setIsModalOpen(true);
   };
 
@@ -145,6 +150,10 @@ export default function JobDetail() {
     }
   };
   const handleCreateCV = () => {
+    if(!userDetail?.access_token){
+      navigate('/login')
+      return;
+  }
     navigate("/profile-cv");
   };
   const getFavoriteJobDetailByUserId = async () => {

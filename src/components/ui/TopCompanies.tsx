@@ -20,7 +20,7 @@ const TopCompanies = () => {
         try {
             const res = await ROLE_API.getEmployerRole(userDetail?.access_token);
             if(res.data){
-                setRoleEmployer(res.data)
+                setRoleEmployer(res.data._id)
             }
         } catch (error) {
             console.error(error)
@@ -36,6 +36,7 @@ const TopCompanies = () => {
                 }
             }
           const res = await USER_API.getAllCompany(params,userDetail?.access_token)
+          console.log("duydeptrai",res.data)
           if (res.data) {
             setCompanies(res.data.items);
             setMeta(res.data.meta)
@@ -47,13 +48,14 @@ const TopCompanies = () => {
     
       useEffect(() => {
         handleGetEmployerRole()
-        if(roleEmployer?.role_name){
+        if(roleEmployer){
             const query={
-                role:roleEmployer?._id
+                role:roleEmployer
             }
             handleGetAllCompanys(query);
         }
-      }, [roleEmployer?.role_name]);
+      }, [roleEmployer]);
+      
       const renderCompanies = ()=>{
             return (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

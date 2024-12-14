@@ -134,7 +134,7 @@ const OverViewCandidate = ({ userDetail }) => {
           <div className="text-blue-600">Việc làm ứng tuyển</div>
         </div>
         <div className="bg-yellow-50 p-4 rounded-lg">
-          <div className="text-3xl font-bold">238</div>
+          <div className="text-3xl font-bold">{userDetail?.favorite_jobs.length || 0}</div>
           <div className="text-yellow-600">Việc làm yêu thích</div>
         </div>
         <div className="bg-green-50 p-4 rounded-lg">

@@ -39,7 +39,6 @@ export default function JobSearchPage() {
   const userDetail = useSelector((state) => state.user);
   const debouncedSearchValue = useDebounce(searchValue, 500);
   const { cities } = useCities();
-  
   const handleJobSearch = async (query?: any, current = 1, pageSize = 10) => {
     const params = {
       current,

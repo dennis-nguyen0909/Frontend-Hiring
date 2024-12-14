@@ -5,15 +5,13 @@ import { useSelector } from "react-redux";
 import { Job, Meta } from "../../../types";
 import CustomPagination from "../../../components/ui/CustomPanigation/CustomPanigation";
 import { current } from "@reduxjs/toolkit";
+import { Empty } from "antd";
 
 export default function SuggestionJob() {
   const [jobsSuggests, setJobSuggests] = useState<[]>([]);
   const [meta, setMeta] = useState<Meta>({});
   const [jobSuggestionCity, setJobSuggestionCity] = useState<[]>([]);
-  const [metaSuggestionCity, setMetaSuggestionCity] = useState<Meta>({});
-
   const userDetail = useSelector((state) => state.user);
-
   const handleSaveJob = (jobId: string) => {
     setJobs(
       jobs.map((job) =>
@@ -58,10 +56,8 @@ export default function SuggestionJob() {
         userDetail?._id,
         userDetail?.access_token
       );
-      console.log("res,res", res);
       if (res.data) {
         setJobSuggestionCity(res.data.items);
-        setMetaSuggestionCity(res.data.meta);
       }
     } catch (error) {
       console.error(error);
@@ -75,26 +71,29 @@ export default function SuggestionJob() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Gợi ý việc làm</h1>
-        {/* <a href="#" className="text-blue-500 hover:text-blue-600 flex items-center gap-1">
-          View All
-          <span className="text-lg">→</span>
-        </a> */}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Use data from the query or fallback to the FEATURED_JOBS */}
-        {(jobsSuggests?.length ? jobsSuggests : jobsSuggests).map((job) => (
-          <JobCard key={job?._id} job={job} onSave={handleSaveJob} />
-        ))}
-      </div>
-
-      <CustomPagination
-        currentPage={meta.current_page}
-        total={meta.total}
-        perPage={meta.per_page}
-        onPageChange={(current, pageSize) =>
-          getJobSuggestionSkills(current, pageSize)
-        }
-      />
+      {jobsSuggests.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Use data from the query or fallback to the FEATURED_JOBS */}
+            {(jobsSuggests?.length ? jobsSuggests : jobsSuggests).map((job) => (
+              <JobCard key={job?._id} job={job} onSave={handleSaveJob} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={`Chưa tìm thấy việc làm phù hợp vui lòng cập nhật thêm thông tin để có cơ hội hơn nhé !`} />
+      )}
+      {jobsSuggests.length > 0 && (
+        <CustomPagination
+          currentPage={meta.current_page}
+          total={meta.total}
+          perPage={meta.per_page}
+          onPageChange={(current, pageSize) =>
+            getJobSuggestionSkills(current, pageSize)
+          }
+        />
+      )}
     </div>
   );
 }

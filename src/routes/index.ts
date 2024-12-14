@@ -1,4 +1,4 @@
-import { ComponentType } from 'react';
+import { ComponentType, lazy } from 'react';
 import HomePage from '../pages/home/HomePage';
 import LoginPage from '../pages/auth/LoginPage';
 import NotFound from '../components/NotFound/NotFound';
@@ -13,11 +13,13 @@ import ManagePage from '../pages/employer/manage/ManagePage';
 import DashBoard from '../pages/dashboard';
 import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
 import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
-import JobSearchPage from '../pages/job/JobPage';
+// import JobSearchPage from '../pages/job/JobPage';
 import JobDetail from '../pages/JobDetail/JobDetail';
 import EmployerDetail from '../pages/EmployerDetail/EmployerDetail';
 import AboutPage from '../pages/about';
 import EmployeesPage from '../pages/PageEmployers';
+
+const JobSearchPage = lazy(()=>import('../pages/job/JobPage'));
 interface IRoute {
     path: string;
     page: ComponentType ;

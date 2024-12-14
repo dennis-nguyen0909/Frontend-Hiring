@@ -1,70 +1,90 @@
-import { Image, Input, Pagination } from 'antd'
-import { Search, MapPin } from 'lucide-react'
-import { USER_API } from '../../services/modules/userServices'
-import { useSelector } from 'react-redux'
-import { useEffect, useState } from 'react'
-import { useDebounce } from '../../hooks/useDebounce'
-import { Meta } from '../../types'
-import CustomPagination from '../../components/ui/CustomPanigation/CustomPanigation'
-import { current } from '@reduxjs/toolkit'
-import { useNavigate } from 'react-router-dom'
+import { Image, Input } from "antd";
+import { Search, MapPin } from "lucide-react";
+import { USER_API } from "../../services/modules/userServices";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDebounce } from "../../hooks/useDebounce";
+import { Meta } from "../../types";
+import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
+import { useNavigate } from "react-router-dom";
+import { ROLE_API } from "../../services/modules/RoleServices";
 
 const popularSearches = [
-  'Front-end',
-  'Back-end',
-  'Development',
-  'PHP',
-  'Laravel',
-  'Bootstrap',
-  'Developer',
-  'Team Lead',
-  'Product Testing',
-  'JavaScript',
-]
+  "Front-end",
+  "Back-end",
+  "Development",
+  "PHP",
+  "Laravel",
+  "Bootstrap",
+  "Developer",
+  "Team Lead",
+  "Product Testing",
+  "JavaScript",
+];
 
 const jobListings = Array(12).fill({
-  company: 'Dribbble',
-  location: 'Dhaka, Bangladesh',
+  company: "Dribbble",
+  location: "Dhaka, Bangladesh",
   featured: true,
   openPositions: 3,
-  logo: '/placeholder.svg',
-})
+  logo: "/placeholder.svg",
+});
 
 export default function EmployeesPage() {
-  const [searchValue,setSearchValue]=useState<string>('')
-  const userDetail = useSelector(state=>state.user)
-  const [companies,setCompanies]=useState([])
-  const [meta,setMeta]=useState<Meta>({})
-  const navigate =useNavigate()
-  const handleSearch = async(query:any,current=1,pageSize=15)=>{
+  const [searchValue, setSearchValue] = useState<string>("");
+  const userDetail = useSelector((state) => state.user);
+  const [companies, setCompanies] = useState([]);
+  const [meta, setMeta] = useState<Meta>({});
+  const [roleEmployer, setRoleEmployer] = useState<string>("");
+  const navigate = useNavigate();
+  const handleGetEmployerRole = async () => {
     try {
-      const params =  {
-          current,
-          pageSize,
-          query
+      const res = await ROLE_API.getEmployerRole(userDetail?.access_token);
+      if (res.data) {
+        setRoleEmployer(res.data._id);
       }
-        const response = await USER_API.getAllCompany(params,userDetail?.access_token);
-        if(response.data){
-          setCompanies(response.data.items);
-          setMeta(response.data.meta)
-        }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
-  useEffect(()=>{
-    handleSearch({})
-  },[])
+  };
+  const handleSearch = async (query: any, current = 1, pageSize = 15) => {
+    try {
+      const params = {
+        current,
+        pageSize,
+        query,
+      };
+      const response = await USER_API.getAllCompany(
+        params,
+        userDetail?.access_token
+      );
+      if (response.data) {
+        setCompanies(response.data.items);
+        setMeta(response.data.meta);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    handleGetEmployerRole();
+    const query = {
+      role: roleEmployer,
+    };
+    if(roleEmployer){
+      handleSearch(query);
+    }
+  }, [roleEmployer]);
 
-  const debounceSearchValue = useDebounce(searchValue,500);
-  const onSearch =  async()=>{
-      await handleSearch({
-        company_name:debounceSearchValue
-      });
-  }
-  const handleNavigate = (id)=>{
-    navigate(`/employer-detail/${id}`)
-  }
+  const debounceSearchValue = useDebounce(searchValue, 500);
+  const onSearch = async () => {
+    await handleSearch({
+      company_name: debounceSearchValue,
+    });
+  };
+  const handleNavigate = (id) => {
+    navigate(`/employer-detail/${id}`);
+  };
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Search Section */}
@@ -76,7 +96,7 @@ export default function EmployeesPage() {
                 size="large"
                 placeholder="Search by: Name company ..."
                 value={searchValue}
-                onChange={(e)=>setSearchValue(e.target.value)}
+                onChange={(e) => setSearchValue(e.target.value)}
                 prefix={<Search className="text-gray-400" size={20} />}
                 className="w-full"
               />
@@ -89,7 +109,10 @@ export default function EmployeesPage() {
                 className="w-full"
               />
             </div>
-            <button onClick={onSearch} className="rounded-lg bg-blue-600 px-8 py-2 text-white transition-colors hover:bg-blue-700">
+            <button
+              onClick={onSearch}
+              className="rounded-lg bg-blue-600 px-8 py-2 text-white transition-colors hover:bg-blue-700"
+            >
               Find Job
             </button>
           </div>
@@ -139,7 +162,10 @@ export default function EmployeesPage() {
                   Featured
                 </span>
               </div>
-              <button onClick={()=>handleNavigate(company?._id)} className="w-full rounded-lg bg-blue-50 py-2 text-center text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100">
+              <button
+                onClick={() => handleNavigate(company?._id)}
+                className="w-full rounded-lg bg-blue-50 py-2 text-center text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
+              >
                 Open Position ({company?.jobs_ids?.length || 0})
               </button>
             </div>
@@ -149,16 +175,15 @@ export default function EmployeesPage() {
         {/* Pagination */}
         <div className="mt-8 flex justify-center">
           <CustomPagination
-          currentPage={meta?.current_page}
-          perPage={meta?.per_page}
-          total={meta?.total}
-          onPageChange={(current,pageSize)=>handleSearch({
-          },current,
-          pageSize)}
-           />
+            currentPage={meta?.current_page}
+            perPage={meta?.per_page}
+            total={meta?.total}
+            onPageChange={(current, pageSize) =>
+              handleSearch({}, current, pageSize)
+            }
+          />
         </div>
       </div>
     </div>
-  )
+  );
 }
-

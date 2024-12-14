@@ -18,6 +18,13 @@ export default function EmployerDetail() {
   const userDetail = useSelector((state) => state.user);
   const [employerDetail, setEmployerDetail] = useState();
   const [jobs, setJobs] = useState<Array<any>>([]);
+  const navigate = useNavigate();
+  
+  useEffect(()=>{
+    if(!userDetail?.access_token){
+      navigate('/')
+    }
+  },[userDetail?.access_token])
 
   const handleGetDetailEmployerDetail = async () => {
     try {

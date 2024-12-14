@@ -256,14 +256,14 @@ const LoginPage = () => {
           <Form.Item
             name="terms"
             valuePropName="checked"
-            rules={[
-              {
-                validator: (_, value) =>
-                  value
-                    ? Promise.resolve()
-                    : Promise.reject("Should accept terms"),
-              },
-            ]}
+            // rules={[
+            //   {
+            //     validator: (_, value) =>
+            //       value
+            //         ? Promise.resolve()
+            //         : Promise.reject("Should accept terms"),
+            //   },
+            // ]}
           >
             <Checkbox>
               I've read and agree with your{" "}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Form,
   Input,
@@ -31,6 +31,12 @@ const UserDetail = () => {
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  useEffect(()=>{
+    if(!userDetail?.access_token){
+      navigate('/')
+      return;
+    }
+  },[userDetail?.access_token])
   const handleUpdateUser = async (values: updateUserDto) => {
     try {
       const res = await userServices.updateUser(values);

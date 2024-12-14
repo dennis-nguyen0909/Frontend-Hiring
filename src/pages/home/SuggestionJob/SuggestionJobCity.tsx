@@ -4,6 +4,7 @@ import { JobApi } from "../../../services/modules/jobServices";
 import { useSelector } from "react-redux";
 import { Meta } from "../../../types";
 import CustomPagination from "../../../components/ui/CustomPanigation/CustomPanigation";
+import { Empty } from "antd";
 
 export default function SuggestionJobCity() {
 
@@ -31,7 +32,6 @@ export default function SuggestionJobCity() {
         userDetail?._id,
         userDetail?.access_token
       );
-      console.log("res,res", res);
       if (res.data) {
         setJobSuggestionCity(res.data.items);
         setMetaSuggestionCity(res.data.meta);
@@ -49,21 +49,24 @@ export default function SuggestionJobCity() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Việc làm gần bạn</h1>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {jobSuggestionCity.length> 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Use data from the query or fallback to the FEATURED_JOBS */}
         {(jobSuggestionCity?.length ? jobSuggestionCity : jobSuggestionCity).map((job) => (
           <JobCard key={job?._id} job={job} onSave={handleSaveJob} />
         ))}
       </div>
-
-      <CustomPagination
+      ):(
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={`Không có việc làm nào gần bạn`} />
+      )}
+      {jobSuggestionCity.length > 0 && <CustomPagination
         currentPage={metaSuggestionCity.current_page}
         total={metaSuggestionCity.total}
         perPage={metaSuggestionCity.per_page}
         onPageChange={(current, pageSize) =>
           getJobSuggestionCity(current, pageSize)
         }
-      />
+      />}
     </div>
   );
 }

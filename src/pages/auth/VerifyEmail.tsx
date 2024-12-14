@@ -1,5 +1,5 @@
 import { Button, Image, Input, notification } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from '../../assets/logo/LogoH.png';
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,6 +15,11 @@ const VerifyEmail = () => {
   const [isLoading,setIsLoading]=useState<boolean>(false)
   const dispatch = useDispatch()
   const { email, userId } = location.state || {};
+  useEffect(()=>{
+      if(!email || !userId){
+        navigate('/');
+      }
+  },[email,userId])
   const handleGetDetailUser = async (id: JwtPayload, access_token: string) => {
     try {
         const refresh_token = localStorage.getItem("refresh_token") || '';

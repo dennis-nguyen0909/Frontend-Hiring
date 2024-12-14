@@ -54,3 +54,12 @@ export const formatCurrency = (amount: number) => {
 export const formatPercentage = (value: number) => {
   return (value * 100).toFixed(1) + '%'; // Nhân với 100 và làm tròn đến 2 chữ số thập phân
 };
+
+
+export function isExpired(date:string) {
+  const currentDate = new Date(); // Ngày hiện tại
+  const expireDate = new Date(date); // Ngày hết hạn
+
+  // So sánh ngày hết hạn với ngày hiện tại
+  return expireDate < currentDate;
+}

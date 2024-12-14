@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import type { MenuProps, MenuTheme } from 'antd';
 import { Menu, Switch } from 'antd';
@@ -13,6 +13,8 @@ import JobTypeComponent from '../JobType/JobTypeComponent';
 import JobContractTypeComponent from '../JobContractType/JobContractTypeComponent';
 import DegreeTypeComponent from '../DegreeType/DegreeTypeComponent';
 import CurrenciesComponent from '../Currencies/CurrenciesComponent';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
@@ -44,6 +46,14 @@ const items: MenuItem[] = [
 const ManagePage: React.FC = () => {
   const [theme, setTheme] = useState<MenuTheme>('light');
   const [current, setCurrent] = useState(TAB_CANDIDATE);
+  const userDetail =useSelector(state=>state.user);
+  const navigate =useNavigate()
+  
+  useEffect(()=>{
+    if(!userDetail?.access_token){
+      navigate('/')
+    }
+  },[userDetail?.access_token])
 
   const handleGetCities = async () => {
     

@@ -1,5 +1,5 @@
 import { Avatar, Button, notification, Pagination, Table } from "antd";
-import { Bookmark } from "lucide-react";
+import { Bookmark, BookmarkCheck } from "lucide-react";
 import { API_FAVORITE_JOB } from "../../../../services/modules/FavoriteJobServices";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -10,6 +10,8 @@ import TableComponent from "../../../../components/Table/TableComponent";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useNavigate } from "react-router-dom";
+import { isExpired } from "../../../../untils";
+import { FAVORITE_JOB } from "../../../../services/api/education";
 
 interface JobApplication {
   _id: ObjectId;
@@ -26,6 +28,20 @@ const FavoriteJob = () => {
   const navigate = useNavigate()
 const onApplyNow = async(id)=>{
     navigate(`/job-information/${id}`)
+}
+
+const handleFavorite = async(jobId:string)=>{
+  const params = {
+    user_id: userDetail?._id,
+    job_id: jobId,
+  };
+  const res = await API_FAVORITE_JOB.createFavoriteJobs(
+    params,
+    userDetail?.access_token
+  );
+  if(+res.statusCode === 201){
+    handleGetAll()
+  }
 }
   const columns = [
     {
@@ -61,7 +77,19 @@ const onApplyNow = async(id)=>{
     {
       title: "",
       key: "bookmark",
-      render: () => <Bookmark className="text-gray-400" />,
+      render: (_,record) => (
+        <>
+        {userDetail?.favorite_jobs.some(job => job.job_id === record?.job_id?._id) ? (
+          // Nếu công việc nằm trong danh sách yêu thích, hiển thị BookmarkCheck
+          <BookmarkCheck onClick={() => handleFavorite(record?.job_id?._id)} className="text-blue-500 cursor-pointer" />
+        ) : (
+          // Nếu không nằm trong danh sách yêu thích, hiển thị Bookmark
+          <Bookmark onClick={() => handleFavorite(record?.job_id?._id)} className="text-gray-400 cursor-pointer" />
+        )}
+      </>
+      
+      
+      )
     },
     {
       title: "",
@@ -69,30 +97,15 @@ const onApplyNow = async(id)=>{
       render: (_, record) => (
         <Button
         onClick={()=>onApplyNow(record?.job_id?._id)}
-          type={record.isExpired ? "default" : "primary"}
-          className={record.isExpired ? "bg-gray-200 text-gray-500" : "bg-blue-500 hover:bg-blue-600"}
+          type={isExpired(record?.job_id?.expire_date) ? "default" : "primary"}
+          className={isExpired(record?.job_id?.expire_date) ? "bg-gray-200 text-gray-500" : "bg-blue-500 hover:bg-blue-600"}
         >
-          {record.isExpired ? "Job Expired" : "Apply Now →"}
+          {isExpired(record?.job_id?.expire_date) ? "Job Expired" : "Apply Now →"}
         </Button>
       ),
     },
   ];
 
-  const mapJobData = (jobFavorites: JobApplication[]) => {
-    return jobFavorites.map((job) => ({
-      key: job._id,
-      title: job.job_id.title,
-      location: job.job_id.city_id,  // Update to use city name if available
-      salary: job.job_id.salary_range ? `${job.job_id.salary_range.min}-${job.job_id.salary_range.max}` : "Negotiable",
-      jobExpire: job.job_id.is_expired ? "Expired" : null,
-      bgColor: "bg-gray-200", // Set default background color or customize
-      icon: job?.job_id?.title.charAt(0), // First letter of job title
-      jobType: job?.job_id?.job_contract_type,  // Full time, part time etc.
-      jobTypeBg: job?.job_id?.job_contract_type === "fulltime" ? "bg-blue-100" : "bg-green-100",
-      jobTypeColor: job?.job_id?.job_contract_type === "fulltime" ? "text-blue-600" : "text-green-600",
-      isExpired: job.job_id?.is_expired,
-    }));
-  };
 
   const handleGetAll = async (current = 1, pageSize = 10) => {
     setLoading(true)

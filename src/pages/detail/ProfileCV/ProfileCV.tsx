@@ -16,6 +16,7 @@ import * as userServices from "../../../services/modules/userServices";
 import { updateUser } from "../../../redux/slices/userSlices";
 import ListCV from "./ListCv";
 import ProfileCard from "./ProfileCard";
+import { useEffect } from "react";
 interface updateUserDto {
   full_name: string;
   address: string;
@@ -32,6 +33,12 @@ const ProfileCV = () => {
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  useEffect(()=>{
+    if(!userDetail?.access_token){
+        navigate('/')
+        return ;
+    }
+  },[userDetail?.access_token])
   const handleUpdateUser = async (values: updateUserDto) => {
     try {
       const res = await userServices.updateUser(values);
@@ -43,6 +50,7 @@ const ProfileCV = () => {
       });
     }
   };
+
   const onFinish = async (values: InputValuesProps) => {
     const { phoneNumber, fullName, address } = values;
     const params = {
@@ -113,8 +121,11 @@ const ProfileCV = () => {
     <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto py-2">
       <div className="w-2/3 bg-white h-fit p-6 shadow-md mr-[50px] rounded-2xl mt-10">
       <div className="space-y-8">
+    {userDetail?.access_token && <>
       <ListCV />
       <ProfileCard userDetail={userDetail} />
+      </>
+    }
     </div>
       </div>
 

@@ -5,16 +5,25 @@ import type { UploadProps } from 'antd'
 import * as userServices from '../../../services/modules/userServices'
 import { CV_API } from '../../../services/modules/CvServices'
 import { useSelector } from 'react-redux'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { File } from 'buffer'
+import { useNavigate } from 'react-router-dom'
 const { Dragger } = Upload
 
 export default function UploadPDF() {
     const userDetail= useSelector(state=>state.user)
+    const navigate =useNavigate()
     const [fileUrl,setFileUrl]=useState<string>('')
     const [fileName,setFileName]=useState<string>('')
     const [publicId,setPublicId]=useState<string>('')
     const [bytes,setBytes]=useState<number>(0)
+    
+  useEffect(()=>{
+    if(!userDetail?.access_token){
+      navigate('/')
+      return;
+    }
+  },[userDetail?.access_token])
   const props: UploadProps = {
     name: 'file',
     multiple: false,

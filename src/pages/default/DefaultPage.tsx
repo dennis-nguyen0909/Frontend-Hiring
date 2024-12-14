@@ -123,7 +123,9 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
 };
 
   useEffect(() => {
+    if(userDetail?.access_token){
       handleCheckUpdate();
+    }
   }, []);
 
   useEffect(() => {

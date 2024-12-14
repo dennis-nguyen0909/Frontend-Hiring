@@ -48,6 +48,7 @@ export const itemsIcon = [
 export const menuHeader = [
   {
     name: "Home",
+    id:'home',
     path: "/",
     color:"#5E6670",
     colorHover:"#205faf",
@@ -56,6 +57,7 @@ export const menuHeader = [
   },
   {
     name: "Profile & CV",
+    id:'profile_cv',
     path: "/profile-cv",
     color:"#5E6670",
     colorHover:"#205faf",
@@ -65,6 +67,7 @@ export const menuHeader = [
   },
   {
     name: "Jobs",
+    id:'jobs',
     path: "/jobs",
     color:"#5E6670",
     colorHover:"#205faf",
@@ -73,6 +76,7 @@ export const menuHeader = [
   },
   {
     name: "Companies",
+    id:'employers',
     path: "/employers",
     color:"#5E6670",
     colorHover:"#205faf",
@@ -81,6 +85,7 @@ export const menuHeader = [
   },
   {
     name: "About",
+    id:'about',
     path: "/about",
     color:"#5E6670",
     colorHover:"#205faf",
@@ -89,6 +94,7 @@ export const menuHeader = [
   },
   {
     name: "Dashboard",
+    id:'dashboard',
     path: "/dashboard/:id",
     color:"#5E6670",
     colorHover:"#205faf",

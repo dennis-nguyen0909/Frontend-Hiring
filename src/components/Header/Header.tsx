@@ -151,34 +151,40 @@ const Header: React.FC = () => {
           <p className="text-white  font-bold">HireDev</p>
         </div>
         <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap">
-          {menuHeader.map((item, idx) => {
-            return (
-              <li key={idx}>
-                {item.candidate === true ? (
-                  <div
-                  onClick={() => handleClick(item)}
-                  className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-                >
-                  {item.name}
-                </div>
-                ):item.employer === true ? (
-                  <div
-                  onClick={() => handleClick(item)}
-                  className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-                >
-                  {item.name}
-                </div>
-                ):(
-                  <div
-                  onClick={() => handleClick(item)}
-                  className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-                >
-                  {item.name}
-                </div>
-                )}
-              </li>
-            );
-          })}
+        {menuHeader.map((item, idx) => {
+    if (item.id === "dashboard" && !user.access_token) {
+      return null; // Không hiển thị Dashboard nếu không có access_token
+    }
+    if(item.id === 'profile_cv' && !user.access_token){
+      return null;
+    }
+    return (
+      <li key={idx}>
+        {item.candidate === true ? (
+          <div
+            onClick={() => handleClick(item)}
+            className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+          >
+            {item.name}
+          </div>
+        ) : item.employer === true ? (
+          <div
+            onClick={() => handleClick(item)}
+            className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+          >
+            {item.name}
+          </div>
+        ) : (
+          <div
+            onClick={() => handleClick(item)}
+            className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+          >
+            {item.name}
+          </div>
+        )}
+      </li>
+    );
+  })}
           <div>
             {user.access_token ? (
               <Popover
