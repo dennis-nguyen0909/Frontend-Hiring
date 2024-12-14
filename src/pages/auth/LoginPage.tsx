@@ -252,6 +252,7 @@ const LoginPage = () => {
           <hr className="w-full h-0.95 bg-gray-500" />
         </div>
         <div className="flex justify-between mt-5 w-full">
+        <a href="http://localhost:8082/api/v1/auth/facebook/login">
           <Button
             className="flex items-center"
             size="large"
@@ -260,6 +261,7 @@ const LoginPage = () => {
             <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
             Sign up with Facebook
           </Button>
+          </a>
           <a href="http://localhost:8082/api/v1/auth/google/login">
           <Button
             className="flex items-center"
