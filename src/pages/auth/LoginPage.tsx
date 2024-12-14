@@ -260,14 +260,15 @@ const LoginPage = () => {
             <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
             Sign up with Facebook
           </Button>
+          <a href="http://localhost:8082/api/v1/auth/google/login">
           <Button
             className="flex items-center"
             size="large"
-            style={{ width: "240px" }}
-          >
+            style={{ width: "240px" }}      >
             <img src={google} alt="Google" className="w-5 h-5 mr-2" />
             Sign up with Google
           </Button>
+            </a>
         </div>
       </div>
     );

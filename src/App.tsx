@@ -24,6 +24,16 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    // Lấy token từ query params
+    const token = urlParams.get('token');
+    if (token) {
+      localStorage.setItem('access_token', token);
+      window.location.href = "http://localhost:5173";  // Sửa lại window.location.href
+    }
+  }, []);
+  
+  useEffect(() => {
     const checkTokenExpiration = () => {
       const accessToken = localStorage.getItem("access_token");
       if (accessToken) {
