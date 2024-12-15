@@ -247,7 +247,7 @@ const LoginPage = () => {
           <hr className="w-full h-0.95 bg-gray-500" />
         </div>
         <div className="flex justify-between mt-5 w-full">
-        <a href="http://localhost:8082/api/v1/auth/facebook/login">
+        <a href={`${import.meta.env.VITE_API_LOGIN_FACEBOOK}`}>
           <Button
             className="flex items-center"
             size="large"
@@ -257,7 +257,7 @@ const LoginPage = () => {
             Sign up with Facebook
           </Button>
           </a>
-          <a href="http://localhost:8082/api/v1/auth/google/login">
+          <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
           <Button
             className="flex items-center"
             size="large"

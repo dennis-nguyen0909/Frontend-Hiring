@@ -82,16 +82,27 @@ const ForgotPage = () => {
                     <hr className="w-full h-0.95 bg-gray-500" />
                 </div>
 
-                <div className="flex justify-between mt-5  w-full" >
-                    <Button className="flex items-center" size="large" style={{width:'240px'}}>
-                        <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
-                        Sign up with Facebook
-                    </Button>
-                    <Button className="flex items-center" size="large" style={{width:'240px'}}>
-                        <img src={google} alt="Google" className="w-5 h-5 mr-2" />
-                        Sign up with Google
-                    </Button>
-                </div>
+                <div className="flex justify-between mt-5 w-full">
+        <a href={`${import.meta.env.VITE_API_LOGIN_FACEBOOK}`}>
+          <Button
+            className="flex items-center"
+            size="large"
+            style={{ width: "240px" }}
+          >
+            <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
+            Sign up with Facebook
+          </Button>
+          </a>
+          <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
+          <Button
+            className="flex items-center"
+            size="large"
+            style={{ width: "240px" }}      >
+            <img src={google} alt="Google" className="w-5 h-5 mr-2" />
+            Sign up with Google
+          </Button>
+            </a>
+        </div>
             </Form>
         );
     };

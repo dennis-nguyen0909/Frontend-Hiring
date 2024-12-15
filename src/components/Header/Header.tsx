@@ -168,6 +168,9 @@ const Header: React.FC = () => {
             if (item.id === "profile_cv" && !userDetail.access_token) {
               return null;
             }
+            if(item.id === 'profile_cv' && userDetail?.role.role_name === 'EMPLOYER'){
+              return null;
+            }
             return (
               <li key={idx}>
                 {item.candidate === true ? (
