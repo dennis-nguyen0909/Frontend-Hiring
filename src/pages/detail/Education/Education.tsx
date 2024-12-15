@@ -43,7 +43,7 @@ const EducationComponent = () => {
   const [actionType, setActionType] = useState<string>("create");
   const {
     handleUpdateProfile
-  } = useCalculateUserProfile(userDetail?.id, userDetail?.access_token);
+  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   const handleGetEducation = async (id: string, access_token: string) => {
     try {
       const res = await EducationApi.getEducationById(id, access_token);

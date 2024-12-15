@@ -53,7 +53,7 @@ export default function DashBoardEmployer() {
 const handleCollapse = async (collapsed: boolean) => {
   setCollapsed(collapsed)
   const res = await userServices.updateUser({
-    id: userDetail?.id,
+    id: userDetail?._id,
     toggle_dashboard: collapsed
   })
 

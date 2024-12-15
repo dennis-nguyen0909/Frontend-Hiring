@@ -41,7 +41,7 @@ const ProfileComponentSetting = () => {
 
 
   const {
-    data: caculateProfile  } = useCalculateUserProfile(userDetail?.id, userDetail?.access_token);
+    data: caculateProfile  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   return (
     <div className="">
       <Col span={24} className="max-w-3xl mx-auto p-4 space-y-6 rounded-xl">

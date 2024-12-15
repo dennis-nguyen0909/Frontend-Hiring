@@ -32,7 +32,7 @@ export default function ProfileCard({ userDetail }: any) {
         current,
         pageSize,
         query: {
-          user_id: userDetail?.id,
+          user_id: userDetail?._id,
         },
       };
       const res = await CV_API.getAll(params, userDetail?.access_token);
@@ -53,7 +53,7 @@ export default function ProfileCard({ userDetail }: any) {
     if (selectedCV) {
       const params ={
         primary_cv_id:selectedCV,
-        id: userDetail?.id,
+        id: userDetail?._id,
       };
       const updateCVMain = await USER_API.updateUser(params,userDetail?.access_token);
       if(updateCVMain.data){
@@ -99,7 +99,7 @@ export default function ProfileCard({ userDetail }: any) {
           <div className="flex flex-wrap gap-3 mb-6">
             <Button
               onClick={() => {
-                navigate(`/profile/${userDetail?.id}`);
+                navigate(`/profile/${userDetail?._id}`);
               }}
               icon={<Edit className="w-4 h-4" />}
               className="flex items-center gap-2 bg-green-50 text-green-600 border-green-200 hover:bg-green-100"

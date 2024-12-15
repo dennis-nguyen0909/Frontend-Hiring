@@ -29,7 +29,7 @@ export default function SuggestionJobCity() {
       };
       const res = await JobApi.getJobSuggestsByCity(
         params,
-        userDetail?.id,
+        userDetail?._id,
         userDetail?.access_token
       );
       if (res.data) {

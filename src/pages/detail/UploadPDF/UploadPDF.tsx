@@ -53,7 +53,7 @@ export default function UploadPDF() {
   const onUpdate = async()=>{
     try {
         const params ={
-            user_id:userDetail?.id,
+            user_id:userDetail?._id,
             cv_name:fileName,
             cv_link:fileUrl,
             public_id:publicId,

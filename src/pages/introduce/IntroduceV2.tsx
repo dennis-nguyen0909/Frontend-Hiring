@@ -33,7 +33,7 @@ const IntroduceV2 = () => {
     }
 
     try {
-      const res = await JobApi.getAllJobsQuery(params, userDetail?.id);
+      const res = await JobApi.getAllJobsQuery(params, userDetail?._id);
       if (page === 1) {
         setJobSuggestions(res.data.items);
       } else {

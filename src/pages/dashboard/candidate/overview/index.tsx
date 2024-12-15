@@ -11,7 +11,7 @@ const OverViewCandidate = ({ userDetail }) => {
   const navigate = useNavigate();
   const {
     data: caculateProfile,
-  } = useCalculateUserProfile(userDetail?.id, userDetail?.access_token);
+  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   const recentlyAppliedColumns = [
     {
       title: 'Job',
@@ -68,7 +68,7 @@ const OverViewCandidate = ({ userDetail }) => {
   const [endValue, setEndValue] = useState<number>(0); // Giá trị đích từ API
 
   const handleGetAppliedUser = async () => {
-    const res = await API_APPLICATION.getCountAppliedCandidate(userDetail?.id, userDetail?.access_token);
+    const res = await API_APPLICATION.getCountAppliedCandidate(userDetail?._id, userDetail?.access_token);
     if (res.data) {
       setEndValue(+res.data);
       setCountApplied(0);
@@ -77,7 +77,7 @@ const OverViewCandidate = ({ userDetail }) => {
 
   const handleGetJobsAppliedRecent = async () => {
     setLoading(true);
-    const res = await API_APPLICATION.getRecentlyAppliedCandidate(userDetail?.id, '10', userDetail?.access_token);
+    const res = await API_APPLICATION.getRecentlyAppliedCandidate(userDetail?._id, '10', userDetail?.access_token);
     if (res.data) {
       const formattedData = res?.data?.map(item => ({
         key: item?._id,
@@ -147,7 +147,7 @@ const OverViewCandidate = ({ userDetail }) => {
            <h3 className="font-semibold text-white">Việc chỉnh sửa hồ sơ của bạn chưa hoàn tất.</h3>
            <p className="text-white">Hoàn tất chỉnh sửa hồ sơ của bạn và xây dựng Sơ yếu lý lịch tùy chỉnh của bạn</p>
          </div>
-         <Button onClick={() => navigate(`/profile/${userDetail?.id}`)} type="primary" className="!bg-white !text-[#e05051] !border-red-500 !hover:bg-red-50">
+         <Button onClick={() => navigate(`/profile/${userDetail?._id}`)} type="primary" className="!bg-white !text-[#e05051] !border-red-500 !hover:bg-red-50">
            Cập nhật ngay
          </Button>
        </div>

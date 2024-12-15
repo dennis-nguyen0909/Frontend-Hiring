@@ -43,7 +43,7 @@ export default function SkillEmployer() {
 
   const onFinish = async (values: SkillEmployerFormData) => {
     const { name, description } = values
-    const res = await EmployerSkillApi.postSkill({ name, description, user_id: userDetail?.id }, userDetail.access_token)
+    const res = await EmployerSkillApi.postSkill({ name, description, user_id: userDetail?._id }, userDetail.access_token)
     if (res.data) {
       notification.success({
         message: "Notification",

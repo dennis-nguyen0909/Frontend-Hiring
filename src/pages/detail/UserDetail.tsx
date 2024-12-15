@@ -54,7 +54,7 @@ const UserDetail = () => {
       phone: phoneNumber,
       full_name: fullName,
       address: address,
-      id: userDetail?.id,
+      id: userDetail?._id,
     };
     const res = await handleUpdateUser(params);
     if (res) {
@@ -96,7 +96,7 @@ const UserDetail = () => {
       case "is_suggestion_job":
         // eslint-disable-next-line no-case-declarations
         const param = {
-         id: userDetail?.id,
+         id: userDetail?._id,
          is_suggestion_job: checked,
        };
        await updateUserApi(param);
@@ -105,7 +105,7 @@ const UserDetail = () => {
       case "isSearchJobStatus":
         // eslint-disable-next-line no-case-declarations
         const params = {
-          id: userDetail?.id,
+          id: userDetail?._id,
           is_search_jobs_status: checked,
         };
         await updateUserApi(params);
@@ -244,7 +244,7 @@ const UserDetail = () => {
           </div>
           <div className="mt-2">
             <Button
-              onClick={() => navigate(`/profile/${userDetail?.id}`)}
+              onClick={() => navigate(`/profile/${userDetail?._id}`)}
               className="!border-primaryColor !text-primaryColor !hover:text-primaryColor !hover:border-primaryColor"
             >
               Cập nhật Profile

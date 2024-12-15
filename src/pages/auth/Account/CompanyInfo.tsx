@@ -29,7 +29,7 @@ const CompanyInfo = ({handleTabChange}) => {
       return;
     }
     const params = {
-        id:userDetail?.id,
+        id:userDetail?._id,
         company_name:values.company_name,
         description:values?.description?.level?.content
     }
@@ -62,7 +62,7 @@ const CompanyInfo = ({handleTabChange}) => {
         const res = await uploadFiled(info?.file);
         if (res.data.url) {
           const params = {
-            id: userDetail?.id,
+            id: userDetail?._id,
             avatar_company: res?.data?.url,
           };
           const update = await USER_API.updateUser(params,userDetail?.access_token);
@@ -81,7 +81,7 @@ const CompanyInfo = ({handleTabChange}) => {
         const res = await uploadFiled(info?.file);
         if (res.data.url) {
           const params = {
-            id: userDetail?.id,
+            id: userDetail?._id,
             banner_company: res?.data?.url,
           };
           const update = await USER_API.updateUser(params,userDetail?.access_token);

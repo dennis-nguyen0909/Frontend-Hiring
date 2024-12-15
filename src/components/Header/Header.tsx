@@ -80,7 +80,7 @@ const Header: React.FC = () => {
                 {userDetail?.full_name}
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
-                Mã ứng viên:<span className="text-black">{userDetail?.id}</span>
+                Mã ứng viên:<span className="text-black">{userDetail?._id}</span>
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
                 Email: {userDetail?.email}
@@ -99,7 +99,7 @@ const Header: React.FC = () => {
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
                 Mã nhà tuyển dụng:
-                <span className="text-black">{userDetail?.id}</span>
+                <span className="text-black">{userDetail?._id}</span>
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
                 Email: {userDetail?.email}
@@ -114,7 +114,7 @@ const Header: React.FC = () => {
                 {userDetail?.full_name}
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
-                Mã quản trị viên:<span className="text-black">{userDetail?.id}</span>
+                Mã quản trị viên:<span className="text-black">{userDetail?._id}</span>
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
                 Email: {userDetail?.email}
@@ -145,7 +145,7 @@ const Header: React.FC = () => {
   const handleClick = (item) => {
     // navigate(`${item.path}`)
     if (item.name === "Dashboard") {
-      navigate(`/dashboard/${userDetail?.id || userDetail?._id}`);
+      navigate(`/dashboard/${userDetail?._id || userDetail?._id}`);
     } else {
       navigate(`${item.path}`);
     }

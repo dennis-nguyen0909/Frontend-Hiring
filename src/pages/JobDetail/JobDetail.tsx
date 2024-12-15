@@ -89,7 +89,7 @@ export default function JobDetail() {
         current: 1,
         pageSize: 30,
         query: {
-          user_id: userDetail?.id,
+          user_id: userDetail?._id,
         },
       };
       const res = await CV_API.getAll(params, userDetail?.access_token);
@@ -126,7 +126,7 @@ export default function JobDetail() {
 
     if (userDetail?.access_token) {
       const params = {
-        user_id: userDetail?.id,
+        user_id: userDetail?._id,
         employer_id: jobDetail?.user_id?._id,
         job_id: jobDetail?._id,
         cover_letter: coverLetter,
@@ -159,7 +159,7 @@ export default function JobDetail() {
   const getFavoriteJobDetailByUserId = async () => {
     try {
       const params = {
-        user_id: userDetail?.id,
+        user_id: userDetail?._id,
         job_id: url?.id,
       };
       const res = await API_FAVORITE_JOB.getFavoriteJobDetailByUserId(
@@ -176,7 +176,7 @@ export default function JobDetail() {
   const onLike = async () => {
     try {
       const params = {
-        user_id: userDetail?.id,
+        user_id: userDetail?._id,
         job_id: jobDetail?._id,
       };
       const res = await API_FAVORITE_JOB.createFavoriteJobs(
@@ -304,7 +304,7 @@ export default function JobDetail() {
             <Button disabled className="py-5 px-6 rounded-full">
               Đã hết hạn
             </Button>
-          ) : jobDetail?.candidate_ids.includes(userDetail?.id) ? (
+          ) : jobDetail?.candidate_ids.includes(userDetail?._id) ? (
             <Button disabled className="py-5 px-6 rounded-full">
               Đã ứng tuyển
             </Button>

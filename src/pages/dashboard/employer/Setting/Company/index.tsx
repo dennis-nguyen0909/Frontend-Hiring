@@ -24,12 +24,12 @@ const CompanyInfo = ()=>{
               let params;
               if (type === "banner"){
                 params = {
-                  id:userDetail?.id,
+                  id:userDetail?._id,
                   banner_company:res?.data?.url
                 }
               }else{
                 params = {
-                  id:userDetail?.id,
+                  id:userDetail?._id,
                   avatar_company:res?.data?.url
                 }
               }
@@ -63,7 +63,7 @@ const CompanyInfo = ()=>{
     const params={
       company_name,
       description:description?.level?.content,
-      id:userDetail?.id
+      id:userDetail?._id
     }
     const res = await userServices.updateUser(params);
     if(res.data){
@@ -82,7 +82,7 @@ const CompanyInfo = ()=>{
   const handleDeleteAvatar = async()=>{
     try {
       const res = await userServices.updateUser({
-        id:userDetail?.id,
+        id:userDetail?._id,
         avatar_company:""
       })
       if(res.data){

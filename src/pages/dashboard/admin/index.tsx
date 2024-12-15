@@ -50,7 +50,7 @@ export default function DashBoardAdmin() {
   const handleCollapse = async (collapsed) => {
     setCollapsed(collapsed)
     const res = await userServices.updateUser({
-      id: userDetail?.id,
+      id: userDetail?._id,
       toggle_dashboard: collapsed
     })
     dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))

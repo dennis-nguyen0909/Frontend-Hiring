@@ -26,7 +26,7 @@ const SearchBar = () => {
         }
       };
 
-      const response = await JobApi.getAllJobsQuery(params, userDetail?.id);
+      const response = await JobApi.getAllJobsQuery(params, userDetail?._id);
 
       // Kiểm tra xem có dữ liệu mới không
       if (response.data.items.length > 0) {

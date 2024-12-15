@@ -49,7 +49,7 @@ const FoundingInfo = ({ handleTabChange }) => {
       const { year_of_establishment } = values;
       const params = {
         ...values,
-        owner: userDetail?.id,
+        owner: userDetail?._id,
         year_of_establishment,
         company_vision: companyVision,
       };
@@ -62,9 +62,7 @@ const FoundingInfo = ({ handleTabChange }) => {
           message: "Notification",
           description: "Cập nhật thành công",
         });
-        dispatch(
-          updateUser({ ...res.data, access_token: userDetail.access_token })
-        );
+
         handleTabChange("social");
       } else {
         notification.error({
@@ -97,7 +95,7 @@ const FoundingInfo = ({ handleTabChange }) => {
       form={form}
       layout="vertical"
     >
-      <LoadingComponentSkeleton isLoading={true}>
+      <LoadingComponentSkeleton isLoading={loading}>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <Form.Item

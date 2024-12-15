@@ -159,7 +159,7 @@ export default function PostJob() {
     setNewRequirement(""); // Reset giá trị ô nhập yêu cầu
   };
   useEffect(() => {
-    handleGetSkillByUser({ user_id: userDetail?.id });
+    handleGetSkillByUser({ user_id: userDetail?._id });
   }, []);
   const handleFinishFailed = ({ errorFields }: any) => {
     errorFields.forEach((field: any) => {
@@ -180,7 +180,7 @@ export default function PostJob() {
 
   const handleAddNewSkill = async () => {
     const res = await EmployerSkillApi.postSkill(
-      { name: newSkill, user_id: userDetail?.id },
+      { name: newSkill, user_id: userDetail?._id },
       userDetail.access_token
     );
     if (res.data) {
@@ -250,7 +250,7 @@ export default function PostJob() {
       const salaryRange = { min: values.min_salary, max: values.max_salary };
       const ageRange = { min: values.min_age, max: values.max_age };
       let params = {
-        user_id: userDetail?.id,
+        user_id: userDetail?._id,
         title: values.title,
         description: content,
         address: values.address,
@@ -313,7 +313,7 @@ export default function PostJob() {
   const onFinish = async (values) => {
     const { name, description, key } = values;
     const res = await DEGREE_TYPE_API.create(
-      { name, description, user_id: userDetail?.id, key },
+      { name, description, user_id: userDetail?._id, key },
       userDetail.access_token
     );
     if (res.data) {
@@ -334,7 +334,7 @@ export default function PostJob() {
   const onFinishLevel = async (values) => {
     const { name, description, key } = values;
     const res = await Level_API.create(
-      { name, description, user_id: userDetail?.id, key },
+      { name, description, user_id: userDetail?._id, key },
       userDetail.access_token
     );
     if (res.data) {
@@ -355,7 +355,7 @@ export default function PostJob() {
   const onFinishContractType = async (values) => {
     const { name, description, key } = values;
     const res = await JOB_CONTRACT_TYPE_API.create(
-      { name, description, user_id: userDetail?.id, key },
+      { name, description, user_id: userDetail?._id, key },
       userDetail.access_token
     );
     if (res.data) {
@@ -376,7 +376,7 @@ export default function PostJob() {
   };
   const onFinishJobType= async(values)=>{
     const { name, description,key } = values
-    const res = await JOB_TYPE_API.create({ name, description, user_id: userDetail?.id,key}, userDetail.access_token)
+    const res = await JOB_TYPE_API.create({ name, description, user_id: userDetail?._id,key}, userDetail.access_token)
     if (res.data) {
 
       notification.success({
@@ -395,7 +395,7 @@ export default function PostJob() {
     }
   }
   const onFinishMoneyType = async(values)=>{
-    const res = await CURRENCY_API.create({user_id: userDetail?.id,...values}, userDetail.access_token)
+    const res = await CURRENCY_API.create({user_id: userDetail?._id,...values}, userDetail.access_token)
     if (res.data) {
       notification.success({
         message: "Thông báo",

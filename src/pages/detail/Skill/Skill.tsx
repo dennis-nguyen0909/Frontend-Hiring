@@ -81,7 +81,7 @@ const SkillComponent = () => {
   };
   const {
     handleUpdateProfile
-  } = useCalculateUserProfile(userDetail?.id, userDetail?.access_token);
+  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   useEffect(() => {
     handleGetSkillByUserId();
   }, []);
@@ -92,7 +92,7 @@ const SkillComponent = () => {
       name,
       evalute,
       description,
-      user_id: userDetail?.id,
+      user_id: userDetail?._id,
     };
     try {
       const res = await SkillApi.postSkill(params, user.access_token);

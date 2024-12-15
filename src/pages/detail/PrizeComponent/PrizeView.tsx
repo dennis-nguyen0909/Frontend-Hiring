@@ -30,14 +30,14 @@ export default function PrizeView() {
     const [selectedId,setSelectedId]=useState<string >('')
     const {
       handleUpdateProfile
-    } = useCalculateUserProfile(userDetail?.id, userDetail?.access_token);
+    } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   const handleGetPrizesByUserId = async ({current=1,pageSize=10}) => {
     try {
         const params = {
             current,
             pageSize,
             query:{
-                user_id:userDetail?.id
+                user_id:userDetail?._id
             }
         }
         const res = await PRIZE_API.getAll(params,userDetail.accessToken)
@@ -94,7 +94,7 @@ const onSubmit = async(values:any)=>{
 
 
     const params = {
-        user_id:userDetail?.id,
+        user_id:userDetail?._id,
         prize_name:values.prize_name,
         organization_name:values.organization_name,
         date_of_receipt:dateOfReceipt.toDate(),
@@ -134,7 +134,7 @@ const onUpdate = async()=>{
     const params={
         ...values,
         date_of_receipt:dateOfReceipt.toDate(),
-        user_id:userDetail?.id,
+        user_id:userDetail?._id,
         prize_image:imgUrl ? imgUrl :null,
         prize_link:link ? link :null
     }

@@ -60,7 +60,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   };
 
   const handleCompleted = async() => {
-    await handleGetDetailUser(userId || userDetail?.id, userDetail?.access_token);
+    await handleGetDetailUser(userId || userDetail?._id, userDetail?.access_token);
     setVisible(false);
   };
   
@@ -118,7 +118,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   const handleCheckUpdate = async () => {
     try {
       const res = await USER_API.checkUpdateCompany(
-        userId || userDetail?.id,
+        userId || userDetail?._id,
         userDetail?.access_token
       );
       if (res.data) {
@@ -171,7 +171,7 @@ console.log("duydeptrai userid",userDetail?._id)
       handleCheckRole();
       handleCheckUpdate();
       handleGetRole()
-      handleGetDetailUser(userId || userDetail?.id, userDetail?.access_token);
+      handleGetDetailUser(userId || userDetail?._id, userDetail?.access_token);
     }
   }, []);
 
@@ -198,7 +198,7 @@ console.log("duydeptrai userid",userDetail?._id)
   const handleContinue = async() => {
     const role = roles?.find((role)=>role.role_name === selectedType?.toUpperCase())
     const params = {
-      id:userDetail?.id,
+      id:userDetail?._id,
       role:role?._id
     }
     const  res = await USER_API.updateUser(params,userDetail?.access_token)

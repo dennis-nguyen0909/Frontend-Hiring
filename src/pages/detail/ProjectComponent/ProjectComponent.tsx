@@ -51,7 +51,7 @@ const ProjectComponent = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedId, setSelectedId] = useState<string>("");
   const [loading,setLoading]=useState<boolean>(false)
-  const {handleUpdateProfile}= useCalculateUserProfile(userDetail?.id,userDetail?.access_token)
+  const {handleUpdateProfile}= useCalculateUserProfile(userDetail?._id,userDetail?.access_token)
 
   const handleGetProjectsByUserId = async ({ current = 1, pageSize = 10 }) => {
     try {
@@ -59,7 +59,7 @@ const ProjectComponent = () => {
         current,
         pageSize,
         query: {
-          user_id: userDetail?.id,
+          user_id: userDetail?._id,
         },
       };
       const res = await PROJECT_API.getAll(params, userDetail.access_token);
@@ -72,7 +72,7 @@ const ProjectComponent = () => {
   };
   const handleSubmit = async (values: any) => {
     const params = {
-      user_id: userDetail?.id,
+      user_id: userDetail?._id,
       project_name: values.project_name,
       customer_name: values.customer_name,
       team_number: values.team_number,

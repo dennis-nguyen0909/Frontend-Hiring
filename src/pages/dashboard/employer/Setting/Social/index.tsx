@@ -41,7 +41,7 @@ const handleSocialLinkChange = (index, field, value) => {
         current,
         pageSize,
         query: {
-          user_id: userDetail?.id,
+          user_id: userDetail?._id,
         },
       };
       const res = await SOCIAL_LINK_API.getAll(params, userDetail?.access_token);
@@ -80,7 +80,7 @@ const handleSocialLinkChange = (index, field, value) => {
         .filter((social) => social.hasChanged || !social.isExisting)
         .map((social) => {
           const params = {
-            user_id: userDetail?.id,
+            user_id: userDetail?._id,
             type: social?.type,
             url: social?.url,
           };

@@ -150,7 +150,7 @@ export default function MyJobEmployer() {
     if (e.key === DELETE) {
       const res = await JobApi.deleteManyJobs(
         [record?._id],
-        userDetail?.id,
+        userDetail?._id,
         userDetail?.access_token
       );
       if (res.data) {
@@ -184,7 +184,7 @@ export default function MyJobEmployer() {
       current,
       pageSize,
       query: {
-        user_id: userDetail?.id,
+        user_id: userDetail?._id,
       },
     };
 

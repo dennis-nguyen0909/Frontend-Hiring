@@ -61,7 +61,7 @@ export default function SavedCandidate() {
       pageSize, // Số lượng phần tử mỗi trang
     };
     const res = await SAVE_CANDIDATE_API.getSaveCandidateByEmployerId(
-      userDetail?.id,
+      userDetail?._id,
       params,
       userDetail?.access_token
     );

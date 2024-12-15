@@ -48,7 +48,7 @@ export default function Founding() {
       const { year_of_establishment } = values;
       const params = {
         ...values,
-        owner: userDetail?.id,
+        owner: userDetail?._id,
         year_of_establishment,
         company_vision: companyVision,
       };
