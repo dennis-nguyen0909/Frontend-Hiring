@@ -69,7 +69,7 @@ const Header: React.FC = () => {
     return (
       <div>
         {roleName === ROLE_NAME_USER ? (
-         <div>
+         <div className="flex">
            <Avatar size="large" src={user?.avatar || avtDefault} />
           <div className="ml-5">
             <p className="font-semibold text-[14px] text-primaryColor ">
@@ -84,19 +84,19 @@ const Header: React.FC = () => {
           </div>
           </div>
         ): roleName === ROLE_NAME_EMPLOYEE ? (
-          <div>
-          <Avatar size="large" src={user?.avatar || avtDefault} />
-         <div className="ml-5">
-           <p className="font-semibold text-[14px] text-primaryColor ">
-             {user?.full_name}
-           </p>
-           <p className="font-light text-[12px] text-[#ccc]">
-             Mã nhà tuyển dụng:<span className="text-black">{user?._id}</span>
-           </p>
-           <p className="font-light text-[12px] text-[#ccc]">
-             Email: {user?.email}
-           </p>
-         </div>
+          <div className="flex">
+          <Avatar size="large" src={user?.avatar || user?.avatar_company || avtDefault} />
+          <div className="ml-5">
+            <p className="font-semibold text-[14px] text-primaryColor ">
+              {user?.full_name}
+            </p>
+            <p className="font-light text-[12px] text-[#ccc]">
+              Mã nhà tuyển dụng:<span className="text-black">{user?._id}</span>
+            </p>
+            <p className="font-light text-[12px] text-[#ccc]">
+              Email: {user?.email}
+            </p>
+          </div>
          </div>
         ):roleName === ROLE_NAME_ADMIN ?(
           <div>
@@ -198,7 +198,7 @@ const Header: React.FC = () => {
                   onMouseEnter={() => setHovered(true)}
                   onMouseLeave={() => setHovered(false)}
                 >
-                  <Avatar size="large" src={user?.avatar || avtDefault} />
+                  <Avatar size="large" src={user?.avatar || user?.avatar_company || avtDefault} />
                   {!hovered ? <ChevronDown /> : <ChevronUp />}
                 </li>
               </Popover>
