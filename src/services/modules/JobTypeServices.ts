@@ -1,5 +1,5 @@
 // src/services/educationService.ts
-import { JOB_TYPE } from "../api/education";
+import { JOB_TYPE } from "../api/route.api";
 import { axiosInstance } from "../config/axiosInterceptor"; 
 
 // Định nghĩa EducationApi và hàm postEducation

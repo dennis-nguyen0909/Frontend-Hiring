@@ -1,5 +1,5 @@
 // src/services/educationService.ts
-import { CURRENCIES } from "../api/education";
+import { CURRENCIES } from "../api/route.api";
 import { axiosInstance } from "../config/axiosInterceptor"; 
 
 // Định nghĩa EducationApi và hàm postEducation

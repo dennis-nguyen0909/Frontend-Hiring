@@ -11,7 +11,7 @@ import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useNavigate } from "react-router-dom";
 import { isExpired } from "../../../../untils";
-import { FAVORITE_JOB } from "../../../../services/api/education";
+import { FAVORITE_JOB } from "../../../../services/api/route.api";
 
 interface JobApplication {
   _id: ObjectId;

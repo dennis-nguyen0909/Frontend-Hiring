@@ -1,5 +1,5 @@
 // src/services/ExperienceService.ts
-import { POST_EXPERIENCE } from "../api/education"; // Đảm bảo POST_EXPERIENCE chứa đúng URL của endpoint
+import { POST_EXPERIENCE } from "../api/route.api"; // Đảm bảo POST_EXPERIENCE chứa đúng URL của endpoint
 import { axiosInstance } from "../config/axiosInterceptor"; // Cấu hình axios
 
 // Định nghĩa ExperienceApi và hàm postExperience

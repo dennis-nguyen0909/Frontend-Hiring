@@ -1,5 +1,5 @@
 // src/services/educationService.ts
-import { SAVE_CANDIDATE } from "../api/education"; // Đảm bảo SAVE_CANDIDATE chứa đúng URL của endpoint
+import { SAVE_CANDIDATE } from "../api/route.api"; // Đảm bảo SAVE_CANDIDATE chứa đúng URL của endpoint
 import { axiosInstance } from "../config/axiosInterceptor"; // Cấu hình axios
 
 // Định nghĩa EducationApi và hàm postEducation

@@ -1,5 +1,5 @@
 // src/services/educationService.ts
-import { ROLES } from "../api/education"; // Đảm bảo ROLES chứa đúng URL của endpoint
+import { ROLES } from "../api/route.api"; // Đảm bảo ROLES chứa đúng URL của endpoint
 import { axiosInstance } from "../config/axiosInterceptor"; // Cấu hình axios
 
 // Định nghĩa EducationApi và hàm postEducation

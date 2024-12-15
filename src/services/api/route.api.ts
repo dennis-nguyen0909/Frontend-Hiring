@@ -18,3 +18,6 @@ export const DEGREE_TYPE = `degree-types`;
 export const CURRENCIES = `currencies`;
 export const ROLES = `role`;
 export const SOCIAL_LINKS = `social-links`;
+export const ORGANIZATION_TYPE = `organization-types`;
+export const INDUSTRY_TYPE = `industry-types`;
+export const TEAMSIZE = `team-sizes`;

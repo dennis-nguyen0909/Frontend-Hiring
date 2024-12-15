@@ -56,7 +56,7 @@ const SettingCandidate = () => {
   const renderSocialLinksTab = () => (
     <div>
       <h2 className="text-xl font-semibold mb-4">Social Links</h2>
-      {socialLinks.map((link, index) => (
+      {socialLinks?.map((link, index) => (
         <div key={index} className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Social Link {index + 1}

@@ -5,18 +5,20 @@ import {
   TwitterOutlined,
   YoutubeOutlined,
 } from "@ant-design/icons";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { USER_API } from "../../services/modules/userServices";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import parse from "html-react-parser";
 import { JobApi } from "../../services/modules/jobServices";
 import JobCard from "./JobCard";
+import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
 
 export default function EmployerDetail() {
   const { id } = useParams();
   const userDetail = useSelector((state) => state.user);
   const [employerDetail, setEmployerDetail] = useState();
+  const [loading, setLoading] = useState<boolean>(false);
   const [jobs, setJobs] = useState<Array<any>>([]);
   const navigate = useNavigate();
   
@@ -28,12 +30,15 @@ export default function EmployerDetail() {
 
   const handleGetDetailEmployerDetail = async () => {
     try {
+      setLoading(true)
       const res = await USER_API.getDetailUser(id, userDetail?.access_token);
       if (res.data) {
         setEmployerDetail(res.data.items);
       }
     } catch (error) {
       console.error(error);
+    } finally{
+      setLoading(false)
     }
   };
   useEffect(() => {
@@ -78,19 +83,11 @@ export default function EmployerDetail() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Breadcrumb */}
-      {/* <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-2 text-sm">
-          <span className="text-gray-500">Home / Find Employers / </span>
-          <span className="font-medium">Single Employers</span>
-        </div>
-      </div> */}
-
-      {/* Banner */}
+      <LoadingComponentSkeleton isLoading={true}>
       <div className="relative h-64 w-full overflow-hidden">
         <Image
           height={500}
-          width={2000} // Cung cấp chiều rộng phù hợp với tỷ lệ của ảnh
+          width={2000} 
           src={employerDetail?.banner_company}
           alt="Company banner"
           className="object-cover w-full h-full brightness-50"
@@ -362,6 +359,7 @@ export default function EmployerDetail() {
           </div>
         </div>
       </div>
+      </LoadingComponentSkeleton>
     </div>
   );
 }

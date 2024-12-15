@@ -1,4 +1,3 @@
-// src/redux/slices/userSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface UserState {
@@ -39,41 +38,59 @@ interface UserState {
   organization: string | null; // Id của Organization
 }
 
-
+// Định nghĩa giá trị khởi tạo cho state
 const initialState: UserState = {
-  id: "",
-  name: "",
-  email: "",
-  full_name: "",
-  phone: "",
-  avatar: "",
-  address: "",
+  id: null,
+  name: null,
+  email: null,
+  full_name: null,
+  phone: null,
+  avatar: null,
+  background: null,
+  address: null,
   gender: null,
   role: null,
   account_type: null,
-  is_active: null,
-  is_search_jobs_status: null,
+  is_active: false,
+  is_search_jobs_status: false,
   auth_providers: null,
   save_job_ids: null,
   cvs: null,
-  background: "",
-  access_token: "",
-  refresh_token: "",
+  access_token: '',
+  refresh_token: '',
+  total_experience: null,
+  no_experience: false,
+  total_experience_months: 0,
+  total_experience_years: 0,
+  company_name: null,
+  website: null,
+  location: null,
+  jobs_ids: null,
+  description: null,
+  avatar_company: null,
+  banner_company: null,
+  organization: null,
 };
 
+// Slice Redux cho User
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    // Cập nhật thông tin người dùng
     updateUser(state, action: PayloadAction<UserState>) {
       return { ...state, ...action.payload };
     },
+    // Reset lại thông tin người dùng
     resetUser() {
       return initialState;
+    },
+    // Update một phần thông tin người dùng nếu cần
+    updatePartialUser(state, action: PayloadAction<Partial<UserState>>) {
+      state = { ...state, ...action.payload };
     },
   },
 });
 
-export const { updateUser, resetUser } = userSlice.actions;
-
+export const { updateUser, resetUser, updatePartialUser } = userSlice.actions;
 export default userSlice.reducer;

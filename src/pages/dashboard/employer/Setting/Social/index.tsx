@@ -3,24 +3,23 @@ import { Button, Input, notification, Select } from "antd";
 import { useEffect, useState } from "react";
 import { SOCIAL_LINK_API } from "../../../../../services/modules/SocialLinkService";
 import { useSelector } from "react-redux";
+import LoadingComponent from "../../../../../components/Loading/LoadingComponent";
+import LoadingComponentSkeleton from "../../../../../components/Loading/LoadingComponentSkeleton";
 
 const SocialEmployer = () => {
   const userDetail = useSelector((state) => state.user);
-
-  // State lưu các social links và tiểu sử
+  const [loading,setLoading]=useState<boolean>(true)
   const [socialLinks, setSocialLinks] = useState([
   ]);
-// Cập nhật handleSocialLinkChange để chắc chắn giá trị được cập nhật đúng
 const handleSocialLinkChange = (index, field, value) => {
   const updatedLinks = [...socialLinks];
   updatedLinks[index][field] = value;
 
-  // Đảm bảo là nếu link đã tồn tại thì cập nhật hasChanged
   if (updatedLinks[index].isExisting) {
     updatedLinks[index].hasChanged = true;
   } else {
     updatedLinks[index].hasChanged = true;
-    updatedLinks[index].isExisting = false; // Đánh dấu là link mới
+    updatedLinks[index].isExisting = false; 
   }
 
   setSocialLinks(updatedLinks);
@@ -37,6 +36,7 @@ const handleSocialLinkChange = (index, field, value) => {
   // Lấy các social links hiện tại từ server
   const handleGetSocialLinks = async (current = 1, pageSize = 10) => {
     try {
+      setLoading(true);
       const params = {
         current,
         pageSize,
@@ -56,6 +56,8 @@ const handleSocialLinkChange = (index, field, value) => {
       }
     } catch (error) {
       console.error(error);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -73,9 +75,7 @@ const handleSocialLinkChange = (index, field, value) => {
       });
       return;
     }
-
     try {
-      // Lọc ra những social links cần tạo mới hoặc đã thay đổi
       const requests = socialLinks
         .filter((social) => social.hasChanged || !social.isExisting)
         .map((social) => {
@@ -121,7 +121,7 @@ const onDeleted = async(id)=>{
   }
 }
   return (
-    <div>
+    <LoadingComponentSkeleton isLoading={loading}>
       <h2 className="text-xl font-semibold mb-4">Social Links</h2>
       {socialLinks.map((link, index) => (
         <div key={index} className="mb-4">
@@ -173,7 +173,7 @@ const onDeleted = async(id)=>{
       >
         Save Changes
       </Button>
-    </div>
+    </LoadingComponentSkeleton>
   );
 };
 

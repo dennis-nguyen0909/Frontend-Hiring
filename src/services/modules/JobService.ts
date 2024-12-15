@@ -1,5 +1,5 @@
 // src/services/educationService.ts
-import { SKILLS } from "../api/education"; // Đảm bảo SKILLS chứa đúng URL của endpoint
+import { SKILLS } from "../api/route.api"; // Đảm bảo SKILLS chứa đúng URL của endpoint
 import { axiosInstance } from "../config/axiosInterceptor"; // Cấu hình axios
 
 // Định nghĩa EducationApi và hàm postEducation

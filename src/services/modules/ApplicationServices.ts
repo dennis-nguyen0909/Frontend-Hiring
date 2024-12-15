@@ -1,6 +1,6 @@
 // src/services/educationService.ts
 import { notification } from "antd";
-import { APPLICATIONS } from "../api/education"; // Đảm bảo APPLICATIONS chứa đúng URL của endpoint
+import { APPLICATIONS } from "../api/route.api"; // Đảm bảo APPLICATIONS chứa đúng URL của endpoint
 import { axiosInstance } from "../config/axiosInterceptor"; // Cấu hình axios
 
 // Định nghĩa EducationApi và hàm postEducation

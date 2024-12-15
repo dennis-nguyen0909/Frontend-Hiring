@@ -1,5 +1,5 @@
 // src/services/educationService.ts
-import { PROJECT } from "../api/education";
+import { PROJECT } from "../api/route.api";
 import { axiosInstance } from "../config/axiosInterceptor"; 
 
 // Định nghĩa EducationApi và hàm postEducation

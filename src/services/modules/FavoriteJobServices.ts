@@ -1,6 +1,6 @@
 // src/services/educationService.ts
 import { notification } from "antd";
-import { FAVORITE_JOB } from "../api/education"; // Đảm bảo FAVORITE_JOB chứa đúng URL của endpoint
+import { FAVORITE_JOB } from "../api/route.api"; // Đảm bảo FAVORITE_JOB chứa đúng URL của endpoint
 import { axiosInstance } from "../config/axiosInterceptor"; // Cấu hình axios
 
 // Định nghĩa EducationApi và hàm postEducation

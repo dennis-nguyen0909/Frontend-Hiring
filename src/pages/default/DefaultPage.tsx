@@ -147,11 +147,12 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
       console.error(error);
     }
   };
-
+console.log("duydeptrai userid",userId)
+console.log("duydeptrai userid",userDetail?._id)
   const handleCheckRole = async () => {
     try {
       const res = await USER_API.getDetailUser(
-        userId || userDetail?.id,
+         userDetail?._id,
         userDetail?.access_token
       );
       if (res?.data?.items) {

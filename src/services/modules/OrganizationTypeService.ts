@@ -1,11 +1,9 @@
-// src/services/educationService.ts
-import { SOCIAL_LINKS } from "../api/route.api";
-import { axiosInstance } from "../config/axiosInterceptor"; 
+import { ORGANIZATION_TYPE } from "../api/route.api";
+import { axiosInstance } from "../config/axiosInterceptor";
 
-// Định nghĩa EducationApi và hàm postEducation
-export const SOCIAL_LINK_API = {
+export const ORGANIZATION_TYPE_API = {
   create: async (data: any, accessToken: string) => {
-    const res = await axiosInstance.post(`${SOCIAL_LINKS}`, data, {
+    const res = await axiosInstance.post(`${ORGANIZATION_TYPE}`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -15,7 +13,7 @@ export const SOCIAL_LINK_API = {
     return null;
   },
   getById: async (id: string, accessToken: string) => {
-    const res = await axiosInstance.get(`${SOCIAL_LINKS}/${id}`, {
+    const res = await axiosInstance.get(`${ORGANIZATION_TYPE}/${id}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -24,22 +22,18 @@ export const SOCIAL_LINK_API = {
     if (res.data) return res.data;
     return null;
   },
-  deleteMany: async (ids: Array<string>, accessToken: string) => {
-    const res = await axiosInstance({
-      method: 'delete',
-      url: `${SOCIAL_LINKS}`,
-      data: { ids },
+  deleteIds: async (id: string, accessToken: string) => {
+    const res = await axiosInstance.delete(`${ORGANIZATION_TYPE}/${id}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
       withCredentials: true,
     });
-  
     if (res.data) return res.data;
     return null;
   },
   update: async (id: string, data: any, accessToken: string) => {
-    const res = await axiosInstance.patch(`${SOCIAL_LINKS}/${id}`, data, {
+    const res = await axiosInstance.patch(`${ORGANIZATION_TYPE}/${id}`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -48,9 +42,8 @@ export const SOCIAL_LINK_API = {
     if (res.data) return res.data;
     return null;
   },
-  getByUserId: async (accessToken: string, params: any) => {
-    const queryParams = new URLSearchParams(params).toString(); // Serialize params to query string
-    const res = await axiosInstance.get(`${SOCIAL_LINKS}/user?${queryParams}`, {
+  getByUserId: async (accessToken: string) => {
+    const res = await axiosInstance.get(`${ORGANIZATION_TYPE}/user`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -59,10 +52,10 @@ export const SOCIAL_LINK_API = {
     if (res.data) return res.data;
     return null;
   },
-  getAll:async (params:any,accessToken:string)=>{
-    const res = await axiosInstance.get(`${SOCIAL_LINKS}`,{
+  getAll: async (params: any, accessToken: string) => {
+    const res = await axiosInstance.get(`${ORGANIZATION_TYPE}`, {
       params: {
-        ...params
+        ...params,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -71,6 +64,5 @@ export const SOCIAL_LINK_API = {
     });
     if (res.data) return res.data;
     return null;
-  }
-  
+  },
 };

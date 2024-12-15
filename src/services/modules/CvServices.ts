@@ -1,5 +1,5 @@
 // src/services/educationService.ts
-import { CV } from "../api/education";
+import { CV } from "../api/route.api";
 import { axiosInstance } from "../config/axiosInterceptor"; 
 
 // Định nghĩa EducationApi và hàm postEducation

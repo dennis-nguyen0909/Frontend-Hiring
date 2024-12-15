@@ -145,7 +145,7 @@ const Header: React.FC = () => {
   const handleClick = (item) => {
     // navigate(`${item.path}`)
     if (item.name === "Dashboard") {
-      navigate(`/dashboard/${userDetail?.id}`);
+      navigate(`/dashboard/${userDetail?.id || userDetail?._id}`);
     } else {
       navigate(`${item.path}`);
     }
@@ -168,7 +168,7 @@ const Header: React.FC = () => {
             if (item.id === "profile_cv" && !userDetail.access_token) {
               return null;
             }
-            if(item.id === 'profile_cv' && userDetail?.role.role_name === 'EMPLOYER'){
+            if(item.id === 'profile_cv' && userDetail?.role?.role_name === 'EMPLOYER'){
               return null;
             }
             return (

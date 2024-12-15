@@ -1,5 +1,5 @@
 // src/services/educationService.ts
-import { POST_EDUCATION } from "../api/education"; // Đảm bảo POST_EDUCATION chứa đúng URL của endpoint
+import { POST_EDUCATION } from "../api/route.api"; // Đảm bảo POST_EDUCATION chứa đúng URL của endpoint
 import { axiosInstance } from "../config/axiosInterceptor"; // Cấu hình axios
 
 // Định nghĩa EducationApi và hàm postEducation
