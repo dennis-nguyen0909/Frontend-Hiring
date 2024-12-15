@@ -33,7 +33,7 @@ const ContactForm = () => {
   const handleSaveChanges = async(values:any) => {
     const params={
         phone:values.phone,
-        id:userDetail?._id,
+        id:userDetail?.id,
         district_id:district,
         city_id:city,
         ward_id:ward,
@@ -59,10 +59,10 @@ const ContactForm = () => {
     const values = form.getFieldsValue();
     try {
         const params={
-            user_id:userDetail?._id,
+            user_id:userDetail?.id,
             ...values
         }
-        const res = await USER_API.resetPassword(params,userDetail?._id)
+        const res = await USER_API.resetPassword(params,userDetail?.id)
     } catch (error) {
         console.error(error)
     }

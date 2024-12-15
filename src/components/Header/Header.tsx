@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { menuHeader } from "../../helper";
 import "react-phone-input-2/lib/style.css";
@@ -9,13 +9,17 @@ import logo from "../../assets/logo/LogoH.png";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Setting from "../Setting/Setting";
 import "./styles.css";
-import { ROLE_NAME_ADMIN, ROLE_NAME_EMPLOYEE, ROLE_NAME_USER } from "../../utils/role.utils";
+import {
+  ROLE_NAME_ADMIN,
+  ROLE_NAME_EMPLOYEE,
+  ROLE_NAME_USER,
+} from "../../utils/role.utils";
+import { ROLE_API } from "../../services/modules/RoleServices";
 const Header: React.FC = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user);
-
+  const userDetail = useSelector((state) => state.user);
   const handleChange = (value: string) => {
     setSelectedLanguage(value);
   };
@@ -69,61 +73,68 @@ const Header: React.FC = () => {
     return (
       <div>
         {roleName === ROLE_NAME_USER ? (
-         <div className="flex">
-           <Avatar size="large" src={user?.avatar || avtDefault} />
-          <div className="ml-5">
-            <p className="font-semibold text-[14px] text-primaryColor ">
-              {user?.full_name}
-            </p>
-            <p className="font-light text-[12px] text-[#ccc]">
-              Mã ứng viên:<span className="text-black">{user?._id}</span>
-            </p>
-            <p className="font-light text-[12px] text-[#ccc]">
-              Email: {user?.email}
-            </p>
-          </div>
-          </div>
-        ): roleName === ROLE_NAME_EMPLOYEE ? (
           <div className="flex">
-          <Avatar size="large" src={user?.avatar || user?.avatar_company || avtDefault} />
-          <div className="ml-5">
-            <p className="font-semibold text-[14px] text-primaryColor ">
-              {user?.full_name}
-            </p>
-            <p className="font-light text-[12px] text-[#ccc]">
-              Mã nhà tuyển dụng:<span className="text-black">{user?._id}</span>
-            </p>
-            <p className="font-light text-[12px] text-[#ccc]">
-              Email: {user?.email}
-            </p>
+            <Avatar size="large" src={userDetail?.avatar || avtDefault} />
+            <div className="ml-5">
+              <p className="font-semibold text-[14px] text-primaryColor ">
+                {userDetail?.full_name}
+              </p>
+              <p className="font-light text-[12px] text-[#ccc]">
+                Mã ứng viên:<span className="text-black">{userDetail?.id}</span>
+              </p>
+              <p className="font-light text-[12px] text-[#ccc]">
+                Email: {userDetail?.email}
+              </p>
+            </div>
           </div>
-         </div>
-        ):roleName === ROLE_NAME_ADMIN ?(
+        ) : roleName === ROLE_NAME_EMPLOYEE ? (
+          <div className="flex">
+            <Avatar
+              size="large"
+              src={userDetail?.avatar || userDetail?.avatar_company || avtDefault}
+            />
+            <div className="ml-5">
+              <p className="font-semibold text-[14px] text-primaryColor ">
+                {userDetail?.full_name}
+              </p>
+              <p className="font-light text-[12px] text-[#ccc]">
+                Mã nhà tuyển dụng:
+                <span className="text-black">{userDetail?.id}</span>
+              </p>
+              <p className="font-light text-[12px] text-[#ccc]">
+                Email: {userDetail?.email}
+              </p>
+            </div>
+          </div>
+        ) : roleName === ROLE_NAME_ADMIN ? (
           <div>
-          <Avatar size="large" src={user?.avatar || avtDefault} />
-         <div className="ml-5">
-           <p className="font-semibold text-[14px] text-primaryColor ">
-             {user?.full_name}
-           </p>
-           <p className="font-light text-[12px] text-[#ccc]">
-             Mã quản trị viên:<span className="text-black">{user?._id}</span>
-           </p>
-           <p className="font-light text-[12px] text-[#ccc]">
-             Email: {user?.email}
-           </p>
-         </div>
-         </div>
-        ):(
+            <Avatar size="large" src={userDetail?.avatar || avtDefault} />
+            <div className="ml-5">
+              <p className="font-semibold text-[14px] text-primaryColor ">
+                {userDetail?.full_name}
+              </p>
+              <p className="font-light text-[12px] text-[#ccc]">
+                Mã quản trị viên:<span className="text-black">{userDetail?.id}</span>
+              </p>
+              <p className="font-light text-[12px] text-[#ccc]">
+                Email: {userDetail?.email}
+              </p>
+            </div>
+          </div>
+        ) : (
           <div>Không có quyền</div>
         )}
       </div>
     );
   };
-
   const content = (
     <div className="w-[400px]">
       <div className="flex items-center">
-        { user?.role?.role_name ? renderAccountHeader(user?.role?.role_name) : <Spin />}
+        {userDetail?.role?.role_name ? (
+          renderAccountHeader(userDetail?.role?.role_name)
+        ) : (
+          <Spin />
+        )}
       </div>
       <Divider />
       <div className="menu-setting">
@@ -131,15 +142,14 @@ const Header: React.FC = () => {
       </div>
     </div>
   );
-  const handleClick = (item)=>{
+  const handleClick = (item) => {
     // navigate(`${item.path}`)
-    if(item.name === "Dashboard"){
-      navigate(`/dashboard/${user?._id}`)
-    }else{
-      navigate(`${item.path}`)
+    if (item.name === "Dashboard") {
+      navigate(`/dashboard/${userDetail?.id}`);
+    } else {
+      navigate(`${item.path}`);
     }
-  }
-
+  };
   return (
     <header>
       <div
@@ -151,42 +161,42 @@ const Header: React.FC = () => {
           <p className="text-white  font-bold">HireDev</p>
         </div>
         <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap">
-        {menuHeader.map((item, idx) => {
-    if (item.id === "dashboard" && !user.access_token) {
-      return null; // Không hiển thị Dashboard nếu không có access_token
-    }
-    if(item.id === 'profile_cv' && !user.access_token){
-      return null;
-    }
-    return (
-      <li key={idx}>
-        {item.candidate === true ? (
-          <div
-            onClick={() => handleClick(item)}
-            className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-          >
-            {item.name}
-          </div>
-        ) : item.employer === true ? (
-          <div
-            onClick={() => handleClick(item)}
-            className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-          >
-            {item.name}
-          </div>
-        ) : (
-          <div
-            onClick={() => handleClick(item)}
-            className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-          >
-            {item.name}
-          </div>
-        )}
-      </li>
-    );
-  })}
+          {menuHeader.map((item, idx) => {
+            if (item.id === "dashboard" && !userDetail.access_token) {
+              return null; // Không hiển thị Dashboard nếu không có access_token
+            }
+            if (item.id === "profile_cv" && !userDetail.access_token) {
+              return null;
+            }
+            return (
+              <li key={idx}>
+                {item.candidate === true ? (
+                  <div
+                    onClick={() => handleClick(item)}
+                    className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+                  >
+                    {item.name}
+                  </div>
+                ) : item.employer === true ? (
+                  <div
+                    onClick={() => handleClick(item)}
+                    className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+                  >
+                    {item.name}
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => handleClick(item)}
+                    className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+                  >
+                    {item.name}
+                  </div>
+                )}
+              </li>
+            );
+          })}
           <div>
-            {user.access_token ? (
+            {userDetail.access_token ? (
               <Popover
                 placement="bottomLeft"
                 overlayClassName="no-arrow"
@@ -198,7 +208,10 @@ const Header: React.FC = () => {
                   onMouseEnter={() => setHovered(true)}
                   onMouseLeave={() => setHovered(false)}
                 >
-                  <Avatar size="large" src={user?.avatar || user?.avatar_company || avtDefault} />
+                  <Avatar
+                    size="large"
+                    src={userDetail?.avatar || userDetail?.avatar_company || avtDefault}
+                  />
                   {!hovered ? <ChevronDown /> : <ChevronUp />}
                 </li>
               </Popover>

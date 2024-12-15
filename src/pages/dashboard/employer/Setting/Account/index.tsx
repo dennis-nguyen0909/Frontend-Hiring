@@ -21,7 +21,7 @@ export default function AccountSettingEmployer() {
     form.validateFields().then(async (values) => {
       const params ={
         ...values,
-        id:userDetail._id
+        id:userDetail?.id
       }
       try {
         const res = await userServices.updateUser(params);
@@ -48,7 +48,7 @@ export default function AccountSettingEmployer() {
         
         const res = await userServices.USER_API.resetPassword({
           ...values,
-          user_id: userDetail._id
+          user_id: userDetail?.id
   
         },userDetail.access_token)
         if(res.data){

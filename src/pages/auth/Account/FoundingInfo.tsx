@@ -21,7 +21,7 @@ const FoundingInfo = ({handleTabChange}) => {
       const { year_of_establishment} = values
       const params ={
         ...values,
-        owner:userDetail?._id,
+        owner:userDetail?.id,
         year_of_establishment,
         company_vision:companyVision
         

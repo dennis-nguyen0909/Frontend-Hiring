@@ -25,7 +25,7 @@ export default function SuggestionJob() {
       const params = { current, pageSize };
       const res = await JobApi.getJobSuggestions(
         params,
-        userDetail._id,
+        userDetail?.id,
         userDetail?.access_token
       );
       if (res.data) {
@@ -53,7 +53,7 @@ export default function SuggestionJob() {
       };
       const res = await JobApi.getJobSuggestsByCity(
         params,
-        userDetail?._id,
+        userDetail?.id,
         userDetail?.access_token
       );
       if (res.data) {

@@ -215,7 +215,7 @@ export default function JobDetail({
   };
 
   useEffect(() => {
-    handleGetSkillByUser({ user_id: userDetail._id });
+    handleGetSkillByUser({ user_id: userDetail?.id });
   }, []);
   const handleSubmit = async (values: any) => {
     const salaryRange = { min: values.min_salary, max: values.max_salary };
@@ -255,7 +255,7 @@ export default function JobDetail({
       return;
     }
     let params = {
-      user_id: userDetail._id,
+      user_id: userDetail?.id,
       title: values.title,
       description: content,
       address:values.address,

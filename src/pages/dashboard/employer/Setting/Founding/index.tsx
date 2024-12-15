@@ -20,7 +20,7 @@ const userDetail = useSelector(state => state.user)
       const { year_of_establishment} = values
       const params ={
         ...values,
-        owner:userDetail?._id,
+        owner:userDetail?.id,
         year_of_establishment,
         company_vision:companyVision
         
@@ -31,7 +31,7 @@ const userDetail = useSelector(state => state.user)
           message: "Notification",
           description: "Cập nhật thành công"
         })
-        dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
+        // dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
       }else{
         notification.error({
           message: "Notification",

@@ -122,7 +122,7 @@ export default function MyJobEmployer() {
       return;
     }
     if(e.key === DELETE){
-      const res = await JobApi.deleteManyJobs([record?._id],userDetail?._id,userDetail?.access_token);
+      const res = await JobApi.deleteManyJobs([record?._id],userDetail?.id,userDetail?.access_token);
       if(res.data){
         notification.success({
           message: "Success",
@@ -148,7 +148,7 @@ export default function MyJobEmployer() {
       current,
       pageSize,
       query:{
-        user_id:userDetail?._id
+        user_id:userDetail?.id
       } 
     };
     

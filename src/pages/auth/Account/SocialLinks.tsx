@@ -30,8 +30,9 @@ const SocialLinks = ({handleTabChange}) => {
   
     try {
       const requests = socialLinks.map((social) => {
+        console.log("userDetail",userDetail)
         const params = {
-          user_id: userDetail?._id,
+          user_id: userDetail?.id,
           type: social?.type,
           url: social?.url,
         };

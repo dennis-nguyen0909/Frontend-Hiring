@@ -95,7 +95,7 @@ const Profile = () => {
 
           // Cập nhật thông tin người dùng với ảnh bìa mới
           const updatedUserDetail = {
-            id: userDetail._id,
+            id: userDetail?.id,
             background: res?.data?.url, // Cập nhật ảnh bìa mới từ server
           };
 
@@ -114,7 +114,7 @@ const Profile = () => {
         const res = await uploadFileToMedia(file);
         if (res?.data?.url) {
           const updatedUserDetail = {
-            id: userDetail._id,
+            id: userDetail?.id,
             avatar: res?.data?.url,
           };
 
@@ -130,7 +130,7 @@ const Profile = () => {
       case "is_suggestion_job":
         // eslint-disable-next-line no-case-declarations
         const param = {
-          id: userDetail._id,
+          id: userDetail?.id,
           is_suggestion_job: checked,
         };
         await updateUserApi(param);
@@ -139,7 +139,7 @@ const Profile = () => {
       case "isSearchJobStatus":
         // eslint-disable-next-line no-case-declarations
         const params = {
-          id: userDetail._id,
+          id: userDetail?.id,
           is_search_jobs_status: checked,
         };
         await updateUserApi(params);
@@ -156,7 +156,7 @@ const Profile = () => {
     isLoading,
     error,
     refetch,
-  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+  } = useCalculateUserProfile(userDetail?.id, userDetail?.access_token);
   return (
     <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto mt-10 py-2 gap-5 ">
       <Col span={16} className="max-w-3xl mx-auto p-4 space-y-6 rounded-xl">
@@ -374,7 +374,7 @@ const Profile = () => {
           </div>
           <div className="mt-2">
             <Button
-              onClick={() => navigate(`/profile/${userDetail._id}`)}
+              onClick={() => navigate(`/profile/${userDetail?.id}`)}
               className="!border-primaryColor !text-primaryColor !hover:text-primaryColor !hover:border-primaryColor"
             >
               Cập nhật Profile

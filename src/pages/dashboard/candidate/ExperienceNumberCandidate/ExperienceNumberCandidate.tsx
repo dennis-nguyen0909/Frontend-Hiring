@@ -7,12 +7,12 @@ import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
 const ExperienceNumberCandidate = () => {
   const [form] = Form.useForm(); // Đảm bảo khai báo form đúng cách
   const userDetail = useSelector((state) => state.user);
-  const { handleUpdateProfile } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+  const { handleUpdateProfile } = useCalculateUserProfile(userDetail?.id, userDetail?.access_token);
 
   const onFinish = async (values: any) => {
     const params = {
       ...values,
-      id: userDetail._id,
+      id: userDetail?.id,
     };
     const res = await userServices.updateUser(params);
     if (res.data) {

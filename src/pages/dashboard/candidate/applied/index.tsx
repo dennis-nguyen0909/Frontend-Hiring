@@ -194,7 +194,7 @@ const Applied = () => {
       current,
       pageSize,
       query: {
-        user_id: userDetail?._id,
+        user_id: userDetail?.id,
       },
     };
     const res = await API_APPLICATION.getAllRecentlyAppliedCandidate(

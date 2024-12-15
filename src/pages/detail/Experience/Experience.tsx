@@ -71,7 +71,7 @@ const ExperienceComponent = () => {
 
   const {
     handleUpdateProfile
-  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token)
+  } = useCalculateUserProfile(userDetail?.id, userDetail?.access_token)
   const handleDeleteManyExperience = async (ids:Array<string>,accessToken:string)=>{
     try {
         const res = await ExperienceApi.deleteManyExperience(ids,accessToken);

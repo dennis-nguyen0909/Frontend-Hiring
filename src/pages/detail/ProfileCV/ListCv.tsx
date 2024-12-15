@@ -112,7 +112,7 @@ export default function ListCV() {
         current,
         pageSize,
         query: {
-          user_id: userDetail?._id,
+          user_id: userDetail?.id,
         },
       };
       const res = await CV_API.getAll(params, userDetail?.access_token);

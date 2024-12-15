@@ -13,10 +13,10 @@ import Contact from "../auth/Account/Contact";
 import Completed from "../auth/Account/Completed";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../redux/slices/userSlices";
-import GeneralModal from "../../components/ui/GeneralModal/GeneralModal";
 import { User } from "lucide-react";
 import { BuildOutlined } from "@ant-design/icons";
 import { ROLE_API } from "../../services/modules/RoleServices";
+import { handleDecoded } from "../../helper";
 
 interface DefaultPageProps {
   children: React.ReactNode;
@@ -42,6 +42,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
       if (res.data.items) {
         dispatch(
           updateUser({
+            id:res?.data?.items?._id,
             ...res?.data.items,
             access_token: access_token,
             refresh_token: refresh_token,
@@ -58,11 +59,34 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
     }
   };
 
-  const handleCompleted = () => {
+  const handleCompleted = async() => {
+    await handleGetDetailUser(userId || userDetail?.id, userDetail?.access_token);
     setVisible(false);
-    handleGetDetailUser(userId || userDetail?._id, userDetail?.access_token);
   };
+  
+    useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      // Lấy token từ query params
+      const accessToken = urlParams.get('access_token');
+      const refreshToken = urlParams.get('refresh_token');
+      if (accessToken && refreshToken) {
+        localStorage.setItem('access_token', accessToken);
+        localStorage.setItem('refresh_token', refreshToken);
+        afterLoginGoogleFacebook(accessToken)
+      }
+    }, []);
 
+    const afterLoginGoogleFacebook = async (accessToken:string)=>{
+      try {
+        const {token,decoded} =handleDecoded(accessToken);
+        await handleGetDetailUser(decoded?.sub+"",token);
+        // window.location.href=`${import.meta.env.VITE_API_URL_APP}`
+        window.history.replaceState(null, '', window.location.pathname);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    
   const tabs = [
     {
       id: "company",
@@ -94,7 +118,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   const handleCheckUpdate = async () => {
     try {
       const res = await USER_API.checkUpdateCompany(
-        userId || userDetail?._id,
+        userId || userDetail?.id,
         userDetail?.access_token
       );
       if (res.data) {
@@ -127,7 +151,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   const handleCheckRole = async () => {
     try {
       const res = await USER_API.getDetailUser(
-        userId || userDetail?._id,
+        userId || userDetail?.id,
         userDetail?.access_token
       );
       if (res?.data?.items) {
@@ -146,6 +170,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
       handleCheckRole();
       handleCheckUpdate();
       handleGetRole()
+      handleGetDetailUser(userId || userDetail?.id, userDetail?.access_token);
     }
   }, []);
 
@@ -172,7 +197,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   const handleContinue = async() => {
     const role = roles?.find((role)=>role.role_name === selectedType?.toUpperCase())
     const params = {
-      id:userDetail?._id,
+      id:userDetail?.id,
       role:role?._id
     }
     const  res = await USER_API.updateUser(params,userDetail?.access_token)

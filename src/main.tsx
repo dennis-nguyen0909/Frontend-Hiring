@@ -25,7 +25,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  // <StrictMode>
     <QueryClientProvider client={queryClient}>
       <IntlProvider messages={messages[language]} locale={language}>
         <Provider store={store}>
@@ -35,5 +35,5 @@ createRoot(document.getElementById("root")!).render(
         </Provider>
       </IntlProvider>
     </QueryClientProvider>
-  </StrictMode>
+  // </StrictMode>
 );

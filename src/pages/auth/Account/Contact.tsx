@@ -31,7 +31,7 @@ const userDetail=useSelector(state=>state.user)
 
   const onFinish =async(values:any)=>{
     const params = {
-      id:userDetail?._id,
+      id:userDetail?.id,
       city_id:values.city,
       district_id:values.district,
       ward_id:values.ward,

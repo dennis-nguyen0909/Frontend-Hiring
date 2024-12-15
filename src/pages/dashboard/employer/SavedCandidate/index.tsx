@@ -57,7 +57,7 @@ export default function SavedCandidate() {
       current,    // Trang hiện tại
       pageSize,   // Số lượng phần tử mỗi trang
     };
-    const res = await SAVE_CANDIDATE_API.getSaveCandidateByEmployerId(userDetail?._id, params, userDetail?.access_token);
+    const res = await SAVE_CANDIDATE_API.getSaveCandidateByEmployerId(userDetail?.id, params, userDetail?.access_token);
     if (res.data) {
       setSaveCandidates(res.data.items)
       setMeta(res.data.meta)

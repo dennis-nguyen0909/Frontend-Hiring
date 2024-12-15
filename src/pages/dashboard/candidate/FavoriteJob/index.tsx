@@ -32,7 +32,7 @@ const onApplyNow = async(id)=>{
 
 const handleFavorite = async(jobId:string)=>{
   const params = {
-    user_id: userDetail?._id,
+    user_id: userDetail?.id,
     job_id: jobId,
   };
   const res = await API_FAVORITE_JOB.createFavoriteJobs(
@@ -114,7 +114,7 @@ const handleFavorite = async(jobId:string)=>{
         current,
         pageSize,
         query: {
-          user_id: userDetail?._id,
+          user_id: userDetail?.id,
         },
       };
         const res = await API_FAVORITE_JOB.getAllJobFavorite(params, userDetail?.access_token);

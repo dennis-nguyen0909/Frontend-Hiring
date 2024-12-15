@@ -45,7 +45,7 @@ export default function CurrenciesComponent() {
   }, [])
 
   const onFinish = async (values) => {
-    const res = await CURRENCY_API.create({user_id: userDetail._id,...values}, userDetail.access_token)
+    const res = await CURRENCY_API.create({user_id: userDetail?.id,...values}, userDetail.access_token)
     if (res.data) {
       notification.success({
         message: "Thông báo",

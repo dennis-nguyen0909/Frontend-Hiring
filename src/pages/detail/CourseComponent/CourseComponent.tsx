@@ -32,7 +32,7 @@ export default function CourseView() {
     const [visible, setVisible] = useState(false);
     const [link, setLink] = useState<string>('');
     const [selectedId, setSelectedId] = useState<string>('');
-   const {handleUpdateProfile}= useCalculateUserProfile(userDetail?._id,userDetail?.access_token)
+   const {handleUpdateProfile}= useCalculateUserProfile(userDetail?.id,userDetail?.access_token)
 
     const handleGetCoursesByUserId = async ({ current = 1, pageSize = 10 }) => {
         try {
@@ -40,7 +40,7 @@ export default function CourseView() {
                 current,
                 pageSize,
                 query:{
-                    user_id: userDetail._id
+                    user_id: userDetail?.id
                 }
             };
             const res = await COURSE_API.getAll(params, userDetail.accessToken);
@@ -103,7 +103,7 @@ export default function CourseView() {
         const formattedEndDate = moment(end_date).toDate();
 
         const params = {
-            user_id: userDetail._id,
+            user_id: userDetail?.id,
             course_name: values.course_name,
             organization_name: values.organization_name,
             start_date: formattedStartDate,

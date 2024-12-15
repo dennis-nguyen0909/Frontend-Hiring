@@ -25,7 +25,7 @@ const Completed = ({handleCompleted}:ICompletedProps) => {
           <Button onClick={handleCompleted} size="large">
             Get Start
           </Button>
-          {/* <Button onClick={()=>navigate(`/dashboard/${userDetail?._id}`)} type="primary" size="large" className="flex items-center">
+          {/* <Button onClick={()=>navigate(`/dashboard/${userDetail?.id}`)} type="primary" size="large" className="flex items-center">
             Post Job
             <ArrowRightOutlined className="ml-2" />
           </Button> */}

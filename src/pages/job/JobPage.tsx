@@ -48,7 +48,7 @@ export default function JobSearchPage() {
 
     try {
       setIsLoadingJob(true);
-      const res = await JobApi.findJobsByCompanyName(params, userDetail?._id);
+      const res = await JobApi.findJobsByCompanyName(params, userDetail?.id);
       if (res.data) {
         setJobSuggestions(res.data.items);
         setListJobs(res.data.items);

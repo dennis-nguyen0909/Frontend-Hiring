@@ -66,17 +66,17 @@ const CertificateComponent = () => {
   };
   const {
     handleUpdateProfile
-  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+  } = useCalculateUserProfile(userDetail?.id, userDetail?.access_token);
   const handleGetSkillByUserId = async ({ current = 1, pageSize = 10 }) => {
     const params = {
       current,
       pageSize,
       query:{
-        candidate_id:userDetail?._id
+        candidate_id:userDetail?.id
       }
     };
 
-    const res = await CERTIFICATE_API.getAll(params,userDetail?._id);
+    const res = await CERTIFICATE_API.getAll(params,userDetail?.id);
     if (res.data) {
       setCertificates(res.data.items);
     }
@@ -90,7 +90,7 @@ const CertificateComponent = () => {
     try {
       const res = await CERTIFICATE_API.findByCertificateId(
         selectedId,
-        userDetail?._id
+        userDetail?.id
       );
       if (res.data) {
         const {
@@ -129,13 +129,13 @@ const CertificateComponent = () => {
   const onFinish = async (values: any) => {
     let params = {
       ...values,
-      candidate_id: userDetail?._id,
+      candidate_id: userDetail?.id,
       img_certificate:file ? file :null
     };
     if (link && link.trim() !== "") {
       params.link_certificate = link;
     }
-    const response = await CERTIFICATE_API.create(params, userDetail?._id);
+    const response = await CERTIFICATE_API.create(params, userDetail?.id);
     if (response.data) {
       notification.success({
         message: "Thông báo",

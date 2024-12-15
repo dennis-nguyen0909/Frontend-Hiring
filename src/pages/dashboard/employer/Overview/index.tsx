@@ -95,7 +95,7 @@ const OverviewEmployer = () => {
     try {
       // Gọi API với các tham số phân trang
       const res = await SAVE_CANDIDATE_API.getSaveCandidateByEmployerId(
-        userDetail?._id,
+        userDetail?.id,
         params,
         userDetail?.access_token
       );
@@ -112,10 +112,10 @@ const OverviewEmployer = () => {
         current,
         pageSize,
         query:{
-          user_id:userDetail?._id
+          user_id:userDetail?.id
         }
       }
-      const res = await JobApi.getAllJobRecent(params,userDetail?._id);
+      const res = await JobApi.getAllJobRecent(params,userDetail?.id);
       if(res.data){
         setJobRecents(res.data.items)
         setMetaJobRecents(res.data.meta)
@@ -126,7 +126,7 @@ const OverviewEmployer = () => {
   }
   const handletGetJobActivity = async ()=>{
     try {
-      const res = await JobApi.countActiveJobsByUser(userDetail?._id,userDetail?.access_token);
+      const res = await JobApi.countActiveJobsByUser(userDetail?.id,userDetail?.access_token);
       if(res.data){
         setCountJobActive(res.data)
       }

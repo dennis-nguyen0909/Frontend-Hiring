@@ -65,7 +65,7 @@ const Personal = () => {
       current,
       pageSize,
       query: {
-        user_id: userDetail?._id,
+        user_id: userDetail?.id,
       },
     };
     const res = await CV_API.getAll(params, userDetail?.access_token);
@@ -84,7 +84,7 @@ const Personal = () => {
   const handleSaveChanges = async (values: any) => {
     const params = {
       ...values,
-      id: userDetail?._id,
+      id: userDetail?.id,
       city_id:city,
       district_id:district,
       ward_id:ward
@@ -122,7 +122,7 @@ const Personal = () => {
     try {
       const res = await CV_API.deleteManyCVByUser(
         [selectedId],
-        userDetail?._id
+        userDetail?.id
       );
       if (+res.statusCode === 200) {
         notification.success({

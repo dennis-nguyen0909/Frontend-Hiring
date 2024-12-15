@@ -44,9 +44,6 @@ const LoginPage = () => {
   const [email, setEmail] = useState<string>("");
   const[isLoading,setIsLoading]=useState<boolean>(false)
 
-  const handleCheckActiveUser=async()=>{
-    con
-  }
   useEffect(() => {
     if (user?.access_token) {
       try {
@@ -100,6 +97,7 @@ const LoginPage = () => {
       const { email, password } = values;
       const res = await login({ username: email, password });
       if (res.data.user) {
+        localStorage.setItem('refresh_token',res.data.user.refresh_token)
         const { access_token} = res.data.user;
         const decoded = jwtDecode(access_token);
         if (decoded?.sub) {
