@@ -11,7 +11,6 @@ interface JobCardProps {
 
 export function JobCard({ job, onSave }: JobCardProps) {
   const navigate =useNavigate()
-  console.log("adasdasda",job)
   const getTypeColor = (key:string) => {
     switch (key) {
       case 'in_office':

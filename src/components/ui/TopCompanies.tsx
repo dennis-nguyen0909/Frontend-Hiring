@@ -36,7 +36,6 @@ const TopCompanies = () => {
                 }
             }
           const res = await USER_API.getAllCompany(params,userDetail?.access_token)
-          console.log("duydeptrai",res.data)
           if (res.data) {
             setCompanies(res.data.items);
             setMeta(res.data.meta)

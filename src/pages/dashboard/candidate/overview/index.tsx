@@ -52,7 +52,7 @@ const OverViewCandidate = ({ userDetail }) => {
       render: (text) => (
         <div className="flex items-center gap-2" >
         <span>{text === 'Pending' ? <Circle size={16} className="text-orange-400"/> : text==='Rejected' ?<CircleX  className="text-red-500" size={16}/> :<CircleCheck size={16} className="text-green-500" />}</span>
-        <span className={`${text === 'Pending' ? "text-orange-400" : text === 'Rejected' ? 'text-red-500' :"text-green-500"}`}>  {text} {console.log("text",text)}</span>
+        <span className={`${text === 'Pending' ? "text-orange-400" : text === 'Rejected' ? 'text-red-500' :"text-green-500"}`}>  {text}</span>
         </div >
       ),
     },
@@ -93,7 +93,6 @@ const OverViewCandidate = ({ userDetail }) => {
         icon: item?.employer_id?.avatar_company,
         is_negotiable:item?.job_id?.is_negotiable
       }));
-      console.log("re.data",res)
       setJobsApplied(formattedData);
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { routes } from "../src/routes/index";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { Fragment } from "react";
 import DefaultPage from "./pages/default/DefaultPage";
 import NotFound from "./components/NotFound/NotFound";
@@ -12,9 +12,11 @@ import { jwtDecode, JwtPayload } from "jwt-decode"; // Fix the import for jwtDec
 import { axiosInstance } from "./services/config/axiosConfig";
 import * as authServices from "./services/modules/authServices";
 import LoadingPage from "./components/Loading/LoadingPage";
+import { useSelector } from "react-redux";
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
+  const userDetail = useSelector(state=>state.user)
   // Simulate loading effect for demo purposes
   useEffect(() => {
     setIsLoading(true);
@@ -26,13 +28,13 @@ function App() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     // Lấy token từ query params
-    const token = urlParams.get('token');
+    const token = urlParams.get("token");
     if (token) {
-      localStorage.setItem('access_token', token);
-      window.location.href = "http://localhost:5173";  // Sửa lại window.location.href
+      localStorage.setItem("access_token", token);
+      window.location.href = "http://localhost:5173"; // Sửa lại window.location.href
     }
   }, []);
-  
+
   useEffect(() => {
     const checkTokenExpiration = () => {
       const accessToken = localStorage.getItem("access_token");
@@ -64,6 +66,19 @@ function App() {
       localStorage.getItem("access_token") as string
     );
   };
+  const handleLogout = async () => {
+    try {
+      // Giả sử có một hàm API để đăng xuất
+      const res = await authServices.logout(userDetail?.access_token);
+      if(res.data === true){
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        dispatch(resetUser())
+      }
+    } catch (error) {
+      console.error("Đăng xuất thất bại:", error);
+    }
+  };
 
   const handleGetDetailUser = async (
     decoded: JwtPayload,
@@ -72,13 +87,17 @@ function App() {
     try {
       const storage = localStorage.getItem("refresh_token");
       const res = await getDetailUser(decoded.sub + "", access_token);
-      dispatch(
-        updateUser({
-          ...res?.data.items,
-          access_token: access_token,
-          refresh_token: storage,
-        })
-      );
+      if (res.data) {
+        dispatch(
+          updateUser({
+            ...res?.data.items,
+            access_token: access_token,
+            refresh_token: storage,
+          })
+        );
+      }else{
+        handleLogout()
+      }
     } catch (error) {
       console.error("Error fetching user details:", error);
     }
@@ -101,7 +120,6 @@ function App() {
         decodedRefreshToken?.exp &&
         decoded?.exp < currentTime.getTime() / 1000
       ) {
-
         if (decodedRefreshToken.exp > currentTime.getTime() / 1000) {
           const data = await authServices.refreshToken(storage);
           config.headers["token"] = `Bearer ${data?.access_token}`;
@@ -124,29 +142,25 @@ function App() {
         </div>
       ) : (
         <Router>
-             <Suspense fallback={<LoadingPage />}>
-              <Routes>
-                {routes.map((route) => {
-                  const Page = route.page;
-                  const Layout = route.isShowHeader ? DefaultPage : Fragment;
-                  return (
-                    <Route
-                      key={route.path}
-                      path={route.path}
-                      element={
-                        <Layout showFooter={route.isShowFooter !== false}>
-                          {route.isPrivate ? (
-                            <NotFound />
-                          ) : (
-                            <Page />
-                          )}
-                        </Layout>
-                      }
-                    />
-                  );
-                })}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+          <Suspense fallback={<LoadingPage />}>
+            <Routes>
+              {routes.map((route) => {
+                const Page = route.page;
+                const Layout = route.isShowHeader ? DefaultPage : Fragment;
+                return (
+                  <Route
+                    key={route.path}
+                    path={route.path}
+                    element={
+                      <Layout showFooter={route.isShowFooter !== false}>
+                        {route.isPrivate ? <NotFound /> : <Page />}
+                      </Layout>
+                    }
+                  />
+                );
+              })}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
           </Suspense>
         </Router>
       )}

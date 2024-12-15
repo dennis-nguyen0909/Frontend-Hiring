@@ -111,8 +111,6 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     setSelectedApplie(applied);
   };
 
-  console.log("userDetail", userDetail);
-  console.log("userDetail title", selectedApplied?.job_id?.title);
   const renderBodyEmail = () => {
     return (
      <LoadingComponentSkeleton isLoading={isLoading}>

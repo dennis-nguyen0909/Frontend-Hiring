@@ -58,4 +58,14 @@ export const ROLE_API = {
     if (res.data) return res.data;
     return null;
   },
+  getAll: async (accessToken: string) => {
+    const res = await axiosInstance.get(`${ROLES}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (res.data) return res.data;
+    return null;
+  },
 };

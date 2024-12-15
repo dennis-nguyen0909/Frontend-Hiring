@@ -46,7 +46,7 @@ export default function UploadPDF() {
       }
     },
     onDrop(e) {
-      console.log('Dropped files', e.dataTransfer.files)
+      console.error('Dropped files', e.dataTransfer.files)
     },
   }
 

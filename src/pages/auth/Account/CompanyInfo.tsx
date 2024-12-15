@@ -28,13 +28,12 @@ const CompanyInfo = ({handleTabChange}) => {
       message.error("Please upload a banner before proceeding.");
       return;
     }
-    console.log("values",values)
     const params = {
         id:userDetail?._id,
         company_name:values.company_name,
         description:values?.description?.level?.content
     }
-    const update = await USER_API.updateUser(params);
+    const update = await USER_API.updateUser(params,userDetail?.access_token);
     if (update.data) {
       form.setFieldsValue({
         company_name:update?.data?.company_name,
@@ -66,7 +65,7 @@ const CompanyInfo = ({handleTabChange}) => {
             id: userDetail?._id,
             avatar_company: res?.data?.url,
           };
-          const update = await USER_API.updateUser(params);
+          const update = await USER_API.updateUser(params,userDetail?.access_token);
           if (update.data) {
             notification.success({
               message: "Thông báo",
@@ -85,7 +84,7 @@ const CompanyInfo = ({handleTabChange}) => {
             id: userDetail?._id,
             banner_company: res?.data?.url,
           };
-          const update = await USER_API.updateUser(params);
+          const update = await USER_API.updateUser(params,userDetail?.access_token);
           if (update.data) {
             notification.success({
               message: "Thông báo",

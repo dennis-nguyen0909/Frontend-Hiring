@@ -55,7 +55,7 @@ export default function ProfileCard({ userDetail }: any) {
         primary_cv_id:selectedCV,
         id: userDetail?._id,
       };
-      const updateCVMain = await USER_API.updateUser(params);
+      const updateCVMain = await USER_API.updateUser(params,userDetail?.access_token);
       if(updateCVMain.data){
         notification.success({
           message:"Thông báo",

@@ -60,7 +60,6 @@ const handleCollapse = async (collapsed: boolean) => {
   dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
 }
 
-console.log("TAB_SKILL",currentTab)
 useEffect(()=>{
   if(userDetail?.toggle_dashboard){
     setCollapsed(userDetail?.toggle_dashboard)

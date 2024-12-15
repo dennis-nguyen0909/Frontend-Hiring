@@ -82,7 +82,6 @@ const FoundingInfo = ({handleTabChange}) => {
     '1000+ employees',
   ]
   const onFinish = (values: any) => {
-    console.log('Form Values:', values);
     // Perform submission logic here
   };
     return (

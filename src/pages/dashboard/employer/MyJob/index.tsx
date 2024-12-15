@@ -123,7 +123,6 @@ export default function MyJobEmployer() {
     }
     if(e.key === DELETE){
       const res = await JobApi.deleteManyJobs([record?._id],userDetail?._id,userDetail?.access_token);
-      console.log("res,res",res)
       if(res.data){
         notification.success({
           message: "Success",

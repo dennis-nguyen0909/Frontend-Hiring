@@ -52,7 +52,6 @@ export default function EmployerDetail() {
         },
       };
       const res = await JobApi.getAllJobs(params, userDetail?.access_token);
-      console.log("res", res);
       if (res.data) {
         setJobs(res.data.items);
       }

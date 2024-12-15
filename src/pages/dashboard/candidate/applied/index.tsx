@@ -66,7 +66,6 @@ const Applied = () => {
       key: "status",
       render: (text) => (
         <div className="flex items-center gap-2" >
-          {console.log("text",text)}
         <span>{text === 'pending' ? <Circle size={16} className="text-orange-400"/> : text==='rejected' ?<CircleX  className="text-red-500" size={16}/> :<CircleCheck size={16} className="text-green-500" />}</span>
         <span className={`${text === 'pending' ? "text-orange-400" : text === 'rejected' ? 'text-red-500' :"text-green-500"}`}>  {capitalizeFirstLetter(text)} {console.log("text",text)}</span>
         </div >

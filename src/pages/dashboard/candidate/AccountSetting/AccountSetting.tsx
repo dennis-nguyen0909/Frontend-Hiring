@@ -40,7 +40,7 @@ const ContactForm = () => {
         address:values.address
     }
     try {
-        const res = await USER_API.updateUser(params);
+        const res = await USER_API.updateUser(params,userDetail?.access_token);
             if(res.data){
                 message.success('Cập nhật thành công');
                 dispatch(updateUser({...res.data}))

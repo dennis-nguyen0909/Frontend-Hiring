@@ -86,7 +86,6 @@ const handleSocialLinkChange = (index, field, value) => {
           };
           return SOCIAL_LINK_API.create(params, userDetail?.access_token); // Gọi API tạo mới hoặc cập nhật
         });
-        console.log("social",socialLinks)
       // Nếu có yêu cầu nào cần thực hiện
       if (requests.length > 0) {
         const results = await Promise.all(requests);

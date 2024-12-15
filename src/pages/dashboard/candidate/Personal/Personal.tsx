@@ -89,7 +89,7 @@ const Personal = () => {
       district_id:district,
       ward_id:ward
     };
-    const res = await USER_API.updateUser(params);
+    const res = await USER_API.updateUser(params,userDetail?.access_token);
     if (res.data) {
       dispatch(
         updateUser({

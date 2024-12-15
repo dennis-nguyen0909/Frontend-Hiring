@@ -31,7 +31,6 @@ axiosInstance.interceptors.request.use(
 //         const originalRequest = error.config;
 
 //         // Kiểm tra nếu lỗi do token hết hạn (401 Unauthorized)
-//         console.log("error",error)
 //         // if (error.response.status === 401 && !originalRequest._retry) {
 //         //     originalRequest._retry = true;
 

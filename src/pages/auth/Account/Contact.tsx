@@ -37,7 +37,7 @@ const userDetail=useSelector(state=>state.user)
       ward_id:values.ward,
       phone:values.phone
     }
-    const res = await USER_API.updateUser(params);
+    const res = await USER_API.updateUser(params,userDetail?.access_token);
     if(res.data){
       handleTabChange("completed")
     }

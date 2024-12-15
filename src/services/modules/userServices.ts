@@ -72,9 +72,18 @@ export const USER_API = {
     if (resData) return resData.data;
     return null;
   },
-  updateUser: async (updateUserDto: any) => {
+  updateUser: async (updateUserDto: any, access_token?: string) => {
     try {
-      const response = await axiosInstance.patch("users", updateUserDto); // URL này sẽ phải đúng với API của bạn
+      const response = await axiosInstance.patch(
+        "users",
+        updateUserDto,
+        {
+          headers: {
+            Authorization: access_token ? `Bearer ${access_token}` : "", // Thêm Authorization header nếu có access_token
+          }
+        }
+      );
+  
       if (response.data) {
         return response.data; // Dữ liệu trả về sau khi cập nhật thành công
       }
@@ -82,7 +91,7 @@ export const USER_API = {
     } catch (error) {
       notification.error({
         message: "Thông báo",
-        description: error.response.data.message,
+        description: error.response?.data?.message || "Đã có lỗi xảy ra",
       });
       return error;
     }
