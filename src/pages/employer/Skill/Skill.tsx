@@ -46,7 +46,7 @@ export default function SkillEmployer() {
     const res = await EmployerSkillApi.postSkill({ name, description, user_id: userDetail?._id }, userDetail.access_token)
     if (res.data) {
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Them Thanh Cong!",
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
@@ -54,7 +54,7 @@ export default function SkillEmployer() {
       form.resetFields();
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Them That Bai!",
       })
     }
@@ -70,14 +70,14 @@ export default function SkillEmployer() {
     const res = await EmployerSkillApi.updateSkill(selectedSkill?._id, values, userDetail.access_token)
     if (res.data) {
       notification.success({
-        message: "Notification",
-        description: "Cap Nhat Thanh Cong!",
+        message: "Thông báo",
+        description: "Cập nhật thành công!",
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
       setVisibleDrawer(false)
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Cap Nhat That Bai!",
       })
     }
@@ -87,13 +87,13 @@ export default function SkillEmployer() {
     const res = await EmployerSkillApi.deleteManySkill([record._id], userDetail.access_token)
     if (res.data) {
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Xoa Thanh Cong!",
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Xoa That Bai!",
       })
     }
@@ -106,7 +106,7 @@ export default function SkillEmployer() {
       key: 'name',
     },
     {
-      title: 'Description',
+      title: 'Mô tả',
       dataIndex: 'description',
       key: 'description',
     },
@@ -129,7 +129,7 @@ export default function SkillEmployer() {
             okText="Yes"
             cancelText="No"
           >
-            <Tooltip title="Delete">
+            <Tooltip title="Xóa">
               <Button
                 icon={<DeleteOutlined />}
                 danger
@@ -191,8 +191,8 @@ export default function SkillEmployer() {
               <Input placeholder="Enter Name" />
             </Form.Item>
   
-            <Form.Item name="description" label="Description">
-              <Input.TextArea placeholder="Enter Description (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
+            <Form.Item name="description" label="Mô tả">
+              <Input.TextArea placeholder="Enter Mô tả (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
             </Form.Item>
   
             <Form.Item>
@@ -218,8 +218,8 @@ export default function SkillEmployer() {
               <Input placeholder="Enter Name" />
             </Form.Item>
   
-            <Form.Item name="description" label="Description">
-              <Input.TextArea placeholder="Enter Description (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
+            <Form.Item name="description" label="Mô tả">
+              <Input.TextArea placeholder="Enter Mô tả (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
             </Form.Item>
   
             <Form.Item>

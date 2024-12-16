@@ -17,7 +17,7 @@ const { Text, Title } = Typography;
 const OverviewEmployer = () => {
   const columns = [
     {
-      title: "JOBS",
+      title: "Công việc",
       dataIndex: "title",
       key: "title",
       render: (text: string, record: any) => (
@@ -30,44 +30,44 @@ const OverviewEmployer = () => {
       ),
     },
     {
-      title: "STATUS",
+      title: "Trạng thái",
       dataIndex: "is_active",
       key: "is_active",
       render: (isActive:any) => (
         <>
         <Badge
           status={isActive ? "success" : "error"}
-          text={isActive ? "Active" : "Expired"}
+          text={isActive ? "Hoạt động" : "Đã hết hạn"}
           className="whitespace-nowrap"
           />
           </>
       ),
     },
     {
-      title: "APPLICATIONS",
+      title: "Số lượng ứng tuyển",
       dataIndex: "applications",
       key: "applications",
       render: (count: number) => (
         <div className="flex items-center gap-2">
           <TeamOutlined />
-          <span>{count} Applications</span>
+          <span>{count} Người ứng tuyển</span>
         </div>
       ),
     },
     {
-      title: "ACTIONS",
+      title: "Hành động",
       key: "actions",
       render: () => (
         <div className="flex gap-2">
           <Button type="primary" className="bg-blue-500">
-            View Applications
+            Xem đơn ứng tuyển
           </Button>
           <Dropdown
             menu={{
               items: [
-                { key: "1", label: "Promote Job" },
-                { key: "2", label: "View Detail" },
-                { key: "3", label: "Mark as expired" },
+                { key: "1", label: "Quảng bá việc làm" },
+                { key: "2", label: "Xem chi tiết" },
+                { key: "3", label: "Đánh dấu là đã hết hạn" },
               ],
             }}
             trigger={["click"]}
@@ -182,7 +182,7 @@ const OverviewEmployer = () => {
       }
     }, intervalTime);
   
-    // Cleanup interval on unmount or when metaSaveCandidate.count changes
+    // Cleanup interval on unmount hoặc when metaSaveCandidate.count changes
     return () => clearInterval(interval);
   }, [metaSaveCandidate.count]); 
   return (
@@ -201,7 +201,7 @@ const OverviewEmployer = () => {
           <div className="text-3xl font-bold">{countOpenJob}</div>
           <div className="flex items-center gap-2">
             <FileTextOutlined />
-            <span>Open Jobs</span>
+            <span>Việc làm mở</span>
           </div>
         </div>
         <div className="bg-orange-50 p-6 rounded-lg">
@@ -216,7 +216,7 @@ const OverviewEmployer = () => {
       <div className="bg-white rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <p className="mb-0">Công việc đăng gần đây</p>
-          <Button type="link">View all</Button>
+          <Button type="link">Xemall</Button>
         </div>
         <Table
           columns={columns}

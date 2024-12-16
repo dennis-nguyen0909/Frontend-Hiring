@@ -148,7 +148,7 @@ const ProjectComponent = () => {
       );
       if (res.data) {
         notification.success({
-          message: "Notification",
+          message: "Thông báo",
           description: "Cập nhật danh sách",
         });
         await handleGetProjectsByUserId({});
@@ -157,7 +157,7 @@ const ProjectComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "An error occurred while updating the project.",
       });
     }
@@ -186,7 +186,7 @@ const ProjectComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "An error occurred while getting the project.",
       });
     }
@@ -201,7 +201,7 @@ const ProjectComponent = () => {
       const res = await PROJECT_API.deleteByUser(id, userDetail.access_token);
       if (+res.statusCode === 200) {
         notification.success({
-          message: "Notification",
+          message: "Thông báo",
           description: "Xóa dự án",
         });
         await handleGetProjectsByUserId({});
@@ -210,7 +210,7 @@ const ProjectComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "An error occurred while deleting the project.",
       });
     }

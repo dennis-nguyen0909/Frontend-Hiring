@@ -102,14 +102,14 @@ const ContactForm = () => {
                     name="email"
                     rules={[{ required: true, message: 'Please input your email!' }]}
                 >
-                    <Input disabled prefix={<MailOutlined />} placeholder="Email address" />
+                    <Input disabled prefix={<MailOutlined />} placeholder="Địa chỉ email" />
                 </Form.Item>
                 <Form.Item
-                    label="Phone"
+                    label="Số điện thoại"
                     name="phone"
                     // rules={[{ required: true, message: 'Please input your phone number!' }]}
                 >
-                    <Input style={{ width: '80%' }} placeholder="Phone number" prefix={<PhoneOutlined />} />
+                    <Input style={{ width: '80%' }} placeholder="Số điện thoại" prefix={<PhoneOutlined />} />
                 </Form.Item>
 
 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -191,7 +191,7 @@ const ContactForm = () => {
         </Form.Item>
         {/* Notifications */}
         <div>
-            <h2 className="text-xl font-semibold mb-4">Notification</h2>
+            <h2 className="text-xl font-semibold mb-4">Thông báo</h2>
             <div className="space-y-2">
                 <Form.Item name="notifyShortlisted" valuePropName="checked" noStyle>
                     <Checkbox>Notify me when employers shortlisted me</Checkbox>
@@ -254,23 +254,23 @@ const ContactForm = () => {
             </div>
         </div>
 
-        {/* Change Password */}
+        {/* Thay đổi mật khẩu */}
         <div>
-            <h2 className="text-xl font-semibold mb-4">Change Password</h2>
+            <h2 className="text-xl font-semibold mb-4">Thay đổi mật khẩu</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Form.Item
-                    label="Current Password"
+                    label="Mật khẩu hiện tại"
                     name="current_password"
                     // rules={[{ required: true, message: 'Please input your current password!' }]}
                 >
-                    <Input.Password placeholder="Current Password" />
+                    <Input.Password placeholder="Mật khẩu hiện tại" />
                 </Form.Item>
                 <Form.Item
-                    label="New Password"
+                    label="Mật khẩu mới"
                     name="new_password"
                     // rules={[{ required: true, message: 'Please input your new password!' }]}
                 >
-                    <Input.Password placeholder="New Password" />
+                    <Input.Password placeholder="Mật khẩu mới" />
                 </Form.Item>
                 <Form.Item
                     label="Confirm Password"
@@ -283,9 +283,9 @@ const ContactForm = () => {
             <Button onClick={handleSavePassword}>Lưu mật khẩu</Button>
         </div>
 
-        {/* Delete Account */}
+        {/* Xóa Account */}
         <div>
-            <h2 className="text-xl font-semibold mb-4">Delete Your Account</h2>
+            <h2 className="text-xl font-semibold mb-4">Xóa tài khoản của bạn</h2>
             <p className="text-gray-600 mb-4">
                 If you delete your Jobpilot account, you will no longer be able to get information about the matched jobs, following employers, job alerts, shortlisted jobs, and other activities. Your account will be deactivated from all the services of Jobpilot.com.
             </p>

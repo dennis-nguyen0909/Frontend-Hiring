@@ -53,7 +53,7 @@ const ForgotPage = () => {
                         </div>
                         <div className="mt-2">
                             <span className="text-gray-500 text-1xl">Don’t have account</span>
-                            <span onClick={handleNextRegister} className="text-blue-500 cursor-pointer"> Create Account</span>
+                            <span onClick={handleNextRegister} className="text-blue-500 cursor-pointer"> Tạo tài khoản</span>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@ const ForgotPage = () => {
                             { type: 'email', message: 'The input is not valid email' }
                         ]}
                     >
-                        <Input size="large" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <Input size="large" placeholder="Địa chỉ email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </Form.Item>
                 </div>
                 <LoadingComponent isLoading={isLoading}>
@@ -78,7 +78,7 @@ const ForgotPage = () => {
                 </LoadingComponent>
                 <div className="flex items-center justify-center mt-3 text-gray-500">
                     <hr className="w-full h-0.95 bg-gray-500" />
-                    <p className="mx-2">or</p>
+                    <p className="mx-2">hoặc</p>
                     <hr className="w-full h-0.95 bg-gray-500" />
                 </div>
 
@@ -90,7 +90,7 @@ const ForgotPage = () => {
             style={{ width: "240px" }}
           >
             <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
-            Sign up with Facebook
+            Đăng nhập với Facebook
           </Button>
           </a>
           <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
@@ -99,7 +99,7 @@ const ForgotPage = () => {
             size="large"
             style={{ width: "240px" }}      >
             <img src={google} alt="Google" className="w-5 h-5 mr-2" />
-            Sign up with Google
+            Đăng nhập với Google
           </Button>
             </a>
         </div>

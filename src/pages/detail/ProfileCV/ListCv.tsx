@@ -143,7 +143,7 @@ export default function ListCV() {
         const res = await CV_API.deleteByUser(id,userDetail?.access_token)
         if(+res.statusCode === 200){
             notification.success({
-                message: "Notification",
+                message: "Thông báo",
                 description:'Xóa thành công'
             })
             handleGetCvByUserId()
@@ -160,7 +160,7 @@ const handleSubmit = async () => {
         const res = await CV_API.update(cv._id,form.getFieldsValue(),userDetail?.access_token)
         if(res.data){
             notification.success({
-                message: "Notification",
+                message: "Thông báo",
                 description:'Tạo CV thành công'
             })
             handleGetCvByUserId()

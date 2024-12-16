@@ -55,11 +55,11 @@ const SettingCandidate = () => {
   };
   const renderSocialLinksTab = () => (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Social Links</h2>
+      <h2 className="text-xl font-semibold mb-4">Liên kết xã hội</h2>
       {socialLinks?.map((link, index) => (
         <div key={index} className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Social Link {index + 1}
+            Liên kết {index + 1}
           </label>
           <div className="flex items-center space-x-2">
             <Select
@@ -97,7 +97,8 @@ const SettingCandidate = () => {
         className="w-full mt-4"
         icon={<PlusOutlined />}
       >
-        Add New Social Link
+        
+Thêm liên kết xã hội mới
       </Button>
       <Button htmlType="submit" onClick={handleSaveChanges}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
           Save & Next
@@ -148,7 +149,7 @@ const SettingCandidate = () => {
               }`}
             >
               <GlobalOutlined className="mr-2" />
-              Social Links
+              Liên kết xã hội
             </span>
           }
           key="social"
@@ -163,7 +164,7 @@ const SettingCandidate = () => {
               }`}
             >
               <LockOutlined className="mr-2" />
-              Account Setting
+              Cài đặt tài khoản
             </span>
           }
           key="account"

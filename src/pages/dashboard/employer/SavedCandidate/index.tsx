@@ -97,7 +97,7 @@ export default function SavedCandidate() {
             className="bg-blue-500"
             onClick={() => handleViewProfile(candidate._id)}
           >
-            View Profile
+            XemProfile
           </Button>,
           <Dropdown
             key="more"
@@ -151,7 +151,8 @@ export default function SavedCandidate() {
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-6 border-b">
               <div className="flex justify-between items-center">
-                <h1 className="text-xl font-semibold">Saved Candidates</h1>
+                <h1 className="text-xl font-semibold">
+Ứng viên đã lưu</h1>
                 <p className="text-sm text-gray-500">
                   All of the saveCandidates are visible until 24 march, 2021
                 </p>

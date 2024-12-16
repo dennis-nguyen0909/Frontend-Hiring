@@ -85,7 +85,7 @@ const ApplicationCard = ({
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
@@ -99,7 +99,7 @@ const ApplicationCard = ({
       }
     } catch (error) {
         notification.error({
-          message: "Notification",
+          message: "Thông báo",
           description: error.message,
         })
     }

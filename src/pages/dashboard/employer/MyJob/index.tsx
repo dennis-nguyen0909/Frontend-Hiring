@@ -28,7 +28,7 @@ import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComp
 export default function MyJobEmployer() {
   const columns = [
     {
-      title: "JOBS",
+      title: "Công việc",
       dataIndex: "title",
       key: "title",
       render: (text: string, record: Job) => (
@@ -41,7 +41,7 @@ export default function MyJobEmployer() {
       ),
     },
     {
-      title: "LOCATION",
+      title: "Vị trí",
       key: "location",
       render: (record: Job) => (
         <div>
@@ -52,32 +52,32 @@ export default function MyJobEmployer() {
       ),
     },
     {
-      title: "STATUS",
+      title: "Trạng thái",
       dataIndex: "is_active",
       key: "is_active",
       render: (isActive: string) => (
         <Badge
           status={isActive ? "success" : "error"}
-          text={isActive ? "Active" : "Expired"}
+          text={isActive ? "Hoạt động" : "Đã hết hạn"}
           className="whitespace-nowrap"
         />
       ),
     },
     {
-      title: "APPLICATIONS",
+      title: "Số lượng ứng tuyển",
       dataIndex: "candidate_ids",
       key: "candidate_ids",
       render: (candidateIds: [string]) => (
         <div className="flex items-center gap-2">
           <TeamOutlined />
           <span>
-            {candidateIds?.length && candidateIds.length} Applications
+            {candidateIds?.length && candidateIds.length} Người ứng tuyển
           </span>
         </div>
       ),
     },
     {
-      title: "TOGGLE ACTIVE",
+      title: "Toggle trạng thái",
       key: "toggle_active",
       render: (record: Job) => (
         <Switch
@@ -88,7 +88,7 @@ export default function MyJobEmployer() {
       ),
     },
     {
-      title: "ACTIONS",
+      title: "Hành động",
       key: "actions",
       render: (record: Job) => (
         <div className="flex gap-2">
@@ -99,15 +99,15 @@ export default function MyJobEmployer() {
             type="primary"
             className="bg-blue-500"
           >
-            View Applications
+            Xem đơn ứng tuyển
           </Button>
           <Dropdown
             menu={{
               items: [
-                { key: PROMOTE_JOB, label: "Promote Job" },
-                { key: VIEW_DETAIL, label: "View Detail" },
-                { key: DELETE, label: "Delete" },
-                // { key: MARK_AS_EXPIRED, label: 'Mark as expired' },
+                { key: PROMOTE_JOB, label: "Quảng bá việc làm" },
+                { key: VIEW_DETAIL, label: "Xem chi tiết" },
+                { key: DELETE, label: "Xóa" },
+                // { key: MARK_AS_EXPIRED, label: 'Đánh dấu là đã hết hạn' },
               ],
               onClick: (e) => handleOnChangeMenu(e, record),
             }}
@@ -241,16 +241,16 @@ export default function MyJobEmployer() {
                   defaultValue="status"
                   style={{ width: 120 }}
                   options={[
-                    { value: "status", label: "Job status" },
-                    { value: "active", label: "Active" },
-                    { value: "expired", label: "Expired" },
+                    { value: "status", label: "Trạng thái công việc" },
+                    { value: "active", label: "Hoạt động" },
+                    { value: "expired", label: "Đã hết hạn" },
                   ]}
                 />
                 <Select
                   defaultValue="all"
                   style={{ width: 120 }}
                   options={[
-                    { value: "all", label: "All Jobs" },
+                    { value: "all", label: "All Việc làm" },
                     { value: "fulltime", label: "Full Time" },
                     { value: "parttime", label: "Part Time" },
                     { value: "contract", label: "Contract" },

@@ -57,7 +57,7 @@ const OverViewCandidate = ({ userDetail }) => {
       title: 'Action',
       key: 'action',
       render: () => (
-        <Button type="primary" className="bg-blue-500 hover:bg-blue-600">View Details</Button>
+        <Button type="primary" className="bg-blue-500 hover:bg-blue-600">XemDetails</Button>
       ),
     },
   ];
@@ -154,12 +154,12 @@ const OverViewCandidate = ({ userDetail }) => {
       ) }
      
 
-      {/* Recently Applied Jobs */}
+      {/* Recently Applied Việc làm */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-xl font-semibold"> Đã ứng tuyển gần đây</h2>
           {/* Đã ứng tuyển gần đây */}
-          <a href="#" className="text-blue-500 hover:underline">View all →</a>
+          <a href="#" className="text-blue-500 hover:underline">Xemall →</a>
         </div>
         <LoadingComponent isLoading={loading}>
          <Table columns={recentlyAppliedColumns} dataSource={jobsApplied} pagination={false} />

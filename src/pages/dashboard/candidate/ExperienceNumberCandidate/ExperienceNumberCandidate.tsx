@@ -17,13 +17,13 @@ const ExperienceNumberCandidate = () => {
     const res = await userServices.updateUser(params);
     if (res.data) {
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Cập nhật thông tin năm kinh nghiệm",
       });
       await handleUpdateProfile();
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Cập nhật thất bại",
       });
     }

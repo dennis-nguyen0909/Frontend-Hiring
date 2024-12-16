@@ -24,7 +24,7 @@ const Applied = () => {
   const [meta, setMeta] = useState<Meta>({});
   const columns = [
     {
-      title: "JOBS",
+      title: "Công việc",
       dataIndex: "job",
       key: "job",
       render: (text, record) => (
@@ -61,7 +61,7 @@ const Applied = () => {
       )
     },
     {
-      title: "STATUS",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (text) => (
@@ -76,7 +76,7 @@ const Applied = () => {
       key: "action",
       render: () => (
         <Button type="primary" className="bg-blue-500 hover:bg-blue-600">
-          View Details
+          XemDetails
         </Button>
       ),
     },
@@ -89,7 +89,7 @@ const Applied = () => {
       location: "Washington",
       salary: "$50k-80k/month",
       dateApplied: "Feb 2, 2019 19:28",
-      status: "Active",
+      status: "Hoạt động",
       bgColor: "bg-green-500",
       icon: "Up",
       jobType: "Remote",
@@ -102,7 +102,7 @@ const Applied = () => {
       location: "Dhaka",
       salary: "$50k-80k/month",
       dateApplied: "Dec 7, 2019 23:26",
-      status: "Active",
+      status: "Hoạt động",
       bgColor: "bg-pink-500",
       icon: "Pd",
       jobType: "Full Time",
@@ -115,7 +115,7 @@ const Applied = () => {
       location: "Brazil",
       salary: "$50k-80k/month",
       dateApplied: "Feb 2, 2019 19:28",
-      status: "Active",
+      status: "Hoạt động",
       bgColor: "bg-black",
       icon: "🍎",
       jobType: "Temporary",
@@ -128,7 +128,7 @@ const Applied = () => {
       location: "Wisconsin",
       salary: "$50k-80k/month",
       dateApplied: "Dec 7, 2019 23:26",
-      status: "Active",
+      status: "Hoạt động",
       bgColor: "bg-blue-500",
       icon: "Vd",
       jobType: "Contract Base",
@@ -141,7 +141,7 @@ const Applied = () => {
       location: "United States",
       salary: "$50k-80k/month",
       dateApplied: "Dec 4, 2019 21:42",
-      status: "Active",
+      status: "Hoạt động",
       bgColor: "bg-blue-400",
       icon: "🐦",
       jobType: "Full Time",
@@ -154,7 +154,7 @@ const Applied = () => {
       location: "North Dakota",
       salary: "$50k-80k/month",
       dateApplied: "Dec 30, 2019 07:52",
-      status: "Active",
+      status: "Hoạt động",
       bgColor: "bg-blue-600",
       icon: "f",
       jobType: "Full Time",
@@ -167,7 +167,7 @@ const Applied = () => {
       location: "New York",
       salary: "$50k-80k/month",
       dateApplied: "Dec 30, 2019 05:18",
-      status: "Active",
+      status: "Hoạt động",
       bgColor: "bg-gray-300",
       icon: "🧩",
       jobType: "Full Time",
@@ -180,7 +180,7 @@ const Applied = () => {
       location: "Michigan",
       salary: "$50k-80k/month",
       dateApplied: "Mar 20, 2019 23:14",
-      status: "Active",
+      status: "Hoạt động",
       bgColor: "bg-orange-500",
       icon: "🅾️",
       jobType: "Full Time",
@@ -216,7 +216,7 @@ const Applied = () => {
   }
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-6">Applied Jobs ({listApplied.length || 0})</h1>
+      <h1 className="text-2xl font-semibold mb-6">Applied Việc làm ({listApplied.length || 0})</h1>
 
       <div className="bg-white rounded-lg shadow">
         <Table columns={columns} dataSource={listApplied} pagination={false} />

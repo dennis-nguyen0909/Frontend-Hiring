@@ -74,7 +74,7 @@ export default function CurrenciesComponent() {
     if (res.data) {
       notification.success({
         message: "Thông báo",
-        description: "Cap Nhat Thanh Cong!",
+        description: "Cập nhật thành công!",
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
       setVisibleDrawer(false)
@@ -143,7 +143,7 @@ export default function CurrenciesComponent() {
             okText="Yes"
             cancelText="No"
           >
-            <Tooltip title="Delete">
+            <Tooltip title="Xóa">
               <Button
                 icon={<DeleteOutlined />}
                 danger

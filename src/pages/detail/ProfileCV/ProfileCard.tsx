@@ -115,7 +115,7 @@ export default function ProfileCard({ userDetail }: any) {
             </Button>
           </div>
 
-          {/* Description */}
+          {/* Mô tả */}
           <p className="text-gray-600 mb-2">
             TopCV Profile là tính năng giúp bạn giới thiệu với mọi người mình là ai, đã làm gì và những thành tích nổi bật của bạn.
           </p>

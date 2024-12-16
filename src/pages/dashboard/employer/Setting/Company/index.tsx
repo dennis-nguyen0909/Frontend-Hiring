@@ -1,12 +1,13 @@
 import { DeleteOutlined, UploadOutlined } from "@ant-design/icons"
 import { Editor } from "@tinymce/tinymce-react"
 import { Button, Form, Image, Input, message, notification, Upload, UploadFile } from "antd"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import * as userServices from '../../../../../services/modules/userServices'
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { updateUser } from "../../../../../redux/slices/userSlices"
 import { MediaApi } from "../../../../../services/modules/mediaServices"
+import LoadingComponent from "../../../../../components/Loading/LoadingComponent"
 const CompanyInfo = ()=>{
     const uploadRef=useRef(null)
     const [logoFile, setLogoFile] = useState<UploadFile | null>(null)
@@ -15,6 +16,7 @@ const CompanyInfo = ()=>{
     const userDetail = useSelector(state=>state.user)
     const dispatch = useDispatch()
     const [isLoading,setIsLoading]=useState(false)
+    
     const handleUploadFile =async (file:File,type:string)=>{
       setIsLoading(true)
         if (file) {
@@ -36,7 +38,7 @@ const CompanyInfo = ()=>{
               const responseUpdate = await userServices.updateUser(params);
               if(responseUpdate.data){
                 notification.success({
-                  message: "Notification",
+                  message: "Thông báo",
                   description: "Cập nhật thành công"
                 })
                 dispatch(updateUser({ ...responseUpdate.data, access_token: userDetail.access_token }))
@@ -59,6 +61,7 @@ const CompanyInfo = ()=>{
       }
 
   const handleSave = async(values: any) => {
+    setIsLoading(true)
     const {company_name,description} = values
     const params={
       company_name,
@@ -68,38 +71,65 @@ const CompanyInfo = ()=>{
     const res = await userServices.updateUser(params);
     if(res.data){
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Cập nhật thành công"
       })
       dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
     }
+    setIsLoading(false)
   }
-  const handleReplaceLogo = () => {
-    if (uploadRef.current) {
-      uploadRef.current.click(); // Mở hộp thoại file khi nhấn nút Replace
-    }
-  };
-  const handleDeleteAvatar = async()=>{
+  const handleGetDetailUser= async()=>{
     try {
-      const res = await userServices.updateUser({
-        id:userDetail?._id,
-        avatar_company:""
-      })
+      setIsLoading(true)
+      const res = await userServices.USER_API.getDetailUser(userDetail?._id,userDetail?.access_token);
       if(res.data){
-        notification.success({
-          message: "Notification",
-          description: "Xóa avatar"
-        })
-        dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
+        dispatch(updateUser({...res.data.items}))
       }
     } catch (error) {
-      
+      console.error(error);
+    } finally{
+      setIsLoading(false)
+    }
+  }
+  useEffect(()=>{
+    handleGetDetailUser()
+  },[ ])
+  const handleDeleteAvatar = async(type:string)=>{
+    try {
+      setIsLoading(true)
+      if(type === 'avatar_company'){
+        const res = await  userServices.USER_API.deleteAvatarEmployer(userDetail?._id,'avatar_company',userDetail?.access_token);
+        if(+res.statusCode === 200){
+          notification.success({
+            message:'Thông báo',
+            description:"Xóa thành công"
+          })
+        }
+        await handleGetDetailUser()
+        return ;
+      }
+      if(type === 'banner_company'){
+        const res = await  userServices.USER_API.deleteAvatarEmployer(userDetail?._id,'banner_company',userDetail?.access_token);
+        if(+res.statusCode === 200){
+          notification.success({
+            message:'Thông báo',
+            description:"Xóa thành công"
+          })
+        }
+        await handleGetDetailUser()
+        return ;
+      }
+    } catch (error) {
+      console.error(error)
+    } finally{
+      setIsLoading(false)
     }
   }
     return (
-      <Form form={form} layout="vertical" onFinish={handleSave}>
+     <LoadingComponent isLoading={isLoading}>
+       <Form form={form} layout="vertical" onFinish={handleSave}>
       <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">Logo & Banner Image</h2>
+        <h2 className="text-lg font-semibold mb-4">Logo & Ảnh nền</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <p className="mb-2">Upload Logo</p>
@@ -144,13 +174,13 @@ const CompanyInfo = ()=>{
                 <Button
                   size="small"
                   icon={<DeleteOutlined />}
-                  onClick={() =>  handleDeleteAvatar()}
+                  onClick={() =>  handleDeleteAvatar('avatar_company')}
                 >
                   Remove
                 </Button>
-                <Button onClick={handleReplaceLogo} size="small" type="link">
+                {/* <Button onClick={handleReplaceLogo} size="small" type="link">
         Replace
-      </Button>
+      </Button> */}
       <Input 
         type="file" 
         ref={uploadRef} 
@@ -166,63 +196,63 @@ const CompanyInfo = ()=>{
           </div>
 
           <div>
-            <p className="mb-2">Banner Image</p>
-          {userDetail?.banner_company ? (
-            <Image
-            className="px-2 py-2"
-              src={userDetail?.banner_company}
-              alt="Banner"
-              preview={false}
-              width={'60%'}
-              height={'80%'}
-            />
-          ):(
-            <Form.Item name="banner">
-            <Upload
-              listType="picture-card"
-              className="w-full"
-              showUploadList={false}
-              onChange={handleBannerChange}
-              beforeUpload={()=>false}
-            >
-              {userDetail?.banner_company ? (
-                <img
-                  src="/placeholder.svg?height=200&width=400"
-                  alt="Banner"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center">
-                  <UploadOutlined className="text-2xl" />
-                  <div className="mt-2">Upload</div>
-                </div>
-              )}
-            </Upload>
-          </Form.Item>
-          )}
-            {userDetail?.banner_company && (
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-sm text-gray-500">4.3 MB</span>
-                <div className="flex gap-2">
-                  <Button
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    onClick={() => setBannerFile(null)}
-                  >
-                    Remove
-                  </Button>
-                  <Button size="small" type="link">
-                    Replace
-                  </Button>
-                </div>
-              </div>
-            )}
+  <p className="">Ảnh nền</p>
+  {userDetail?.banner_company ? (
+    <div className="relative w-full h-64"> {/* Banner container */}
+      <Image
+        className="w-full h-full object-cover" // Điều chỉnh hình ảnh để bao phủ toàn bộ container
+        src={userDetail?.banner_company}
+        alt="Banner"
+        preview={false}
+        width={'100%'}
+        height={'100%'}
+      />
+    </div>
+  ) : (
+    <Form.Item name="banner">
+      <Upload
+        listType="picture-card"
+        className="w-full"
+        showUploadList={false}
+        onChange={handleBannerChange}
+        beforeUpload={() => false}
+      >
+        {userDetail?.banner_company ? (
+          <img
+            src="/placeholder.svg?height=200&width=400"
+            alt="Banner"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="flex flex-col items-center">
+            <UploadOutlined className="text-2xl" />
+            <div className="mt-2">Upload</div>
           </div>
+        )}
+      </Upload>
+    </Form.Item>
+  )}
+  {userDetail?.banner_company && (
+    <div className="flex items-center justify-center gap-2 mt-2">
+      <span className="text-sm text-gray-500">4.3 MB</span>
+      <div className="flex gap-2">
+        <Button
+          size="small"
+          icon={<DeleteOutlined />}
+          onClick={() => handleDeleteAvatar('banner_company')}
+        >
+          Remove
+        </Button>
+      </div>
+    </div>
+  )}
+</div>
+
         </div>
 
         <div className="mb-4">
           <Form.Item
-            label="Company Name"
+            label="Tên công ty"
             name="company_name"
             initialValue={userDetail?.company_name}
             rules={[{ required: true, message: 'Please enter company name' }]}
@@ -233,7 +263,7 @@ const CompanyInfo = ()=>{
 
         <div>
           <Form.Item
-            label="About Us"
+            label="Về chúng tôi"
             name="description"
             initialValue={userDetail?.description}
             rules={[{ required: true, message: 'Please write about us' }]}
@@ -266,6 +296,7 @@ const CompanyInfo = ()=>{
         </Form.Item>
       </div>
     </Form>
+     </LoadingComponent>
     )
 }
 

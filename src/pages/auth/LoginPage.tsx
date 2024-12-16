@@ -124,7 +124,7 @@ const LoginPage = () => {
         }
       } else {
         notification.error({
-          message: "Login failed",
+          message: "Đăng nhập thất bại",
           description: error.message,
         });
       }
@@ -164,17 +164,17 @@ const LoginPage = () => {
         {/* Header */}
         <div className="flex gap-10 items-center justify-between mt-[200px]">
           <div>
-            <h1 className="font-medium text-3xl">Sign in.</h1>
+            <h1 className="font-medium text-3xl">Đăng ký.</h1>
             <div className="mt-2">
               <span className="text-gray-500 text-1xl">
-                Don’t have an account?
+                Bạn chưa có tài khoản?
               </span>
               <span
                 onClick={handleNavigateRegister}
                 className="text-blue-500 cursor-pointer"
               >
                 {" "}
-                Create Account
+                Tạo tài khoản
               </span>
             </div>
           </div>
@@ -191,7 +191,7 @@ const LoginPage = () => {
           >
             <Input
               size="large"
-              placeholder="Email address"
+              placeholder="Địa chỉ email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -213,13 +213,13 @@ const LoginPage = () => {
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
             >
-              Remember me
+              Ghi nhớ tài khoản
             </Checkbox>
             <span
               onClick={() => navigate("/forgot-password")}
               className="text-blue-500"
             >
-              Forget password?
+              Quên mật khẩu?
             </span>
           </div>
          <div className="w-full">
@@ -232,7 +232,7 @@ const LoginPage = () => {
               size="large"
               style={{ backgroundColor: "#0f65cc" }}
             >
-              Sign In{" "}
+              Đăng nhập{" "}
               <ArrowRightOutlined
                 style={{ fontSize: "18px", fontWeight: "bold" }}
               />
@@ -243,7 +243,7 @@ const LoginPage = () => {
         </Form>
         <div className="flex items-center justify-center mt-3 text-gray-500">
           <hr className="w-full h-0.95 bg-gray-500" />
-          <p className="mx-2">or</p>
+          <p className="mx-2">hoặc</p>
           <hr className="w-full h-0.95 bg-gray-500" />
         </div>
         <div className="flex justify-between mt-5 w-full">
@@ -254,7 +254,7 @@ const LoginPage = () => {
             style={{ width: "240px" }}
           >
             <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
-            Sign up with Facebook
+            Đăng nhập với Facebook
           </Button>
           </a>
           <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
@@ -263,7 +263,7 @@ const LoginPage = () => {
             size="large"
             style={{ width: "240px" }}      >
             <img src={google} alt="Google" className="w-5 h-5 mr-2" />
-            Sign up with Google
+            Đăng nhập với Google
           </Button>
             </a>
         </div>
@@ -295,7 +295,7 @@ const LoginPage = () => {
         setCurrent(current+1)
       }else{
         notification.error({
-          message: "Notification",
+          message: "Thông báo",
           description: response?.message[0],
         })
       }
@@ -366,7 +366,7 @@ const LoginPage = () => {
           current={current}
           items={[
             {
-              title: "Login",
+              title: "Quên mật khẩu?",
               icon: <UserOutlined />,
             },
             {

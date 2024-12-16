@@ -20,7 +20,7 @@ export const useCities = () => {
   const [error, setError] = useState(null);
     const user = useSelector(state=>state.user)
   useEffect(() => {
-    // Replace this with your actual API call or data source
+    // Replace this with your actual API call hoặc data source
     const fetchCities = async () => {
       try {
         setLoading(true);

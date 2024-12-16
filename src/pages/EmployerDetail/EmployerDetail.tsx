@@ -96,7 +96,7 @@ export default function EmployerDetail() {
         {/* Mờ tối phần overlay */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
           <h2 className="text-3xl font-bold">{employerDetail?.company_name}</h2>
-          <p className="text-lg mt-2">Slogan or Description</p>
+          <p className="text-lg mt-2">Khẩu hiệu hoặc Mô tả</p>
         </div>
       </div>
 
@@ -116,7 +116,7 @@ export default function EmployerDetail() {
               </div>
             </div>
             <Button type="primary" size="large" className="bg-blue-600">
-              View Open Position →
+              Xem vị trí mở→
             </Button>
           </div>
         </Card>
@@ -124,15 +124,15 @@ export default function EmployerDetail() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="md:col-span-2 space-y-8">
-            {/* Description */}
-            <Card title="Description" className="shadow-sm">
+            {/* Mô tả */}
+            <Card title="Mô tả" className="shadow-sm">
               <p className="text-gray-600">
                 {parse(employerDetail?.description || "")}
               </p>
             </Card>
 
-            {/* Company Benefits */}
-            <Card title="Company Benefits" className="shadow-sm">
+            {/* Lợi ích công ty */}
+            <Card title="Lợi ích công ty" className="shadow-sm">
               <ul className="list-disc pl-5 space-y-2 text-gray-600">
                 <li>In hac habitasse platea dictumst.</li>
                 <li>
@@ -148,8 +148,8 @@ export default function EmployerDetail() {
               </ul>
             </Card>
 
-            {/* Company Vision */}
-            <Card title="Company Vision" className="shadow-sm">
+            {/* Tầm nhìn công ty */}
+            <Card title="Tầm nhìn công ty" className="shadow-sm">
               <p className="text-gray-600">
                 {parse(employerDetail?.organization?.company_vision || "")}
               </p>
@@ -201,8 +201,8 @@ export default function EmployerDetail() {
 
           {/* Right Column */}
           <div className="space-y-8">
-            {/* Contact Information */}
-            <Card title="Contact Information" className="shadow-sm">
+            {/* Thông tin liên hệ */}
+            <Card title="Thông tin liên hệ" className="shadow-sm">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -239,7 +239,7 @@ export default function EmployerDetail() {
               </div>
             </Card>
 
-            {/* Company Info */}
+            {/* Thông tin công ty */}
             <Card className="shadow-sm">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -247,7 +247,7 @@ export default function EmployerDetail() {
                     <span className="text-blue-600">📅</span>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">FOUNDED IN</p>
+                    <p className="text-xs text-gray-500">ĐƯỢC THÀNH LẬP</p>
                     <p className="font-medium">
                       {employerDetail?.organization?.year_of_establishment}
                     </p>
@@ -258,7 +258,7 @@ export default function EmployerDetail() {
                     <span className="text-blue-600">🏢</span>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">ORGANIZATION TYPE</p>
+                    <p className="text-xs text-gray-500">LOẠI TỔ CHỨC</p>
                     <p className="font-medium">
                       {employerDetail?.organization?.organization_type}
                     </p>
@@ -269,7 +269,7 @@ export default function EmployerDetail() {
                     <span className="text-blue-600">👥</span>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">TEAM SIZE</p>
+                    <p className="text-xs text-gray-500">QUY MÔ</p>
                     <p className="font-medium">
                       {employerDetail?.organization?.team_size}
                     </p>
@@ -280,7 +280,7 @@ export default function EmployerDetail() {
                     <span className="text-blue-600">💻</span>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">INDUSTRY TYPE</p>
+                    <p className="text-xs text-gray-500">LOẠI NGÀNH</p>
                     <p className="font-medium">
                       {employerDetail?.organization?.industry_type}
                     </p>
@@ -290,7 +290,7 @@ export default function EmployerDetail() {
             </Card>
 
             {/* Social Media */}
-            <Card title="Follow us on:" className="shadow-sm">
+            <Card title="Theo dõi chúng tôi trên :" className="shadow-sm">
               <div className="flex gap-4">
                 {facebookLink && (
                   <Link
@@ -335,7 +335,7 @@ export default function EmployerDetail() {
 
         {/* Open Positions */}
         <div className="mt-12 pb-10">
-          <h2 className="text-2xl font-semibold mb-6">Open Position ({jobs.length || 0})</h2>
+          <h2 className="text-2xl font-semibold mb-6">Vị trí mở({jobs.length || 0})</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {jobs.map((job, idx) => {
               return (

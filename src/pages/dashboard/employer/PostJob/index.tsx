@@ -37,6 +37,7 @@ import { Level_API } from "../../../../services/modules/LevelServices";
 import { JOB_CONTRACT_TYPE_API } from "../../../../services/modules/JobContractTypeService";
 import { JOB_TYPE_API } from "../../../../services/modules/JobTypeServices";
 import { CURRENCY_API } from "../../../../services/modules/CurrenciesServices";
+import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 const { Title, Text } = Typography;
 export default function PostJob() {
   const [form] = Form.useForm();
@@ -52,6 +53,7 @@ export default function PostJob() {
   const [typeModal, setTypeModal] = useState<string>("");
   const [expireDate, setExpireDate] = useState("");
   const [listSkills, setListSkills] = useState<ListSkillsFormData[]>([]);
+  const [loading,setLoading]=useState<boolean>(false)
   const { data: listLevels, refreshData: refreshLevel } = useLevels(1, 30);
   const { data: listContractTypes, refreshData: refreshContractType } =
     useContractType(1, 30);
@@ -185,14 +187,14 @@ export default function PostJob() {
     );
     if (res.data) {
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Them Thanh Cong!",
       });
       handleGetSkillByUser({});
       setIsModalVisible(false);
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Them That Bai!",
       });
     }
@@ -213,6 +215,7 @@ export default function PostJob() {
   };
   const handleSubmit = async (values: any) => {
     try {
+      setLoading(true)
       if (!requirements.length) {
         notification.error({
           message: "Thông báo",
@@ -307,6 +310,8 @@ export default function PostJob() {
         message: "Thông báo",
         description: error,
       });
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -913,7 +918,7 @@ export default function PostJob() {
           </Form.Item>
           <div className="">
             <Form.Item
-              label="Kỹ năng cần có"
+              label="Kỹ năng yêu cầu"
               name="skills"
               rules={[
                 {
@@ -1365,7 +1370,7 @@ export default function PostJob() {
           </Form.Item>
         </div>
 
-        {/* Job Description */}
+        {/* Job Mô tả */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Mô tả công việc</h2>
 
@@ -1429,11 +1434,13 @@ export default function PostJob() {
 
         {/* Image Company s */}
         {/* Submit Button */}
-        <Form.Item>
+       <LoadingComponent isLoading={loading}>
+       <Form.Item>
           <Button type="primary" htmlType="submit" className="w-full">
             Lưu
           </Button>
         </Form.Item>
+       </LoadingComponent>
       </Form>
       <GeneralModal
         title="Thêm"

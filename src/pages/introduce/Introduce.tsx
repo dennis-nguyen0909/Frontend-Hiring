@@ -56,7 +56,7 @@ const Introduce = () =>{
                             className="ml-4"
                             style={{ height: "50px", borderRadius: "8px" }} // Larger button with height and border-radius
                         >
-                            Find Job
+                            Tìm kiếm
                         </Button>
                         </div>
                         <div className="mt-5">

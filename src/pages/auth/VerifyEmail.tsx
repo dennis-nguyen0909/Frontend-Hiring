@@ -59,13 +59,13 @@ const VerifyEmail = () => {
         }
       }else{
         notification.error({
-          message: "Notification",
+          message: "Thông báo",
           description: response?.message[0],
         })
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       })
     }finally{

@@ -75,7 +75,7 @@ export default function DegreeTypeComponent() {
     if (res.data) {
       notification.success({
         message: "Thông báo",
-        description: "Cap Nhat Thanh Cong!",
+        description: "Cập nhật thành công!",
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
       setVisibleDrawer(false)
@@ -139,7 +139,7 @@ export default function DegreeTypeComponent() {
             okText="Yes"
             cancelText="No"
           >
-            <Tooltip title="Delete">
+            <Tooltip title="Xóa">
               <Button
                 icon={<DeleteOutlined />}
                 danger
@@ -274,8 +274,8 @@ export default function DegreeTypeComponent() {
             </Form.Item>
       
   
-            <Form.Item name="description" label="Description">
-              <Input.TextArea placeholder="Enter Description (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
+            <Form.Item name="description" label="Mô tả">
+              <Input.TextArea placeholder="Enter Mô tả (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
             </Form.Item>
   
             <Form.Item>

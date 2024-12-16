@@ -32,7 +32,7 @@ export const itemsIcon = [
     icon: buldingIcon,
     width: 50,
     height: 50,
-    description: "Companies",
+    description: "Công ty",
     preview: false,
     amount: "97,354",
   },
@@ -40,14 +40,14 @@ export const itemsIcon = [
     icon: bagIcon,
     width: 50,
     height: 50,
-    description: "New Jobs",
+    description: "New Việc làm",
     preview: false,
     amount: "7,532",
   },
 ];
 export const menuHeader = [
   {
-    name: "Home",
+    name: "Trang chủ",
     id:'home',
     path: "/",
     color:"#5E6670",
@@ -66,7 +66,7 @@ export const menuHeader = [
     
   },
   {
-    name: "Jobs",
+    name: "Việc làm",
     id:'jobs',
     path: "/jobs",
     color:"#5E6670",
@@ -75,7 +75,7 @@ export const menuHeader = [
     employer:true
   },
   {
-    name: "Companies",
+    name: "Công ty",
     id:'employers',
     path: "/employers",
     color:"#5E6670",
@@ -84,7 +84,7 @@ export const menuHeader = [
     employer:true
   },
   {
-    name: "About",
+    name: "Về chúng tôi",
     id:'about',
     path: "/about",
     color:"#5E6670",
@@ -159,7 +159,7 @@ export const jobItems = [
     image: jobIcon,
   },
   {
-    name: "Companies",
+    name: "Công ty",
     color: '#474C54',
     count:'97,354',
     image: companiesIcon
@@ -171,7 +171,7 @@ export const jobItems = [
     image: candidateIcon
   },
   {
-    name: "New Jobs",
+    name: "New Việc làm",
     color: '#474C54',
     count:'7,532',
     image: jobIcon

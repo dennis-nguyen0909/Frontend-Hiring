@@ -92,10 +92,10 @@ const IntroduceV2 = () => {
       <div className="flex w-full flex-col h-auto">
         <div className="w-full h-full flex items-center justify-center flex-col gap-4">
           <h1 className="text-4xl text-black font-bold">
-            Find Your Perfect Tech Job
+            Tìm công việc công nghệ hoàn hảo của bạn
           </h1>
           <section className="text-center">
-            Connect with top companies and build your career in tech
+            Kết nối với các công ty hàng đầu và xây dựng sự nghiệp của bạn trong lĩnh vực công nghệ
           </section>
 
           <div
@@ -146,7 +146,7 @@ const IntroduceV2 = () => {
                 color: "white",
               }}
             >
-              Find Job
+              Tìm kiếm
             </Button>
           </div>
         </div>

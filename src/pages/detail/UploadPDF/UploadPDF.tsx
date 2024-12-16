@@ -39,7 +39,7 @@ export default function UploadPDF() {
         message.success(`${info.file.name} đã được tải lên thành công.`)
       } else if (status === 'error') {
         notification.error({
-          message:'Notification',
+          message:'Thông báo',
           description:'Tải lên thất bại'
         })
         message.error(`${info.file.name} tải lên thất bại.`)
@@ -62,13 +62,13 @@ export default function UploadPDF() {
         const res = await CV_API.create(params,userDetail.access_token);
         if(res.data){
             notification.success({
-                message:'Notification',
+                message:'Thông báo',
                 description:'Cập nhật thành công'
             })
         }
     } catch (error) {
         notification.error({
-            message:'Notification',
+            message:'Thông báo',
             description:error.message
         })
     }

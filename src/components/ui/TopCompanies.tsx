@@ -70,7 +70,7 @@ const TopCompanies = () => {
         <>
             <div className="h-full px-5 md:px-primary"> 
                 <div>
-                    <h1 className="text-textBlack text-3xl font-medium">Top Companies</h1>
+                    <h1 className="text-textBlack text-3xl font-medium">Top Công ty</h1>
                 </div>
                 <div className="mt-5 mb-5">
                     {renderCompanies()}

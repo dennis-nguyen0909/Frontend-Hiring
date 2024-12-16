@@ -26,7 +26,7 @@ const CompanyCard = ({ item }) => {
       </div>
       <div className="flex justify-center mt-1">
         <Button onClick={handleNavigate} size="small" style={{ backgroundColor: "#E7F0FA" }} className="text-primaryBlue w-full font-semibold !rounded-lg border-none">
-          Open Position
+          Vị trí mở
         </Button>
       </div>
     </div>

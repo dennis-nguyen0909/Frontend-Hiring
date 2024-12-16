@@ -134,7 +134,7 @@ const Footer = () => {
               </div>
             </div>
     
-            {/* Company Info */}
+            {/* Thông tin công ty */}
           </div>
             <div className="mt-12 pt-8 px-primary border-t">
               <h2 className="font-semibold text-lg mb-4">Công ty Cổ phần HireDev Việt Nam</h2>

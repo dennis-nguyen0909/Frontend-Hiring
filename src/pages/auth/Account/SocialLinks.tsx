@@ -64,7 +64,7 @@ const SocialLinks = ({handleTabChange}) => {
       {socialLinks.map((link, index) => (
         <div key={link.id} className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Social Link {index + 1}
+            Liên kết {index + 1}
           </label>
           <div className="flex gap-4">
             <Select
@@ -110,7 +110,8 @@ const SocialLinks = ({handleTabChange}) => {
         className="bg-gray-50 hover:bg-gray-100 mb-8"
         onClick={handleAddLink}
       >
-        <PlusCircleOutlined /> Add New Social Link
+        <PlusCircleOutlined /> 
+Thêm liên kết xã hội mới
       </Button>
 
       <div className="flex justify-between">

@@ -48,7 +48,7 @@ const Profile = () => {
       return res;
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }

@@ -59,14 +59,14 @@ const FoundingInfo = ({ handleTabChange }) => {
       );
       if (res.data) {
         notification.success({
-          message: "Notification",
+          message: "Thông báo",
           description: "Cập nhật thành công",
         });
 
         handleTabChange("social");
       } else {
         notification.error({
-          message: "Notification",
+          message: "Thông báo",
           description: res.response.data.message,
         });
       }
@@ -106,7 +106,7 @@ const FoundingInfo = ({ handleTabChange }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <Form.Item
-          label="Organization Type"
+          label="Loại tổ chức"
           name="organization_type"
           rules={[
             { required: true, message: "Please select organization type" },
@@ -122,7 +122,7 @@ const FoundingInfo = ({ handleTabChange }) => {
         </Form.Item>
 
         <Form.Item
-          label="Industry Types"
+          label="Loại ngành"
           name="industry_type"
           rules={[{ required: true, message: "Please select industry type" }]}
         >
@@ -136,7 +136,7 @@ const FoundingInfo = ({ handleTabChange }) => {
         </Form.Item>
 
         <Form.Item
-          label="Team Size"
+          label="Quy mô thành viên"
           name="team_size"
           rules={[{ required: true, message: "Please select team size" }]}
         >
@@ -152,7 +152,7 @@ const FoundingInfo = ({ handleTabChange }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Form.Item
-          label="Year of Establishment"
+          label="Năm thành lập"
           name="year_of_establishment"
           rules={[
             { required: true, message: "Please select establishment date" },
@@ -162,7 +162,7 @@ const FoundingInfo = ({ handleTabChange }) => {
         </Form.Item>
 
         <Form.Item
-          label="Company Website"
+          label="Trang web công ty"
           name="company_website"
           rules={[
             { required: true, message: "Please enter company_website URL" },
@@ -178,7 +178,7 @@ const FoundingInfo = ({ handleTabChange }) => {
 
       <div className="mb-6">
         <Form.Item
-          label="Company Vision"
+          label="Tầm nhìn công ty"
           name="company_vision"
           required
           rules={[{ validator: validateCompanyVision }]}

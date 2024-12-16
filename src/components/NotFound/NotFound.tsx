@@ -20,11 +20,11 @@ export default function NotFound() {
         <div className="flex flex-col items-start space-y-4">
           <h1 className="text-4xl font-bold text-gray-900">Oops! Page not found</h1>
           <p className="text-gray-600 text-lg max-w-md">
-            Something went wrong. It looks like the link is broken or the page is removed.
+            Something went wrong. It looks like the link is broken hoặc the page is removed.
           </p>
           <div className="flex gap-4 mt-4">
             <Button onClick={()=>navigate('/')} type="primary" size="large" className="flex items-center">
-              Home
+              Trang chủ
               <ArrowRightOutlined className="ml-1" />
             </Button>
             <Button size="large" onClick={handleGoBack}>

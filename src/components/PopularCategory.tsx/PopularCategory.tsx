@@ -9,7 +9,7 @@ const PopularCategory = ()=>{
                 Popular category
                 </h1>
                 <div className="relative flex items-center ">
-                    <Button   className="text-primary w-[130px] h-[40px]">View all  </Button>
+                    <Button   className="text-primary w-[130px] h-[40px]">Xemall  </Button>
                     <Image  src={arrowRight} preview={false} className="z-100 absolute" />
                 </div>
             </div>

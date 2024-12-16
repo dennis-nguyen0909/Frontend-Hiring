@@ -1,14 +1,7 @@
 import { Button, notification } from "antd";
 import {
-  ArrowUpCircle,
-  Bell,
-  Gift,
-  Key,
-  Lock,
   LogOut,
-  Mail,
   Settings,
-  SquareKanban,
   User,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,13 +26,13 @@ const Setting = () => {
           dispatch(resetUser())
           navigate("/");
           notification.success({
-            message: "Notification",
+            message: "Thông báo",
             description: "Đăng xuất thành công",
           })
         }
       } catch (error) {
         notification.error({
-          message: "Notification",
+          message: "Thông báo",
           description: error.message,
         })
         console.error("Đăng xuất thất bại:", error);

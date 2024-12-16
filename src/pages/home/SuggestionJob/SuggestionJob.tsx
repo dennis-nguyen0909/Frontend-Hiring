@@ -75,7 +75,7 @@ export default function SuggestionJob() {
       {jobsSuggests.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Use data from the query or fallback to the FEATURED_JOBS */}
+            {/* Use data from the query hoặc fallback to the FEATURED_JOBS */}
             {(jobsSuggests?.length ? jobsSuggests : jobsSuggests).map((job) => (
               <JobCard key={job?._id} job={job} onSave={handleSaveJob} />
             ))}

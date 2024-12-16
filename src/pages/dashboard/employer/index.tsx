@@ -6,9 +6,7 @@ import {
   SaveOutlined,
   SettingOutlined,
   LogoutOutlined,
-  TeamOutlined,
   DollarOutlined,
-  BankOutlined,
 } from '@ant-design/icons'
 import OverviewEmployer from './Overview'
 import PostJob from './PostJob'
@@ -19,8 +17,7 @@ import * as userServices from '../../../services/modules/userServices'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { updateUser } from '../../../redux/slices/userSlices'
-import { TAB_CURRENCY_TYPE, TAB_DEGREE_TYPE, TAB_JOB_CONTRACT_TYPE, TAB_JOB_TYPE, TAB_LEVEL, TAB_SKILL } from '../../../utils/role.utils'
-import SkillLevel from '../../employer/SkillLevel/SkillLevel'
+import { TAB_SKILL } from '../../../utils/role.utils'
 import SkillEmployer from '../../employer/Skill/Skill'
 import './style.css'
 const { Sider, Content } = Layout
@@ -32,14 +29,14 @@ export default function DashBoardEmployer() {
   const userDetail = useSelector(state => state.user)
   const dispatch = useDispatch()
   const menuItems = [
-    { key: '1', icon: <UserOutlined />, label: 'Overview', className: 'bg-blue-50' },
-    // { key: '2', icon: <TeamOutlined />, label: 'Employers Profile' },
-    { key: '3', icon: <FileTextOutlined />, label: 'Post a Job' },
-    { key: '4', icon: <FileTextOutlined />, label: 'My Jobs' },
-    { key: '5', icon: <SaveOutlined />, label: 'Saved Candidate' },
-    { key: '6', icon: <DollarOutlined />, label: 'Plans & Billing' },
-    // { key: '7', icon: <BankOutlined />, label: 'All Companies' },
-    { key: '8', icon: <SettingOutlined />, label: 'Settings' },
+    { key: '1', icon: <UserOutlined />, label: 'Tổng quan', className: 'bg-blue-50' },
+    // { key: '2', icon: <TeamOutlined />, label: 'Nhà Tuyển Dụng Profile' },
+    { key: '3', icon: <FileTextOutlined />, label: 'Đăng việc làm' },
+    { key: '4', icon: <FileTextOutlined />, label: 'Việc làm của tôi' },
+    { key: '5', icon: <SaveOutlined />, label: 'Lưu ứng viên' },
+    { key: '6', icon: <DollarOutlined />, label: 'Gói & Thanh toán' },
+    // { key: '7', icon: <BankOutlined />, label: 'All Công ty' },
+    { key: '8', icon: <SettingOutlined />, label: 'Cài đặt' },
     {
       key: 'sub4',
       label: 'Quản lý bài viết',
@@ -76,7 +73,7 @@ useEffect(()=>{
         width={250}
       >
         <div className="p-4 text-xl font-bold text-center border-b">
-          {!collapsed && "EMPLOYERS DASHBOARD"}
+          {!collapsed && "Nhà Tuyển Dụng"}
         </div>
         <Menu
           mode="inline"

@@ -1,6 +1,6 @@
 import { notification } from "antd";
 import { axiosInstance } from "../config/axiosInterceptor";
-
+type AvatarType = 'avatar_company' | 'banner_company';
 // src/services/authService.ts
 export const getDetailUser = async (id: string, access_token: string) => {
   const resData = await axiosInstance.get(`/users/${id}`, {
@@ -158,6 +158,27 @@ export const USER_API = {
       return null; 
     } catch (error) {
       return error; // Return null if any error occurs
+    }
+  },
+  deleteAvatarEmployer: async (userId:string,type:AvatarType,accessToken:string) => {
+    try {
+      const res = await axiosInstance.delete(`users/delete-avatar`, {
+        data: { // Sử dụng 'data' để truyền dữ liệu vào body
+          user_id: userId,
+          type: type,
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      });
+  
+      if (res.data) {
+        return res.data;
+      }
+      return null;
+    } catch (error) {
+      return error; // Trả về lỗi nếu có bất kỳ lỗi nào xảy ra
     }
   },
 };

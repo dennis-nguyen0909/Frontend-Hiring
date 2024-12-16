@@ -29,6 +29,7 @@ import { useLevels } from "../../../../hooks/useLevels";
 import { useContractType } from "../../../../hooks/useContractType";
 import { useDegreeType } from "../../../../hooks/useDegreeType";
 import { useJobType } from "../../../../hooks/useJobType";
+import GeneralModal from "../../../../components/ui/GeneralModal/GeneralModal";
 const { Title, Text } = Typography;
 interface IPropsJobDetail {
   idJob: string;
@@ -71,7 +72,67 @@ export default function JobDetail({
   const [newTitle, setNewTitle] = useState("");
   const [newRequirement, setNewRequirement] = useState("");
   const [currentSection, setCurrentSection] = useState(""); // Để theo dõi phần tựa đề hiện tại
+  const [typeModal, setTypeModal] = useState<string>("");
 
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newSkill, setNewSkill] = useState("");
+  const handleOpenModal = (type: string) => {
+    setTypeModal(type);
+    setIsModalVisible(true);
+  };
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setNewSkill("");
+  };
+  const handleSkillChange = (value) => {
+    setSelectedSkills(value);
+  };
+
+  const handleAddNewSkill = async () => {
+    const res = await EmployerSkillApi.postSkill(
+      { name: newSkill, user_id: userDetail?._id },
+      userDetail.access_token
+    );
+    if (res.data) {
+      notification.success({
+        message: "Thông báo",
+        description: "Them Thanh Cong!",
+      });
+      handleGetSkillByUser({});
+      setIsModalVisible(false);
+    } else {
+      notification.error({
+        message: "Thông báo",
+        description: "Them That Bai!",
+      });
+    }
+  };
+  const renderBody = (type: string) => {
+    switch (type) {
+      case "add-skill":
+        return (
+          <>
+            <Space direction="vertical" style={{ width: "100%" }}>
+              <Input
+                placeholder="Nhập tên kỹ năng"
+                value={newSkill}
+                onChange={(e) => setNewSkill(e.target.value)}
+              />
+            </Space>
+            <div className="flex justify-between items-center mt-10">
+              <Button key="cancel" onClick={handleCloseModal}>
+                Hủy
+              </Button>
+              ,
+              <Button key="submit" type="primary" onClick={handleAddNewSkill}>
+                Thêm kỹ năng
+              </Button>
+            </div>
+          </>
+        );
+      }
+  }
   // Thêm yêu cầu vào đúng tựa đề
   const addRequirement = () => {
     if (!newTitle || !newRequirement) {
@@ -547,7 +608,7 @@ export default function JobDetail({
             <InputNumber min={18} max={65} placeholder="Tuổi tối đa" />
           </Form.Item>
           <div className="">
-            <Form.Item
+          <Form.Item
               label="Kỹ năng yêu cầu"
               name="skills"
               rules={[
@@ -559,16 +620,28 @@ export default function JobDetail({
             >
               <Select
                 placeholder="Chọn kỹ năng"
-                mode="multiple" // Cho phép chọn nhiều kỹ năng
+                mode="multiple"
                 style={{ width: "100%" }}
-                onChange={(value) => {
-                }}
+                value={selectedSkills}
+                onChange={handleSkillChange}
               >
                 {listSkills.map((skill) => (
                   <Select.Option key={skill._id} value={skill._id}>
                     {skill.name}
                   </Select.Option>
                 ))}
+
+                {/* Hiển thị dấu + nếu chưa có kỹ năng nào được chọn */}
+                <Select.Option key="add-skill" value="add-skill" disabled>
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() => handleOpenModal("add-skill")}
+                    style={{ width: "100%" }}
+                  >
+                    Thêm kỹ năng mới
+                  </Button>
+                </Select.Option>
               </Select>
             </Form.Item>
 
@@ -935,7 +1008,7 @@ export default function JobDetail({
           </Form.Item>
         </div>
 
-        {/* Job Description */}
+        {/* Job Mô tả */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Mô tả công việc</h2>
 
@@ -1002,6 +1075,13 @@ export default function JobDetail({
           </Button>
         </Form.Item>
       </Form>
+      <GeneralModal
+        title="Thêm"
+        visible={isModalVisible}
+        onCancel={handleCloseModal}
+        renderBody={() => renderBody(typeModal)}
+        // footer={false}
+      />
     </div>
   );
 }

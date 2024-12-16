@@ -123,7 +123,7 @@ const CompanyInfo = ({handleTabChange}) => {
               <p className="text-gray-500">
                 <UploadOutlined className="text-2xl mb-2" />
                 <br />
-                Browse photo or drop here
+                Browse photo hoặc drop here
               </p>
               <p className="text-xs text-gray-400 mt-2">
                 A photo larger than 400 pixels work best. Max photo size 5 MB.
@@ -135,7 +135,7 @@ const CompanyInfo = ({handleTabChange}) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Banner Image
+            Ảnh nền
           </label>
           {userDetail?.banner_company ? (
             <Avatar shape="square" size={140}  src={userDetail?.banner_company} />
@@ -152,7 +152,7 @@ const CompanyInfo = ({handleTabChange}) => {
               <p className="text-gray-500">
                 <UploadOutlined className="text-2xl mb-2" />
                 <br />
-                Browse photo or drop here
+                Browse photo hoặc drop here
               </p>
               <p className="text-xs text-gray-400 mt-2">
                 Banner images optimal dimension 1520×400. Supported format JPEG,
@@ -185,7 +185,7 @@ const CompanyInfo = ({handleTabChange}) => {
 
         <div>
           <Form.Item
-            label="About Us"
+            label="Về chúng tôi"
             name="description"
             rules={[{ required: true, message: "Please input description!" }]}
           >

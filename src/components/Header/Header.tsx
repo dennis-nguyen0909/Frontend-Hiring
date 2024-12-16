@@ -91,8 +91,9 @@ const Header: React.FC = () => {
           <div className="flex">
             <Avatar
               size="large"
-              src={userDetail?.avatar || userDetail?.avatar_company || avtDefault}
+              src={userDetail?.avatar_company || userDetail?.avatar || avtDefault}
             />
+            {console.log("avatar",userDetail?.avatar_company)}
             <div className="ml-5">
               <p className="font-semibold text-[14px] text-primaryColor ">
                 {userDetail?.full_name}
@@ -213,7 +214,7 @@ const Header: React.FC = () => {
                 >
                   <Avatar
                     size="large"
-                    src={userDetail?.avatar || userDetail?.avatar_company || avtDefault}
+                    src={userDetail?.avatar_company|| userDetail?.avatar  || avtDefault}
                   />
                   {!hovered ? <ChevronDown /> : <ChevronUp />}
                 </li>
@@ -226,14 +227,14 @@ const Header: React.FC = () => {
                     variant="outline"
                     className="bg-white text-black hover:bg-gray-200 hover:!text-black"
                   >
-                    Login
+                    Quên mật khẩu?
                   </Button>
                   <Button
                     onClick={() => navigate("/register")}
                     style={{ backgroundColor: "#d64453" }}
                     className="text-white outline-none border-none hover:!text-black"
                   >
-                    Register
+                    Đăng ký
                   </Button>
                 </div>
               </div>

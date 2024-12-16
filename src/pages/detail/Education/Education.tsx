@@ -51,7 +51,7 @@ const EducationComponent = () => {
       setEducation(res.data);
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
@@ -70,7 +70,7 @@ const EducationComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
@@ -135,7 +135,7 @@ const EducationComponent = () => {
       return res;
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
@@ -196,7 +196,7 @@ const EducationComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }

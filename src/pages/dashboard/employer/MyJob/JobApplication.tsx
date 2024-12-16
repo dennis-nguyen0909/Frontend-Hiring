@@ -81,7 +81,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
         </Form.Item>
 
         <Button type="primary" htmlType="submit">
-          Save Changes
+          Lưu thay đổi
         </Button>
       </Form>
     );
@@ -126,18 +126,18 @@ const JobApplication: React.FC<IPropJobApplication> = ({
         }}
         layout="vertical"
       >
-        <Form.Item label="Company Name" name="recruiterCompany">
+        <Form.Item label="Tên công ty" name="recruiterCompany">
           <Input placeholder="Enter company name" disabled />
         </Form.Item>
         <Form.Item label="Recruiter Email" name="recruiterEmail">
           <Input type="email" placeholder="Enter recruiter email" disabled />
         </Form.Item>
 
-        <Form.Item label="Candidate Name" name="candidateName">
+        <Form.Item label="Ứng Viên Name" name="candidateName">
           <Input placeholder="Enter candidate name" disabled />
         </Form.Item>
 
-        <Form.Item label="Candidate Email" name="candidateEmail">
+        <Form.Item label="Ứng Viên Email" name="candidateEmail">
           <Input placeholder="Enter candidate name" disabled />
         </Form.Item>
 
@@ -214,7 +214,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           onClick={handleChangeHome}
           size={40}
         />
-        {/* <span className="hover:text-gray-700 cursor-pointer">Home</span>
+        {/* <span className="hover:text-gray-700 cursor-pointer">Trang chủ</span>
         {" / "}
         <span className="hover:text-gray-700 cursor-pointer">Job</span>
         {" / "}

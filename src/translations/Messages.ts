@@ -11,7 +11,7 @@ const enMessages = defineMessages({
   },
   home: {
     id: 'home',
-    defaultMessage: 'Home',
+    defaultMessage: 'Trang chủ',
   },
 });
 

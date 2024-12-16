@@ -19,7 +19,7 @@ const AddJobStep1 = ({ onNext }) => {
 const AddJobStep2 = ({ onNext }) => {
   return (
     <Form onFinish={onNext}>
-      <Form.Item label="Job Description" name="description">
+      <Form.Item label="Job Mô tả" name="description">
         <Input.TextArea />
       </Form.Item>
       <Form.Item>

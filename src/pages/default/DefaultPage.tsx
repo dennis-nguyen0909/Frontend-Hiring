@@ -90,17 +90,17 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   const tabs = [
     {
       id: "company",
-      label: "Company Info",
+      label: "Thông tin công ty",
       content: <CompanyInfo handleTabChange={handleTabChange} />,
     },
     {
       id: "founding",
-      label: "Founding Info",
+      label: "Thông tin thành lập",
       content: <FoundingInfo handleTabChange={handleTabChange} />,
     },
     {
       id: "social",
-      label: "Social Media Profile",
+      label: "Hồ sơ truyền thông xã hội",
       content: <SocialLinks handleTabChange={handleTabChange} />,
     },
     {
@@ -222,7 +222,7 @@ console.log("duydeptrai userid",userDetail?._id)
         </h2>
 
         <div className="grid grid-cols-2 gap-6">
-          {/* Candidate */}
+          {/* Ứng Viên */}
           <div
             className={`p-6 bg-white rounded-xl border shadow-md cursor-pointer flex items-center gap-4 transition-transform duration-300 ease-in-out ${
               selectedType === "user"
@@ -235,10 +235,10 @@ console.log("duydeptrai userid",userDetail?._id)
             onClick={() => handleTypeSelect("user")}
           >
             <User className="w-7 h-7 text-gray-600" />
-            <span className="text-lg font-medium text-gray-700">Candidate</span>
+            <span className="text-lg font-medium text-gray-700">Ứng Viên</span>
           </div>
 
-          {/* Employers */}
+          {/* Nhà Tuyển Dụng */}
           <div
             className={`p-6 bg-[#0A2647] rounded-xl shadow-md cursor-pointer flex items-center gap-4 transition-transform duration-300 ease-in-out ${
               selectedType === "employer"
@@ -251,7 +251,7 @@ console.log("duydeptrai userid",userDetail?._id)
             onClick={() => handleTypeSelect("employer")}
           >
             <BuildOutlined className="w-7 h-7 text-white" />
-            <span className="text-lg font-medium text-white">Employers</span>
+            <span className="text-lg font-medium text-white">Nhà Tuyển Dụng</span>
           </div>
         </div>
 

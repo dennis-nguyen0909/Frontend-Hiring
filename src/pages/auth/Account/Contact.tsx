@@ -56,7 +56,7 @@ const userDetail=useSelector(state=>state.user)
               <Input
                 type="email"
                 disabled
-                placeholder="Email address"
+                placeholder="Địa chỉ email"
                 prefix={<MailIcon className="h-4 w-4 text-gray-400" />}
                 className="w-full"
               />
@@ -66,12 +66,12 @@ const userDetail=useSelector(state=>state.user)
           <div>
             <Form.Item
               name="phone"
-              label="Phone"
+              label="Số điện thoại"
               rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
 
             >
               <Input
-                placeholder="Phone..."
+                placeholder="Số điện thoại..."
                 className="w-full"
               />
             </Form.Item>

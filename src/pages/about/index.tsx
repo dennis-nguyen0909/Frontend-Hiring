@@ -29,7 +29,7 @@ export default function AboutPage() {
             <StatsCard
               icon={<BuildingOfficeIcon className="w-6 h-6 text-blue-600" />}
               number="97,354"
-              label="Companies"
+              label="Công ty"
             />
             <StatsCard
               icon={<UserGroupIcon className="w-6 h-6 text-blue-600" />}
@@ -131,7 +131,7 @@ export default function AboutPage() {
       <section className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 gap-8">
           <CTACard
-            title="Become a Candidate"
+            title="Become a Ứng Viên"
             description="Find the most exciting jobs from top employers. Register now!"
             buttonText="Register Now"
             imageSrc="/placeholder.svg?height=200&width=300"

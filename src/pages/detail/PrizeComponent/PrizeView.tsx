@@ -112,7 +112,7 @@ export default function PrizeView() {
     const res = await PRIZE_API.create(params, userDetail.accessToken);
     if (res.data) {
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Thêm Giải thưởng thành công",
       });
       await handleGetPrizesByUserId({});
@@ -127,7 +127,7 @@ export default function PrizeView() {
       setImgUrl(res.data.url);
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Tải thất bại",
       });
     }
@@ -155,7 +155,7 @@ export default function PrizeView() {
     );
     if (res.data) {
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Cập nhật giải thưởng",
       });
       await handleGetPrizesByUserId({});
@@ -171,7 +171,7 @@ export default function PrizeView() {
     );
     if (+res.statusCode === 200) {
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Xóa thành công",
       });
       await handleGetPrizesByUserId({});

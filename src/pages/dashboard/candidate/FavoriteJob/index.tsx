@@ -100,7 +100,7 @@ const handleFavorite = async(jobId:string)=>{
           type={isExpired(record?.job_id?.expire_date) ? "default" : "primary"}
           className={isExpired(record?.job_id?.expire_date) ? "bg-gray-200 text-gray-500" : "bg-blue-500 hover:bg-blue-600"}
         >
-          {isExpired(record?.job_id?.expire_date) ? "Job Expired" : "Apply Now →"}
+          {isExpired(record?.job_id?.expire_date) ? "Job Đã hết hạn" : "Apply Now →"}
         </Button>
       ),
     },
@@ -136,7 +136,7 @@ const handleFavorite = async(jobId:string)=>{
     <div>
       <h1 className="text-2xl font-semibold mb-6">Công việc yêu thích ({jobFavorites.length || 0})</h1>
 
-      {/* Favorite Jobs Table */}
+      {/* Favorite Việc làm Table */}
      <LoadingComponent isLoading={loading}>
 
      <div className="bg-white rounded-lg shadow">

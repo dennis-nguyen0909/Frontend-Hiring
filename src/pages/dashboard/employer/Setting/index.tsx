@@ -15,7 +15,7 @@ export default function SettingEmployer() {
       label: (
         <span className="!text-black flex items-center gap-2">
           <UserOutlined />
-          Company Info
+          Thông tin công ty
         </span>
       ),
       content: (
@@ -27,7 +27,7 @@ export default function SettingEmployer() {
       label: (
         <span className="!text-black flex items-center gap-2">
           <GlobalOutlined />
-          Founding Info
+          Thông tin thành lập
         </span>
       ),
       content: (
@@ -39,7 +39,7 @@ export default function SettingEmployer() {
       label: (
         <span className="!text-black flex items-center gap-2">
           <WifiOutlined />
-          Social Media Profile
+          Hồ sơ truyền thông xã hội
         </span>
       ),
       content: (
@@ -51,7 +51,7 @@ export default function SettingEmployer() {
       label: (
         <span className="!text-black flex items-center gap-2">
           <SettingOutlined />
-          Account Setting
+          Cài đặt tài khoản
         </span>
       ),
       content: (
@@ -63,7 +63,7 @@ export default function SettingEmployer() {
   return (
     <div className="setting-employer p-6 bg-gray-50 min-h-screen">
       <div className=" mx-auto">
-        <h1 className="text-2xl font-semibold mb-6">Settings</h1>
+        <h1 className="text-2xl font-semibold mb-6">Cài đặt</h1>
         <div className="bg-white rounded-lg shadow-sm">
           <Tabs
             activeKey={activeTab}

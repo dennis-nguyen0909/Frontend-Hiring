@@ -44,6 +44,7 @@ export default function Founding() {
   }, []);
 
   const handleSave = () => {
+    setLoading(true)
     form.validateFields().then(async (values) => {
       const { year_of_establishment } = values;
       const params = {
@@ -58,7 +59,7 @@ export default function Founding() {
       );
       if (res.data) {
         notification.success({
-          message: "Notification",
+          message: "Thông báo",
           description: "Cập nhật thành công",
         });
         handleGetOrganization();
@@ -70,11 +71,12 @@ export default function Founding() {
         );
       } else {
         notification.error({
-          message: "Notification",
+          message: "Thông báo",
           description: res.response.data.message,
         });
       }
     });
+    setLoading(false)
   };
 
   useEffect(() => {
@@ -100,7 +102,7 @@ export default function Founding() {
        <LoadingComponentSkeleton isLoading={loading}>
        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <Form.Item
-            label="Organization Type"
+            label="Loại tổ chức"
             name="organization_type"
             rules={[
               { required: true, message: "Please select organization type" },
@@ -116,7 +118,7 @@ export default function Founding() {
           </Form.Item>
 
           <Form.Item
-            label="Industry Types"
+            label="Loại ngành"
             name="industry_type"
             rules={[{ required: true, message: "Please select industry type" }]}
           >
@@ -130,7 +132,7 @@ export default function Founding() {
           </Form.Item>
 
           <Form.Item
-            label="Team Size"
+            label="Quy mô thành viên"
             name="team_size"
             rules={[{ required: true, message: "Please select team size" }]}
           >
@@ -146,7 +148,7 @@ export default function Founding() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <Form.Item
-            label="Year of Establishment"
+            label="Năm thành lập"
             name="year_of_establishment"
             rules={[
               { required: true, message: "Please select establishment date" },
@@ -156,7 +158,7 @@ export default function Founding() {
           </Form.Item>
 
           <Form.Item
-            label="Company Website"
+            label="Trang web công ty"
             name="company_website"
             rules={[
               { required: true, message: "Please enter company_website URL" },
@@ -171,7 +173,7 @@ export default function Founding() {
         </div>
 
         <div className="mb-6">
-          <label className="block mb-2">Company Vision</label>
+          <label className="block mb-2">Tầm nhìn công ty</label>
           <Editor
             apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
             value={companyVision}
@@ -193,7 +195,7 @@ export default function Founding() {
         </div>
 
         <Button htmlType="submit" onClick={handleSave}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white mt-5">
-          Save Changes
+          Lưu thay đổi
         </Button>
        </LoadingComponentSkeleton>
       </Form>

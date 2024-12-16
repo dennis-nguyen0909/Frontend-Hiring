@@ -83,7 +83,7 @@ const ExperienceComponent = () => {
       return res;
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
@@ -97,7 +97,7 @@ const ExperienceComponent = () => {
       return res;
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
@@ -133,14 +133,14 @@ const ExperienceComponent = () => {
     if (res.data) {
       await handleGetWorkExperiencesByUser();
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Thêm kinh nghiệm thành công!",
       });
       await handleUpdateProfile();
       closeModal();
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: res.message,
       });
       closeModal();
@@ -160,7 +160,7 @@ const ExperienceComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
@@ -176,7 +176,7 @@ const ExperienceComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     }
@@ -222,14 +222,14 @@ const ExperienceComponent = () => {
     if (res.data) {
       await handleGetWorkExperiencesByUser();
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Xóa thành công",
       });
       closeModal();
       await handleUpdateProfile();
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Xóa thất bại ",
       });
       closeModal();
@@ -252,14 +252,14 @@ const ExperienceComponent = () => {
     if (res.data) {
       await handleGetWorkExperiencesByUser();
       notification.success({
-        message: "Notification",
+        message: "Thông báo",
         description: "Cập nhật thành công",
       });
       closeModal();
       await handleUpdateProfile();
     } else {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: "Cập nhật thất bại",
       });
       closeModal();

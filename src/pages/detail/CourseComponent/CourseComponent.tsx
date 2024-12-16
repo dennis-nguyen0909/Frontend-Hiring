@@ -119,7 +119,7 @@ export default function CourseView() {
         const res = await COURSE_API.create(params, userDetail.accessToken);
         if (res.data) {
             notification.success({
-                message: "Notification",
+                message: "Thông báo",
                 description: 'Thêm Khóa học thành công'
             });
             await handleGetCoursesByUserId({});
@@ -134,7 +134,7 @@ export default function CourseView() {
             setImgUrl(res.data.url);
         } else {
             notification.error({
-                message: "Notification",
+                message: "Thông báo",
                 description: 'Tải thất bại'
             });
         }
@@ -152,7 +152,7 @@ export default function CourseView() {
             const res = await COURSE_API.update(selectedId, params, userDetail.accessToken);
             if (res.data) {
                 notification.success({
-                    message: "Notification",
+                    message: "Thông báo",
                     description: 'Cập nhật thành công'
                 });
                await handleGetCoursesByUserId({});
@@ -162,7 +162,7 @@ export default function CourseView() {
             }
         } catch (error) {
                 notification.error({
-                    message: "Notification",
+                    message: "Thông báo",
                     description: error.response.data.message
                 })
         }
@@ -172,7 +172,7 @@ export default function CourseView() {
             const res = await COURSE_API.deleteByUser(selectedId,userDetail.accessToken)
             if(+res.statusCode === 200){
                 notification.success({
-                    message: "Notification",
+                    message: "Thông báo",
                     description:'Xóa thông báo'
                 })
                 await handleGetCoursesByUserId({})
@@ -182,7 +182,7 @@ export default function CourseView() {
             }
         }catch(error){
             notification.error({
-                message: "Notification",
+                message: "Thông báo",
                 description: error.response.data.message
             })
         }

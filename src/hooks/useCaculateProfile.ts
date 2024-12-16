@@ -6,7 +6,7 @@ const useCalculateUserProfile = (userId: string | undefined, accessToken: string
     queryKey: ["calculateUserProfile", userId], 
     queryFn: async () => {
       if (!userId || !accessToken) {
-        throw new Error("Missing userId or accessToken");
+        throw new Error("Missing userId hoặc accessToken");
       }
       const res = await USER_API.calculateProfileCompletion(userId, accessToken);
       return res.data;

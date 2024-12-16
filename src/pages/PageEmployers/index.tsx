@@ -104,7 +104,7 @@ export default function EmployeesPage() {
             <div className="flex-1">
               <Input
                 size="large"
-                placeholder="City, state or zip code"
+                placeholder="City, state hoặc zip code"
                 prefix={<MapPin className="text-gray-400" size={20} />}
                 className="w-full"
               />
@@ -113,7 +113,7 @@ export default function EmployeesPage() {
               onClick={onSearch}
               className="rounded-lg bg-blue-600 px-8 py-2 text-white transition-colors hover:bg-blue-700"
             >
-              Find Job
+              Tìm kiếm
             </button>
           </div>
 
@@ -166,7 +166,7 @@ export default function EmployeesPage() {
                 onClick={() => handleNavigate(company?._id)}
                 className="w-full rounded-lg bg-blue-50 py-2 text-center text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
               >
-                Open Position ({company?.jobs_ids?.length || 0})
+                Vị trí mở({company?.jobs_ids?.length || 0})
               </button>
             </div>
           ))}

@@ -76,8 +76,8 @@ const LoginPage = () => {
       });
       if (res.data) {
         notification.success({
-          message: "Notification",
-          description: "Register success",
+          message: "Thông báo",
+          description: "Đăng ký thành công",
         });
         navigate("/verify", {
           state: {
@@ -88,13 +88,13 @@ const LoginPage = () => {
       }
       if (+res.error_code === 400) {
         notification.error({
-          message: "Notification",
+          message: "Thông báo",
           description: res?.message,
         });
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       });
     } finally {
@@ -123,7 +123,7 @@ const LoginPage = () => {
 
         <Card className=" bg-gray-50 border-0 mt-10">
           <h2 className="text-center text-gray-500 text-lg mb-4">
-            CREATE ACCOUNT AS A
+            TẠO TÀI KHOẢN NHƯ MỘT
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <div
@@ -144,7 +144,7 @@ const LoginPage = () => {
               onClick={() => handleTypeSelect("user")}
             >
               <User className="w-6 h-6 text-gray-600" />
-              <span className="text-lg text-gray-600">Candidate</span>
+              <span className="text-lg text-gray-600">Ứng Viên</span>
             </div>
             <div
               className={`p-1 bg-[#0A2647] rounded-lg cursor-pointer flex items-center gap-3 ${
@@ -165,7 +165,7 @@ const LoginPage = () => {
               onClick={() => handleTypeSelect("employer")}
             >
               <Building className="w-6 h-6 text-white" />
-              <span className="text-lg text-white">Employers</span>
+              <span className="text-lg text-white">Nhà Tuyển Dụng</span>
             </div>
           </div>
         </Card>
@@ -180,7 +180,7 @@ const LoginPage = () => {
             >
               <Input
                 size="large"
-                placeholder="Full Name"
+                placeholder="Họ Tên"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
               />
@@ -208,7 +208,7 @@ const LoginPage = () => {
           >
             <Input
               size="large"
-              placeholder="Email address"
+              placeholder="Địa chỉ email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -266,19 +266,19 @@ const LoginPage = () => {
             // ]}
           >
             <Checkbox>
-              I've read and agree with your{" "}
-              <span className="text-blue-500">Terms of Services</span>
+              Tôi đã đọc và đồng ý với bạn{" "}
+              <span className="text-blue-500">Điều khoản dịch vụ</span>
             </Checkbox>
             <div className="mt-2">
               <span className="text-gray-500 text-1xl">
-                Already have an account?
+                Đã có tài khoản?
               </span>
               <span
                 onClick={handleNextRegister}
                 className="text-blue-500 cursor-pointer"
               >
                 {" "}
-                Log In
+                Quên mật khẩu?
               </span>
             </div>
           </Form.Item>
@@ -291,7 +291,7 @@ const LoginPage = () => {
               size="large"
               style={{ backgroundColor: "#0f65cc" }}
             >
-              Sign in{" "}
+              Đăng ký{" "}
               <ArrowRightOutlined
                 style={{ fontSize: "18px", fontWeight: "bold" }}
               />
@@ -300,7 +300,7 @@ const LoginPage = () => {
         </LoadingComponent>
         <div className="flex items-center justify-center mt-3 text-gray-500">
           <hr className="w-full h-0.95 bg-gray-500" />
-          <p className="mx-2">or</p>
+          <p className="mx-2">hoặc</p>
           <hr className="w-full h-0.95 bg-gray-500" />
         </div>
 
@@ -312,7 +312,7 @@ const LoginPage = () => {
             style={{ width: "240px" }}
           >
             <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
-            Sign up with Facebook
+            Đăng nhập với Facebook
           </Button>
           </a>
           <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
@@ -321,7 +321,7 @@ const LoginPage = () => {
             size="large"
             style={{ width: "240px" }}      >
             <img src={google} alt="Google" className="w-5 h-5 mr-2" />
-            Sign up with Google
+            Đăng nhập với Google
           </Button>
             </a>
         </div>

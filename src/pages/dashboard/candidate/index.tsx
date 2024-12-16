@@ -28,13 +28,13 @@ const DashboardCandidate = () => {
         dispatch(resetUser())
         navigate("/");
         notification.success({
-          message: "Notification",
+          message: "Thông báo",
           description: "Đăng xuất thành công",
         })
       }
     } catch (error) {
       notification.error({
-        message: "Notification",
+        message: "Thông báo",
         description: error.message,
       })
       console.error("Đăng xuất thất bại:", error);
@@ -53,7 +53,7 @@ const DashboardCandidate = () => {
             onClick={() => handleTabClick('overview')}
           >
             <FileTextOutlined className="mr-3" />
-            Overview
+            Tổng quan
           </a>
           <a 
             href="#"
@@ -61,7 +61,7 @@ const DashboardCandidate = () => {
             onClick={() => handleTabClick('appliedJobs')}
           >
             <FileTextOutlined className="mr-3" />
-            Applied Jobs
+            Applied Việc làm
           </a>
           <a 
             href="#"
@@ -69,7 +69,7 @@ const DashboardCandidate = () => {
             onClick={() => handleTabClick('favoriteJobs')}
           >
             <BookOutlined className="mr-3" />
-            Favorite Jobs
+            Favorite Việc làm
           </a>
           <a 
             href="#"
@@ -86,7 +86,7 @@ const DashboardCandidate = () => {
             onClick={() => handleTabClick('settings')}
           >
             <SettingOutlined className="mr-3" />
-            Settings
+            Cài đặt
           </a>
         </nav>
         <div className="absolute bottom-4 left-4 flex items-center text-gray-700">

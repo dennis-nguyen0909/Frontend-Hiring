@@ -73,9 +73,9 @@ export function Example() {
   const [activeStep, setActiveStep] = React.useState(3)
   
   const steps = [
-    { id: "company", label: "Company Info", icon: null },
-    { id: "founding", label: "Founding Info", icon: null },
-    { id: "social", label: "Social Media Profile", icon: null },
+    { id: "company", label: "Thông tin công ty", icon: null },
+    { id: "founding", label: "Thông tin thành lập", icon: null },
+    { id: "social", label: "Hồ sơ truyền thông xã hội", icon: null },
     { id: "contact", label: "Contact", icon: null },
     { id: "completed", label: "Completed", icon: null },
   ]

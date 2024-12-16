@@ -27,14 +27,14 @@ export default function AccountSettingEmployer() {
         const res = await userServices.updateUser(params);
         if(res.data){
           notification.success({
-            message: "Notification",
+            message: "Thông báo",
             description: "Cập nhật thống tin"
           })
           dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
         }
       } catch (error) {
         notification.error({
-          message: "Notification",
+          message: "Thông báo",
           description: error.message
         })
       }
@@ -53,13 +53,13 @@ export default function AccountSettingEmployer() {
         },userDetail.access_token)
         if(res.data){
           notification.success({
-            message: "Notification",
+            message: "Thông báo",
             description: "Cập nhật thống tin"
           })
           dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }))
         }else{
           notification.error({
-            message: "Notification",
+            message: "Thông báo",
             description: res.response.data.message
           })
         }
@@ -72,7 +72,7 @@ export default function AccountSettingEmployer() {
 
   const handleDeleteAccount = () => {
     setShowDeleteModal(false)
-    message.success('Account deleted successfully')
+    message.success('Tài khoản đã được đóng')
   }
 
   useEffect(()=>{
@@ -89,7 +89,7 @@ export default function AccountSettingEmployer() {
       label: (
         <span className="flex items-center gap-2">
           <UserOutlined />
-          Company Info
+          Thông tin công ty
         </span>
       ),
     },
@@ -98,7 +98,7 @@ export default function AccountSettingEmployer() {
       label: (
         <span className="flex items-center gap-2">
           <GlobalOutlined />
-          Founding Info
+          Thông tin thành lập
         </span>
       ),
     },
@@ -107,7 +107,7 @@ export default function AccountSettingEmployer() {
       label: (
         <span className="flex items-center gap-2">
           <WifiOutlined />
-          Social Media Profile
+          Hồ sơ truyền thông xã hội
         </span>
       ),
     },
@@ -116,7 +116,7 @@ export default function AccountSettingEmployer() {
       label: (
         <span className="flex items-center gap-2 text-blue-500">
           <SettingOutlined />
-          Account Setting
+          Cài đặt tài khoản
         </span>
       ),
     },
@@ -133,13 +133,11 @@ export default function AccountSettingEmployer() {
   }
 
   return (
-    <div className="p-6  min-h-screen">
+    <div className=" min-h-screen">
       <div className="mx-auto">
-        <h1 className="text-2xl font-semibold mb-6">Settings</h1>
-        
-        <div className="p-6">
+        <div>
             <div className="mb-8">
-              <h2 className="text-lg font-semibold mb-4">Contact Information</h2>
+              <h2 className="text-lg font-semibold mb-4">Thông tin liên hệ</h2>
               <Form
                 form={form}
                 layout="vertical"
@@ -163,9 +161,9 @@ export default function AccountSettingEmployer() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Form.Item
-                    label="Phone"
+                    label="Số điện thoại"
                     name="phone"
-                    rules={[{ required: true, message: 'Please enter phone number' }]}
+                    rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}
                   >
                     <Input
                       addonBefore={
@@ -175,7 +173,7 @@ export default function AccountSettingEmployer() {
                           <Select.Option value="+44">+44</Select.Option>
                         </Select>
                       }
-                      placeholder="Phone number..."
+                      placeholder="Số điện thoại..."
                     />
                   </Form.Item>
 
@@ -186,26 +184,26 @@ export default function AccountSettingEmployer() {
                     <Input
                     disabled
                       prefix={<MailOutlined className="text-gray-400" />}
-                      placeholder="Email address"
+                      placeholder="Địa chỉ email"
                     />
                   </Form.Item>
                 </div>
 
                 <Button htmlType="submit" onClick={handleSaveContact}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
-                    Save Changes
+                    Lưu thay đổi
                   </Button>
               </Form>
             </div>
 
             <div className="mb-8">
-              <h2 className="text-lg font-semibold mb-4">Change Password</h2>
+              <h2 className="text-lg font-semibold mb-4">Thay đổi mật khẩu</h2>
               <Form
                 form={passwordForm}
                 layout="vertical"
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Form.Item
-                    label="Current Password"
+                    label="Mật khẩu hiện tại"
                     name="current_password"
                     rules={[{ required: true, message: 'Please enter current password' }]}
                   >
@@ -218,7 +216,7 @@ export default function AccountSettingEmployer() {
                   </Form.Item>
 
                   <Form.Item
-                    label="New Password"
+                    label="Mật khẩu mới"
                     name="new_password"
                     rules={[{ required: true, message: 'Please enter new password' }]}
                   >
@@ -232,38 +230,37 @@ export default function AccountSettingEmployer() {
                 </div>
 
                 <Button  onClick={handleChangePassword}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
-                    Save Changes
+                    Lưu thay đổi
                   </Button>
               </Form>
             </div>
 
             <div>
-              <h2 className="text-lg font-semibold mb-4">Delete Your Company</h2>
+              <h2 className="text-lg font-semibold mb-4">Xóa công ty của bạn</h2>
               <p className="text-gray-500 mb-4">
-                If you delete your company, there is no going back. Please be certain. All information 
-                will be removed from the platform. You will be abandoned from all the services of jobplat.com
+              Nếu bạn xóa công ty của mình, bạn sẽ không thể quay trở lại. Xin hãy chắc chắn. Tất cả thông tin sẽ bị xóa khỏi nền tảng. Bạn sẽ bị loại khỏi tất cả các dịch vụ của jobplat.com
               </p>
               <Button 
                 danger
                 icon={<DeleteOutlined />}
                 onClick={() => setShowDeleteModal(true)}
               >
-                Close Account
+                Đóng tài khoản
               </Button>
             </div>
           </div>
       </div>
 
       <Modal
-        title="Confirm Account Deletion"
+        title="Xác nhận xóa tài khoản"
         open={showDeleteModal}
         onOk={handleDeleteAccount}
         onCancel={() => setShowDeleteModal(false)}
-        okText="Yes, Delete Account"
-        cancelText="Cancel"
+        okText="Có, Xóa tài khoản"
+        cancelText="Hủy"
         okButtonProps={{ danger: true }}
       >
-        <p>Are you sure you want to delete your company account? This action cannot be undone.</p>
+        <p>Bạn có chắc chắn muốn xóa tài khoản công ty của mình không? Không thể hoàn tác hành động này.</p>
       </Modal>
     </div>
   )

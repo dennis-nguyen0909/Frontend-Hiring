@@ -144,7 +144,7 @@ const Personal = () => {
   const popoverContent = (
     <div className="flex flex-col gap-1">
       <Button>Edit</Button>
-      <Button onClick={handleDeleteCv}>Delete</Button>
+      <Button onClick={handleDeleteCv}>Xóa</Button>
     </div>
   );
   const [avatar, setAvatar] = useState(userDetail?.avatar || '');
@@ -224,7 +224,7 @@ const Personal = () => {
                   <div className="text-center">
                     <UploadOutlined className="text-2xl mb-1" />
                     <div className="text-xs text-gray-500">
-                      Browse photo or drop here
+                      Browse photo hoặc drop here
                     </div>
                     <div className="text-xs text-gray-400">
                       A photo larger than 400 pixels works best. Max photo size
@@ -373,7 +373,7 @@ const Personal = () => {
           </div>
         <Form.Item>
         <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
-          Save Changes
+          Lưu thay đổi
         </Button>
         </Form.Item>
       </Form>
@@ -421,7 +421,7 @@ const Personal = () => {
           <div onClick={() => navigate("/upload-cv")}>
             <div className="font-medium">Add CV/Resume</div>
             <div className="text-sm text-gray-500">
-              Browse file or drop here, only pdf
+              Browse file hoặc drop here, only pdf
             </div>
           </div>
         </div>
