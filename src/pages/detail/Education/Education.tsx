@@ -26,6 +26,7 @@ interface typePostEducation {
   end_date?: string;
   user_id: string;
   _id: string;
+  description:string;
 }
 
 const EducationComponent = () => {
@@ -249,17 +250,19 @@ const EducationComponent = () => {
   useEffect(() => {
     if (education) {
       form.setFieldsValue({
-        school: education.school,
-        major: education.major,
-        start_date: education.start_date ? moment(education.start_date) : null,
-        end_date: education.end_date ? moment(education.end_date) : null,
+        school: education?.school,
+        major: education?.major,
+        start_date: education?.start_date ? moment(education?.start_date) : null,
+        end_date: education?.end_date ? moment(education?.end_date) : null,
         currently_studying:
-          education.end_date === null ||
-          !education.end_date ||
-          education.end_date === undefined
+          education?.end_date === null ||
+          !education?.end_date ||
+          education?.end_date === undefined
             ? true
             : false,
+        description:education?.description
       });
+      setIsCurrentlyStudying(education?.currently_studying)
     }
   }, [education,selectedEducationId]);
 
@@ -326,41 +329,40 @@ const EducationComponent = () => {
 
         <Form.Item>
           {actionType === "create" ? (
-            <Button
+            <div className="w-full">
+              <Button
               type="primary"
               loading={loading}
               htmlType="submit"
-              style={{
-                width: "100%",
-                backgroundColor: "#4CAF50",
-                borderColor: "#4CAF50",
-              }}
+              className="!bg-primaryColor w-full"
             >
               Thêm
             </Button>
+            </div>
           ) : (
             <div className="flex items-center justify-between gap-4">
               <Button
               className="!bg-primaryColorH text-white"
                 danger
-                onClick={()=>handleDeleteEducation()}
+                onClick={()=>handleUpdateEducation()}
                 style={{
                   width: "100%",
                 }}
               >
-                Xóa
+                Cập nhật
               </Button>
               <Button
                 type="primary"
                 loading={loading}
-                onClick={()=>handleUpdateEducation()}
+                onClick={()=>handleDeleteEducation()}
                 style={{
                   width: "100%",
                   backgroundColor: "black",
                   borderColor: "#4CAF50",
+                  border:'none'
                 }}
               >
-                Cập nhật
+                Xóa
               </Button>
             </div>
           )}
@@ -427,9 +429,9 @@ const EducationComponent = () => {
         renderBody={renderBody}
         title={
           actionType === "create"
-            ? "Thêm học vấn"
+            ? "Học vấn"
             : actionType === "edit"
-            ? "Chỉnh sửa học vấn"
+            ? "Cập nhật"
             : "Xóa học vấn"
         }
       />

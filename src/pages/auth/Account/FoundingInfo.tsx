@@ -73,6 +73,13 @@ const FoundingInfo = ({ handleTabChange }) => {
     });
   };
 
+  const validateCompanyVision = (_, value) => {
+    if (!value.level.content || value.level.content.trim() === "") {
+      return Promise.reject(new Error("Please enter company vision"));
+    }
+    return Promise.resolve();
+  };
+
   useEffect(() => {
     if (organization) {
       form.setFieldsValue({
@@ -170,30 +177,35 @@ const FoundingInfo = ({ handleTabChange }) => {
       </div>
 
       <div className="mb-6">
-        <label className="block mb-2">Company Vision</label>
-        <Editor
-          value={companyVision}
-          apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
-          onEditorChange={(content) => setCompanyVision(content)}
-          init={{
-            height: 200,
-            menubar: false,
-            plugins: [
-              "advlist autolink lists link image charmap print preview anchor",
-              "searchreplace visualblocks code fullscreen",
-              "insertdatetime media table paste code help wordcount",
-            ],
-            toolbar:
-              "bold italic underline strikethrough | link | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat",
-            content_style:
-              "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-          }}
-        />
+        <Form.Item
+          label="Company Vision"
+          name="company_vision"
+          required
+          rules={[{ validator: validateCompanyVision }]}
+        >
+          <Editor
+            value={companyVision}
+            apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
+            onEditorChange={(content) => setCompanyVision(content)}
+            init={{
+              height: 200,
+              menubar: false,
+              plugins: [
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table paste code help wordcount",
+              ],
+              toolbar:
+                "bold italic underline strikethrough | link | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat",
+              content_style:
+                "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+            }}
+          />
+        </Form.Item>
       </div>
-
-      <Button type="primary" onClick={handleSave} className="bg-blue-500">
-        Save Changes
-      </Button>
+      <Button htmlType="submit" onClick={handleSave}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+          Save & Next
+        </Button>
       </LoadingComponentSkeleton>
     </Form>
   );

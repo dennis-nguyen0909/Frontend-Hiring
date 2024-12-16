@@ -191,13 +191,9 @@ export default function AccountSettingEmployer() {
                   </Form.Item>
                 </div>
 
-                <Button 
-                  type="primary" 
-                  onClick={handleSaveContact}
-                  className="bg-blue-500"
-                >
-                  Save Changes
-                </Button>
+                <Button htmlType="submit" onClick={handleSaveContact}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+                    Save Changes
+                  </Button>
               </Form>
             </div>
 
@@ -235,13 +231,9 @@ export default function AccountSettingEmployer() {
                   </Form.Item>
                 </div>
 
-                <Button 
-                  type="primary" 
-                  onClick={handleChangePassword}
-                  className="bg-blue-500"
-                >
-                  Change Password
-                </Button>
+                <Button  onClick={handleChangePassword}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+                    Save Changes
+                  </Button>
               </Form>
             </div>
 

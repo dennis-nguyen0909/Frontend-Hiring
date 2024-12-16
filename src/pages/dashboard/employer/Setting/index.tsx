@@ -13,7 +13,7 @@ export default function SettingEmployer() {
     {
       key: '1',
       label: (
-        <span className="flex items-center gap-2">
+        <span className="!text-black flex items-center gap-2">
           <UserOutlined />
           Company Info
         </span>
@@ -25,7 +25,7 @@ export default function SettingEmployer() {
     {
       key: '2',
       label: (
-        <span className="flex items-center gap-2">
+        <span className="!text-black flex items-center gap-2">
           <GlobalOutlined />
           Founding Info
         </span>
@@ -37,7 +37,7 @@ export default function SettingEmployer() {
     {
       key: '3',
       label: (
-        <span className="flex items-center gap-2">
+        <span className="!text-black flex items-center gap-2">
           <WifiOutlined />
           Social Media Profile
         </span>
@@ -49,7 +49,7 @@ export default function SettingEmployer() {
     {
       key: '4',
       label: (
-        <span className="flex items-center gap-2">
+        <span className="!text-black flex items-center gap-2">
           <SettingOutlined />
           Account Setting
         </span>
@@ -61,7 +61,7 @@ export default function SettingEmployer() {
   ]
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="setting-employer p-6 bg-gray-50 min-h-screen">
       <div className=" mx-auto">
         <h1 className="text-2xl font-semibold mb-6">Settings</h1>
         <div className="bg-white rounded-lg shadow-sm">
@@ -72,7 +72,7 @@ export default function SettingEmployer() {
               key,
               label,
             }))}
-            className="px-6 pt-4"
+            className="px-6 pt-4 !text-primaryColor"
           />
           <div className="p-6">
             {tabItems.find((item) => item.key === activeTab)?.content}

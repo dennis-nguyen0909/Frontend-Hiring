@@ -6,14 +6,13 @@ import moment from 'moment';
 const { Title, Text } = Typography;
 
 interface CourseProps {
-  course_name: string;
-  organization_name: string;
-  description: string;
-  start_date: Date;
-  end_date: Date;
-  
-  course_link?: string;
-  course_image?: string;
+  course_name: string | undefined;
+  organization_name: string | undefined;
+  description: string | undefined;
+  start_date: Date | undefined;
+  end_date: Date | undefined;
+  course_link?: string | undefined;
+  course_image?: string | undefined;
   onEdit?: () => void;
 }
 
@@ -27,6 +26,7 @@ export default function Course({
   course_image,
   onEdit,
 }: CourseProps) {
+  console.log("course_image",course_image)
   return (
     <div>
       <Card

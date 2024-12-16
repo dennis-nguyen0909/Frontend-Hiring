@@ -5,6 +5,7 @@ import {
   LinkOutlined,
 } from "@ant-design/icons";
 import {
+  Avatar,
   Button,
   Card,
   DatePicker,
@@ -50,8 +51,11 @@ const ProjectComponent = () => {
   const userDetail = useSelector((state) => state.user);
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedId, setSelectedId] = useState<string>("");
-  const [loading,setLoading]=useState<boolean>(false)
-  const {handleUpdateProfile}= useCalculateUserProfile(userDetail?._id,userDetail?.access_token)
+  const [loading, setLoading] = useState<boolean>(false);
+  const { handleUpdateProfile } = useCalculateUserProfile(
+    userDetail?._id,
+    userDetail?.access_token
+  );
 
   const handleGetProjectsByUserId = async ({ current = 1, pageSize = 10 }) => {
     try {
@@ -109,13 +113,14 @@ const ProjectComponent = () => {
     form.resetFields();
     setLink("");
     setImgUrl("");
+    setSelectedId('')
   };
   useEffect(() => {
     handleGetProjectsByUserId({});
   }, []);
   const onFileChange = async (file: any) => {
     try {
-        setLoading(true)
+      setLoading(true);
       const res = await MediaApi.postMedia(file, userDetail?.access_token);
       if (res.data.url) {
         setImgUrl(res.data.url);
@@ -126,217 +131,221 @@ const ProjectComponent = () => {
         description: "An error occurred while uploading the file.",
       });
     }
-    setLoading(false)
+    setLoading(false);
   };
   const onUpdate = async () => {
     try {
-        const values = form.getFieldsValue();
-        const params = {
-          ...values,
-          project_image: imgUrl || null,
-          project_link: link || null,
-        };
-        const res = await PROJECT_API.update(selectedId, params, userDetail.access_token);
-        if (res.data) {
-          notification.success({
-            message: "Notification",
-            description: "Cập nhật danh sách",
-          });
-         await  handleGetProjectsByUserId({});
-          closeModal();
-        await handleUpdateProfile();
-
-        }
-    }catch (error) {
-        notification.error({
-            message: "Notification",
-            description:'An error occurred while updating the project.'
-        })
-    }
-  };
-  const handletGetDetail = async (id:string) => {
-    try {
-      const res = await PROJECT_API.findById(id,userDetail.access_token)
-      setSelectedId(id)
-      if(res.data){
-        form.setFieldsValue({
-            project_name: res.data.project_name || '',
-            customer_name: res.data.customer_name || '',
-            team_number: res.data.team_number || '',
-            location: res.data.location || '',
-            mission: res.data.mission || '',
-            technology: res.data.technology || '',
-            project_time: [
-              res.data.start_date ? moment(res.data.start_date) : null,
-              res.data.end_date ? moment(res.data.end_date) : null
-            ],
-            project_link: res.data.project_link || '',
-            description: res.data.description || ''
-        })
-        setLink(res.data.project_link);
-        setImgUrl(res.data.project_image);
-    }
-    }catch (error) {
-        notification.error({
-            message: "Notification",
-            description:'An error occurred while getting the project.'
-        })
-    }
-}
-  useEffect(() => {
-     if(selectedId){
-     handletGetDetail(selectedId)
-     } 
-  },[selectedId])
-  const onDelete = async (id:string) => {
-    try {
-      const res = await PROJECT_API.deleteByUser(id,userDetail.access_token)
-      if(+res.statusCode === 200){
+      const values = form.getFieldsValue();
+      const params = {
+        ...values,
+        project_image: imgUrl || null,
+        project_link: link || null,
+      };
+      const res = await PROJECT_API.update(
+        selectedId,
+        params,
+        userDetail.access_token
+      );
+      if (res.data) {
         notification.success({
-            message: "Notification",
-            description:'Xóa dự án'
-        })
-        await handleGetProjectsByUserId({})
+          message: "Notification",
+          description: "Cập nhật danh sách",
+        });
+        await handleGetProjectsByUserId({});
         closeModal();
         await handleUpdateProfile();
-
       }
     } catch (error) {
-        notification.error({
-            message: "Notification",
-            description:'An error occurred while deleting the project.'
-        })
+      notification.error({
+        message: "Notification",
+        description: "An error occurred while updating the project.",
+      });
+    }
+  };
+  const handletGetDetail = async (id: string) => {
+    try {
+      const res = await PROJECT_API.findById(id, userDetail.access_token);
+      setSelectedId(id);
+      if (res.data) {
+        form.setFieldsValue({
+          project_name: res.data.project_name || "",
+          customer_name: res.data.customer_name || "",
+          team_number: res.data.team_number || "",
+          location: res.data.location || "",
+          mission: res.data.mission || "",
+          technology: res.data.technology || "",
+          project_time: [
+            res.data.start_date ? moment(res.data.start_date) : null,
+            res.data.end_date ? moment(res.data.end_date) : null,
+          ],
+          project_link: res.data.project_link || "",
+          description: res.data.description || "",
+        });
+        setLink(res.data.project_link);
+        setImgUrl(res.data.project_image);
+      }
+    } catch (error) {
+      notification.error({
+        message: "Notification",
+        description: "An error occurred while getting the project.",
+      });
+    }
+  };
+  useEffect(() => {
+    if (selectedId) {
+      handletGetDetail(selectedId);
+    }
+  }, [selectedId]);
+  const onDelete = async (id: string) => {
+    try {
+      const res = await PROJECT_API.deleteByUser(id, userDetail.access_token);
+      if (+res.statusCode === 200) {
+        notification.success({
+          message: "Notification",
+          description: "Xóa dự án",
+        });
+        await handleGetProjectsByUserId({});
+        closeModal();
+        await handleUpdateProfile();
+      }
+    } catch (error) {
+      notification.error({
+        message: "Notification",
+        description: "An error occurred while deleting the project.",
+      });
     }
   };
   const renderBody = () => {
     return (
-    <LoadingComponent isLoading={loading}>
-          <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        className="space-y-4"
-      >
-        <Form.Item
-          label="Tên dự án"
-          name="project_name"
-          rules={[{ required: true, message: "Vui lòng nhập tên dự án" }]}
+      <LoadingComponent isLoading={loading}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          className="space-y-4"
         >
-          <Input placeholder="Tên dự án" className="w-full" />
-        </Form.Item>
+          <Form.Item
+            label="Tên dự án"
+            name="project_name"
+            rules={[{ required: true, message: "Vui lòng nhập tên dự án" }]}
+          >
+            <Input placeholder="Tên dự án" className="w-full" />
+          </Form.Item>
 
-        <Form.Item
-          label="Khách hàng"
-          name="customer_name"
-          rules={[{ required: true, message: "Vui lòng nhập tên khách hàng" }]}
-        >
-          <Input placeholder="Tên khách hàng" />
-        </Form.Item>
+          <Form.Item
+            label="Khách hàng"
+            name="customer_name"
+            rules={[
+              { required: true, message: "Vui lòng nhập tên khách hàng" },
+            ]}
+          >
+            <Input placeholder="Tên khách hàng" />
+          </Form.Item>
 
-        <Form.Item
-          label="Số thành viên"
-          name="team_number"
-          rules={[{ required: true, message: "Vui lòng nhập số thành viên" }]}
-        >
-          <InputNumber
-            placeholder="Số thành viên tham gia dự án"
-            className="w-full"
-          />
-        </Form.Item>
+          <Form.Item
+            label="Số thành viên"
+            name="team_number"
+            rules={[{ required: true, message: "Vui lòng nhập số thành viên" }]}
+          >
+            <InputNumber
+              placeholder="Số thành viên tham gia dự án"
+              className="w-full"
+            />
+          </Form.Item>
 
-        <Form.Item
-          label="Vị trí"
-          name="location"
-          rules={[{ required: true, message: "Vui lòng nhập vị trí" }]}
-        >
-          <Input placeholder="Vị trí của bạn trong dự án" />
-        </Form.Item>
+          <Form.Item
+            label="Vị trí"
+            name="location"
+            rules={[{ required: true, message: "Vui lòng nhập vị trí" }]}
+          >
+            <Input placeholder="Vị trí của bạn trong dự án" />
+          </Form.Item>
 
-        <Form.Item
-          label="Nhiệm vụ"
-          name="mission"
-          rules={[{ required: true, message: "Vui lòng nhập nhiệm vụ" }]}
-        >
-          <Input placeholder="Nhiệm vụ của bạn trong dự án" />
-        </Form.Item>
+          <Form.Item
+            label="Nhiệm vụ"
+            name="mission"
+            rules={[{ required: true, message: "Vui lòng nhập nhiệm vụ" }]}
+          >
+            <Input placeholder="Nhiệm vụ của bạn trong dự án" />
+          </Form.Item>
 
-        <Form.Item label="Công nghệ sử dụng" name="technology">
-          <Input placeholder="Công nghệ được sử dụng trong dự án" />
-        </Form.Item>
+          <Form.Item label="Công nghệ sử dụng" name="technology">
+            <Input placeholder="Công nghệ được sử dụng trong dự án" />
+          </Form.Item>
 
-        <Form.Item
-          label="Thời gian"
-          name="project_time"
-          rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
-        >
-          <DatePicker.RangePicker
-            className="w-full"
-            placeholder={["Bắt đầu", "Kết thúc"]}
-          />
-        </Form.Item>
+          <Form.Item
+            label="Thời gian"
+            name="project_time"
+            rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
+          >
+            <DatePicker.RangePicker
+              className="w-full"
+              placeholder={["Bắt đầu", "Kết thúc"]}
+            />
+          </Form.Item>
 
-        <Form.Item label="Mô tả chi tiết" name="description">
-          <TextArea rows={4} placeholder="Mô tả chi tiết dự án" />
-        </Form.Item>
+          <Form.Item label="Mô tả chi tiết" name="description">
+            <TextArea rows={4} placeholder="Mô tả chi tiết dự án" />
+          </Form.Item>
 
-        <Form.Item label="Hình ảnh dự án" name="project_image">
-          <UploadForm
-            link={link}
-            setLink={setLink}
-            onFileChange={onFileChange}
-          />
-        </Form.Item>
+          <Form.Item label="Hình ảnh dự án" name="project_image">
+            <UploadForm
+              link={link}
+              setLink={setLink}
+              onFileChange={onFileChange}
+            />
+          </Form.Item>
 
-        <Form.Item className="flex justify-end">
-          {type === "create" && (
-            <Button type="primary" htmlType="submit">
-              Thêm{" "}
-            </Button>
-          )}
-          {type === "edit" && (
-            <div className="flex justify-between gap-4">
-              <Button
-                type="primary"
-                onClick={onUpdate}
-                className="bg-green-500 hover:bg-green-600 text-white px-8 w-full"
-              >
-                Cập nhật
-              </Button>
-              <Button
-                type="danger"
-                onClick={() => onDelete()}
-                className="bg-primaryColor hover:bg-green-600 text-white px-8 w-full"
-              >
-                Xóa
-              </Button>
-            </div>
-          )}
-        </Form.Item>
-      </Form>
-    </LoadingComponent>
+          <Form.Item className="flex justify-end">
+            {type === "create" && (
+                    <Button htmlType="submit"   className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white mt-5 w-full !cursor-pointer" >Thêm</Button>
+            )}
+            {type === "edit" && (
+              <div className="flex justify-between gap-4">
+                  <Button htmlType="submit"   className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white w-full !cursor-pointer" onClick={onUpdate}>Cập nhật</Button>
+                  <Button htmlType="submit"   className="px-4 !bg-primaryColor !text-[#201527] !border-none !hover:text-white w-full !cursor-pointer" onClick={()=>onDelete(selectedId)}>Xóa</Button>
+              </div>
+            )}
+          </Form.Item>
+        </Form>
+      </LoadingComponent>
     );
   };
 
   const showModal = (type: string, id?: string) => {
     setVisible(true);
     setType(type);
-   if(id){
-    handletGetDetail(id)
-   }
+    if (id) {
+      handletGetDetail(id);
+    }
   };
   return (
     <div>
       <Card className="w-full">
-        <div className="flex gap-5 ml-[30px] items-center">
-          <ProjectorIcon className="text-primaryColor" />
-          <h2 className="text-[18px] font-semibold">Dự án</h2>
+        <div className="flex gap-5 ml-[30px] items-center justify-between">
+          <div className="flex items-center gap-1">
+            <ProjectorIcon className="text-primaryColor" />
+            <h2 className="text-[15px] font-semibold">Dự án</h2>
+          </div>
+          <div className="mr-[25px]">
+            <Button
+              onClick={() => showModal("create")}
+              className="mt-4"
+            >
+              Thêm mục
+            </Button>
+          </div>
         </div>
         {projects.length > 0 ? (
-          <Card className="p-4 mt-6">
+          <Card className=" mt-6 !border-none">
             {projects.map((project: Project) => (
-              <Card key={project._id} className="mb-4">
+              <Card key={project._id} className="mb-4 ">
                 <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-4">
                   <div>
+                   {project?.project_image &&  <Avatar shape="square" size={64} src={project?.project_image} alt={project?.project_image} />}
+                  </div>
+                    <div>
                     <h3 className="font-semibold text-lg">
                       {project.project_name}
                     </h3>
@@ -346,15 +355,16 @@ const ProjectComponent = () => {
                       - {moment(project.end_date).format("MM/YYYY")}
                     </p>
                     <p>Nhiệm vụ: {project.mission}</p>
+                    </div>
                   </div>
                   <div className="flex space-x-2">
                     <Button
                       icon={<EditOutlined />}
-                      onClick={() => showModal("edit", project._id)}
+                      onClick={() => showModal("edit", project?._id)}
                     />
                     <Popconfirm
                       title="Bạn có chắc muốn xóa dự án này?"
-                        onConfirm={()=>onDelete(project._id)}
+                      onConfirm={() => onDelete(project?._id)}
                       okText="Xóa"
                       cancelText="Hủy"
                     >
@@ -366,24 +376,12 @@ const ProjectComponent = () => {
             ))}
           </Card>
         ) : (
-          <Card className="flex items-center flex-row justify-between p-6">
-            <div>
+          <Card className=" !border-none flex items-center  p-6">
+           <div className="border-gray-50 border-e-2">
               <p className="text-muted-foreground">
                 Bạn có thể mô tả rõ hơn trong CV bằng cách chèn thêm hình ảnh
                 hoặc liên kết mô tả dự án.
               </p>
-            </div>
-            <div className=" flex items-center justify-between mt-10">
-              <Button
-                onClick={() => showModal("create")}
-                className="mt-4 border-green-500 text-green-500 hover:bg-green-50 hover:text-green-600"
-              >
-                Thêm mục
-              </Button>
-              <LineChartOutlined
-                size={30}
-                className="text-green-500 text-3xl"
-              />
             </div>
           </Card>
         )}
@@ -395,7 +393,7 @@ const ProjectComponent = () => {
         visible={visible}
         onCancel={closeModal}
         onOk={closeModal}
-        title={type === "create" ? "Thêm dự án" : "Sửa dự án"}
+        title={type === "create" ? "Dự án" : "Cập nhật"}
         renderBody={renderBody}
       />
     </div>

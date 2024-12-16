@@ -185,9 +185,9 @@ const ContactForm = () => {
             </div>
         </div>
         <Form.Item>
-            <Button type="primary" htmlType="submit" className="mt-4 bg-blue-500 hover:bg-blue-600">
-                Save Changes
-            </Button>
+        <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+          Save
+        </Button>
         </Form.Item>
         {/* Notifications */}
         <div>

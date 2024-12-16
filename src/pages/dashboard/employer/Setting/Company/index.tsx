@@ -173,6 +173,8 @@ const CompanyInfo = ()=>{
               src={userDetail?.banner_company}
               alt="Banner"
               preview={false}
+              width={'60%'}
+              height={'80%'}
             />
           ):(
             <Form.Item name="banner">
@@ -258,13 +260,9 @@ const CompanyInfo = ()=>{
         </div>
 
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="bg-blue-500"
-          >
-            Save Changes
-          </Button>
+        <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+          Save & Next
+        </Button>
         </Form.Item>
       </div>
     </Form>

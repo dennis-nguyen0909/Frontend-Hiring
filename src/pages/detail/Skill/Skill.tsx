@@ -198,24 +198,25 @@ const SkillComponent = () => {
               <div className="flex items-center justify-between gap-4">
                 <Button
                   className="!bg-primaryColorH text-white"
-                  onClick={handleDeleteSkill}
+                  onClick={handleUpdateSkill}
                   danger
                   style={{
                     width: "100%",
                   }}
                 >
-                  Xóa
+                  Cập nhật
                 </Button>
                 <Button
                   type="primary"
-                  onClick={handleUpdateSkill}
+                  onClick={handleDeleteSkill}
                   style={{
                     width: "100%",
                     backgroundColor: "black",
                     borderColor: "#4CAF50",
+                    border:'none'
                   }}
                 >
-                  Cập nhật
+                  Xóa
                 </Button>
               </div>
             )}
@@ -296,9 +297,9 @@ const SkillComponent = () => {
         renderBody={renderBody}
         title={
           actionType === "create"
-            ? "Thêm Kỹ năng"
+            ? "Kỹ năng"
             : actionType === "edit"
-            ? "Chỉnh sửa Kỹ năng"
+            ? "Cập nhật"
             : "Xóa Kỹ năng"
         }
       />

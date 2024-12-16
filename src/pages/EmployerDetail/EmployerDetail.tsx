@@ -83,7 +83,7 @@ export default function EmployerDetail() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <LoadingComponentSkeleton isLoading={true}>
+      <LoadingComponentSkeleton isLoading={loading}>
       <div className="relative h-64 w-full overflow-hidden">
         <Image
           height={500}

@@ -11,6 +11,7 @@ import Course from './Course';
 import { BookOpen } from 'lucide-react';
 import TextArea from 'antd/es/input/TextArea';
 import useCalculateUserProfile from '../../../hooks/useCaculateProfile';
+import LoadingComponent from '../../../components/Loading/LoadingComponent';
 
 interface Course {
     _id: string;
@@ -31,6 +32,7 @@ export default function CourseView() {
     const [imgUrl, setImgUrl] = useState<string>('');
     const [visible, setVisible] = useState(false);
     const [link, setLink] = useState<string>('');
+    const [loading,setLoading]=useState<boolean>(false)
     const [selectedId, setSelectedId] = useState<string>('');
    const {handleUpdateProfile}= useCalculateUserProfile(userDetail?._id,userDetail?.access_token)
 
@@ -63,6 +65,7 @@ export default function CourseView() {
         form.resetFields();
         setLink('');
         setImgUrl('');
+        setSelectedId('')
     };
 
 
@@ -90,7 +93,7 @@ export default function CourseView() {
     const handleOpenModel = (type: string, id?: string) => {
         setType(type);
         setVisible(!visible);
-        setSelectedId(id);
+        setSelectedId(id || '');
     };
 
     const [form] = Form.useForm();
@@ -124,8 +127,8 @@ export default function CourseView() {
             await handleUpdateProfile();
         }
     };
-
     const handleOnchangeFile = async (file: File) => {
+        setLoading(true)
         const res = await MediaApi.postMedia(file, userDetail.access_token);
         if (res.data.url) {
             setImgUrl(res.data.url);
@@ -135,6 +138,7 @@ export default function CourseView() {
                 description: 'Tải thất bại'
             });
         }
+        setLoading(false)
     };
 
     const onUpdate = async () => {
@@ -186,15 +190,13 @@ export default function CourseView() {
 
     const renderBody = () => {
         return (
-            <div className="p-6">
-                <h2 className="text-xl font-semibold mb-6">Khóa học</h2>
-                
                 <Form
                     form={form}
                     layout="vertical"
                     onFinish={onSubmit}
                 >
-                    <Form.Item
+                   <LoadingComponent isLoading={loading}>
+                   <Form.Item
                         label={<span>Tên khóa học <span className="text-red-500">*</span></span>}
                         name="course_name"
                         rules={[{ required: true, message: 'Vui lòng nhập tên khóa học' }]}
@@ -221,6 +223,8 @@ export default function CourseView() {
                     <Form.Item
                         label="Ngày kết thúc"
                         name="end_date"
+                        rules={[{ required: true, message: 'Vui lòng nhập ngày kết thúc' }]}
+
                     >
                         <Input type="date" />
                     </Form.Item>
@@ -237,9 +241,7 @@ export default function CourseView() {
                     </div>
 
                     {type === 'create' && (
-                        <Button type="primary" htmlType="submit" className="w-full">
-                            Thêm
-                        </Button>
+                    <Button htmlType="submit"   className="px-4 !bg-primaryColor !text-[#201527] !border-none !hover:text-white w-full !cursor-pointer">Thêm</Button>
                     )}
                     {type === 'edit' && (
                         <div className='flex justify-between gap-2'>
@@ -251,8 +253,9 @@ export default function CourseView() {
                         </Button>
                         </div>
                     )}
+                   </LoadingComponent>
                 </Form>
-            </div>
+
         );
     };
 
@@ -271,8 +274,14 @@ export default function CourseView() {
                   </div>
                     {courses?.map((course) => (
                         <Course
-                            // key={course._id}
                             {...course}
+                            start_date={course.start_date}
+                            end_date={course.end_date}
+                            course_name={course.course_name}
+                            organization_name={course.organization_name}
+                            description={course?.description}
+                            course_link={course?.course_link}
+                            course_image={course?.course_image}
                             onEdit={() => handleOpenModel("edit", course._id)}
                         />
                     ))}
@@ -295,7 +304,7 @@ export default function CourseView() {
             <GeneralModal
                 renderBody={renderBody}
                 visible={visible}
-                title={type === "create" ? "Thêm khóa học" : "Chỉnh sửa khóa học"}
+                title={type === "create" ? "Khóa học" : "Cập nhật"}
                 onCancel={closeModal}
             />
         </>

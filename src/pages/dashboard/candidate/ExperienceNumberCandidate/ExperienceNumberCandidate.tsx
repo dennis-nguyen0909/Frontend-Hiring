@@ -47,14 +47,6 @@ const ExperienceNumberCandidate = () => {
         layout="vertical"
         style={{ maxWidth: '600px', margin: '0 auto' }} // Căn giữa form
       >
-        <Form.Item
-          label="Không có kinh nghiệm"
-          name="no_experience"
-          valuePropName="checked"
-        >
-          <Checkbox>Không có kinh nghiệm</Checkbox>
-        </Form.Item>
-
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -96,10 +88,16 @@ const ExperienceNumberCandidate = () => {
             </Form.Item>
           </Col>
         </Row>
+        <Form.Item
+          name="no_experience"
+          valuePropName="checked"
+        >
+          <Checkbox>Không có kinh nghiệm</Checkbox>
+        </Form.Item>
 
         <Form.Item style={{ textAlign: 'center' }}>
-          <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: '20px' }}>
-            Cập nhật
+        <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+                    Cập nhật
           </Button>
         </Form.Item>
       </Form>

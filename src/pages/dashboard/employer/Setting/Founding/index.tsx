@@ -192,7 +192,7 @@ export default function Founding() {
           />
         </div>
 
-        <Button type="primary" onClick={handleSave} className="bg-blue-500">
+        <Button htmlType="submit" onClick={handleSave}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white mt-5">
           Save Changes
         </Button>
        </LoadingComponentSkeleton>

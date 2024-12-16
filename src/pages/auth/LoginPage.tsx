@@ -11,7 +11,7 @@ import {
   notification,
 } from "antd";
 import logo from "../../assets/images/logo.png";
-import icon from "../../assets/icons/logo.png";
+import icon from "../../assets/logo/LogoH.png";
 import facebook from "../../assets/icons/fb.png";
 import google from "../../assets/icons/gg.png";
 import {
@@ -153,7 +153,7 @@ const LoginPage = () => {
     return (
       <div className="w-[500px]">
         <div className="flex items-center justify-start mt-10 gap-2 ">
-          <Image src={icon} preview={false} />
+          <Image src={icon} width={45} height={45} preview={false} />
           <h1
             onClick={() => navigate("/")}
             className="font-medium text-2xl cursor-pointer"

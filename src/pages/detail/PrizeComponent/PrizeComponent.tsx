@@ -7,12 +7,12 @@ import moment from 'moment';
 const { Title, Text } = Typography;
 
 interface PrizeProps {
-  user_id: string;
-  prize_name: string;
-  organization_name: string;
+  user_id: string | undefined;
+  prize_name: string | undefined;
+  organization_name: string | undefined;
   date_of_receipt: Date;
-  prize_link: string;
-  prize_image: string;
+  prize_link: string | undefined;
+  prize_image: string | undefined;
   onEdit?: () => void;
 }
 

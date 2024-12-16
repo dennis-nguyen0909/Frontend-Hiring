@@ -22,7 +22,7 @@ import { updateUser } from '../../../redux/slices/userSlices'
 import { TAB_CURRENCY_TYPE, TAB_DEGREE_TYPE, TAB_JOB_CONTRACT_TYPE, TAB_JOB_TYPE, TAB_LEVEL, TAB_SKILL } from '../../../utils/role.utils'
 import SkillLevel from '../../employer/SkillLevel/SkillLevel'
 import SkillEmployer from '../../employer/Skill/Skill'
-
+import './style.css'
 const { Sider, Content } = Layout
 const { Title, Text } = Typography
 

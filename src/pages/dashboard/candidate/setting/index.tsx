@@ -13,7 +13,7 @@ import 'react-quill/dist/quill.snow.css';
 import Personal from "../Personal/Personal";
 import ProfileComponentSetting from "../../../detail/Profile/ProfileComponentSetting";
 import AccountSetting from "../AccountSetting/AccountSetting";
-
+import './style.css'
 const SettingCandidate = () => {
   const [activeTab, setActiveTab] = useState("personal");
   const [socialLinks, setSocialLinks] = useState([
@@ -99,24 +99,20 @@ const SettingCandidate = () => {
       >
         Add New Social Link
       </Button>
-      <Button
-        type="primary"
-        className="mt-4 bg-blue-500 hover:bg-blue-600"
-        onClick={handleSaveChanges}
-      >
-        Save Changes
-      </Button>
+      <Button htmlType="submit" onClick={handleSaveChanges}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+          Save & Next
+        </Button>
     </div>
   );
   return (
-    <div>
+    <div className="setting-candidate">
       <h1 className="text-2xl font-semibold mb-6">Setting</h1>
 
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <TabPane
           tab={
             <span
-              className={`flex items-center ${
+              className={`!text-black flex items-center ${
                 activeTab === "personal" ? "text-blue-500" : ""
               }`}
             >
@@ -131,7 +127,7 @@ const SettingCandidate = () => {
         <TabPane
           tab={
             <span
-              className={`flex items-center ${
+              className={`!text-black flex items-center ${
                 activeTab === "profile" ? "text-blue-500" : ""
               }`}
             >
@@ -147,7 +143,7 @@ const SettingCandidate = () => {
         <TabPane
           tab={
             <span
-              className={`flex items-center ${
+              className={`!text-black flex items-center ${
                 activeTab === "social" ? "text-blue-500" : ""
               }`}
             >
@@ -162,7 +158,7 @@ const SettingCandidate = () => {
         <TabPane
           tab={
             <span
-              className={`flex items-center ${
+              className={`!text-black flex items-center ${
                 activeTab === "account" ? "text-blue-500" : ""
               }`}
             >

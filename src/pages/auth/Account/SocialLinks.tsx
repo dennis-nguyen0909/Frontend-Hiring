@@ -114,7 +114,7 @@ const SocialLinks = ({handleTabChange}) => {
       </Button>
 
       <div className="flex justify-between">
-        <Button onClick={onUpdate} type="primary" size="large" className="px-8">
+      <Button htmlType="submit" onClick={onUpdate}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
           Save & Next
         </Button>
       </div>

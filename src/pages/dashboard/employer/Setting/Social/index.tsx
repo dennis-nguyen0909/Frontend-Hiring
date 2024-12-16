@@ -166,13 +166,9 @@ const onDeleted = async(id)=>{
       >
         Add New Social Link
       </Button>
-      <Button
-        type="primary"
-        className="mt-4 bg-blue-500 hover:bg-blue-600"
-        onClick={handleSaveChanges}
-      >
-        Save Changes
-      </Button>
+      <Button htmlType="submit" onClick={handleSaveChanges}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white mt-5">
+          Save Changes
+        </Button>
     </LoadingComponentSkeleton>
   );
 };

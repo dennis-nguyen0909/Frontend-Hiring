@@ -26,6 +26,9 @@ import { useNavigate } from "react-router-dom";
 import { useCities } from "../../../../hooks/useCities";
 import { useDistricts } from "../../../../hooks/useDistricts";
 import { useWards } from "../../../../hooks/useWards";
+import moment from "moment";
+import { MediaApi } from "../../../../services/modules/mediaServices";
+import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 interface CV {
   _id: string; 
   user_id: string; 
@@ -50,6 +53,7 @@ const Personal = () => {
   const { cities, loading: citiesLoading } = useCities();
   const { districts, loading: districtLoading } = useDistricts(city);
   const { wards, loading: wardsLoading } = useWards(district);
+  const [loading,setLoading]=useState<boolean>(false)
   const handleCityChange = (value) => {
       setCity(value);
     };
@@ -82,6 +86,7 @@ const Personal = () => {
   };
 
   const handleSaveChanges = async (values: any) => {
+    setLoading(true)
     const params = {
       ...values,
       id: userDetail?._id,
@@ -100,6 +105,7 @@ const Personal = () => {
       );
       message.success("Changes saved successfully");
     }
+    setLoading(false)
   };
 
   const handleFileUpload = (info) => {
@@ -141,9 +147,26 @@ const Personal = () => {
       <Button onClick={handleDeleteCv}>Delete</Button>
     </div>
   );
+  const [avatar, setAvatar] = useState(userDetail?.avatar || '');
 
+  const handleAvatarChange = async(e) => {
+    const file = e.target.files[0];
+    setLoading(true)
+    if (file) {
+      const reader = new FileReader();
+      const res = await MediaApi.postMedia(file,userDetail?.access_token);
+      if(res.data){
+        reader.onloadend = () => {
+          setAvatar(res.data.url);
+          handleSaveChanges({avatar:res.data.url})
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    setLoading(false)
+  };
   return (
-    <div>
+    <LoadingComponent isLoading={loading}>
       <h2 className="text-xl font-semibold mb-4">Thông tin cơ bản</h2>
       <Form
         layout="vertical"
@@ -156,13 +179,33 @@ const Personal = () => {
           city:userDetail?.city_id?.name,
           district:userDetail?.district_id?.name,
           ward:userDetail?.ward_id?.name,
-          address:userDetail?.address
+          address:userDetail?.address,
+          birthday: userDetail?.birthday ? moment(userDetail?.birthday).format('YYYY-MM-DD') : '' // Chuyển sang định dạng YYYY-MM-DD
         }}
       >
         <div className="">
           <div className="col-span-1 md:col-span-2">
             {userDetail?.avatar ? (
-              <Avatar size={100} shape="square" src={userDetail?.avatar} />
+             <div className="relative">
+             <div className="relative inline-block group">
+               <Avatar
+                 size={150}
+                 shape="circle"
+                 src={avatar}
+                 className="transition-opacity duration-300"
+               />
+               {/* Chữ "Update" sẽ chỉ hiện khi hover vào div chứa avatar */}
+               <span className="absolute top-[50px] inset-0 flex justify-center items-center text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                 Update
+               </span>
+               <input
+                 type="file"
+                 accept="image/*"
+                 onChange={handleAvatarChange}
+                 className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-10"
+               />
+             </div>
+           </div>
             ) : (
               <Form.Item
                 label="Profile Picture"
@@ -211,6 +254,14 @@ const Personal = () => {
               <Select.Option value={1}>Nữ</Select.Option>
               <Select.Option value={2}>Không xác định</Select.Option>
             </Select>
+          </Form.Item>
+          <Form.Item
+            label="Ngày sinh"
+            name="birthday"
+            rules={[{ required: true, message: "Please enter your birthday" }]}
+            style={{ width: "500px" }}
+          >
+            <Input type="date"/>
           </Form.Item>
           <Form.Item
             label="Giới thiệu"
@@ -321,13 +372,9 @@ const Personal = () => {
             </Form.Item>
           </div>
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="mt-4 bg-blue-500 hover:bg-blue-600"
-          >
-            Save Changes
-          </Button>
+        <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+          Save Changes
+        </Button>
         </Form.Item>
       </Form>
 
@@ -382,7 +429,7 @@ const Personal = () => {
        <PDFViewer fileUrl={iframeSrc} />
       )} */}
       </div>
-    </div>
+    </LoadingComponent>
   );
 };
 

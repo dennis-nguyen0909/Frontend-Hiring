@@ -63,6 +63,7 @@ const CertificateComponent = () => {
     setLink('')
     setSelectedId("");
     setActionType("");
+    setIsNotExpired(false)
   };
   const {
     handleUpdateProfile
@@ -177,7 +178,11 @@ const CertificateComponent = () => {
         const data = form.getFieldsValue();
         const params ={
             ...data,
-            img_certificate:file ? file :null
+            img_certificate:file ? file :null,
+
+        }
+        if (link && link.trim() !== "") {
+          params.link_certificate = link;
         }
       const res = await CERTIFICATE_API.update(id, params, userDetail?.access_token);
       if (res.data) {
@@ -286,7 +291,7 @@ const CertificateComponent = () => {
                 Thêm
               </Button>
             ) : (
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center justify-between gap-4 mt-4">
                 <Button
                   className="!bg-primaryColorH text-white"
                   onClick={()=>handleDeleteCertificate(selectedId)}
@@ -375,7 +380,7 @@ const CertificateComponent = () => {
                     <a  target="_blank"  href={item.link_certificate} className="ml-2">{item?.link_certificate}</a>
                   </div>}
                   </div>
-                    {item.img_certificate && <div>
+                    {item?.img_certificate && <div>
                     <Image  preview={false} className="shadow-custom" style={{borderRadius:'20px',maxWidth:80,maxHeight:80}} src={item?.img_certificate} />
                 </div>}
                 </div>
@@ -407,9 +412,9 @@ const CertificateComponent = () => {
         renderBody={renderBody}
         title={
           actionType === "create"
-            ? "Thêm Chứng chỉ"
+            ? "Chứng chỉ"
             : actionType === "edit"
-            ? "Chỉnh sửa Chứng chỉ"
+            ? "Cập nhật"
             : "Xóa Chứng chỉ"
         }
       />

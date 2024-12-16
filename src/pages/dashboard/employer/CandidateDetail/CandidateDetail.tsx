@@ -4,6 +4,8 @@ import * as userServices from "../../../../services/modules/userServices";
 import { CheckCircle, XCircle } from "lucide-react";
 import moment from "moment";
 import axios from "axios";
+import axiosInstance from "../../../../services/config/axiosInterceptor";
+import { StarFilled } from "@ant-design/icons";
 
 const CandidateDetailView = ({ candidateId, userDetail }) => {
   const [candidateDetail, setCandidateDetail] = useState();
@@ -22,21 +24,21 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
     handleGetCandidateDetail();
   }, []);
 
-  const downloadCV = async (userId: string) => {
-    try {
-      const response = await axios.get(`http://localhost:8082/api/v1/cvs/download/${userId}`, {
-        responseType: 'blob',
-      });
+  // const downloadCV = async (userId: string) => {
+  //   try {
+  //     const response = await axiosInstance.get(`http://localhost:8082/api/v1/cvs/download/${userId}`, {
+  //       responseType: 'blob',
+  //     });
   
-      const blob = response.data;
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'CV.pdf'; 
-      link.click(); 
-    } catch (error) {
-      console.error('Error downloading CV:', error);
-    }
-  };
+  //     const blob = response.data;
+  //     const link = document.createElement('a');
+  //     link.href = URL.createObjectURL(blob);
+  //     link.download = 'CV.pdf'; 
+  //     link.click(); 
+  //   } catch (error) {
+  //     console.error('Error downloading CV:', error);
+  //   }
+  // };
   
   // Gọi hàm downloadCV khi người dùng nhấn nút hoặc trigger sự kiện
   
@@ -62,19 +64,19 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
         {/* Phone */}
         <div className="flex justify-between">
           <div className="font-medium">Số điện thoại:</div>
-          <div>{candidateDetail?.phone || "Không có"}</div>
+          <div>{candidateDetail?.phone || "Chưa cập nhật"}</div>
         </div>
 
         {/* Address */}
         <div className="flex justify-between">
           <div className="font-medium">Địa chỉ:</div>
-          <div>{candidateDetail?.address || "Không có"}</div>
+          <div>{candidateDetail?.city_id?.name || "Chưa cập nhật"}</div>
         </div>
 
         {/* Gender */}
         <div className="flex justify-between">
           <div className="font-medium">Giới tính:</div>
-          <div>{candidateDetail?.gender || "Không xác định"}</div>
+          <div>{candidateDetail?.gender===0 ? 'Nam' :candidateDetail?.gender === 1 ? 'Nữ' : "Không xác định"}</div>
         </div>
 
 
@@ -91,7 +93,7 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
 
         {/* No Experience */}
         <div className="flex justify-between">
-          <div className="font-medium">Không có kinh nghiệm:</div>
+          <div className="font-medium">Chưa cập nhật kinh nghiệm:</div>
           <div>{candidateDetail?.no_experience ? "Có" : "Không"}</div>
         </div>
         {/* Total Experience Years */}
@@ -112,18 +114,24 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
           <div className="font-medium bg-[#b2dbfe] rounded-md p-2">Kinh nghiệm làm việc:</div>
           {candidateDetail?.work_experience_ids?.length > 0 ? (
             candidateDetail?.work_experience_ids.map((work, index) => (
-              <div key={index}>
-                <div className="font-semibold">{work?.company}</div>
-                <div>{work?.position}</div>
-                <div>
-                  {work?.start_date &&
-                    new Date(work?.start_date).toLocaleDateString()}{" "}
-                  -{" "}
-                  {work?.currently_working
-                    ? "Hiện tại"
-                    : new Date(work?.end_date).toLocaleDateString()}
+              <Card key={index}>
+               <div className="flex items-center justify-between">
+
+               <div>
+                  <div className="font-semibold">{work?.company}</div>
+                  <div>{work?.position}</div>
+                  <div>
+                    {work?.start_date &&
+                      new Date(work?.start_date).toLocaleDateString()}{" "}
+                    -{" "}
+                    {work?.currently_working
+                      ? "Hiện tại"
+                      : new Date(work?.end_date).toLocaleDateString()}
+                  </div>
                 </div>
-              </div>
+                <Image width={100} height={'100%'} src={work?.image_url} preview={false} />
+               </div>
+              </Card>
             ))
           ) : (
             <div>Chưa có kinh nghiệm làm việc</div>
@@ -135,11 +143,11 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
           <div className="font-medium bg-[#cccccc] rounded-md p-2">Kỹ năng:</div>
           {candidateDetail?.skills?.length > 0 ? (
             candidateDetail?.skills.map((skill, index) => (
-              <div key={index}>
+              <Card key={index}>
                 <div className="font-semibold">{skill?.name}</div>
-                <div>Đánh giá: {skill?.evalute}</div>
+                <div>Mức độ : {skill?.evalute} <StarFilled className="text-yellow-500" /></div>
                 <div>{skill?.description}</div>
-              </div>
+              </Card>
             ))
           ) : (
             <div>Chưa có kỹ năng</div>
@@ -152,14 +160,14 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
           <div className="font-medium bg-[#a8a9bc] rounded-md p-2">Học vấn:</div>
           {candidateDetail?.education_ids?.length > 0 ? (
             candidateDetail?.education_ids.map((education, index) => (
-              <div key={index}>
+              <Card key={index}>
                 <div className="font-semibold">{education?.school}</div>
                 <div>{education?.major}</div>
                 <div>
                   {new Date(education?.start_date).toLocaleDateString()} -{" "}
                   {education?.currently_studying ? "Đang học" : "Đã tốt nghiệp"}
                 </div>
-              </div>
+              </Card>
             ))
           ) : (
             <div>Chưa có thông tin học vấn</div>
@@ -330,7 +338,7 @@ const CandidateDetailView = ({ candidateId, userDetail }) => {
           </Space>
         </Card>
       ))}
-      <Button onClick={()=>downloadCV(candidateDetail?._id)}>Download cv</Button>
+      {/* <Button onClick={()=>downloadCV(candidateDetail?._id)}>Download cv</Button> */}
     </div>
       </div>
     </div>

@@ -1,0 +1,20 @@
+.setting-candidate .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn span {
+  color: #d64453 !important;
+}
+
+.setting-candidate .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
+  background-color: #d64453 !important;
+}
+
+.setting-candidate .ant-tabs-tab:hover,
+.ant-tabs-tab:focus,
+.ant-tabs-tab:active {
+  color: #d64453 !important;
+}
+
+.setting-candidate .ant-tabs-tab .ant-tabs-tab-btn:hover {
+  color: #d64453 !important;
+}
+.setting-candidate .ant-tabs-tab .ant-tabs-tab-btn:hover {
+  color: black !important;
+}
