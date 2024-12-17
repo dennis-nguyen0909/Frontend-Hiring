@@ -136,6 +136,22 @@ const ContactForm = () => {
         };
         await updateUserApi(paramsResume);
         break;
+      case "notification_when_employer_save_profile":
+        // eslint-disable-next-line no-case-declarations
+        const params2 = {
+          id: userDetail?._id,
+          notification_when_employer_save_profile: checked,
+        };
+        await updateUserApi(params2);
+        break;
+      case "notification_when_employer_reject_cv":
+        // eslint-disable-next-line no-case-declarations
+        const params3 = {
+          id: userDetail?._id,
+          notification_when_employer_reject_cv: checked,
+        };
+        await updateUserApi(params3);
+        break;
       default:
         break;
     }
@@ -303,12 +319,12 @@ const ContactForm = () => {
               valuePropName="checked"
               noStyle
             >
-              <Checkbox>
+              <Checkbox defaultChecked={userDetail?.notification_when_employer_save_profile} value={userDetail?.notification_when_employer_save_profile} onChange={(e)=>onChangeSwitch(e.target.checked,"notification_when_employer_save_profile")}>
                 Thông báo cho tôi khi nhà tuyển dụng lưu hồ sơ của tôi
               </Checkbox>
             </Form.Item>
             <Form.Item name="notifyRejected" valuePropName="checked" noStyle>
-              <Checkbox>
+              <Checkbox defaultChecked={userDetail?.notification_when_employer_reject_cv} value={userDetail?.notification_when_employer_reject_cv} onChange={(e)=>onChangeSwitch(e.target.checked,"notification_when_employer_reject_cv")}>
                 Thông báo cho tôi khi nhà tuyển dụng từ chối tôi
               </Checkbox>
             </Form.Item>
