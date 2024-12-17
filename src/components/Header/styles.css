@@ -1,3 +1,10 @@
 .no-arrow .ant-popover-arrow {
-    display: none; /* Ẩn tam giác */
-  }
+  display: none; /* Ẩn tam giác */
+}
+
+.custom-badge .ant-badge-count {
+  transform: scale(0.8); /* Điều chỉnh kích thước nhỏ lại */
+  transform-origin: center; /* Co lại từ chính giữa */
+  top: -5px; /* Điều chỉnh vị trí dọc của badge */
+  right: -5px; /* Điều chỉnh vị trí ngang của badge */
+}

@@ -7,15 +7,12 @@ import NotFound from "./components/NotFound/NotFound";
 import LoadingPage from "./components/Loading/LoadingPage";
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   useEffect(() => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
     }, 500);
   }, []);
-
-  
   return (
     <div>
       {isLoading ? (
