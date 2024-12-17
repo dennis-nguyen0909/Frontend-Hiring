@@ -1,29 +1,15 @@
-import { CheckCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import {
-  Avatar,
-  Button,
   Card,
   Col,
-  Divider,
-  notification,
   Progress,
-  Switch,
 } from "antd";
-import avtDefault from "../../../assets/avatars/avatar-default.jpg";
-import { updateUser } from "../../../redux/slices/userSlices";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
-  Camera,
-  Download,
   Pencil,
-  Share2,
 } from "lucide-react";
-import { useRef, useState } from "react";
-import * as userServices from "../../../services/modules/userServices";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import EducationComponent from "../Education/Education";
 import ExperienceComponent from "../Experience/Experience";
-import { MediaApi } from "../../../services/modules/mediaServices";
 import SkillComponent from "../Skill/Skill";
 import ExperienceNumberCandidate from "../../dashboard/candidate/ExperienceNumberCandidate/ExperienceNumberCandidate";
 import CertificateComponent from "../Certificate/CertificateComponent";
@@ -31,17 +17,22 @@ import ProjectComponent from "../ProjectComponent/ProjectComponent";
 import PrizeView from "../PrizeComponent/PrizeView";
 import CourseView from "../CourseComponent/CourseComponent";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
+import { useViewerCandidateProfile } from "../../../hooks/useViewerCandidateProfile";
+import { useViewerCandidateProfileMonth } from "../../../hooks/useViewerCandidateProfileMonth";
+import { useViewerCandidateProfileYear } from "../../../hooks/useViewerCandidateProfileYear";
 const ProfileComponentSetting = () => {
   const userDetail = useSelector((state) => state.user);
-  const [visible, setVisible] = useState(false);
-  const [visibleInAvatar, setVisibleInAvatar] = useState(false);
-  const [coverImage, setCoverImage] = useState(userDetail?.background || null);
-
-
-
-
   const {
-    data: caculateProfile  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+    data: caculateProfile,refetch  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+  const {meta:metaViewerWeek,refreshData:refreshWeek} =useViewerCandidateProfile(1,10);
+  const {meta:metaViewerMonth,refreshData:refreshMonth}= useViewerCandidateProfileMonth(1,10);
+  const {meta:metaViewerYear,refreshData:refreshYear}= useViewerCandidateProfileYear(1,10);
+  useEffect(() => {
+    refreshWeek();
+    refetch()
+    refreshMonth()
+    refreshYear()
+  }, []);
   return (
       <Col span={24} className="mx-auto p-4 space-y-6 rounded-xl">
     
@@ -85,15 +76,15 @@ const ProfileComponentSetting = () => {
             </p>
             <div className="grid grid-cols-3 gap-4">
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{metaViewerWeek.total || 0}</p>
                 <p className="text-sm text-gray-500">Lượt xem trong tuần</p>
               </div>
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{metaViewerMonth.total || 0}</p>
                 <p className="text-sm text-gray-500">Lượt xem trong tháng</p>
               </div>
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{metaViewerYear.total || 0}</p>
                 <p className="text-sm text-gray-500">Lượt xem trong năm</p>
               </div>
             </div>

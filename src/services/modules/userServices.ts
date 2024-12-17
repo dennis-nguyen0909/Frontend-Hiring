@@ -181,4 +181,16 @@ export const USER_API = {
       return error; // Trả về lỗi nếu có bất kỳ lỗi nào xảy ra
     }
   },
+  viewProfileCandidate: async (id: string, access_token: string) => {
+    console.log("id",id)
+    const resData = await axiosInstance.get(`/users/profile/${id}`, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+      withCredentials: true,
+    });
+  
+    if (resData) return resData.data;
+    return null;
+  }
 };

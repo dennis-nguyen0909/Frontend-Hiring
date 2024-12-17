@@ -278,7 +278,7 @@ const LoginPage = () => {
                 className="text-blue-500 cursor-pointer"
               >
                 {" "}
-                Quên mật khẩu?
+                Đăng nhập
               </span>
             </div>
           </Form.Item>

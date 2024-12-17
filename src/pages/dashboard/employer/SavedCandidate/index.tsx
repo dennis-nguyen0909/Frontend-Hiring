@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { List, Button, Dropdown, message, Avatar } from "antd";
+import { List, Button, Dropdown, message, Avatar, notification } from "antd";
 import {
   MoreOutlined,
   MailOutlined,
@@ -41,9 +41,17 @@ export default function SavedCandidate() {
     );
   };
 
-  const handleViewProfile = (candidateId: string) => {
-    setCurrentTab("view_profile");
-    setSelectedCandidate(candidateId);
+  const handleViewProfile = (candidate:any) => {
+    if(candidate.is_profile_privacy){
+      setCurrentTab("view_profile");
+      setSelectedCandidate(candidate?._id);
+      console.log("candidate",candidate)
+    }else{
+      notification.error({
+        message:'Thông báo',
+        description:'Ứng viên chưa công khai thông tin'
+      })
+    }
   };
 
   const handleSendEmail = (candidateId: string) => {
@@ -95,9 +103,9 @@ export default function SavedCandidate() {
             key="view"
             type="primary"
             className="bg-blue-500"
-            onClick={() => handleViewProfile(candidate._id)}
+            onClick={() => handleViewProfile(candidate)}
           >
-            XemProfile
+            Xem thông tin
           </Button>,
           <Dropdown
             key="more"

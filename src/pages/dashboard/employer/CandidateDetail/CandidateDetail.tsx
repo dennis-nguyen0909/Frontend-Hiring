@@ -1,29 +1,20 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Descriptions,
   Avatar,
-  Badge,
-  Tooltip,
   Card,
   Image,
   Space,
-  Button,
 } from "antd";
-import * as userServices from "../../../../services/modules/userServices";
 import { CheckCircle, XCircle } from "lucide-react";
 import moment from "moment";
-import axios from "axios";
-import axiosInstance from "../../../../services/config/axiosInterceptor";
 import { StarFilled } from "@ant-design/icons";
+import { USER_API } from "../../../../services/modules/userServices";
 
-const CandidateDetailView = ({ candidateId, userDetail }) => {
+const CandidateDetailView = ({ candidateId, userDetail }:{candidateId:string,userDetail:any}) => {
   const [candidateDetail, setCandidateDetail] = useState();
 
   const handleGetCandidateDetail = async () => {
-    const res = await userServices.getDetailUser(
-      candidateId,
-      userDetail?.access_token
-    );
+    const res = await USER_API.viewProfileCandidate(candidateId,userDetail?.access_token);
     if (res?.data?.items) {
       setCandidateDetail(res?.data?.items);
     }

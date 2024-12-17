@@ -64,4 +64,44 @@ export const NOTIFICATION_API = {
       return null;
     }
   },
+  getNotificationsByWeek: async (params:any, accessToken: string) => {
+    const res = await axiosInstance.get(`${NOTIFICATIONS}/week`,{
+         params: {
+           ...params
+         },
+         headers: {
+           Authorization: `Bearer ${accessToken}`,
+         },
+         withCredentials: true,
+       });
+       if (res.data) return res.data;
+       return null;
+  },
+  getNotificationsByMonth: async (params:any, accessToken: string) => {
+    const res = await axiosInstance.get(`${NOTIFICATIONS}/month`,{
+         params: {
+           ...params
+         },
+         headers: {
+           Authorization: `Bearer ${accessToken}`,
+         },
+         withCredentials: true,
+       });
+       if (res.data) return res.data;
+       return null;
+  },
+  getNotificationsByYear: async (params:any, accessToken: string) => {
+    const res = await axiosInstance.get(`${NOTIFICATIONS}/year`,{
+         params: {
+           ...params
+         },
+         headers: {
+           Authorization: `Bearer ${accessToken}`,
+         },
+         withCredentials: true,
+       });
+       if (res.data) return res.data;
+       return null;
+  },
+  
 };

@@ -120,6 +120,22 @@ const ContactForm = () => {
         };
         await updateUserApi(params);
         break;
+      case "is_profile_privacy":
+        // eslint-disable-next-line no-case-declarations
+        const paramsPrivacyProfile = {
+          id: userDetail?._id,
+          is_profile_privacy: checked,
+        };
+        await updateUserApi(paramsPrivacyProfile);
+        break;
+      case "is_resume_privacy":
+        // eslint-disable-next-line no-case-declarations
+        const paramsResume = {
+          id: userDetail?._id,
+          is_resume_privacy: checked,
+        };
+        await updateUserApi(paramsResume);
+        break;
       default:
         break;
     }
@@ -330,7 +346,7 @@ const ContactForm = () => {
             <h2 className="text-xl font-semibold mb-4">Quyền riêng tư hồ sơ</h2>
             <Form.Item name="profilePrivacy" valuePropName="checked" noStyle>
               <Space>
-                <Switch defaultChecked />
+                <Switch value={userDetail?.is_profile_privacy} onChange={(checked)=>onChangeSwitch(checked,"is_profile_privacy")} className="custom-switch"   />
                 <span>Hồ sơ của bạn bây giờ đã được công khai</span>
               </Space>
             </Form.Item>
@@ -339,7 +355,7 @@ const ContactForm = () => {
             <h2 className="text-xl font-semibold mb-4">Resume Privacy</h2>
             <Form.Item name="resumePrivacy" valuePropName="checked" noStyle>
               <Space>
-                <Switch className="custom-switch" />
+                <Switch value={userDetail?.is_resume_privacy} onChange={(checked)=>onChangeSwitch(checked,"is_resume_privacy")}  className="custom-switch" />
                 <span>Sơ yếu lý lịch của bạn hiện đang ở chế độ riêng tư</span>
               </Space>
             </Form.Item>

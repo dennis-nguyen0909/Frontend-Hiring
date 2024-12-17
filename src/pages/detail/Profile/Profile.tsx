@@ -26,6 +26,9 @@ import ProjectComponent from "../ProjectComponent/ProjectComponent";
 import PrizeView from "../PrizeComponent/PrizeView";
 import CourseView from "../CourseComponent/CourseComponent";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
+import { useViewerCandidateProfile } from "../../../hooks/useViewerCandidateProfile";
+import { useViewerCandidateProfileMonth } from "../../../hooks/useViewerCandidateProfileMonth";
+import { useViewerCandidateProfileYear } from "../../../hooks/useViewerCandidateProfileYear";
 const Profile = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
@@ -157,6 +160,15 @@ const Profile = () => {
     error,
     refetch,
   } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+  const {meta:metaViewerWeek,refreshData:refreshWeek} =useViewerCandidateProfile(1,10);
+  const {meta:metaViewerMonth,refreshData:refreshMonth}= useViewerCandidateProfileMonth(1,10);
+  const {meta:metaViewerYear,refreshData:refreshYear}= useViewerCandidateProfileYear(1,10);
+  useEffect(() => {
+    refreshWeek();
+    refetch()
+    refreshMonth()
+    refreshYear()
+  }, []);
   return (
     <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto mt-10 py-2 gap-5 ">
       <Col span={16} className="max-w-3xl mx-auto p-4 space-y-6 rounded-xl">
@@ -273,15 +285,15 @@ const Profile = () => {
             </p>
             <div className="grid grid-cols-3 gap-4">
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{metaViewerWeek.total || 0}</p>
                 <p className="text-sm text-gray-500">Lượt xem trong tuần</p>
               </div>
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{metaViewerMonth.total || 0}</p>
                 <p className="text-sm text-gray-500">Lượt xem trong tháng</p>
               </div>
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{metaViewerYear.total || 0}</p>
                 <p className="text-sm text-gray-500">Lượt xem trong năm</p>
               </div>
             </div>
