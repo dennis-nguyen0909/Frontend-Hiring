@@ -80,7 +80,7 @@ const JobCard = ({ job }) => {
               : "!text-[#0A65CC] !bg-[#EDEFF5]"
           } flex-1 md:flex-none` }
         >
-          Apply Now <ArrowRightOutlined className="font-bold" />
+          Ứng tuyển ngay <ArrowRightOutlined className="font-bold" />
         </Button>
       </div>
     </div>

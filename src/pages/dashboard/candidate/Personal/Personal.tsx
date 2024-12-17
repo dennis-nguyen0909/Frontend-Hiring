@@ -378,7 +378,7 @@ const Personal = () => {
         </Form.Item>
       </Form>
 
-      <h2 className="text-xl font-semibold mt-8 mb-4">Your CV/Resume</h2>
+      <h2 className="text-xl font-semibold mt-8 mb-4">CV & Sơ yếu lý lịch</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {listCv?.map((resume, index) => (
           <div
@@ -419,9 +419,9 @@ const Personal = () => {
         <div className="bg-white border-2 border-dashed border-gray-300 p-4 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-500 transition-colors">
           <PlusOutlined className="text-2xl mr-2" />
           <div onClick={() => navigate("/upload-cv")}>
-            <div className="font-medium">Add CV/Resume</div>
+            <div className="font-medium">Thêm CV & Sơ yếu lý lịch</div>
             <div className="text-sm text-gray-500">
-              Browse file hoặc drop here, only pdf
+              Duyệt tập tin hoặc thả ở đây, chỉ pdf
             </div>
           </div>
         </div>

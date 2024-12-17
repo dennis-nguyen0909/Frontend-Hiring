@@ -59,7 +59,7 @@ const ResetPage = () => {
             >
                 <Input.Password
                 size="large"
-                placeholder="Confirm Password"
+                placeholder="Xác nhận mật khẩu"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 iconRender={(visible) =>

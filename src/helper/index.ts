@@ -56,7 +56,7 @@ export const menuHeader = [
     employer:true
   },
   {
-    name: "Profile & CV",
+    name: "Hồ sơ & CV",
     id:'profile_cv',
     path: "/profile-cv",
     color:"#5E6670",

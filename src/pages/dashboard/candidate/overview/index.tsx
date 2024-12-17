@@ -14,7 +14,7 @@ const OverViewCandidate = ({ userDetail }) => {
   } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   const recentlyAppliedColumns = [
     {
-      title: 'Job',
+      title: 'Việc làm',
       dataIndex: 'job',
       key: 'job',
       render: (text, record) => (
@@ -38,12 +38,12 @@ const OverViewCandidate = ({ userDetail }) => {
       ),
     },
     {
-      title: 'Date Applied',
+      title: 'Ngày nộp',
       dataIndex: 'dateApplied',
       key: 'dateApplied',
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (text) => (
@@ -54,10 +54,10 @@ const OverViewCandidate = ({ userDetail }) => {
       ),
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       key: 'action',
       render: () => (
-        <Button type="primary" className="bg-blue-500 hover:bg-blue-600">XemDetails</Button>
+        <Button type="primary" className="bg-blue-500 hover:bg-blue-600">Xem chi tiết</Button>
       ),
     },
   ];
@@ -159,7 +159,7 @@ const OverViewCandidate = ({ userDetail }) => {
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-xl font-semibold"> Đã ứng tuyển gần đây</h2>
           {/* Đã ứng tuyển gần đây */}
-          <a href="#" className="text-blue-500 hover:underline">Xemall →</a>
+          <a href="#" className="text-blue-500 hover:underline">Xem tất cả →</a>
         </div>
         <LoadingComponent isLoading={loading}>
          <Table columns={recentlyAppliedColumns} dataSource={jobsApplied} pagination={false} />

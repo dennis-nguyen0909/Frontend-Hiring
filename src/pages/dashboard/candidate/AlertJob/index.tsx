@@ -42,7 +42,7 @@ const AlertJob = ()=>{const columns = [
       key: 'action',
       render: () => (
         <Button type="primary" className="bg-blue-500 hover:bg-blue-600">
-          Apply Now →
+          Ứng tuyển ngay →
         </Button>
       ),
     },

@@ -100,7 +100,7 @@ const handleFavorite = async(jobId:string)=>{
           type={isExpired(record?.job_id?.expire_date) ? "default" : "primary"}
           className={isExpired(record?.job_id?.expire_date) ? "bg-gray-200 text-gray-500" : "bg-blue-500 hover:bg-blue-600"}
         >
-          {isExpired(record?.job_id?.expire_date) ? "Job Đã hết hạn" : "Apply Now →"}
+          {isExpired(record?.job_id?.expire_date) ? "Job Đã hết hạn" : "Ứng tuyển ngay →"}
         </Button>
       ),
     },

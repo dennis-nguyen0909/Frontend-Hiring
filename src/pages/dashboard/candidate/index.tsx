@@ -45,7 +45,7 @@ const DashboardCandidate = () => {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
-        <div className="p-4 text-xl font-bold border-b text-center">CANDIDATE DASHBOARD</div>
+        <div className="p-4 text-xl font-bold border-b text-center">ỨNG VIÊN</div>
         <nav className="mt-4">
           <a 
             href="#"
@@ -61,7 +61,7 @@ const DashboardCandidate = () => {
             onClick={() => handleTabClick('appliedJobs')}
           >
             <FileTextOutlined className="mr-3" />
-            Applied Việc làm
+            Việc làm đã ứng tuyển
           </a>
           <a 
             href="#"
@@ -69,7 +69,7 @@ const DashboardCandidate = () => {
             onClick={() => handleTabClick('favoriteJobs')}
           >
             <BookOutlined className="mr-3" />
-            Favorite Việc làm
+            Việc làm đã lưu
           </a>
           <a 
             href="#"
@@ -77,7 +77,7 @@ const DashboardCandidate = () => {
             onClick={() => handleTabClick('jobAlert')}
           >
             <BellOutlined className="mr-3" />
-            Job Alert
+            Thông báo việc làm
             <span className="ml-auto bg-blue-500 text-white text-xs px-2 rounded-full">09</span>
           </a>
           <a 
@@ -91,7 +91,7 @@ const DashboardCandidate = () => {
         </nav>
         <div className="absolute bottom-4 left-4 flex items-center text-gray-700">
           <LogoutOutlined className="mr-2" onClick={handleLogout} />
-          Log-out
+          Đăng xuất
         </div>
       </div>
 

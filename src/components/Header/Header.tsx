@@ -227,7 +227,7 @@ const Header: React.FC = () => {
                     variant="outline"
                     className="bg-white text-black hover:bg-gray-200 hover:!text-black"
                   >
-                    Quên mật khẩu?
+                    Đăng nhập
                   </Button>
                   <Button
                     onClick={() => navigate("/register")}

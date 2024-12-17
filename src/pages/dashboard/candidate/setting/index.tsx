@@ -107,7 +107,7 @@ Thêm liên kết xã hội mới
   );
   return (
     <div className="setting-candidate">
-      <h1 className="text-2xl font-semibold mb-6">Setting</h1>
+      <h1 className="text-2xl font-semibold mb-6">Cài đặt</h1>
 
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <TabPane
@@ -118,7 +118,7 @@ Thêm liên kết xã hội mới
               }`}
             >
               <UserOutlined className="mr-2" />
-              Personal
+              Cá nhân
             </span>
           }
           key="personal"
@@ -133,7 +133,7 @@ Thêm liên kết xã hội mới
               }`}
             >
               <ProfileOutlined className="mr-2" />
-              Profile
+              Hồ sơ
             </span>
           }
           key="profile"

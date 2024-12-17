@@ -164,7 +164,7 @@ const LoginPage = () => {
         {/* Header */}
         <div className="flex gap-10 items-center justify-between mt-[200px]">
           <div>
-            <h1 className="font-medium text-3xl">Đăng ký.</h1>
+            <h1 className="font-medium text-3xl">Đăng nhập.</h1>
             <div className="mt-2">
               <span className="text-gray-500 text-1xl">
                 Bạn chưa có tài khoản?

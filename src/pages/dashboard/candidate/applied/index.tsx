@@ -53,7 +53,7 @@ const Applied = () => {
       ),
     },
     {
-      title: "DATE APPLIED",
+      title: "Ngày nộp",
       dataIndex: "dateApplied",
       key: "dateApplied",
       render:(record)=>(
@@ -72,11 +72,11 @@ const Applied = () => {
       )
     },
     {
-      title: "ACTION",
+      title: "Hành động",
       key: "action",
       render: () => (
         <Button type="primary" className="bg-blue-500 hover:bg-blue-600">
-          XemDetails
+          Xem chi tiết
         </Button>
       ),
     },
@@ -216,7 +216,7 @@ const Applied = () => {
   }
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-6">Applied Việc làm ({listApplied.length || 0})</h1>
+      <h1 className="text-2xl font-semibold mb-6">Việc làm đã ứng tuyển ({listApplied.length || 0})</h1>
 
       <div className="bg-white rounded-lg shadow">
         <Table columns={columns} dataSource={listApplied} pagination={false} />

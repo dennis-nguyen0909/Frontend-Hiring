@@ -566,7 +566,7 @@ export default function JobDetail() {
         type="primary"
         onClick={onAppliedJob}
       >
-        Apply Now
+        Ứng tuyển ngay
       </Button>
     </Form>
       </Modal>
