@@ -1,6 +1,5 @@
 import { FacebookFilled, LinkedinOutlined, YoutubeOutlined } from "@ant-design/icons";
 import { Image } from "antd";
-import React from "react";
 import { Link } from "react-router-dom";
 import logoH from '../../assets/logo/LogoH.png'
 import appStore from '../../assets/logo/app_store.webp'

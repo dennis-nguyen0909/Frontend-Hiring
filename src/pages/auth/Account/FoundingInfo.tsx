@@ -180,8 +180,8 @@ const FoundingInfo = ({ handleTabChange }) => {
         <Form.Item
           label="Tầm nhìn công ty"
           name="company_vision"
-          required
-          rules={[{ validator: validateCompanyVision }]}
+          // required
+          // rules={[{ validator: validateCompanyVision }]}
         >
           <Editor
             value={companyVision}

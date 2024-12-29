@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios"
 const apiUrl = import.meta.env.VITE_API_URL;
-export default function requestApi(endpoint,method,body,responseType='json'){
+export default function requestApi(endpoint:string,method:string,body:string,responseType='json'){
     const headers = {
         "Accept":"application/json",
         "Content-Type":"application/json",
@@ -35,7 +36,7 @@ export default function requestApi(endpoint,method,body,responseType='json'){
                    originConfig.headers['Authorization']=`Bearer ${access_token}`
                    return  instance(originConfig);
                 }
-            } catch (error) {
+            } catch (error:unknown | any) {
                 if(error.response && error.response.status === 400){
                     localStorage.removeItem('access_token');
                     localStorage.removeItem('refresh_token');

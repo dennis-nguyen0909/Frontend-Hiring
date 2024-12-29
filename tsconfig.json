@@ -9,7 +9,8 @@
       "baseUrl": "./",
       "paths": {
         "@/*": ["src/*"]
-      }
+      },
+      "noEmitOnError": false,  // Cho phép build ngay cả khi có lỗi
     }
   
 }

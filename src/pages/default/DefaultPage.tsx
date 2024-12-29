@@ -216,7 +216,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
       <div className="space-y-6">
         {/* Title */}
         <h2 className="text-2xl font-semibold text-gray-800 text-center">
-          You are ?
+         Bạn là ?
         </h2>
 
         <div className="grid grid-cols-2 gap-6">

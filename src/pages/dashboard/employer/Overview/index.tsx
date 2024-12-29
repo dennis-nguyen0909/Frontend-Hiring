@@ -142,7 +142,7 @@ const OverviewEmployer = () => {
 
   useEffect(() => {
     if (countJobActive === 0) return; 
-    let start = 1; 
+    let start = 0; 
     const end = countJobActive;
     const duration = 500;
 

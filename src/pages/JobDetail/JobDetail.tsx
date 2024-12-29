@@ -515,7 +515,7 @@ export default function JobDetail() {
         </div>
       </div>
       <Modal
-        title={`Apply Job: ${jobDetail?.title}`}
+        title={`Ứng tuyển: ${jobDetail?.title}`}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={false}

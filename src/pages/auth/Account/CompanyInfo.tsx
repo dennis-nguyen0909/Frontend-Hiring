@@ -187,7 +187,7 @@ const CompanyInfo = ({handleTabChange}) => {
           <Form.Item
             label="Về chúng tôi"
             name="description"
-            rules={[{ required: true, message: "Please input description!" }]}
+            // rules={[{ required: true, message: "Please input description!" }]}
           >
             <Editor
               apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"

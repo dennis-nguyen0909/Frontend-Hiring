@@ -13,6 +13,7 @@ import { defaultMeta } from "../../../../untils";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import CandidateDetailView from "../CandidateDetail/CandidateDetail";
 import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
+import { USER_API } from "../../../../services/modules/userServices";
 
 interface SaveCandidates {
   _id: string;
@@ -29,7 +30,7 @@ export default function SavedCandidate() {
   const [currentTab, setCurrentTab] = useState("save_candidate");
   const [meta, setMeta] = useState<Meta>(defaultMeta);
   const [selectedCandidate, setSelectedCandidate] = useState<string>("");
-  const [isLoading,setIsLoading]=useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleBookmark = (candidateId: string) => {
     setSaveCandidates((prev) =>
@@ -40,17 +41,34 @@ export default function SavedCandidate() {
       )
     );
   };
-
-  const handleViewProfile = (candidate:any) => {
-    if(candidate.is_profile_privacy){
-      setCurrentTab("view_profile");
-      setSelectedCandidate(candidate?._id);
-      console.log("candidate",candidate)
-    }else{
-      notification.error({
-        message:'Thông báo',
-        description:'Ứng viên chưa công khai thông tin'
-      })
+  const handleGetCandidate = async (id: string, access_token: string) => {
+    try {
+      const res = await USER_API.getDetailUser(id, access_token);
+      return res;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleViewProfile = async (candidate: any) => {
+    try {
+      const res = await handleGetCandidate(
+        candidate?._id,
+        userDetail?.access_token
+      );
+      if (res?.data?.items) {
+        const { is_profile_privacy } = res.data.items;
+        if (is_profile_privacy) {
+          setCurrentTab("view_profile");
+          setSelectedCandidate(candidate?._id);
+        } else {
+          notification.error({
+            message: "Thông báo",
+            description: "Ứng viên chưa công khai thông tin",
+          });
+        }
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -63,7 +81,7 @@ export default function SavedCandidate() {
   };
 
   const handleGetSaveCandidates = async ({ current = 1, pageSize = 10 }) => {
-    setIsLoading(true)
+    setIsLoading(true);
     const params = {
       current, // Trang hiện tại
       pageSize, // Số lượng phần tử mỗi trang
@@ -79,7 +97,7 @@ export default function SavedCandidate() {
     } else {
       setSaveCandidates([]);
     }
-    setIsLoading(false)
+    setIsLoading(false);
   };
   useEffect(() => {
     handleGetSaveCandidates({ current: 1, pageSize: 10 });
@@ -159,23 +177,22 @@ export default function SavedCandidate() {
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-6 border-b">
               <div className="flex justify-between items-center">
-                <h1 className="text-xl font-semibold">
-Ứng viên đã lưu</h1>
+                <h1 className="text-xl font-semibold">Ứng viên đã lưu</h1>
                 <p className="text-sm text-gray-500">
                   All of the saveCandidates are visible until 24 march, 2021
                 </p>
               </div>
             </div>
 
-          <div className="px-4 py-4">
-            <LoadingComponentSkeleton isLoading={isLoading}>
-            <List
-                itemLayout="horizontal"
-                dataSource={saveCandidates}
-                renderItem={(candidate) => renderItem(candidate)}
-              />
-            </LoadingComponentSkeleton>
-          </div>
+            <div className="px-4 py-4">
+              <LoadingComponentSkeleton isLoading={isLoading}>
+                <List
+                  itemLayout="horizontal"
+                  dataSource={saveCandidates}
+                  renderItem={(candidate) => renderItem(candidate)}
+                />
+              </LoadingComponentSkeleton>
+            </div>
           </div>
           <div>
             <CustomPagination

@@ -188,14 +188,14 @@ export default function PostJob() {
     if (res.data) {
       notification.success({
         message: "Thông báo",
-        description: "Them Thanh Cong!",
+        description: "Thêm thành công",
       });
       handleGetSkillByUser({});
       setIsModalVisible(false);
     } else {
       notification.error({
         message: "Thông báo",
-        description: "Them That Bai!",
+        description: "Thêm thất bại",
       });
     }
   };

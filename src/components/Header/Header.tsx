@@ -279,7 +279,8 @@ const Header: React.FC = () => {
               </li>
             );
           })}
-          <li className="relative">
+          {userDetail?.access_token && 
+          <li className="relative mt-[2px]">
             <Popover
               content={renderNotifications}
               trigger="hover"
@@ -294,6 +295,7 @@ const Header: React.FC = () => {
               </Badge>
             </Popover>
           </li>
+            }
 
           <div>
             {userDetail.access_token ? (

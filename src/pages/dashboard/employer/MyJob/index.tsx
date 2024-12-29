@@ -260,7 +260,7 @@ export default function MyJobEmployer() {
             </div>
           </div>
 
-         <LoadingComponentSkeleton isLoading={isLoading}>
+         {/* <LoadingComponentSkeleton isLoading={isLoading}> */}
          <Table
             columns={columns}
             dataSource={listMyJobs}
@@ -277,7 +277,7 @@ export default function MyJobEmployer() {
               }}
             />
           )}
-         </LoadingComponentSkeleton>
+         {/* </LoadingComponentSkeleton> */}
         </div>
       )}
       {currentMenu === VIEW_DETAIL_APPLICATION && selectedJob && (

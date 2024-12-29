@@ -47,7 +47,7 @@ export default function SkillEmployer() {
     if (res.data) {
       notification.success({
         message: "Thông báo",
-        description: "Them Thanh Cong!",
+        description: "Thêm thành công",
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
       setVisible(false)
@@ -55,7 +55,7 @@ export default function SkillEmployer() {
     } else {
       notification.error({
         message: "Thông báo",
-        description: "Them That Bai!",
+        description: "Thêm thất bại",
       })
     }
   }
