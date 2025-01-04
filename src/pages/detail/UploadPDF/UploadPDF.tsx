@@ -28,7 +28,7 @@ export default function UploadPDF() {
     name: 'file',
     multiple: false,
     accept: '.doc,.docx,.pdf',
-    action: `http://localhost:8082/api/v1/media/upload-pdf`,
+    action: `${import.meta.env.VITE_API_URL}/media/upload-pdf`,
     onChange(info) {
       const { status } = info.file
       if (status === 'done') {
