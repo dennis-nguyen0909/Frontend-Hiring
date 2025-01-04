@@ -13,6 +13,7 @@ import parse from "html-react-parser";
 import { JobApi } from "../../services/modules/jobServices";
 import JobCard from "./JobCard";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
+import SocialLogin from "../../components/ui/SocialLogin/SocialLogin";
 
 export default function EmployerDetail() {
   const { id } = useParams();
@@ -238,6 +239,8 @@ export default function EmployerDetail() {
                 </div>
               </div>
             </Card>
+
+            <SocialLogin />
 
             {/* Thông tin công ty */}
             <Card className="shadow-sm">

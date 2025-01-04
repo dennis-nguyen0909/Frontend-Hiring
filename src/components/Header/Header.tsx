@@ -55,12 +55,14 @@ const Header: React.FC = () => {
     }
   }
   useEffect(()=>{
-        getNotificationsForCandidate()
+    if(userDetail?.access_token){
+      getNotificationsForCandidate()
+    }
   },[])
 
   useEffect(() => {
     // Thiết lập kết nối với WebSocket server (NestJS)
-    const newSocket = io("http://localhost:8080", {
+    const newSocket = io(import.meta.env.VITE_API_SOCKET, {
       transports: ["websocket"], // Chỉ định sử dụng WebSocket
     });
     setSocket(newSocket);

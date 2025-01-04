@@ -33,7 +33,7 @@ export default function NotificationModal() {
     }
   }
   useEffect(()=>{
-    if(userDetail?.role?.role_name === 'USER'){
+    if(userDetail?.role?.role_name === 'USER' && userDetail?.access_token){
       getNotificationsForCandidate();
     }
   },[])
