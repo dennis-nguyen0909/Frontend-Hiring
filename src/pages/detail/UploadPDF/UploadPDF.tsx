@@ -29,6 +29,9 @@ export default function UploadPDF() {
     multiple: false,
     accept: '.doc,.docx,.pdf',
     action: `${import.meta.env.VITE_API_URL}/media/upload-pdf`,
+    headers: {
+      'x-requested-with': 'XMLHttpRequest', // Thêm header này
+    },
     onChange(info) {
       const { status } = info.file
       if (status === 'done') {
