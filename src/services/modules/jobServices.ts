@@ -1,7 +1,6 @@
-import { message, notification } from "antd";
+import { message } from "antd";
 import { axiosInstance } from "../config/axiosInterceptor";
 import axios from "axios";
-import { axiosPythonInstance } from "../config/axiosPythonInstance";
 
 // Định nghĩa một đối tượng JobApi
 export const JobApi = {
@@ -199,7 +198,7 @@ export const JobApi = {
   },
   getJobSuggestions: async (params: any,userId:string,accessToken:string)=>{
     try {
-      const res = await axios.get(`http://127.0.0.1:5000/suggests/${userId}`,{
+      const res = await axios.get(`${import.meta.env.VITE_API_PYTHON_URL}/suggests/${userId}`,{
         params: {
           ...params
         },
@@ -218,7 +217,7 @@ export const JobApi = {
   },
   getJobSuggestsByCity: async (params: any,userId:string,accessToken:string)=>{
     try {
-      const res = await axios.get(`http://127.0.0.1:5000/suggests_by_city/${userId}`,{
+      const res = await axios.get(`${import.meta.env.VITE_API_PYTHON_URL}/suggests_by_city/${userId}`,{
         params: {
           ...params
         },
