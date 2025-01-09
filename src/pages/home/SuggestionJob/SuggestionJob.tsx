@@ -6,9 +6,12 @@ import { Job, Meta } from "../../../types";
 import CustomPagination from "../../../components/ui/CustomPanigation/CustomPanigation";
 import { current } from "@reduxjs/toolkit";
 import { Empty } from "antd";
+import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 
 export default function SuggestionJob() {
   const [jobsSuggests, setJobSuggests] = useState<[]>([]);
+  const [loading,setLoading]=useState<boolean>(false);
+  const [loadingCity,setLoadingCity]=useState<boolean>(false);
   const [meta, setMeta] = useState<Meta>({});
   const [jobSuggestionCity, setJobSuggestionCity] = useState<[]>([]);
   const userDetail = useSelector((state) => state.user);
@@ -22,6 +25,7 @@ export default function SuggestionJob() {
 
   const getJobSuggestionSkills = async (current = 1, pageSize = 12) => {
     try {
+      setLoading(true)
       const params = { current, pageSize };
       const res = await JobApi.getJobSuggestions(
         params,
@@ -29,6 +33,7 @@ export default function SuggestionJob() {
         userDetail?.access_token
       );
       if (res.data) {
+        
         setJobSuggests(res.data.items);
         setMeta(res.data.meta);
       } else {
@@ -39,14 +44,18 @@ export default function SuggestionJob() {
     } catch (error) {
       console.error(error);
       return []; // return an empty array in case of an error
+    } finally {
+      setLoading(false)
     }
   };
+  console.log("duydeptrai vlvlvl",jobsSuggests)
   useEffect(() => {
     getJobSuggestionSkills();
   }, []);
 
   const getJobSuggestionCity = async (current = 1, pageSize = 12) => {
     try {
+      setLoadingCity(true)
       const params = {
         current,
         pageSize,
@@ -61,6 +70,8 @@ export default function SuggestionJob() {
       }
     } catch (error) {
       console.error(error);
+    } finally{
+      setLoadingCity(false)
     }
   };
   useEffect(() => {
@@ -72,6 +83,7 @@ export default function SuggestionJob() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Gợi ý việc làm</h1>
       </div>
+      <LoadingComponentSkeleton isLoading={loading}>
       {jobsSuggests.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -94,6 +106,7 @@ export default function SuggestionJob() {
           }
         />
       )}
+      </LoadingComponentSkeleton>
     </div>
   );
 }

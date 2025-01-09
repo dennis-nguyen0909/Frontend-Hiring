@@ -49,7 +49,7 @@ export const capitalizeFirstLetter = (text) => {
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()
 }
 export const formatCurrency = (amount: number) => {
-  return amount.toLocaleString(); // Sử dụng toLocaleString để định dạng số với dấu phẩy
+  return amount?.toLocaleString(); // Sử dụng toLocaleString để định dạng số với dấu phẩy
 };
 export const formatPercentage = (value: number) => {
   return (value * 100).toFixed(1) + '%'; // Nhân với 100 và làm tròn đến 2 chữ số thập phân

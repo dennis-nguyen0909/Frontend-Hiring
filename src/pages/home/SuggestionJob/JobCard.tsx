@@ -65,7 +65,7 @@ export function JobCard({ job, onSave }: JobCardProps) {
             <BookOutlined className={job.isSaved ? "text-blue-500" : ""} />
           </button>
         </div>
-        
+        {console.log("duydeptrai",job)}
         <div className="flex items-center gap-3">
           <Avatar 
             shape="square"
