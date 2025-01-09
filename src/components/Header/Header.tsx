@@ -236,11 +236,11 @@ const Header: React.FC = () => {
         className="justify-between items-center md:px-4 lg:px-primary w-full sticky hidden md:flex"
         style={{ backgroundColor: "black" }}
       >
-        <div className="flex justify-center items-center">
-          <Image src={logo} preview={false} width={64} height={64} />
+        <div className="flex justify-center items-center gap-2">
+          <Avatar shape="circle" src={logo} size={45} />
           <p className="text-white font-bold  md:hidden lg:block">HireDev</p>
         </div>
-        <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap">
+        <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap py-2">
           {menuHeader.map((item, idx) => {
             if (item.id === "dashboard" && !userDetail.access_token) {
               return null; // Không hiển thị Dashboard nếu không có access_token
@@ -314,7 +314,7 @@ const Header: React.FC = () => {
                     onMouseLeave={() => setHovered(false)}
                   >
                     <Avatar
-                      size="large"
+                      size={40}
                       src={
                         userDetail?.avatar_company ||
                         userDetail?.avatar ||
@@ -330,7 +330,6 @@ const Header: React.FC = () => {
                 <div className="flex space-x-2">
                   <Button
                     onClick={() => navigate("/login")}
-                    variant="outline"
                     className="bg-white text-black hover:bg-gray-200 hover:!text-black"
                   >
                     Đăng nhập

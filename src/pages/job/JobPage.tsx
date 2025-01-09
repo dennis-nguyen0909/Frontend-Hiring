@@ -2,17 +2,12 @@ import {
   Input,
   Select,
   Button,
-  Card,
   Tag,
-  Switch,
-  Image,
   Checkbox,
   Empty,
 } from "antd";
-import { Bookmark } from "lucide-react";
 import { useEffect, useState } from "react";
 import { JobApi } from "../../services/modules/jobServices";
-import { useNavigate } from "react-router-dom";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useSelector } from "react-redux";
 import { useCities } from "../../hooks/useCities";

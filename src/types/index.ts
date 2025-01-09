@@ -119,4 +119,15 @@ export interface IBackendRes<T> {
     user_id: UserApplication;              // Applicant's details (referenced from `User`)
     __v: number;                // MongoDB version key (internal versioning)
   }
+
+  
+  export interface FilterSection {
+    title: string
+    items: {
+      label: string
+      count: number
+      value: string
+    }[]
+  }
+  
   

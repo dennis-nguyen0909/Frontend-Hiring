@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { getDetailUser } from '../modules/userServices';
-import { JwtPayload } from 'jwt-decode';
-import { handleDecoded } from '../../helper';
 
 export const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL

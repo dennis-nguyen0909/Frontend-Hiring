@@ -20,6 +20,7 @@ import AboutPage from '../pages/about';
 import EmployeesPage from '../pages/PageEmployers';
 
 const JobSearchPage = lazy(()=>import('../pages/job/JobPage'));
+const JobBoard = lazy(()=>import('../pages/job/JobBoard'));
 interface IRoute {
     path: string;
     page: ComponentType ;
@@ -47,7 +48,7 @@ export const routes: IRoute[] = [
     },
     {
         path: '/jobs',
-        page: JobSearchPage,
+        page: JobBoard,
         isShowHeader: true,
     },
     {
