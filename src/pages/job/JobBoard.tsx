@@ -68,6 +68,24 @@ export default function JobBoard() {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) { // Giả sử màn hình nhỏ hơn 768px sẽ dùng chế độ "list"
+        setViewMode("list");
+      } else {
+        setViewMode("grid");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Gọi handleResize lần đầu tiên khi component mount
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   const handleCollapse = async () => {
     const newCollapsed = !collapsed;
     setCollapsed(newCollapsed);  // Update local state immediately
@@ -318,9 +336,9 @@ export default function JobBoard() {
                 <div className="flex gap-1 ml-4">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded ${
+                    className={`p-2 rounded  ${
                       viewMode === "grid" ? "bg-gray-100" : ""
-                    }`}
+                    } ${window.innerWidth < 768 ? 'hidden':'' }`}
                   >
                     <Grid2X2 className="w-5 h-5" />
                   </button>
