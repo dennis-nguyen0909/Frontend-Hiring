@@ -81,7 +81,7 @@ export default function SuggestionJob() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Gợi ý việc làm</h1>
+        <h1 className="text-[16px] font-bold text-gray-900">Gợi ý việc làm</h1>
       </div>
       <LoadingComponentSkeleton isLoading={loading}>
       {jobsSuggests.length > 0 ? (

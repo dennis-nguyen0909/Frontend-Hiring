@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Button, Empty, Layout, Select } from "antd";
 import {
   Search,
-  MapPin,
   Grid2X2,
   LayoutList,
   CircleChevronLeft,
@@ -11,39 +10,50 @@ import {
 import { useJobType } from "../../hooks/useJobType";
 import { useContractType } from "../../hooks/useContractType";
 import { useCities } from "../../hooks/useCities";
-import { useDegreeType } from "../../hooks/useDegreeType";
 import { JobApi } from "../../services/modules/jobServices";
 import { useSelector } from "react-redux";
 import { Meta } from "../../types";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
+import { useLocation, useNavigate } from "react-router-dom";
+import { USER_API } from "../../services/modules/userServices";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../../redux/slices/userSlices";
 const { Sider } = Layout;
 export default function JobBoard() {
-  const [collapsed, setCollapsed] = useState(false);
+  const userDetail = useSelector(state=>state.user)
+  const [collapsed, setCollapsed] = useState<boolean>(userDetail?.collapsed);
   const [sortBy, setSortBy] = useState("newest");
-  const [isLoading,setIsLoading]=useState<boolean>(false)
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [listJobs, setListJobs] = useState<[]>([]);
   const [meta, setMeta] = useState<Meta>({});
-  const handleCollapse = async () => {
-    setCollapsed(!collapsed);
-  };
-  const userDetail = useSelector((state) => state.user);
+  const [selectedFilters, setSelectedFilters] = useState<{
+    [key: string]: string[];
+  }>({}); // Store selected checkbox values
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("Florence, Italy");
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const { data: jobTypes } = useJobType();
   const { data: jobContractTypes } = useContractType();
-  const { data: degreeTypes } = useDegreeType();
   const { cities } = useCities();
-  const [searchCity,setSearchCity]=useState<string>('')
-  const handleGetJob = async (current = 1, pageSize = 15, query?: any) => {
+  const [searchCity, setSearchCity] = useState<string>("");
+  const dispatch = useDispatch()
+  const location = useLocation();
+  const { keyword } = location.state || {};  // Nhận dữ liệu từ state
+  const handleGetJob = async (
+    current = 1,
+    pageSize = 9,
+    query?: any,
+    sort?: any
+  ) => {
     const params = {
       current,
       pageSize,
       query: { ...query },
+      sort,
     };
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const response = await JobApi.getAllJobs(
         params,
         userDetail?.access_token
@@ -54,118 +64,146 @@ export default function JobBoard() {
       }
     } catch (e) {
       console.log(e);
-    } finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   };
+  const handleCollapse = async () => {
+    const newCollapsed = !collapsed;
+    setCollapsed(newCollapsed);  // Update local state immediately
+  
+    const params = {
+      toggle_filter: newCollapsed,  // Use the updated value
+      id: userDetail?._id,
+    };
+  
+    try {
+      const res = await USER_API.updateUser(params, userDetail?.access_token);
+      if (res?.data) {
+        dispatch(updateUser({ ...res.data }));  // Update Redux state with the new value
+      }
+    } catch (error) {
+      console.log("Error updating user", error);
+    }
+  };
+  
   useEffect(() => {
-    handleGetJob();
-  }, []);
-  console.log("duydeptrai", cities);
+    if(keyword){
+      const params = {
+        keyword
+      }
+      setSearchTerm(keyword)
+      handleGetJob(1,9,params);
+    }else{
+      handleGetJob();
+    }
+  }, [keyword]);
+
   const filters = [
     {
       title: "Loại công việc",
+      code: "job_type",
       items: jobTypes
         ? jobTypes.map((type) => ({
             label: type.name,
             count: 0,
             value: type.key,
-          }))
-        : [],
-    },
-    {
-      title: "Loại công việc",
-      items: degreeTypes
-        ? degreeTypes.map((type) => ({
-            label: type.name,
-            count: 0,
-            value: type.key,
+            id: type._id,
           }))
         : [],
     },
     {
       title: "Loại hợp đồng",
+      code: "job_contract_type",
       items: jobContractTypes
         ? jobContractTypes.map((type) => ({
             label: type.name,
             count: 0,
             value: type.key,
+            id: type._id,
           }))
         : [],
-    },
-    {
-      title: "Categories",
-      items: [
-        { label: "Design", count: 24, value: "design" },
-        { label: "Sales", count: 3, value: "sales" },
-        { label: "Marketing", count: 3, value: "marketing" },
-        { label: "Business", count: 3, value: "business" },
-        { label: "Human Resource", count: 6, value: "hr" },
-      ],
     },
   ];
   const handleChange = (value: string) => {
     console.log(`Selected city: ${value}`);
-    setSearchCity(value)
+    setSearchCity(value);
   };
   const handleSearch = async () => {
     const query = {
       keyword: searchTerm,
     };
-    await handleGetJob(1, 15, query);
+    await handleGetJob(1, 9, query);
   };
-  const onFilter = async()=>{
+  const onFilter = async () => {
     const query = {
-      city_id:searchCity
-    }
-    await handleGetJob(1,15,query);
-  }
+      city_id: searchCity,
+      keyword: searchTerm,
+      job_type: selectedFilters?.job_type || [], // Add job_type filter if selected
+      job_contract_type: selectedFilters?.job_contract_type || [], // Add job_contract_type filter if selected
+    };
+    await handleGetJob(1, 9, query);
+  };
+  const handleOnCheckbox = (code: string, label: string) => {
+    setSelectedFilters((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (updatedFilters[code]) {
+        // If the filter already exists, toggle the selected label
+        if (updatedFilters[code].includes(label)) {
+          updatedFilters[code] = updatedFilters[code].filter(
+            (item) => item !== label
+          );
+        } else {
+          updatedFilters[code].push(label);
+        }
+      } else {
+        updatedFilters[code] = [label];
+      }
+      return updatedFilters;
+    });
+  };
+
+  const onApply = (jobId: string) => {
+    navigate(`/job-information/${jobId}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-white px-0 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-center mb-2">
-            Find your{" "}
+          <h1 className="text-[18px] font-bold text-center mb-2">
+            Tìm công việc{" "}
             <span className="relative">
-              dream job
+              mơ ước của bạn
               <span className="absolute bottom-0 left-0 w-full h-2 bg-blue-200 -z-10"></span>
             </span>
           </h1>
-          <p className="text-center text-gray-600 mb-8">
-            Find your next career at companies like HubSpot, Nike, and Dropbox
+          <p className="text-center text-gray-600 mb-8 text-[10px]">
+            Tiếp cận 40,000+ tin tuyển dụng việc làm mỗi ngày từ hàng nghìn
+            doanh nghiệp uy tín tại Việt Nam
           </p>
 
           {/* Search Bar */}
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4 p-4 bg-white rounded-lg shadow-sm border">
-              <div className="flex-1 flex items-center">
-                <Search className="w-5 h-5 text-gray-400 mr-2" />
+          <div className="max-w-2xl mx-auto">
+            <div className="flex flex-col md:flex-row gap-4 bg-white rounded-lg shadow-sm border">
+              <div className="flex-1 flex items-center ml-2">
+                <Search className="w-4 h-4 text-gray-400 mr-" />
                 <input
                   type="text"
                   placeholder="Job title or keyword"
-                  className="w-full border-none focus:ring-0"
+                  className="w-full border-none pl-1 py-1 text-[10px] focus:outline-none focus:border-none h-8"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
+                <Button
+                  onClick={handleSearch}
+                  type="primary"
+                  className="!bg-primaryColor h-6 text-[10px] px-3 mr-2 text-center"
+                >
+                  Tìm kiếm
+                </Button>
               </div>
-              <div className="flex-1 flex items-center border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-4">
-                <MapPin className="w-5 h-5 text-gray-400 mr-2" />
-                <input
-                  type="text"
-                  placeholder="Location"
-                  className="w-full border-none focus:ring-0"
-                  value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
-                />
-              </div>
-              <Button
-                onClick={handleSearch}
-                type="primary"
-                className="bg-indigo-600"
-              >
-                Search
-              </Button>
             </div>
           </div>
         </div>
@@ -175,25 +213,31 @@ export default function JobBoard() {
       <main className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters */}
-          <Sider collapsed={collapsed} className="bg-transparent" width={250}>
+          <Sider collapsed={userDetail?.toggle_filter} className="bg-transparent" width={250}>
             <div className="w-full lg:w-64 space-y-6">
               {/* Hiển thị biểu tượng Filter khi thu gọn */}
               <div className="flex items-center justify-between">
-                {collapsed ? (
+                {userDetail?.toggle_filter ? (
                   <CircleChevronLeft onClick={handleCollapse} />
                 ) : (
                   <CircleChevronRight onClick={handleCollapse} />
                 )}
-                {!collapsed && <Button onClick={onFilter} className="ml-2">Lọc</Button>}
+                {!userDetail?.toggle_filter && (
+                  <Button onClick={onFilter} className="ml-2">
+                    Lọc
+                  </Button>
+                )}
               </div>
 
               {/* Hiển thị nội dung lọc */}
-              {!collapsed && (
+              {!userDetail?.toggle_filter && (
                 <div>
                   <div className="pb-3">
-                    <h3 className="font-semibold mb-4">Lọc theo thành phố</h3>
+                    <h3 className="font-semibold mb-4 text-[12px]">
+                      Lọc theo thành phố
+                    </h3>
                     <Select
-                      defaultValue="thanh_pho_ho_chi_minh"
+                      defaultValue={cities[0]?._id}
                       style={{ width: "100%" }}
                       onChange={handleChange}
                       placeholder="Chọn thành phố"
@@ -205,20 +249,27 @@ export default function JobBoard() {
                       ))}
                     </Select>
                   </div>
-                  {filters.map((section) => (
+                  {filters?.map((section) => (
                     <div key={section.title} className="pb-3">
-                      <h3 className="font-semibold mb-4">{section.title}</h3>
+                      <h3 className="font-semibold mb-4 text-[12px]">
+                        {section.title}
+                      </h3>
                       <div className="space-y-2">
-                        {section.items.map((item) => (
+                        {section?.items?.map((item) => (
                           <label key={item.value} className="flex items-center">
                             <input
+                              onClick={() =>
+                                handleOnCheckbox(section?.code, item?.id)
+                              }
                               type="checkbox"
                               className="rounded border-gray-300 text-indigo-600"
                             />
-                            <span className="ml-2 text-sm">{item.label}</span>
-                            <span className="ml-auto text-sm text-gray-500">
-                              ({item.count})
+                            <span className="ml-2 text-[12px]">
+                              {item.label}
                             </span>
+                            {/* <span className="ml-auto text-[12px] text-gray-500">
+                              ({item.count})
+                            </span> */}
                           </label>
                         ))}
                       </div>
@@ -232,38 +283,38 @@ export default function JobBoard() {
           {/* Job Listings */}
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold">All Jobs</h2>
+              <h2 className="text-[16px] font-semibold">Tất cả công việc</h2>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Sort by:</span>
+                <span className="text-[12px] text-gray-500">Sắp xếp theo:</span>
                 <select
-                  className="text-sm border-gray-300 rounded-md"
+                  defaultValue="desc" // Giá trị mặc định là 'Cũ nhất'
+                  className="text-[12px] border-gray-300 rounded-md"
                   onChange={(e) => {
-                    const selectedSort = e.target.value; // Get selected sort option
-                    setSortBy(selectedSort); // Update the sort option
+                    const selectedSort = e.target.value; // Lấy giá trị của option đã chọn
+                    setSortBy(selectedSort); // Cập nhật lựa chọn sort
 
-                    let sortCriteria = {};
+                    let sortCriteria = {}; // Mặc định là không có sắp xếp
 
-                    if (selectedSort === "Newest") {
-                      sortCriteria = { createdAt: -1 }; // Sort by 'createdAt' in descending order
-                    } else if (selectedSort === "Oldest") {
-                      sortCriteria = { createdAt: 1 }; // Sort by 'createdAt' in ascending order
-                    } else {
-                      sortCriteria = {}; // Default case for 'Most relevant' (no sort)
+                    // Cập nhật sortCriteria dựa trên lựa chọn
+                    if (selectedSort === "desc") {
+                      sortCriteria = { createdAt: "desc" }; // Sắp xếp theo createdAt mới nhất
+                    } else if (selectedSort === "asc") {
+                      sortCriteria = { createdAt: "asc" }; // Sắp xếp theo createdAt cũ nhất
                     }
 
-                    const params = {
-                      query: {
-                        ...sortCriteria, // Add the sort criteria to the query
-                      },
+                    // Tạo params cho query
+                    const paramsSort = {
+                      sort: sortCriteria,
                     };
 
-                    handleGetJob(1, 15, params); // Refetch jobs with new sort criteria
+                    // Gọi hàm handleGetJob với các tham số mới
+                    handleGetJob(1, 9, {}, paramsSort); // 1: trang đầu, 15: số lượng item trên mỗi trang
                   }}
                 >
-                  <option>Most relevant</option>
-                  <option>Newest</option>
-                  <option>Oldest</option>
+                  <option value={'desc'}>Mới nhất</option>
+                  <option value={'asc'}>Cũ nhất</option>
                 </select>
+
                 <div className="flex gap-1 ml-4">
                   <button
                     onClick={() => setViewMode("grid")}
@@ -286,52 +337,97 @@ export default function JobBoard() {
             </div>
 
             <LoadingComponentSkeleton isLoading={isLoading}>
-              {listJobs?.length>0 ? (
+              {listJobs?.length > 0 ? (
                 <div>
                   <div
                     className={`grid ${
-                      viewMode === "grid" ? "grid-cols-2" : "grid-cols-1"
-                    } gap-4`}
+                      viewMode === "grid"
+                        ? "grid-cols-3 gap-2"
+                        : "grid-cols-1 gap-3"
+                    }`} // Giảm gap giữa các cột khi ở chế độ grid
                   >
                     {listJobs?.map((job) => (
                       <div
                         key={job?.id}
-                        className="bg-white p-6 rounded-lg border hover:shadow-md transition-shadow"
+                        className={`bg-white p-4 rounded-lg border hover:shadow-md transition-shadow ${
+                          viewMode === "grid" ? "p-3" : "p-4"
+                        }`} // Ở dạng grid, giảm padding hơn nữa
                       >
-                        <div className="flex items-start gap-4">
+                        <div className="flex items-start gap-3">
                           <img
                             src={job?.user_id?.avatar_company}
                             alt={"ảnh"}
-                            className="w-12 h-12 rounded-lg"
+                            className={`rounded-lg ${
+                              viewMode === "grid" ? "w-10 h-10" : "w-10 h-10"
+                            }`} // Giảm kích thước avatar hơn khi ở grid
                           />
                           <div className="flex-1">
-                            <h3 className="font-semibold">{job.title}</h3>
-                            <div className="text-sm text-gray-500 mt-1">
+                            <h3
+                              className={`font-semibold ${
+                                viewMode === "grid"
+                                  ? "text-[12px]"
+                                  : "text-[12px]"
+                              }`}
+                            >
+                              {job.title}
+                            </h3>{" "}
+                            {/* Giảm kích thước chữ tiêu đề trong chế độ grid */}
+                            <div
+                              className={`text-gray-500 mt-1 ${
+                                viewMode === "grid"
+                                  ? "text-[8px]"
+                                  : "text-[12px]"
+                              }`}
+                            >
                               {job?.user_id?.company_name} •{" "}
-                              {job?.user_id?.city_id?.name}
+                              {job?.city_id?.name}
                             </div>
-                            <div className="flex gap-2 mt-3">
-                              <span className="px-3 py-1 text-xs rounded-full bg-blue-50 text-blue-600">
+                            <div
+                              className={`text-gray-500 mt-1 ${
+                                viewMode === "grid"
+                                  ? "text-[10px]"
+                                  : "text-[12px]"
+                              }`}
+                            >
+                              Lương :{" "}
+                              {job?.is_negotiable
+                                ? "Thỏa thuận"
+                                : `${job?.salary_range?.min}${job?.type_money?.symbol} - ${job?.salary_range?.max}${job?.type_money?.symbol}`}
+                            </div>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              <span className="px-2 py-1 text-[10px] rounded-full bg-blue-50 text-blue-600">
                                 {job?.job_type?.name}
+                              </span>
+                              <span className="px-2 py-1 text-[10px] rounded-full bg-blue-50 text-blue-600">
+                                {job?.job_contract_type?.name}
                               </span>
                               {job?.skills?.map((tag) => (
                                 <span
                                   key={tag}
-                                  className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-600"
+                                  className="px-2 py-1 text-[10px] rounded-full bg-gray-100 text-gray-600"
                                 >
                                   {tag?.name}
                                 </span>
                               ))}
                             </div>
                           </div>
-                          <Button type="primary" className="bg-indigo-600">
-                            Apply
+                          <Button
+                            onClick={() => onApply(job?._id)}
+                            type="primary"
+                            className={`!bg-primaryColor !cursor-pointer ${
+                              viewMode === "grid"
+                                ? "text-[10px] py-1 px-2"
+                                : "text-[12px] py-1 px-3"
+                            }`} // Giảm padding và kích thước nút khi ở chế độ grid
+                          >
+                            Ứng tuyển
                           </Button>
                         </div>
                       </div>
                     ))}
                   </div>
                   <CustomPagination
+                    sizeArrow={30}
                     currentPage={meta?.current_page}
                     total={meta?.total}
                     perPage={meta?.per_page}
@@ -340,7 +436,12 @@ export default function JobBoard() {
                     }}
                   />
                 </div>
-              ) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={`Không có dữ liệu`} />}
+              ) : (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={`Không có dữ liệu`}
+                />
+              )}
             </LoadingComponentSkeleton>
           </div>
         </div>

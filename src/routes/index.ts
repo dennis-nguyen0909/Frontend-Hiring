@@ -10,7 +10,7 @@ import ResetPage from '../pages/auth/ResetPage';
 import UserDetail from '../pages/detail/UserDetail';
 import Profile from '../pages/detail/Profile/Profile';
 import ManagePage from '../pages/employer/manage/ManagePage';
-import DashBoard from '../pages/dashboard';
+
 import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
 import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
 // import JobSearchPage from '../pages/job/JobPage';
@@ -21,6 +21,7 @@ import EmployeesPage from '../pages/PageEmployers';
 
 const JobSearchPage = lazy(()=>import('../pages/job/JobPage'));
 const JobBoard = lazy(()=>import('../pages/job/JobBoard'));
+const DashBoard = lazy(()=>import ('../pages/dashboard'));
 interface IRoute {
     path: string;
     page: ComponentType ;

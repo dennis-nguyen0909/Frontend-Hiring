@@ -5,11 +5,13 @@ import { useSelector } from "react-redux";
 import { Meta } from "../../../types";
 import CustomPagination from "../../../components/ui/CustomPanigation/CustomPanigation";
 import { Empty } from "antd";
+import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 
 export default function SuggestionJobCity() {
 
   const [jobSuggestionCity, setJobSuggestionCity] = useState<[]>([]);
   const [metaSuggestionCity, setMetaSuggestionCity] = useState<Meta>({});
+  const [isLoading,setIsLoading]=useState<boolean>(false)
 
   const userDetail = useSelector((state) => state.user);
 
@@ -23,6 +25,7 @@ export default function SuggestionJobCity() {
 
   const getJobSuggestionCity = async (current = 1, pageSize = 12) => {
     try {
+      setIsLoading(true)
       const params = {
         current,
         pageSize,
@@ -38,6 +41,8 @@ export default function SuggestionJobCity() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false)
     }
   };
   useEffect(() => {
@@ -47,9 +52,10 @@ export default function SuggestionJobCity() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Việc làm gần bạn</h1>
+        <h1 className="text-[16px] font-bold text-gray-900">Việc làm gần bạn</h1>
       </div>
-      {jobSuggestionCity.length> 0 ? (
+     <LoadingComponentSkeleton isLoading={isLoading}>
+     {jobSuggestionCity.length> 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Use data from the query hoặc fallback to the FEATURED_JOBS */}
         {(jobSuggestionCity?.length ? jobSuggestionCity : jobSuggestionCity).map((job) => (
@@ -67,6 +73,7 @@ export default function SuggestionJobCity() {
           getJobSuggestionCity(current, pageSize)
         }
       />}
+     </LoadingComponentSkeleton>
     </div>
   );
 }

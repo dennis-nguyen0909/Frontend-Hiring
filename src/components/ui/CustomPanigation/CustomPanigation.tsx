@@ -7,12 +7,14 @@ interface CustomPaginationProps {
   total: number;
   perPage: number;
   onPageChange: (current: number, pageSize: number) => void;
+  className?:string;
+  sizeArrow?:number ;
 }
 
-const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, total, perPage, onPageChange }) => {
+const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, total, perPage, onPageChange,className,sizeArrow=30 }) => {
   return (
     <Pagination
-      className="panigate"
+      className={`panigate ${className}`}
       current={currentPage}
       pageSize={perPage}
       total={total}
@@ -23,7 +25,7 @@ const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, total,
         if (type === 'prev') {
           return (
             <ArrowLeft
-              size={30}
+              size={sizeArrow}
               className="hover:bg-[#f3f3f3] px-2 py-2 cursor-pointer rounded-full"
             />
           );
@@ -31,7 +33,7 @@ const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, total,
         if (type === 'next') {
           return (
             <ArrowRight
-              size={30}
+              size={sizeArrow}
               className="hover:bg-[#f3f3f3] px-2 py-2 cursor-pointer rounded-full"
             />
           );

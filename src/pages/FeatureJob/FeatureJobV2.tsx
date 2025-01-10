@@ -175,7 +175,7 @@ const FeatureJobV2 = () => {
         className="flex justify-between items-center h-1/4"
         style={{ margin: "50px 0" }}
       >
-        <h1 className="text-textBlack text-3xl font-medium">
+        <h1 className="text-textBlack text-[16px] font-medium">
           Việc làm tốt nhất
         </h1>
         <div className="relative flex items-center">
