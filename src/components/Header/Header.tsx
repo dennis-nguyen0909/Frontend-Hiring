@@ -16,7 +16,7 @@ import {
 import avtDefault from "../../assets/avatars/avatar-default.jpg";
 import { useSelector } from "react-redux";
 import logo from "../../assets/logo/LogoH.png";
-import { Bell, ChevronDown, ChevronUp } from "lucide-react";
+import { Bell, ChevronDown, ChevronUp, Menu as HamburgerMenu, Menu } from "lucide-react";
 import Setting from "../Setting/Setting";
 import "./styles.css";
 import {
@@ -27,57 +27,46 @@ import {
 import moment from "moment";
 import { io } from "socket.io-client";
 import { NOTIFICATION_API } from "../../services/modules/NotificationService";
-interface INotification {
-  _id: string;
-  candidateId: any; // Ứng viên
-  employerId: any; // Nhà tuyển dụng
-  applicationId: any; // Đơn ứng tuyển
-  jobId: any; // Công việc
-  message: string; // Tin nhắn thông báo
-  isRead: boolean; // Trạng thái đã đọc
-  createdAt: Date; // Thời gian tạo thông báo
-}
 
 const Header: React.FC = () => {
   const [hovered, setHovered] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false); // New state to manage the menu visibility
   const navigate = useNavigate();
   const userDetail = useSelector((state) => state.user);
   const [socket, setSocket] = useState<any>(null);
-  const [notifications,setNotifications]=useState<INotification[]>([])
-  const getNotificationsForCandidate=async()=>{
+  const [notifications, setNotifications] = useState<INotification[]>([]);
+
+  const getNotificationsForCandidate = async () => {
     try {
-      const res = await NOTIFICATION_API.getNotificationsForCandidate(userDetail?._id,userDetail?.access_token);
-      if(res.data){
-        setNotifications(res.data.items)
+      const res = await NOTIFICATION_API.getNotificationsForCandidate(userDetail?._id, userDetail?.access_token);
+      if (res.data) {
+        setNotifications(res.data.items);
       }
     } catch (error) {
       console.error(error);
     }
-  }
-  useEffect(()=>{
-    if(userDetail?.access_token){
-      getNotificationsForCandidate()
-    }
-  },[])
+  };
 
   useEffect(() => {
-    // Thiết lập kết nối với WebSocket server (NestJS)
+    if (userDetail?.access_token) {
+      getNotificationsForCandidate();
+    }
+  }, []);
+
+  useEffect(() => {
     const newSocket = io(import.meta.env.VITE_API_SOCKET, {
-      transports: ["websocket"], // Chỉ định sử dụng WebSocket
+      transports: ["websocket"],
     });
     setSocket(newSocket);
-    console.log("Socket created:", newSocket);
 
     newSocket.on("notification", (data: any) => {
-      getNotificationsForCandidate()
+      getNotificationsForCandidate();
     });
 
     newSocket.on("connect", () => {
-      // Giả sử userId là 123
       newSocket.emit("joinRoom", { userId: userDetail?._id });
-      console.log("Client joined room with userId:", userDetail?._id);
     });
-    // Lắng nghe sự kiện lỗi kết nối
+
     newSocket.on("connect_error", (err: any) => {
       console.error("Connection error:", err);
     });
@@ -89,17 +78,21 @@ const Header: React.FC = () => {
     return () => {
       newSocket.close();
     };
-  }, []);
+  }, [userDetail]);
+
   const onReaded = async (notificationIds: string[]) => {
     const result = await NOTIFICATION_API.markAsRead(notificationIds, userDetail?.access_token);
     if (result) {
-      setNotifications(prevState =>
-        prevState.map(notification =>
-          notificationIds.includes(notification._id) ? { ...notification, isRead: true } : notification
+      setNotifications((prevState) =>
+        prevState.map((notification) =>
+          notificationIds.includes(notification._id)
+            ? { ...notification, isRead: true }
+            : notification
         )
       );
     }
   };
+
   const renderAccountHeader = (roleName: string) => {
     return (
       <div>
@@ -123,9 +116,7 @@ const Header: React.FC = () => {
           <div className="flex">
             <Avatar
               size="large"
-              src={
-                userDetail?.avatar_company || userDetail?.avatar || avtDefault
-              }
+              src={userDetail?.avatar_company || userDetail?.avatar || avtDefault}
             />
             <div className="ml-5">
               <p className="font-semibold text-[14px] text-primaryColor ">
@@ -162,6 +153,7 @@ const Header: React.FC = () => {
       </div>
     );
   };
+
   const content = (
     <div className="w-[400px]">
       <div className="flex items-center">
@@ -177,8 +169,8 @@ const Header: React.FC = () => {
       </div>
     </div>
   );
-  const handleClick = (item) => {
-    // navigate(`${item.path}`)
+
+  const handleClick = (item: any) => {
     if (item.name === "Dashboard") {
       navigate(`/dashboard/${userDetail?._id || userDetail?._id}`);
     } else {
@@ -188,11 +180,14 @@ const Header: React.FC = () => {
 
   const renderNotifications = () => {
     return (
-      <div className="min-w-min max-w-sm  bg-white rounded-lg  w-[250px]">
+      <div className="min-w-min max-w-sm bg-white rounded-lg w-[250px]">
         <div className="flex flex-row items-center justify-between space-y-0 pb-3">
-          <div className="text-[12px] font-bold ">Thông báo</div>
+          <div className="text-[12px] font-bold">Thông báo</div>
           <div className="flex items-center gap-2">
-            <Button onClick={() => onReaded(unreadNotifications.map(notification => notification._id))} className="text-green-600 text-[12px] border-none hover:text-green-700 p-0">
+            <Button
+              onClick={() => onReaded(unreadNotifications.map((notification) => notification._id))}
+              className="text-green-600 text-[12px] border-none hover:text-green-700 p-0"
+            >
               Đánh dấu là đã đọc
             </Button>
           </div>
@@ -206,19 +201,16 @@ const Header: React.FC = () => {
                   className="rounded-lg bg-slate-50 p-3 hover:bg-slate-100 transition-colors cursor-pointer px-2"
                 >
                   <h3 className="font-semibold text-slate-900 text-[10px]">
-                    {notification.title}
-                  </h3>
-                  <p className="mt-1 text-[10px] text-slate-700">
                     {notification.message}
-                  </p>
-                 <div className="flex justify-between items-center">
-                 <p className="mt-2 text-[10px] text-slate-500">
-                    {moment(notification.createdAt).fromNow()}
-                  </p>
-                  <p className="mt-2 text-[10px] text-slate-500">
-                    {notification.isRead ? 'Đã xem' : ''}
-                  </p>
-                </div>
+                  </h3>
+                  <div className="flex justify-between items-center">
+                    <p className="mt-2 text-[10px] text-slate-500">
+                      {moment(notification.createdAt).fromNow()}
+                    </p>
+                    <p className="mt-2 text-[10px] text-slate-500">
+                      {notification.isRead ? 'Đã xem' : ''}
+                    </p>
+                  </div>
                 </div>
               ))
             ) : (
@@ -229,21 +221,63 @@ const Header: React.FC = () => {
       </div>
     );
   };
-  const unreadNotifications = notifications.filter(notification => !notification.isRead);
+
+  const unreadNotifications = notifications.filter((notification) => !notification.isRead);
+
   return (
     <header>
       <div
-        className="justify-between items-center md:px-4 lg:px-primary w-full sticky hidden md:flex"
+        className="justify-between items-center md:px-4 lg:px-primary w-full sticky md:flex"
         style={{ backgroundColor: "black" }}
       >
         <div className="flex justify-center items-center gap-2">
           <Avatar shape="circle" src={logo} size={45} />
-          <p className="text-white font-bold  md:hidden lg:block">HireDev</p>
+          <p className="text-white font-bold md:hidden lg:block">HireDev</p>
         </div>
-        <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap py-2">
+
+        {/* Hamburger Menu for Small Screens */}
+        <div className="md:hidden flex items-center gap-4">
+          <Menu
+            size={30}
+            className="text-white cursor-pointer"
+            onClick={() => setMenuVisible(!menuVisible)}
+          />
+        </div>
+
+        {/* Menu */}
+        {menuVisible && (
+          <ul className="flex gap-[20px] md:gap-5 items-center flex-col flex-wrap py-2 w-full bg-black md:hidden">
+            {menuHeader.map((item, idx) => {
+              if (item.id === "dashboard" && !userDetail.access_token) {
+                return null; 
+              }
+              if (item.id === "profile_cv" && !userDetail.access_token) {
+                return null;
+              }
+              if (
+                item.id === "profile_cv" &&
+                userDetail?.role?.role_name === "EMPLOYER"
+              ) {
+                return null;
+              }
+              return (
+                <li key={idx}>
+                  <div
+                    onClick={() => handleClick(item)}
+                    className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+                  >
+                    {item.name}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap py-2 hidden md:flex">
           {menuHeader.map((item, idx) => {
             if (item.id === "dashboard" && !userDetail.access_token) {
-              return null; // Không hiển thị Dashboard nếu không có access_token
+              return null;
             }
             if (item.id === "profile_cv" && !userDetail.access_token) {
               return null;
@@ -256,96 +290,37 @@ const Header: React.FC = () => {
             }
             return (
               <li key={idx}>
-                {item.candidate === true ? (
-                  <div
-                    onClick={() => handleClick(item)}
-                    className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-                  >
-                    {item.name}
-                  </div>
-                ) : item.employer === true ? (
-                  <div
-                    onClick={() => handleClick(item)}
-                    className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-                  >
-                    {item.name}
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => handleClick(item)}
-                    className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-                  >
-                    {item.name}
-                  </div>
-                )}
+                <div
+                  onClick={() => handleClick(item)}
+                  className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+                >
+                  {item.name}
+                </div>
               </li>
             );
           })}
-          {userDetail?.access_token && 
-          <li className="relative mt-[2px]">
-            <Popover
-              content={renderNotifications}
-              trigger="hover"
-              placement="bottom"
-            >
-              <Badge
-                className="custom-badge"
-                count={unreadNotifications.length}
-                overflowCount={99}
-              >
-                <Bell size={20} className="text-2xl cursor-pointer text-white hover:text-blue-500" />
-              </Badge>
-            </Popover>
-          </li>
-            }
-
-          <div>
-            {userDetail.access_token ? (
-              <>
-                <Popover
-                  placement="bottomLeft"
-                  overlayClassName="no-arrow"
-                  opened={hovered}
-                  content={content}
-                >
-                  <li
-                    className="relative w-[90px] bg-white rounded-full py-1 px-1 flex items-center justify-between cursor-pointer"
-                    onMouseEnter={() => setHovered(true)}
-                    onMouseLeave={() => setHovered(false)}
-                  >
-                    <Avatar
-                      size={40}
-                      src={
-                        userDetail?.avatar_company ||
-                        userDetail?.avatar ||
-                        avtDefault
-                      }
-                    />
-                    {!hovered ? <ChevronDown /> : <ChevronUp />}
-                  </li>
-                </Popover>
-              </>
-            ) : (
-              <div>
-                <div className="flex space-x-2">
-                  <Button
-                    onClick={() => navigate("/login")}
-                    className="bg-white text-black hover:bg-gray-200 hover:!text-black"
-                  >
-                    Đăng nhập
-                  </Button>
-                  <Button
-                    onClick={() => navigate("/register")}
-                    style={{ backgroundColor: "#d64453" }}
-                    className="text-white outline-none border-none hover:!text-black"
-                  >
-                    Đăng ký
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
         </ul>
+
+        <div>
+          {userDetail.access_token ? (
+            <>
+              <Popover
+                placement="bottomLeft"
+                overlayClassName="no-arrow"
+                opened={hovered}
+                content={content}
+                onVisibleChange={() => setHovered(!hovered)}
+              >
+                <div className="w-full flex items-center justify-center">
+                  <Avatar size="large" src={userDetail?.avatar || avtDefault} />
+                  <ChevronDown className="cursor-pointer text-white" size={20} />
+                </div>
+              </Popover>
+            </>
+          ) : (
+            <Button onClick={() => navigate("/login")}>Đăng nhập</Button>
+          )}
+        </div>
       </div>
     </header>
   );
