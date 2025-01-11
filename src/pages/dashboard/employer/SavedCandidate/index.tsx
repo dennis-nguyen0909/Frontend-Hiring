@@ -41,6 +41,7 @@ export default function SavedCandidate() {
       )
     );
   };
+
   const handleGetCandidate = async (id: string, access_token: string) => {
     try {
       const res = await USER_API.getDetailUser(id, access_token);
@@ -49,6 +50,7 @@ export default function SavedCandidate() {
       console.error(error);
     }
   };
+
   const handleViewProfile = async (candidate: any) => {
     try {
       const res = await handleGetCandidate(
@@ -99,6 +101,7 @@ export default function SavedCandidate() {
     }
     setIsLoading(false);
   };
+
   useEffect(() => {
     handleGetSaveCandidates({ current: 1, pageSize: 10 });
   }, []);
@@ -164,22 +167,23 @@ export default function SavedCandidate() {
           }
           title={<span className="font-medium">{candidate.full_name}</span>}
           description={
-            <span className="text-gray-500">{candidate.position}123</span>
+            <span className="text-gray-500">{candidate.position}</span>
           }
         />
       </List.Item>
     );
   };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {currentTab === "save_candidate" && (
-        <div className=" mx-auto">
+        <div className="mx-auto max-w-7xl">
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-6 border-b">
               <div className="flex justify-between items-center">
                 <h1 className="text-xl font-semibold">Ứng viên đã lưu</h1>
                 <p className="text-sm text-gray-500">
-                  All of the saveCandidates are visible until 24 march, 2021
+                  All of the saveCandidates are visible until 24 March, 2021
                 </p>
               </div>
             </div>

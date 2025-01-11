@@ -111,7 +111,7 @@ const LoginPage = () => {
         initialValues={{ role }}
       >
         {/* header */}
-        <div className="flex items-center justify-start gap-2">
+        <div className="flex items-center lg:justify-start justify-center gap-2">
           <Avatar shape="square" src={icon} />
           <h1
             onClick={() => navigate("/")}
@@ -304,7 +304,7 @@ const LoginPage = () => {
           <hr className="w-full h-0.95 bg-gray-500" />
         </div>
 
-        <div className="flex justify-between mt-5 w-full">
+        <div className="flex justify-between mt-5 w-full gap-2">
         <a href={`${import.meta.env.VITE_API_LOGIN_FACEBOOK}`}>
           <Button
             className="flex items-center"
@@ -347,12 +347,12 @@ const LoginPage = () => {
   };
   return (
     <div className="flex justify-between items-center overflow-hidden">
-      <div className="flex flex-col gap-[100px] h-screen w-3/6 pl-[150px]">
+      <div className="flex flex-col gap-[100px] h-screen lg:w-3/6 lg:pl-[150px] px-primaryx2 w-full">
         <div className="flex align-center justify-center ">
           {renderFormCreate()}
         </div>
       </div>
-      <div className="flex flex-col gap-[100px] h-screen w-2/4 relative">
+      <div className=" flex-col gap-[100px] h-screen w-2/4 relative lg:flex hidden">
         <img src={logo} alt="" className="fixed h-full" />
         <p className="absolute font-normal text-3xl text-white bottom-[250px] left-[100px]">
           Over 1,75,324 candidates

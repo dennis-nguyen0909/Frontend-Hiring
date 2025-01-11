@@ -13,7 +13,9 @@ import { calculateTimeRemaining, defaultMeta } from "../../../../untils";
 import { JobApi } from "../../../../services/modules/jobServices";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import './styles.css'
+
 const { Text, Title } = Typography;
+
 const OverviewEmployer = () => {
   const columns = [
     {
@@ -28,31 +30,35 @@ const OverviewEmployer = () => {
           </div>
         </div>
       ),
+      width: '30%',
+      className: "whitespace-nowrap overflow-hidden text-ellipsis", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
       title: "Trạng thái",
       dataIndex: "is_active",
       key: "is_active",
-      render: (isActive:any) => (
-        <>
+      render: (isActive: any) => (
         <Badge
           status={isActive ? "success" : "error"}
           text={isActive ? "Hoạt động" : "Đã hết hạn"}
           className="whitespace-nowrap"
-          />
-          </>
+        />
       ),
+      width: '15%',
+      className: "whitespace-nowrap overflow-hidden text-ellipsis", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
       title: "Số lượng ứng tuyển",
-      dataIndex: "applications",
-      key: "applications",
+      dataIndex: "count_apply",
+      key: "count_apply",
       render: (count: number) => (
         <div className="flex items-center gap-2">
           <TeamOutlined />
-          <span>{count} Người ứng tuyển</span>
+          <span>{count || 0} Người ứng tuyển</span>
         </div>
       ),
+      width: '20%',
+      className: "whitespace-nowrap overflow-hidden text-ellipsis", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
       title: "Hành động",
@@ -76,16 +82,19 @@ const OverviewEmployer = () => {
           </Dropdown>
         </div>
       ),
+      width: '20%',
+      className: "whitespace-nowrap overflow-hidden text-ellipsis", // Thêm class CSS để ngăn nội dung xuống dòng
     },
   ];
 
-  const [metaSaveCandidate,setMetaSaveCandidate]=useState<Meta>(defaultMeta)
+  const [metaSaveCandidate, setMetaSaveCandidate] = useState<Meta>(defaultMeta);
   const [jobRecents, setJobRecents] = useState<never[]>([]);
   const [metaJobRecents, setMetaJobRecents] = useState<Meta>(defaultMeta);
   const userDetail = useSelector((state) => state.user);
   const [countJobActive, setCountJobActive] = useState<number>(0);
   const [countOpenJob, setCountOpenJob] = useState(0);
   const [countSaveCandidate, setCountSaveCandidate] = useState(1);
+
   const handleGetSaveCandidate = async ({ current = 1, pageSize = 10 }) => {
     const params = {
       current, // Trang hiện tại
@@ -93,7 +102,6 @@ const OverviewEmployer = () => {
     };
 
     try {
-      // Gọi API với các tham số phân trang
       const res = await SAVE_CANDIDATE_API.getSaveCandidateByEmployerId(
         userDetail?._id,
         params,
@@ -106,43 +114,49 @@ const OverviewEmployer = () => {
       /* empty */
     }
   };
-  const handleGetAllJobRecent =async ({current=1,pageSize=10})=>{
+
+  const handleGetAllJobRecent = async ({ current = 1, pageSize = 10 }) => {
     try {
-      const params ={
+      const params = {
         current,
         pageSize,
-        query:{
-          user_id:userDetail?._id
-        }
-      }
-      const res = await JobApi.getAllJobRecent(params,userDetail?._id);
-      if(res.data){
-        setJobRecents(res.data.items)
-        setMetaJobRecents(res.data.meta)
-      }
-    }catch(error){
-      console.error(error)
-    }
-  }
-  const handletGetJobActivity = async ()=>{
-    try {
-      const res = await JobApi.countActiveJobsByUser(userDetail?._id,userDetail?.access_token);
-      if(res.data){
-        setCountJobActive(res.data)
+        query: {
+          user_id: userDetail?._id,
+        },
+      };
+      const res = await JobApi.getAllJobRecent(params, userDetail?._id);
+      if (res.data) {
+        setJobRecents(res.data.items);
+        setMetaJobRecents(res.data.meta);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
-  useEffect(()=>{
-    handleGetSaveCandidate({current:1,pageSize:10})
-    handleGetAllJobRecent({current:1,pageSize:10})
-    handletGetJobActivity();
-  },[])
+  };
+
+  const handletGetJobActivity = async () => {
+    try {
+      const res = await JobApi.countActiveJobsByUser(
+        userDetail?._id,
+        userDetail?.access_token
+      );
+      if (res.data) {
+        setCountJobActive(res.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    if (countJobActive === 0) return; 
-    let start = 0; 
+    handleGetSaveCandidate({ current: 1, pageSize: 10 });
+    handleGetAllJobRecent({ current: 1, pageSize: 10 });
+    handletGetJobActivity();
+  }, []);
+
+  useEffect(() => {
+    if (countJobActive === 0) return;
+    let start = 0;
     const end = countJobActive;
     const duration = 500;
 
@@ -156,35 +170,33 @@ const OverviewEmployer = () => {
       }
     }, intervalTime);
 
-    // Cleanup interval khi component unmount hoặc countJobActive thay đổi
     return () => clearInterval(interval);
-  }, [countJobActive]); // Khi countJobActive thay đổi, bắt đầu đếm lại
+  }, [countJobActive]);
 
   useEffect(() => {
-    // If the count is 0, do not start the interval
     if (metaSaveCandidate.count === 0) {
-      setCountSaveCandidate(0); // Set count to 0 directly when there's no count
-      return; // Exit early if count is 0
+      setCountSaveCandidate(0);
+      return;
     }
-  
-    let start = 1; 
+
+    let start = 1;
     const end = metaSaveCandidate.count;
     const duration = 500;
-  
+
     const intervalTime = duration / (end - start);
-  
+
     const interval = setInterval(() => {
       start += 1;
       setCountSaveCandidate(start);
-  
+
       if (start >= end) {
         clearInterval(interval); // Stop interval once it reaches the end
       }
     }, intervalTime);
-  
-    // Cleanup interval on unmount hoặc when metaSaveCandidate.count changes
+
     return () => clearInterval(interval);
-  }, [metaSaveCandidate.count]); 
+  }, [metaSaveCandidate.count]);
+
   return (
     <div>
       <div className="mb-8 flex flex-col gap-1">
@@ -216,23 +228,26 @@ const OverviewEmployer = () => {
       <div className="bg-white rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <p className="mb-0">Công việc đăng gần đây</p>
-          <Button type="link">Xemall</Button>
+          <Button type="link">Xem tất cả</Button>
         </div>
-        <Table
-          columns={columns}
-          dataSource={jobRecents}
-          pagination={false}
-          className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
-        />
+        <div className="overflow-y-auto max-h-96">
+          <Table
+            columns={columns}
+            dataSource={jobRecents}
+            pagination={false}
+            tableLayout="auto"  // Cho phép các cột tự động co giãn
+            className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
+          />
+        </div>
       </div>
 
-      <CustomPagination 
-       currentPage={metaJobRecents?.current_page}
-       total={metaJobRecents?.total}
-       perPage={metaJobRecents?.per_page}
-       onPageChange={(current, pageSize) => {
-         handleGetAllJobRecent({ current, pageSize });
-       }}
+      <CustomPagination
+        currentPage={metaJobRecents?.current_page}
+        total={metaJobRecents?.total}
+        perPage={metaJobRecents?.per_page}
+        onPageChange={(current, pageSize) => {
+          handleGetAllJobRecent({ current, pageSize });
+        }}
       />
     </div>
   );

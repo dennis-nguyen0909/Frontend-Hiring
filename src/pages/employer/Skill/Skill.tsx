@@ -88,7 +88,7 @@ export default function SkillEmployer() {
     if (res.data) {
       notification.success({
         message: "Thông báo",
-        description: "Xoa Thanh Cong!",
+        description: "Xóa thành công",
       })
       handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
     } else {

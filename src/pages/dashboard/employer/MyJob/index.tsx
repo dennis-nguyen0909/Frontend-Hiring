@@ -32,60 +32,102 @@ export default function MyJobEmployer() {
       dataIndex: "title",
       key: "title",
       render: (text: string, record: Job) => (
-        <div>
+        <div className="truncate">
           <div className="font-medium">{text}</div>
           <div className="text-gray-500 text-sm">
             {/* {record?.job_contract_type?.name} • {new Date(record.expire_date).toLocaleDateString()} */}
           </div>
         </div>
       ),
+      // Prevent title from wrapping
+      onHeaderCell: () => ({
+        style: {
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        },
+      }),
     },
     {
       title: "Vị trí",
       key: "location",
       render: (record: Job) => (
-        <div>
+        <div className="truncate">
           <div>
             {record.city_id.name}, {record.district_id.name}
           </div>
         </div>
       ),
+      // Prevent title from wrapping
+      onHeaderCell: () => ({
+        style: {
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        },
+      }),
     },
     {
       title: "Trạng thái",
       dataIndex: "is_active",
       key: "is_active",
       render: (isActive: string) => (
-        <Badge
+        <div>
+          <Badge
           status={isActive ? "success" : "error"}
           text={isActive ? "Hoạt động" : "Đã hết hạn"}
           className="whitespace-nowrap"
         />
+        </div>
       ),
+      // Prevent title from wrapping
+      onHeaderCell: () => ({
+        style: {
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        },
+      }),
     },
     {
       title: "Số lượng ứng tuyển",
       dataIndex: "candidate_ids",
       key: "candidate_ids",
       render: (candidateIds: [string]) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 truncate">
           <TeamOutlined />
           <span>
             {candidateIds?.length && candidateIds.length} Người ứng tuyển
           </span>
         </div>
       ),
+      // Prevent title from wrapping
+      onHeaderCell: () => ({
+        style: {
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        },
+      }),
     },
     {
       title: "Toggle trạng thái",
       key: "toggle_active",
       render: (record: Job) => (
         <Switch
-          className="custom-switch"
+          className="custom-switch truncate"
           checked={record.is_active}
           onChange={(checked) => handleToggleActiveJob(record, checked)}
         />
       ),
+      // Prevent title from wrapping
+      onHeaderCell: () => ({
+        style: {
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        },
+      }),
     },
     {
       title: "Hành động",
@@ -117,8 +159,17 @@ export default function MyJobEmployer() {
           </Dropdown>
         </div>
       ),
+      // Prevent title from wrapping
+      onHeaderCell: () => ({
+        style: {
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        },
+      }),
     },
   ];
+
   const userDetail = useSelector((state) => state.user);
   const [listMyJobs, setListMyJobs] = useState<Job[]>([]);
   const [meta, setMeta] = useState<Meta>({
@@ -131,6 +182,7 @@ export default function MyJobEmployer() {
   const [currentMenu, setCurrentMenu] = useState<string>(MY_JOB_HOME);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const handleOnChangeMenu = async (e, record) => {
     if (e.key === MARK_AS_EXPIRED) {
       const res = await JobApi.updateJob(
@@ -190,14 +242,13 @@ export default function MyJobEmployer() {
 
     try {
       setIsLoading(true);
-      // Gọi API với các tham số phân trang
       const res = await JobApi.getJobByEmployerID(
         params,
         userDetail.access_token
       );
       if (res.data) {
-        setListMyJobs(res.data.items); // Giả sử bạn có state `jobs` để lưu danh sách công việc
-        setMeta(res.data.meta); // Giả sử bạn có state `meta` để lưu thông tin phân trang
+        setListMyJobs(res.data.items);
+        setMeta(res.data.meta);
       }
     } catch (error) {
       console.error("Error fetching jobs:", error);
@@ -209,64 +260,85 @@ export default function MyJobEmployer() {
   useEffect(() => {
     handleGetMyJob({ current: 1, pageSize: 10 });
   }, []);
+
   const handleToggleActiveJob = async (job: Job, checked: boolean) => {
     const params = {
       is_active: checked,
     };
-    const res = await JobApi.updateJob(
-      job._id,
-      params,
-      userDetail.access_token
-    );
-    if (res.data) {
-      notification.success({
-        message: "Success",
-        description: "Job updated successfully",
+    try {
+      const res = await JobApi.updateJob(
+        job._id,
+        params,
+        userDetail.access_token
+      );
+      if (res.data) {
+        // Update the local state directly
+        setListMyJobs((prevJobs) =>
+          prevJobs.map((item) =>
+            item._id === job._id ? { ...item, is_active: checked } : item
+          )
+        );
+        notification.success({
+          message: "Success",
+          description: "Job updated successfully",
+        });
+      }
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "There was an issue updating the job.",
       });
-      handleGetMyJob({});
     }
   };
+  
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {!selectedJob && currentMenu === MY_JOB_HOME && (
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6 border-b">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap justify-between items-center gap-4">
               <h1 className="text-xl font-semibold">
                 Công việc của tôi{" "}
                 <span className="text-gray-400">({meta && meta.total})</span>
               </h1>
-              <div className="flex gap-4">
-                <Select
-                  defaultValue="status"
-                  style={{ width: 120 }}
-                  options={[
-                    { value: "status", label: "Trạng thái công việc" },
-                    { value: "active", label: "Hoạt động" },
-                    { value: "expired", label: "Đã hết hạn" },
-                  ]}
-                />
-                <Select
-                  defaultValue="all"
-                  style={{ width: 120 }}
-                  options={[
-                    { value: "all", label: "All Việc làm" },
-                    { value: "fulltime", label: "Full Time" },
-                    { value: "parttime", label: "Part Time" },
-                    { value: "contract", label: "Contract" },
-                  ]}
-                />
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <div className="flex gap-4 flex-wrap justify-start w-full sm:w-auto">
+                  <Select
+                    defaultValue="status"
+                    style={{ width: "100%" }}
+                    options={[
+                      { value: "status", label: "Trạng thái công việc" },
+                      { value: "active", label: "Hoạt động" },
+                      { value: "expired", label: "Đã hết hạn" },
+                    ]}
+                  />
+                  <Select
+                    defaultValue="all"
+                    style={{ width: "100%" }}
+                    options={[
+                      { value: "all", label: "All Việc làm" },
+                      { value: "fulltime", label: "Full Time" },
+                      { value: "parttime", label: "Part Time" },
+                      { value: "contract", label: "Contract" },
+                    ]}
+                  />
+                </div>
               </div>
             </div>
           </div>
+                    {console.log("listjob",listMyJobs)}
+          {/* Responsive table */}
+         <LoadingComponentSkeleton isLoading={isLoading}>
+         <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              dataSource={listMyJobs}
+              pagination={false}
+              className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
+            />
+          </div>
 
-         {/* <LoadingComponentSkeleton isLoading={isLoading}> */}
-         <Table
-            columns={columns}
-            dataSource={listMyJobs}
-            pagination={false}
-            className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
-          />
           {listMyJobs?.length > 0 && (
             <CustomPagination
               currentPage={meta?.current_page}
@@ -277,9 +349,10 @@ export default function MyJobEmployer() {
               }}
             />
           )}
-         {/* </LoadingComponentSkeleton> */}
+         </LoadingComponentSkeleton>
         </div>
       )}
+
       {currentMenu === VIEW_DETAIL_APPLICATION && selectedJob && (
         <div className="bg-white rounded-lg shadow-sm">
           <JobApplication
@@ -288,6 +361,7 @@ export default function MyJobEmployer() {
           />
         </div>
       )}
+
       {currentMenu === VIEW_DETAIL && selectedJob && (
         <div className="bg-white rounded-lg shadow-sm">
           <JobDetail

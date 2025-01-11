@@ -299,6 +299,23 @@ const Header: React.FC = () => {
               </li>
             );
           })}
+          {userDetail?.access_token && 
+          <li className="relative mt-[2px]">
+            <Popover
+              content={renderNotifications}
+              trigger="hover"
+              placement="bottom"
+            >
+              <Badge
+                className="custom-badge"
+                count={unreadNotifications.length}
+                overflowCount={99}
+              >
+                <Bell size={20} className="text-2xl cursor-pointer text-white hover:text-blue-500" />
+              </Badge>
+            </Popover>
+          </li>
+            }
         </ul>
 
         <div>
@@ -312,7 +329,7 @@ const Header: React.FC = () => {
                 onVisibleChange={() => setHovered(!hovered)}
               >
                 <div className="w-full flex items-center justify-center">
-                  <Avatar size="large" src={userDetail?.avatar || avtDefault} />
+                  <Avatar size="large" src={userDetail?.avatar || userDetail?.avatar_company || avtDefault } />
                   <ChevronDown className="cursor-pointer text-white" size={20} />
                 </div>
               </Popover>

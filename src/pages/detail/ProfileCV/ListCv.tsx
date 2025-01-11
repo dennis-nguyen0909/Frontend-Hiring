@@ -52,7 +52,7 @@ const CVCard = ({ cv, userDetail,onDelete,onUpdate,handleShare }: { cv: CV; user
       {/* Content */}
       <div className="p-6 pt-0">
         <div className="flex items-start justify-between gap-3 mb-3">
-          <h3 className="text-xl font-semibold text-white truncate">
+          <h3 className="text-[12px] font-semibold text-white truncate">
             {cv.cv_name}
           </h3>
           <div onClick={onUpdate} className="bg-[#5c6674] hover:bg-[#ccc] cursor-pointer px-1 py-1 rounded-full">
@@ -182,6 +182,7 @@ const renderBody = ()=>{
         className="mt-4"
       >
         <Form.Item
+        className="!text-[12px]"
           label="Tên CV (thường là vị trí ứng tuyển)"
           name="cv_name"
           rules={[
@@ -190,21 +191,21 @@ const renderBody = ()=>{
         >
           <Input
             placeholder="Nhập tên CV"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 !text-[14px]"
           />
         </Form.Item>
 
         <div className="flex justify-end gap-3 mt-6">
           <Button 
             onClick={onClose}
-            className="px-6 hover:bg-gray-100"
+            className="px-6 hover:bg-gray-100 !text-[12px]"
           >
             Hủy
           </Button>
           <Button 
             type="primary" 
             onClick={handleSubmit}
-            className="px-6 bg-green-500 hover:bg-green-600 border-none"
+            className="px-6 bg-green-500 hover:bg-green-600 border-none !text-[12px]"
           >
             Cập nhật
           </Button>
@@ -232,11 +233,11 @@ const onUpdate = async (id:string) => {
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold">CV đã tải lên HireDev</h2>
+        <h2 className="text-[14px] font-bold">CV đã tải lên HireDev</h2>
         <Button
           onClick={() => navigate("/upload-cv")}
           type="primary"
-          className="!bg-primaryColor cursor-pointer"
+          className="!bg-primaryColor cursor-pointer !text-[12px] !h-[30px]"
         >
           Tải CV lên
         </Button>

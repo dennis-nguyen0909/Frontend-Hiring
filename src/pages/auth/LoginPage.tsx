@@ -152,7 +152,7 @@ const LoginPage = () => {
   const renderFormCreate = () => {
     return (
       <div className="w-[500px]">
-        <div className="flex items-center justify-start mt-10 gap-2 ">
+        <div className="flex items-center lg:justify-start justify-center lg:mt-10 mt-4 gap-2">
           <Image src={icon} width={45} height={45} preview={false} />
           <h1
             onClick={() => navigate("/")}
@@ -162,7 +162,7 @@ const LoginPage = () => {
           </h1>
         </div>
         {/* Header */}
-        <div className="flex gap-10 items-center justify-between mt-[200px]">
+        <div className="flex gap-10 items-center justify-between lg:mt-[200px] mt-[150px]">
           <div>
             <h1 className="font-medium text-3xl">Đăng nhập.</h1>
             <div className="mt-2">
@@ -246,7 +246,7 @@ const LoginPage = () => {
           <p className="mx-2">hoặc</p>
           <hr className="w-full h-0.95 bg-gray-500" />
         </div>
-        <div className="flex justify-between mt-5 w-full">
+        <div className="flex justify-between mt-5 w-full gap-2">
         <a href={`${import.meta.env.VITE_API_LOGIN_FACEBOOK}`}>
           <Button
             className="flex items-center"
@@ -327,16 +327,16 @@ const LoginPage = () => {
   }
   return (
     <div className="flex justify-between items-center overflow-hidden">
-      <div className="flex flex-col gap-[100px] h-screen w-3/6 pl-[150px]">
+      <div className="flex flex-col gap-[100px] h-screen lg:w-3/6 w-full lg:pl-[150px] px-primaryx2">
         <div className="flex align-center justify-center ">
           {renderFormCreate()}
         </div>
       </div>
-      <div className="flex flex-col gap-[100px] h-screen w-2/4 relative">
+      <div className="flex-col gap-[100px] h-screen w-2/4 relative hidden lg:flex">
         <img
           src={logo}
           alt="Logo"
-          className="  w-full fixed"
+          className=" w-full fixed h-full"
         />
         <p className="absolute font-normal text-3xl text-white bottom-[250px] left-[100px]">
           Over 1,75,324 candidates

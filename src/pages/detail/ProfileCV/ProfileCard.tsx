@@ -69,8 +69,8 @@ export default function ProfileCard({ userDetail }: any) {
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold">TopCV Profile</h2>
-        <span className="text-gray-500">
+        <h2 className="text-[14px] font-bold">TopCV Profile</h2>
+        <span className="text-gray-500 text-[12px]">
           Cập nhật lần cuối {moment(userDetail?.updatedAt).format('DD/MM/YYYY HH:mm')}
         </span>
       </div>
@@ -102,13 +102,13 @@ export default function ProfileCard({ userDetail }: any) {
                 navigate(`/profile/${userDetail?._id}`);
               }}
               icon={<Edit className="w-4 h-4" />}
-              className="flex items-center gap-2 bg-green-50 text-green-600 border-green-200 hover:bg-green-100"
+              className="flex items-center gap-2 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 !text-[12px]"
             >
               Chỉnh sửa
             </Button>
             <Button
               icon={<Star className="w-4 h-4" />}
-              className="flex items-center gap-2 bg-green-50 text-green-600 border-green-200 hover:bg-green-100"
+              className="flex items-center gap-2 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 !text-[12px]"
               onClick={() => setIsModalVisible(true)}
             >
               Đặt làm CV chính
@@ -116,10 +116,10 @@ export default function ProfileCard({ userDetail }: any) {
           </div>
 
           {/* Mô tả */}
-          <p className="text-gray-600 mb-2">
+          <p className="text-gray-600 mb-2 text-[12px]">
             TopCV Profile là tính năng giúp bạn giới thiệu với mọi người mình là ai, đã làm gì và những thành tích nổi bật của bạn.
           </p>
-          <a href="#" className="text-green-600 hover:text-green-700 font-medium">
+          <a href="#" className="text-green-600 hover:text-green-700 font-medium !text-[12px]">
             Tìm hiểu ngay
           </a>
         </div>
