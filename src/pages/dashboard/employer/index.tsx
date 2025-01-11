@@ -119,7 +119,7 @@ export default function DashBoardEmployer() {
             onClick={() => setCollapsed(!collapsed)}
             type="primary"
           >
-            {collapsed ? "Open Menu" : "Close Menu"}
+            {collapsed ? "Dashboard Menu" : "Close Menu"}
           </Button>
         )}
         <Content className="p-6 bg-gray-50 flex-1">

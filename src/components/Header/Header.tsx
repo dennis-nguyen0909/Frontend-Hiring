@@ -8,7 +8,6 @@ import {
   Button,
   Divider,
   Empty,
-  Image,
   notification,
   Popover,
   Spin,
@@ -16,7 +15,7 @@ import {
 import avtDefault from "../../assets/avatars/avatar-default.jpg";
 import { useSelector } from "react-redux";
 import logo from "../../assets/logo/LogoH.png";
-import { Bell, ChevronDown, ChevronUp, Menu as HamburgerMenu, Menu } from "lucide-react";
+import { Bell, ChevronDown, Menu } from "lucide-react";
 import Setting from "../Setting/Setting";
 import "./styles.css";
 import {
@@ -27,7 +26,10 @@ import {
 import moment from "moment";
 import { io } from "socket.io-client";
 import { NOTIFICATION_API } from "../../services/modules/NotificationService";
-
+import { INotification } from "../ui/NotificationModal";
+import * as authServices from "../../services/modules/authServices";
+import { resetUser } from "../../redux/slices/userSlices";
+import { useDispatch } from "react-redux";
 const Header: React.FC = () => {
   const [hovered, setHovered] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); // New state to manage the menu visibility
@@ -35,10 +37,15 @@ const Header: React.FC = () => {
   const userDetail = useSelector((state) => state.user);
   const [socket, setSocket] = useState<any>(null);
   const [notifications, setNotifications] = useState<INotification[]>([]);
-
+  const [notificationsVisible, setNotificationsVisible] =
+    useState<boolean>(false);
+  const dispatch = useDispatch();
   const getNotificationsForCandidate = async () => {
     try {
-      const res = await NOTIFICATION_API.getNotificationsForCandidate(userDetail?._id, userDetail?.access_token);
+      const res = await NOTIFICATION_API.getNotificationsForCandidate(
+        userDetail?._id,
+        userDetail?.access_token
+      );
       if (res.data) {
         setNotifications(res.data.items);
       }
@@ -81,7 +88,10 @@ const Header: React.FC = () => {
   }, [userDetail]);
 
   const onReaded = async (notificationIds: string[]) => {
-    const result = await NOTIFICATION_API.markAsRead(notificationIds, userDetail?.access_token);
+    const result = await NOTIFICATION_API.markAsRead(
+      notificationIds,
+      userDetail?.access_token
+    );
     if (result) {
       setNotifications((prevState) =>
         prevState.map((notification) =>
@@ -116,7 +126,9 @@ const Header: React.FC = () => {
           <div className="flex">
             <Avatar
               size="large"
-              src={userDetail?.avatar_company || userDetail?.avatar || avtDefault}
+              src={
+                userDetail?.avatar_company || userDetail?.avatar || avtDefault
+              }
             />
             <div className="ml-5">
               <p className="font-semibold text-[14px] text-primaryColor ">
@@ -178,14 +190,44 @@ const Header: React.FC = () => {
     }
   };
 
+  const handleLogout = async () => {
+    // Gọi API đăng xuất ở đây
+    try {
+      // Giả sử có một hàm API để đăng xuất
+      const res = await authServices.logout(userDetail?.access_token);
+      if (res.data === true) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        dispatch(resetUser());
+        navigate("/");
+        notification.success({
+          message: "Thông báo",
+          description: "Đăng xuất thành công",
+        });
+      }
+    } catch (error) {
+      notification.error({
+        message: "Thông báo",
+        description: error.message,
+      });
+      console.error("Đăng xuất thất bại:", error);
+    }
+  };
   const renderNotifications = () => {
     return (
-      <div className="min-w-min max-w-sm bg-white rounded-lg w-[250px]">
-        <div className="flex flex-row items-center justify-between space-y-0 pb-3">
+      <div className="lg:min-w-min lg:max-w-sm bg-white lg:rounded-lg lg:w-[250px] w-full shadow">
+        <div
+          className="flex flex-row items-center justify-between space-y-0 lg:pb-3 px-6"
+          style={{ borderBottom: "1px solid #ccc" }}
+        >
           <div className="text-[12px] font-bold">Thông báo</div>
           <div className="flex items-center gap-2">
             <Button
-              onClick={() => onReaded(unreadNotifications.map((notification) => notification._id))}
+              onClick={() =>
+                onReaded(
+                  unreadNotifications.map((notification) => notification._id)
+                )
+              }
               className="text-green-600 text-[12px] border-none hover:text-green-700 p-0"
             >
               Đánh dấu là đã đọc
@@ -208,13 +250,16 @@ const Header: React.FC = () => {
                       {moment(notification.createdAt).fromNow()}
                     </p>
                     <p className="mt-2 text-[10px] text-slate-500">
-                      {notification.isRead ? 'Đã xem' : ''}
+                      {notification.isRead ? "Đã xem" : ""}
                     </p>
                   </div>
                 </div>
               ))
             ) : (
-              <Empty />
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={"Chưa có thông báo nào"}
+              />
             )}
           </div>
         </div>
@@ -222,26 +267,45 @@ const Header: React.FC = () => {
     );
   };
 
-  const unreadNotifications = notifications.filter((notification) => !notification.isRead);
-
+  const unreadNotifications = notifications.filter(
+    (notification) => !notification.isRead
+  );
+  const openNotifications = () => {
+    setNotificationsVisible(!notificationsVisible);
+  };
   return (
     <header>
       <div
         className="justify-between items-center md:px-4 lg:px-primary w-full sticky md:flex"
         style={{ backgroundColor: "black" }}
       >
-        <div className="flex justify-center items-center gap-2">
-          <Avatar shape="circle" src={logo} size={45} />
-          <p className="text-white font-bold md:hidden lg:block">HireDev</p>
-        </div>
+        <div className="flex justify-between mx-5">
+          <div className="flex justify-center items-center gap-2">
+            <Avatar shape="circle" src={logo} size={45} />
+            <p className="text-white font-bold md:hidden lg:block">HireDev</p>
+          </div>
 
-        {/* Hamburger Menu for Small Screens */}
-        <div className="md:hidden flex items-center gap-4">
-          <Menu
-            size={30}
-            className="text-white cursor-pointer"
-            onClick={() => setMenuVisible(!menuVisible)}
-          />
+          {/* Hamburger Menu for Small Screens */}
+          <div className="md:hidden flex items-center gap-4">
+            {userDetail?.access_token && (
+              <Badge
+                onClick={() => openNotifications()}
+                className="custom-badge"
+                count={unreadNotifications.length}
+                overflowCount={99}
+              >
+                <Bell
+                  size={20}
+                  className="text-2xl cursor-pointer text-white hover:text-blue-500"
+                />
+              </Badge>
+            )}
+            <Menu
+              size={30}
+              className="text-white cursor-pointer"
+              onClick={() => setMenuVisible(!menuVisible)}
+            />
+          </div>
         </div>
 
         {/* Menu */}
@@ -249,7 +313,7 @@ const Header: React.FC = () => {
           <ul className="flex gap-[20px] md:gap-5 items-center flex-col flex-wrap py-2 w-full bg-black md:hidden">
             {menuHeader.map((item, idx) => {
               if (item.id === "dashboard" && !userDetail.access_token) {
-                return null; 
+                return null;
               }
               if (item.id === "profile_cv" && !userDetail.access_token) {
                 return null;
@@ -271,7 +335,45 @@ const Header: React.FC = () => {
                 </li>
               );
             })}
+            {!userDetail?.access_token && (
+              <>
+                <li
+                  className="block md:hidden"
+                  onClick={() => navigate("/login")}
+                >
+                  <div className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer">
+                    Đăng nhập
+                  </div>
+                </li>
+                <li
+                  className="block md:hidden"
+                  onClick={() => navigate("/register")}
+                >
+                  <div className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer">
+                    Đăng ký
+                  </div>
+                </li>
+              </>
+            )}
+            {userDetail?.access_token && (
+              <li className="block md:hidden" onClick={handleLogout}>
+                <div className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer">
+                  Đăng xuất
+                </div>
+              </li>
+            )}
           </ul>
+        )}
+        {notificationsVisible && (
+          <div
+            className={`${
+              notificationsVisible
+                ? "translate-y-0 opacity-100"
+                : "-translate-y-full opacity-0"
+            } transition-all duration-500 ease-out lg:min-w-min lg:max-w-sm bg-white lg:rounded-lg lg:w-[250px] w-full shadow`}
+          >
+            {renderNotifications()}
+          </div>
         )}
 
         <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap py-2 hidden md:flex">
@@ -299,26 +401,29 @@ const Header: React.FC = () => {
               </li>
             );
           })}
-          {userDetail?.access_token && 
-          <li className="relative mt-[2px]">
-            <Popover
-              content={renderNotifications}
-              trigger="hover"
-              placement="bottom"
-            >
-              <Badge
-                className="custom-badge"
-                count={unreadNotifications.length}
-                overflowCount={99}
+          {userDetail?.access_token && (
+            <li className="relative mt-[2px]">
+              <Popover
+                content={renderNotifications}
+                trigger="hover"
+                placement="bottom"
               >
-                <Bell size={20} className="text-2xl cursor-pointer text-white hover:text-blue-500" />
-              </Badge>
-            </Popover>
-          </li>
-            }
+                <Badge
+                  className="custom-badge"
+                  count={unreadNotifications.length}
+                  overflowCount={99}
+                >
+                  <Bell
+                    size={20}
+                    className="text-2xl cursor-pointer text-white hover:text-blue-500"
+                  />
+                </Badge>
+              </Popover>
+            </li>
+          )}
         </ul>
 
-        <div>
+        <div className="hidden md:block">
           {userDetail.access_token ? (
             <>
               <Popover
@@ -329,8 +434,18 @@ const Header: React.FC = () => {
                 onVisibleChange={() => setHovered(!hovered)}
               >
                 <div className="w-full flex items-center justify-center">
-                  <Avatar size="large" src={userDetail?.avatar || userDetail?.avatar_company || avtDefault } />
-                  <ChevronDown className="cursor-pointer text-white" size={20} />
+                  <Avatar
+                    size="large"
+                    src={
+                      userDetail?.avatar ||
+                      userDetail?.avatar_company ||
+                      avtDefault
+                    }
+                  />
+                  <ChevronDown
+                    className="cursor-pointer text-white"
+                    size={20}
+                  />
                 </div>
               </Popover>
             </>
