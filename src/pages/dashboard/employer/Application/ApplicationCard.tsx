@@ -40,17 +40,17 @@ const ApplicationCard = ({
   const items: MenuProps["items"] = [
     {
       key: "rejected",
-      label: "Từ chối",
+      label: <span className="!text-[12px]">Từ chối</span>,
       onClick: () => handleMenuClick("rejected", applied._id),
     },
     {
       key: "accepted",
-      label: "Chấp nhận",
+      label: <span className="!text-[12px]">Chấp nhận</span>,
       onClick: () => handleMenuClick("accepted", applied._id),
     },
     {
       key: "pending",
-      label: "Đang chờ",
+      label: <span className="!text-[12px]">Đang chờ</span>,
       onClick: () => handleMenuClick("pending", applied._id),
     },
   ];
@@ -58,7 +58,7 @@ const ApplicationCard = ({
   const itemsDelete: MenuProps["items"] = [
     {
       key: "delete",
-      label: "Xóa",
+      label: <span className="!text-[12px]">Xóa</span>,
       onClick: () => handleMenuClick("delete", applied._id),
     },
   ];
@@ -135,7 +135,7 @@ const ApplicationCard = ({
         />
         <div className="flex-grow ml-3 flex flex-col">
           <Text className="font-bold text-[18px]">{user_id?.full_name}</Text>
-          <Text type="secondary" className="text-sm">
+          <Text type="secondary" className="text-[12px]">
             {job_id?.title}
           </Text>
         </div>
@@ -157,7 +157,7 @@ const ApplicationCard = ({
       </div>
       <div className="mt-4 space-y-2 text-sm">
         {user_id?.total_experience_months && user_id?.total_experience_years ? (
-          <p>
+          <p className="text-[12px]">
             Kinh nghiệm:{" "}
             {user_id?.total_experience_months +
               " tháng " +
@@ -165,13 +165,13 @@ const ApplicationCard = ({
               " năm"}
           </p>
         ) : (
-          <p>Kinh nghiệm: Chưa có kinh nghiệm</p>
+          <p className="text-[12px]">Kinh nghiệm: Chưa có kinh nghiệm</p>
         )}
         {user_id?.education_ids?.map((edu, index) => (
-          <p key={index}>Education: {edu.school}</p>
+          <p className="text-[12px]"key={index}>Education: {edu.school}</p>
         ))}
         <div className="flex justify-between items-center">
-          <p>Ngày nộp: {moment(applied_date).format("MM/DD/YYYY")}</p>
+          <p className="text-[12px]">Ngày nộp: {moment(applied_date).format("MM/DD/YYYY")}</p>
           <div
             className="cursor-pointer text-xl text-red-500"
             onClick={() => handleSaveCandidate(user_id?._id)}
@@ -180,10 +180,10 @@ const ApplicationCard = ({
           </div>
         </div>
       </div>
-      <Button onClick={onDownloadCvCandidate} icon={<DownloadOutlined />} className="w-full mt-4 !border-black !text-black !hover:text-primaryColor">
+      <Button onClick={onDownloadCvCandidate} icon={<DownloadOutlined />} className="w-full mt-4 !border-black !text-black !hover:text-primaryColor !text-[12px]">
         Download CV
       </Button>
-      {applied.status === 'accepted' && <Button onClick={()=>handleOpenModalEmail(applied)}>Gửi email</Button>}
+      {applied.status === 'accepted' && <Button className="!text-[12px]" onClick={()=>handleOpenModalEmail(applied)}>Gửi email</Button>}
     </Card>
   );
 };

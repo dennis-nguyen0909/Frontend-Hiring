@@ -101,8 +101,7 @@ const Header: React.FC = () => {
         )
       );
     }
-  };
-
+  };console.log("userDetail",userDetail)
   const renderAccountHeader = (roleName: string) => {
     return (
       <div>

@@ -9,11 +9,11 @@ import {
 import { Button, Input, message, Select, Tabs } from "antd";
 import TabPane from "antd/es/tabs/TabPane";
 import { useState } from "react";
-import 'react-quill/dist/quill.snow.css';
+import "react-quill/dist/quill.snow.css";
 import Personal from "../Personal/Personal";
 import ProfileComponentSetting from "../../../detail/Profile/ProfileComponentSetting";
 import AccountSetting from "../AccountSetting/AccountSetting";
-import './style.css'
+import "./style.css";
 const SettingCandidate = () => {
   const [activeTab, setActiveTab] = useState("personal");
   const [socialLinks, setSocialLinks] = useState([
@@ -22,7 +22,6 @@ const SettingCandidate = () => {
     { platform: "Instagram", url: "" },
     { platform: "Youtube", url: "" },
   ]);
-  const [biography, setBiography] = useState('')
   const handleTabChange = (key) => {
     setActiveTab(key);
   };
@@ -46,19 +45,12 @@ const SettingCandidate = () => {
     message.success("Changes saved successfully");
   };
 
-  const handleFileUpload = (info) => {
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  };
   const renderSocialLinksTab = () => (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Liên kết xã hội</h2>
+      <h2 className="text-[12px]font-semibold mb-4">Liên kết xã hội</h2>
       {socialLinks?.map((link, index) => (
         <div key={index} className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-[12px] font-medium text-gray-700 mb-1">
             Liên kết {index + 1}
           </label>
           <div className="flex items-center space-x-2">
@@ -68,8 +60,9 @@ const SettingCandidate = () => {
               onChange={(value) =>
                 handleSocialLinkChange(index, "platform", value)
               }
+              dropdownStyle={{fontSize:'12px'}}
             >
-              <Select.Option value="Facebook">Facebook</Select.Option>
+              <Select.Option  value="Facebook">Facebook</Select.Option>
               <Select.Option value="Twitter">Twitter</Select.Option>
               <Select.Option value="Instagram">Instagram</Select.Option>
               <Select.Option value="Youtube">Youtube</Select.Option>
@@ -85,6 +78,7 @@ const SettingCandidate = () => {
             />
             <Button
               type="text"
+              size="small"
               icon={<CloseOutlined />}
               onClick={() => removeSocialLink(index)}
             />
@@ -94,26 +88,29 @@ const SettingCandidate = () => {
       <Button
         type="dashed"
         onClick={addNewSocialLink}
-        className="w-full mt-4"
+        className="w-full mt-4 !text-[12px]"
         icon={<PlusOutlined />}
       >
-        
-Thêm liên kết xã hội mới
+        Thêm liên kết xã hội mới
       </Button>
-      <Button htmlType="submit" onClick={handleSaveChanges}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
-          Save & Next
-        </Button>
+      <Button
+        htmlType="submit"
+        onClick={handleSaveChanges}
+        className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white !text-[12px] mt-2 w-full lg:w-auto"
+      >
+        Save & Next
+      </Button>
     </div>
   );
   return (
     <div className="setting-candidate">
-      <h1 className="text-2xl font-semibold mb-6">Cài đặt</h1>
+      <h1 className="text-[16px] font-semibold mb-6">Cài đặt</h1>
 
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <TabPane
           tab={
             <span
-              className={`!text-black flex items-center ${
+              className={`!text-black flex items-center text-[12px] ${
                 activeTab === "personal" ? "text-blue-500" : ""
               }`}
             >
@@ -128,7 +125,7 @@ Thêm liên kết xã hội mới
         <TabPane
           tab={
             <span
-              className={`!text-black flex items-center ${
+              className={`!text-black flex items-center text-[12px] ${
                 activeTab === "profile" ? "text-blue-500" : ""
               }`}
             >
@@ -144,7 +141,7 @@ Thêm liên kết xã hội mới
         <TabPane
           tab={
             <span
-              className={`!text-black flex items-center ${
+              className={`!text-black flex items-center text-[12px] ${
                 activeTab === "social" ? "text-blue-500" : ""
               }`}
             >
@@ -159,7 +156,7 @@ Thêm liên kết xã hội mới
         <TabPane
           tab={
             <span
-              className={`!text-black flex items-center ${
+              className={`!text-black flex items-center text-[12px] ${
                 activeTab === "account" ? "text-blue-500" : ""
               }`}
             >

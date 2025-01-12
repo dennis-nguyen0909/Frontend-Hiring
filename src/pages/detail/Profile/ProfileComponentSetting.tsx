@@ -34,16 +34,13 @@ const ProfileComponentSetting = () => {
     refreshYear()
   }, []);
   return (
-      <Col span={24} className="mx-auto p-4 space-y-6 rounded-xl">
-    
+      <Col span={24} className="mx-auto  space-y-6 rounded-xl">
         <div className="space-y-4">
-
-          <Card className="p-6 space-y-4">
-            <h2 className="font-semibold">Mức độ hoàn thành hồ sơ</h2>
-
+          <Card className="space-y-4">
+            <h2 className="font-semibold text-[12px]">Mức độ hoàn thành hồ sơ</h2>
             <div className="relative pt-6">
               <Progress
-                className="h-2 rounded-full"
+                className="h-2 rounded-full text-[12px]"
                 percent={caculateProfile}
                 strokeColor={{
                   "0%": "#d3464f",
@@ -58,8 +55,8 @@ const ProfileComponentSetting = () => {
                 <Pencil className="h-6 w-6 text-primaryColor" />
               </div>
               <div>
-                <h3 className="font-medium">Cập nhật thông tin cá nhân</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="font-medium text-[12px]">Cập nhật thông tin cá nhân</h3>
+                <p className=" text-gray-500 text-[12px]">
                   Mức độ hoàn thành hồ sơ {caculateProfile}%
                 </p>
               </div>
@@ -67,25 +64,25 @@ const ProfileComponentSetting = () => {
           </Card>
 
           {/* Statistics */}
-          <Card className="p-6">
-            <h2 className="font-semibold mb-4">
+          <Card>
+            <h2 className="font-semibold mb-4 text-[12px]">
               Thống kê số lượt xem từ Nhà tuyển dụng
             </h2>
-            <p className="text-sm text-red-500 mb-4">
+            <p className="text-sm text-red-500 mb-4 text-[12px]">
               Phần này chỉ hiển thị với riêng bạn
             </p>
             <div className="grid grid-cols-3 gap-4">
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">{metaViewerWeek.total || 0}</p>
-                <p className="text-sm text-gray-500">Lượt xem trong tuần</p>
+                <p className="font-bold text-[12px]">{metaViewerWeek.total || 0}</p>
+                <p className=" text-gray-500 text-[12px]">Lượt xem trong tuần</p>
               </div>
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">{metaViewerMonth.total || 0}</p>
-                <p className="text-sm text-gray-500">Lượt xem trong tháng</p>
+                <p className="font-bold text-[12px]">{metaViewerMonth.total || 0}</p>
+                <p className=" text-gray-500 text-[12px]">Lượt xem trong tháng</p>
               </div>
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">{metaViewerYear.total || 0}</p>
-                <p className="text-sm text-gray-500">Lượt xem trong năm</p>
+                <p className="font-bold text-[12px]">{metaViewerYear.total || 0}</p>
+                <p className=" text-gray-500 text-[12px]">Lượt xem trong năm</p>
               </div>
             </div>
           </Card>

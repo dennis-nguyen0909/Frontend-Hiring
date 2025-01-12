@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import arrowRight from "../../assets/icons/arrowRight.png";
 import { AlignLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import LocationSlider from "../../components/LocationSlider/LocationSlider";
-import JobItem from "../../components/ui/JobItem";
 import { JobApi } from "../../services/modules/jobServices";
 import { CitiesAPI } from "../../services/modules/citiesServices";
 import { useSelector } from "react-redux";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 import SliderSalary from "../../components/SalarySlider/SalarySlider";
 import { JobCard } from "../home/SuggestionJob/JobCard";
+import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
 
 const FeatureJobV2 = () => {
   const [jobs, setJobs] = useState([]);
@@ -22,15 +22,12 @@ const FeatureJobV2 = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>("dia_diem");
   const userDetail = useSelector((state) => state.user);
   const [selectedSalary, setSelectedSalary] = useState("all");
+  const [isLoading,setIsLoading]=useState<boolean>(false);
 
-  // Hàm handle khi thay đổi mức lương
   // Fetch cities data
   const handleGetCities = async () => {
     try {
-      const res = await CitiesAPI.getCitiesByCode(
-        "79",
-        userDetail.access_token
-      );
+      const res = await CitiesAPI.getCitiesByCode("79", userDetail.access_token);
       if (res.data) {
         setCities(res.data);
       }
@@ -46,6 +43,7 @@ const FeatureJobV2 = () => {
     query = {},
   }) => {
     try {
+      setIsLoading(true);
       const params = {
         current,
         pageSize,
@@ -68,6 +66,8 @@ const FeatureJobV2 = () => {
       }
     } catch (error) {
       console.error("Error fetching jobs:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -112,74 +112,52 @@ const FeatureJobV2 = () => {
   }) => {
     setSelectedSalary(salaryRange);
     let query: any = {};
-    // Kiểm tra nếu chọn tất cả
-    if (salaryRange === "all") {
-      query = {}; // Không thêm filter về salary
-    } else if (salaryRange === "thoa_thuan") {
-      query = { is_negotiable: true }; // Thỏa thuận
-    } else if (salaryRange === "under_10m") {
-      query = {
-        salary_range_min: 0,
-        salary_range_max: 10000000,
-      };
+    // Handle salary ranges
+    switch (salaryRange) {
+      case "all":
+        query = {}; 
+        break;
+      case "thoa_thuan":
+        query = { is_negotiable: true }; 
+        break;
+      case "under_10m":
+        query = { salary_range_min: 0, salary_range_max: 10000000 }; 
+        break;
+      case "10m_to_15m":
+        query = { salary_range_min: 10000000, salary_range_max: 15000000 }; 
+        break;
+      case "15m_to_20m":
+        query = { salary_range_min: 15000000, salary_range_max: 20000000 }; 
+        break;
+      case "20m_to_25m":
+        query = { salary_range_min: 20000000, salary_range_max: 25000000 }; 
+        break;
+      case "25m_to_30m":
+        query = { salary_range_min: 25000000, salary_range_max: 30000000 }; 
+        break;
+      case "30m_to_50m":
+        query = { salary_range_min: 30000000, salary_range_max: 50000000 }; 
+        break;
+      case "above_50m":
+        query = { salary_range_min: 50000000, salary_range_max: Infinity }; 
+        break;
+      default:
+        query = { salary_range_min: salaryRange.min, salary_range_max: salaryRange.max };
     }
-    else if (salaryRange === "10m_to_15m") {
-      query = {
-        salary_range_min: 10000000,
-        salary_range_max: 15000000,
-      };
-    }
-    else if (salaryRange === "15m_to_20m") {
-      query = {
-        salary_range_min: 15000000,
-        salary_range_max: 20000000,
-      };
-    }
-    else if (salaryRange === "20m_to_25m") {
-      query = {
-        salary_range_min: 20000000,
-        salary_range_max: 25000000,
-      };
-    }
-    else if (salaryRange === "25m_to_30m") {
-      query = {
-        salary_range_min: 25000000,
-        salary_range_max: 30000000,
-      };
-    }
-    else if (salaryRange === "30m_to_50m") {
-      query = {
-        salary_range_min: 30000000,
-        salary_range_max: 50000000,
-      };
-    }
-    else if (salaryRange === "above_50m") {
-      query = {
-        salary_range_min: 50000000,
-        salary_range_max: Infinity,
-      };
-    }
-    else {
-      query = {
-        salary_range_min: salaryRange.min,
-        salary_range_max: salaryRange.max,
-      };
-    }
-
     await handleGetAllJobs({ query });
   };
 
   return (
     <div className="px-5 md:px-primary h-auto mb-[150px] bg-[#f3f5f7] pb-[100px] pt-[10px]">
       <div
-        className="flex justify-between items-center h-1/4"
+        className="flex justify-between items-center"
         style={{ margin: "50px 0" }}
       >
         <h1 className="text-textBlack text-[16px] font-medium">
           Việc làm tốt nhất
         </h1>
         <div className="relative flex items-center">
-          <Button className="text-primary w-[130px] h-[40px]">
+          <Button className="text-primary w-[130px] h-[40px] !text-[12px]">
             Xem tất cả
             <ArrowRightOutlined className="font-bold" />
           </Button>
@@ -189,24 +167,25 @@ const FeatureJobV2 = () => {
 
       {/* Filter Section */}
       <div className="mb-4">
-        <div className="flex items-center">
-          <div className="w-1/3">
+        <div className="flex flex-wrap gap-4">
+          <div className="w-full md:w-1/3">
             <Select
               size="large"
               suffixIcon={<AlignLeftOutlined />}
               defaultValue={"dia_diem"}
-              style={{ width: 200 }}
+              style={{ width: "100%",fontSize:'12px' }}
+              className="!text-[12px]"
               onChange={handleChangeFilter}
               options={[
-                { value: "dia_diem", label: "Địa điểm" },
-                { value: "muc_luong", label: "Mức lương" },
-                { value: "kinh_nghiem", label: "Kinh Nghiệm" },
-                { value: "nghe_nghiep", label: "Nghề nghiệp", disabled: true },
+                { value: "dia_diem", label: <span className="!text-[12px]">Địa điểm</span> },
+                { value: "muc_luong", label: <span className="!text-[12px]">Mức lương</span> },
+                { value: "kinh_nghiem", label: <span className="!text-[12px]">Kinh Nghiệm</span> },
+                { value: "nghe_nghiep", label: <span className="!text-[12px]">Nghề nghiệp</span> },
               ]}
             />
           </div>
           {selectedFilter === "dia_diem" && (
-            <div className="w-2.5/3">
+            <div className="w-full md:w-2/3">
               <LocationSlider
                 dataCity={cities}
                 selectedDistrict={selectedDistrict}
@@ -218,7 +197,7 @@ const FeatureJobV2 = () => {
             </div>
           )}
           {selectedFilter === "muc_luong" && (
-            <div className="w-2.5/3">
+            <div className="w-full md:w-2/3">
               <SliderSalary
                 selectedSalary={selectedSalary}
                 handleChangeSelectedSalary={handleChangeSelectedSalary}
@@ -228,27 +207,30 @@ const FeatureJobV2 = () => {
         </div>
       </div>
 
-      {/* Job Listing */}
-      {jobs?.length > 0 ? (
-        <div className="grid grid-cols-3 gap-4">
-          {jobs.map((job, idx) => (
-            // <JobItem item={job} key={idx} />
-            <JobCard key={job?._id} job={job} />
-          ))}
-        </div>
-      ) : (
-        <div className="min-h-[300px] flex items-center justify-center">
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-        </div>
-      )}
+      <LoadingComponentSkeleton isLoading={isLoading}>
+        {/* Job Listing */}
+        {jobs?.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {jobs?.map((job, idx) => (
+              <JobCard key={job?._id} job={job} />
+            ))}
+          </div>
+        ) : (
+          <div className="min-h-[300px] flex items-center justify-center">
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'Không có dữ liệu'} />
+          </div>
+        )}
 
-      {/* Pagination */}
-      <CustomPagination
-        currentPage={meta?.current_page}
-        total={meta?.total}
-        perPage={meta?.per_page}
-        onPageChange={onChangePagination}
-      />
+        {/* Pagination */}
+        {jobs?.length > 0 && (
+          <CustomPagination
+            currentPage={meta?.current_page}
+            total={meta?.total}
+            perPage={meta?.per_page}
+            onPageChange={onChangePagination}
+          />
+        )}
+      </LoadingComponentSkeleton>
     </div>
   );
 };

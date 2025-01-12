@@ -122,7 +122,7 @@ export default function DashBoardEmployer() {
             {collapsed ? "Dashboard Menu" : "Close Menu"}
           </Button>
         )}
-        <Content className="p-6 bg-gray-50 flex-1">
+        <Content className="lg:p-6  bg-gray-50 flex-1">
           {currentTab === "1" && <OverviewEmployer />}
           {currentTab === "3" && <PostJob />}
           {currentTab === "4" && <MyJobEmployer />}

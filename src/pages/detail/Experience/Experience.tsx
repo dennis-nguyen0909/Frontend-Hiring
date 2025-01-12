@@ -15,11 +15,12 @@ import { LinkOutlined, PictureOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
-import { BookOpen, Briefcase, Pencil } from "lucide-react";
+import { BookOpen, Brain, Briefcase, Pencil } from "lucide-react";
 import { ExperienceApi } from "../../../services/modules/experienceServices";
 import { MediaApi } from "../../../services/modules/mediaServices";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
+import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 const { TextArea } = Input;
 
 interface WorkExperienceProps {
@@ -46,8 +47,8 @@ const ExperienceComponent = () => {
   }));
   const userDetail = useSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingDetail, setIsLoadingDetail] = useState<boolean>(false);
   const inputRef = useRef(null);
-  const dispatch = useDispatch();
   const [form] = Form.useForm();
   const user = useSelector((state: any) => state.user);
   const [listWorkExperiences, setListWorkExperiences] = useState([]);
@@ -79,6 +80,7 @@ const ExperienceComponent = () => {
     accessToken: string
   ) => {
     try {
+      setIsLoading(true);
       const res = await ExperienceApi.deleteManyExperience(ids, accessToken);
       return res;
     } catch (error) {
@@ -86,6 +88,8 @@ const ExperienceComponent = () => {
         message: "Thông báo",
         description: error.message,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   const handleCreateWorkExperience = async (
@@ -93,6 +97,7 @@ const ExperienceComponent = () => {
     accessToken: string
   ) => {
     try {
+      setIsLoading(true);
       const res = await ExperienceApi.postExperience(params, accessToken);
       return res;
     } catch (error) {
@@ -100,10 +105,13 @@ const ExperienceComponent = () => {
         message: "Thông báo",
         description: error.message,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const onFinish = async (values: any) => {
+    setIsLoading(true);
     const { currently_working, company, position, description } = values;
 
     // Sử dụng moment.utc để đảm bảo thời gian không bị thay đổi do múi giờ
@@ -138,12 +146,14 @@ const ExperienceComponent = () => {
       });
       await handleUpdateProfile();
       closeModal();
+      setIsLoading(false);
     } else {
       notification.error({
         message: "Thông báo",
         description: res.message,
       });
       closeModal();
+      setIsLoading(false);
     }
   };
 
@@ -167,6 +177,7 @@ const ExperienceComponent = () => {
   };
   const handleGetDetailExperience = async (selectedId: string) => {
     try {
+      setIsLoadingDetail(true);
       const res = await ExperienceApi.getExperienceById(
         selectedId,
         userDetail.access_token
@@ -179,6 +190,8 @@ const ExperienceComponent = () => {
         message: "Thông báo",
         description: error.message,
       });
+    } finally {
+      setIsLoadingDetail(false);
     }
   };
 
@@ -237,6 +250,7 @@ const ExperienceComponent = () => {
   };
 
   const handleUpdateExperience = async () => {
+    setIsLoading(true);
     let data = form.getFieldsValue();
     if (selectedFile) {
       data = {
@@ -257,12 +271,14 @@ const ExperienceComponent = () => {
       });
       closeModal();
       await handleUpdateProfile();
+      setIsLoading(false);
     } else {
       notification.error({
         message: "Thông báo",
         description: "Cập nhật thất bại",
       });
       closeModal();
+      setIsLoading(false);
     }
   };
   const handleOnClickImage = () => {
@@ -289,133 +305,193 @@ const ExperienceComponent = () => {
 
   const renderBody = () => {
     return (
-      <LoadingComponent isLoading={isLoading}>
-        <Form onFinish={onFinish} form={form} layout="vertical">
-          <Form.Item
-            label="Công ty"
-            name="company"
-            required
-            rules={[{ required: true, message: "Vui lòng nhập tên công ty" }]}
-          >
-            <Input placeholder="Công ty" />
-          </Form.Item>
-
-          <Form.Item
-            label="Chức vụ"
-            name="position"
-            required
-            rules={[{ required: true, message: "Vui lòng nhập chức vụ" }]}
-          >
-            <Input placeholder="Nhân viên văn phòng" />
-          </Form.Item>
-
-          <Form.Item name="currently_working" valuePropName="checked">
-            <Checkbox
-              checked={currentlyWorking}
-              onChange={(e) => setCurrentlyWorking(e.target.checked)}
+      <LoadingComponentSkeleton isLoading={isLoadingDetail}>
+        <LoadingComponent isLoading={isLoading}>
+          <Form onFinish={onFinish} form={form} layout="vertical">
+            <Form.Item
+              label={<div className="text-[12px]">Công ty</div>}
+              name="company"
+              required
+              rules={[{ required: true, message: "Vui lòng nhập tên công ty" }]}
             >
-              Tôi đang làm việc ở đây
-            </Checkbox>
-          </Form.Item>
+              <Input placeholder="Công ty" className="text-[12px]" />
+            </Form.Item>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Typography.Text>Bắt đầu</Typography.Text>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                <Form.Item name="startMonth">
-                  <Select placeholder="Chọn tháng" options={months} />
-                </Form.Item>
-                <Form.Item name="startYear">
-                  <Select placeholder="Chọn năm" options={years} />
-                </Form.Item>
-              </div>
-            </div>
+            <Form.Item
+              label="Chức vụ"
+              name="position"
+              required
+              rules={[{ required: true, message: "Vui lòng nhập chức vụ" }]}
+            >
+              <Input
+                placeholder="Nhân viên văn phòng"
+                className="text-[12px]"
+              />
+            </Form.Item>
 
-            <div>
-              <Typography.Text>Kết thúc</Typography.Text>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                <Form.Item name="endMonth">
-                  <Select
-                    placeholder="Chọn tháng"
-                    options={months}
-                    disabled={
-                      workExperience?.currently_working || currentlyWorking
-                    }
-                  />
-                </Form.Item>
-                <Form.Item name="endYear">
-                  <Select
-                    placeholder="Chọn năm"
-                    options={years}
-                    disabled={
-                      workExperience?.currently_working || currentlyWorking
-                    }
-                  />
-                </Form.Item>
-              </div>
-            </div>
-          </div>
-
-          <Form.Item label="Mô tả chi tiết" name="description">
-            <TextArea
-              placeholder="Mô tả chi tiết công việc, những gì đạt được trong quá trình làm việc"
-              rows={4}
-            />
-          </Form.Item>
-
-          <Typography.Text italic className="block mb-4">
-            Thêm liên kết hoặc tải lên hình ảnh về kinh nghiệm của bạn
-          </Typography.Text>
-
-          <div className="flex gap-4 mb-6">
-            <Button onClick={handleOnClickImage} icon={<PictureOutlined />}>
-              Tải ảnh
-            </Button>
-            <Button icon={<LinkOutlined />}>Tải liên kết</Button>
-          </div>
-
-          <Form.Item>
-            {actionType === "create" ? (
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="w-full !bg-primaryColor"
+            <Form.Item name="currently_working" valuePropName="checked">
+              <Checkbox
+                className="text-[12px]"
+                checked={currentlyWorking}
+                onChange={(e) => setCurrentlyWorking(e.target.checked)}
               >
-                Thêm
+                Tôi đang làm việc ở đây
+              </Checkbox>
+            </Form.Item>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Typography.Text className="text-[12px]">
+                  <span className="text-red-500 pr-1">*</span>
+                  Bắt đầu
+                </Typography.Text>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <Form.Item
+                    name="startMonth"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng chọn tháng bắt đầu",
+                      },
+                    ]}
+                  >
+                    <Select
+                      placeholder="Chọn tháng"
+                      options={months}
+                      className="text-[12px]"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="startYear"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn năm bắt đầu" },
+                    ]}
+                  >
+                    <Select
+                      placeholder="Chọn năm"
+                      options={years}
+                      className="text-[12px]"
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+
+              <div>
+                <Typography.Text className="text-[12px]">
+                  <span className="text-red-500 pr-1">*</span>Kết thúc
+                </Typography.Text>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <Form.Item
+                    name="endMonth"
+                    rules={[
+                      {
+                        required: !currentlyWorking,
+                        message: "Vui lòng chọn tháng kết thúc",
+                      },
+                    ]}
+                  >
+                    <Select
+                      placeholder="Chọn tháng"
+                      options={months}
+                      disabled={
+                        workExperience?.currently_working || currentlyWorking
+                      }
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="endYear"
+                    rules={[
+                      {
+                        required: !currentlyWorking,
+                        message: "Vui lòng chọn năm kết thúc",
+                      },
+                    ]}
+                  >
+                    <Select
+                      placeholder="Chọn năm"
+                      options={years}
+                      disabled={
+                        workExperience?.currently_working || currentlyWorking
+                      }
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+            </div>
+
+            <Form.Item label={<div className="text-[12px]">Mô tả chi tiết</div>} name="description">
+              <TextArea
+                placeholder="Mô tả chi tiết công việc, những gì đạt được trong quá trình làm việc"
+                rows={4}
+                className="text-[12px]"
+              />
+            </Form.Item>
+
+            <Typography.Text italic className="block mb-4 text-[12px]">
+              Thêm liên kết hoặc tải lên hình ảnh về kinh nghiệm của bạn
+            </Typography.Text>
+
+            <div className="flex gap-4 mb-6">
+              <Button
+                className="!text-[12px]"
+                onClick={handleOnClickImage}
+                icon={<PictureOutlined />}
+              >
+                Tải ảnh
               </Button>
-            ) : (
-              <div className="flex items-center justify-between gap-4">
+              <Button className="!text-[12px]" icon={<LinkOutlined />}>
+                Tải liên kết
+              </Button>
+            </div>
+
+            <Form.Item>
+              {actionType === "create" ? (
                 <Button
                   type="primary"
-                  onClick={() => handleUpdateExperience()}
-                  className="!bg-primaryColorH text-white w-full"
+                  htmlType="submit"
+                  className="w-full !bg-primaryColor"
+                  size="small"
                 >
-                  Cập nhật
+                  Thêm
                 </Button>
-                <Button
-                  danger
-                  onClick={() => handleDeleteExperience()}
-                  style={{
-                    width: "100%",
-                    backgroundColor: "black",
-                    borderColor: "#4CAF50",
-                    color:'white',
-                    border:'none'
-                  }}
-                >
-                  Xóa
-                </Button>
-              </div>
-            )}
-          </Form.Item>
-          <input
-            ref={inputRef}
-            onChange={handleChangeFile}
-            type="file"
-            style={{ display: "none" }}
-          />
-        </Form>
-      </LoadingComponent>
+              ) : (
+                <div className="flex items-center justify-between gap-4">
+                  <Button
+                    type="primary"
+                    onClick={() => handleUpdateExperience()}
+                    className="!bg-primaryColorH text-white w-full"
+                  size="small"
+
+                  >
+                    Cập nhật
+                  </Button>
+                  <Button
+                  size="small"
+
+                    danger
+                    onClick={() => handleDeleteExperience()}
+                    style={{
+                      width: "100%",
+                      backgroundColor: "black",
+                      borderColor: "#4CAF50",
+                      color: "white",
+                      border: "none",
+                    }}
+                  >
+                    Xóa
+                  </Button>
+                </div>
+              )}
+            </Form.Item>
+            <input
+              ref={inputRef}
+              onChange={handleChangeFile}
+              type="file"
+              style={{ display: "none" }}
+            />
+          </Form>
+        </LoadingComponent>
+      </LoadingComponentSkeleton>
     );
   };
   const WorkExperience = ({
@@ -470,13 +546,17 @@ const ExperienceComponent = () => {
   return (
     <div>
       {listWorkExperiences.length > 0 ? (
-        <Card className="p-6">
+        <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-[#d3464f]" />
-              <h2 className="font-semibold">Kinh nghiệm</h2>
+              <Brain className="h-6 w-6 text-[#d3464f]" size={12} />
+              <h2 className="font-semibold text-[12px]">Kinh nghiệm</h2>
             </div>
-            <Button onClick={() => handleOpenExperience("create")}>
+            <Button
+              size="small"
+              className="text-[12px]"
+              onClick={() => handleOpenExperience("create")}
+            >
               Thêm mục
             </Button>
           </div>
@@ -498,17 +578,21 @@ const ExperienceComponent = () => {
           {/* </div> */}
         </Card>
       ) : (
-        <Card className="p-6">
+        <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-[#d3464f]" />
-              <h2 className="font-semibold">Kinh nghiệm</h2>
+              <Brain className="h-6 w-6 text-[#d3464f]" size={12} />
+              <h2 className="font-semibold text-[12px]">Kinh nghiệm</h2>
             </div>
-            <Button onClick={() => handleOpenExperience("create")}>
+            <Button
+              size="small"
+              className="text-[12px]"
+              onClick={() => handleOpenExperience("create")}
+            >
               Thêm mục
             </Button>
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-gray-500 !text-[12px]">
             Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
             phần này theo CV.
           </p>

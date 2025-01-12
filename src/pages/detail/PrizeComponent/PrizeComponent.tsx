@@ -55,13 +55,13 @@ export default function  PrizeComponent({
           <div className="flex-grow">
             <div className="flex justify-between items-start">
               <div>
-                <Title level={4} className="!mb-1">
+                <Title level={4} className="!mb-1 !text-[14px]">
                   {prize_name}
                 </Title>
-                <Text className="block text-gray-600">
+                <Text className="block text-gray-600 !text-[12px]">
                   {organization_name}
                 </Text>
-                <Text className="block text-gray-500 text-sm">
+                <Text className="block text-gray-500 !text-[12px]">
                   {moment(date_of_receipt).format('YYYY-MM')}
                 </Text>
               </div>
@@ -73,7 +73,7 @@ export default function  PrizeComponent({
                     icon={<LinkOutlined />}
                     href={prize_link}
                     target="_blank"
-                    className="text-gray-500 hover:text-blue-500"
+                    className="text-gray-500 hover:text-blue-500 !text-[12px]"
                   />
                 )}
                 {onEdit && (
@@ -81,7 +81,7 @@ export default function  PrizeComponent({
                     type="text" 
                     icon={<EditOutlined />}
                     onClick={onEdit}
-                    className="text-gray-500 hover:text-blue-500"
+                    className="text-gray-500 hover:text-blue-500 !text-[12px]"
                   />
                 )}
               </div>

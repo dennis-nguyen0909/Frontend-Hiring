@@ -57,13 +57,13 @@ const Footer = () => {
                         <div className="space-y-2">
                             <h3 className="font-semibold">Cộng đồng HireDev</h3>
                             <div className="flex space-x-4">
-                                <Link to="#" className="text-gray-600 hover:text-primary">
+                                <Link to="#" className="text-gray-600 hover:text-primary !text-[12px]">
                                     <FacebookFilled className="h-6 w-6" />
                                 </Link>
-                                <Link to="#" className="text-gray-600 hover:text-primary">
+                                <Link to="#" className="text-gray-600 hover:text-primary !text-[12px]">
                                     <YoutubeOutlined className="h-6 w-6" />
                                 </Link>
-                                <Link to="#" className="text-gray-600 hover:text-primary">
+                                <Link to="#" className="text-gray-600 hover:text-primary !text-[12px]">
                                     <LinkedinOutlined className="h-6 w-6" />
                                 </Link>
                             </div>
@@ -75,45 +75,45 @@ const Footer = () => {
                         <div className="space-y-4">
                             <h3 className="font-semibold">Về HireDev</h3>
                             <ul className="space-y-2 text-sm">
-                                <li><Link to="#" className="hover:text-primary">Giới thiệu</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Góc báo chí</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Tuyển dụng</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Liên hệ</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Hỏi đáp</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Chính sách bảo mật</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Điều khoản dịch vụ</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Quy chế hoạt động</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Giới thiệu</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Góc báo chí</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Tuyển dụng</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Liên hệ</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Hỏi đáp</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Chính sách bảo mật</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Điều khoản dịch vụ</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Quy chế hoạt động</Link></li>
                             </ul>
                         </div>
 
                         <div className="space-y-4">
                             <h3 className="font-semibold">Hồ sơ và CV</h3>
                             <ul className="space-y-2 text-sm">
-                                <li><Link to="#" className="hover:text-primary">Quản lý CV của bạn</Link></li>
-                                <li><Link to="#" className="hover:text-primary">HireDev Profile</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Hướng dẫn viết CV</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Review CV</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Quản lý CV của bạn</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">HireDev Profile</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Hướng dẫn viết CV</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Review CV</Link></li>
                             </ul>
                         </div>
 
                         <div className="space-y-4">
                             <h3 className="font-semibold">Khám phá</h3>
                             <ul className="space-y-2 text-sm">
-                                <li><Link to="#" className="hover:text-primary">Ứng dụng di động HireDev</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Tính lương Gross - Net</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Tính lãi suất kép</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Lập kế hoạch tiết kiệm</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Ứng dụng di động HireDev</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Tính lương Gross - Net</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Tính lãi suất kép</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Lập kế hoạch tiết kiệm</Link></li>
                             </ul>
                         </div>
 
                         <div className="space-y-4">
                             <h3 className="font-semibold">Xây dựng sự nghiệp</h3>
                             <ul className="space-y-2 text-sm">
-                                <li><Link to="#" className="hover:text-primary">Việc làm tốt nhất</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Việc làm lương cao</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Việc làm quản lý</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Việc làm IT</Link></li>
-                                <li><Link to="#" className="hover:text-primary">Việc làm Senior</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Việc làm tốt nhất</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Việc làm lương cao</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Việc làm quản lý</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Việc làm IT</Link></li>
+                                <li><Link to="#" className="hover:text-primary !text-[12px]">Việc làm Senior</Link></li>
                             </ul>
                         </div>
                     </div>

@@ -20,9 +20,21 @@ import { USER_API } from "../../services/modules/userServices";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../redux/slices/userSlices";
 const { Sider } = Layout;
+const popularSearches = [
+  "Front-end",
+  "Back-end",
+  "Development",
+  "PHP",
+  "Laravel",
+  "Bootstrap",
+  "Developer",
+  "Team Lead",
+  "Product Testing",
+  "JavaScript",
+];
 export default function JobBoard() {
-  const userDetail = useSelector(state=>state.user)
-  const [collapsed, setCollapsed] = useState<boolean>(userDetail?.collapsed);
+  const userDetail = useSelector((state) => state.user);
+  const [collapsed, setCollapsed] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState("newest");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,9 +49,9 @@ export default function JobBoard() {
   const { data: jobContractTypes } = useContractType();
   const { cities } = useCities();
   const [searchCity, setSearchCity] = useState<string>("");
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const location = useLocation();
-  const { keyword } = location.state || {};  // Nhận dữ liệu từ state
+  const { keyword } = location.state || {}; // Nhận dữ liệu từ state
   const handleGetJob = async (
     current = 1,
     pageSize = 9,
@@ -70,7 +82,8 @@ export default function JobBoard() {
   };
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) { // Giả sử màn hình nhỏ hơn 768px sẽ dùng chế độ "list"
+      if (window.innerWidth < 768) {
+        // Giả sử màn hình nhỏ hơn 768px sẽ dùng chế độ "list"
         setViewMode("list");
       } else {
         setViewMode("grid");
@@ -88,31 +101,31 @@ export default function JobBoard() {
   }, []);
   const handleCollapse = async () => {
     const newCollapsed = !collapsed;
-    setCollapsed(newCollapsed);  // Update local state immediately
-  
+    setCollapsed(newCollapsed); // Update local state immediately
+
     const params = {
-      toggle_filter: newCollapsed,  // Use the updated value
+      toggle_filter: newCollapsed, // Use the updated value
       id: userDetail?._id,
     };
-  
+
     try {
       const res = await USER_API.updateUser(params, userDetail?.access_token);
       if (res?.data) {
-        dispatch(updateUser({ ...res.data }));  // Update Redux state with the new value
+        dispatch(updateUser({ ...res.data })); // Update Redux state with the new value
       }
     } catch (error) {
       console.log("Error updating user", error);
     }
   };
-  
+
   useEffect(() => {
-    if(keyword){
+    if (keyword) {
       const params = {
-        keyword
-      }
-      setSearchTerm(keyword)
-      handleGetJob(1,9,params);
-    }else{
+        keyword,
+      };
+      setSearchTerm(keyword);
+      handleGetJob(1, 9, params);
+    } else {
       handleGetJob();
     }
   }, [keyword]);
@@ -184,7 +197,13 @@ export default function JobBoard() {
   const onApply = (jobId: string) => {
     navigate(`/job-information/${jobId}`);
   };
-
+  const onSearchPopular = async (value: string) => {
+    const query = {
+      keyword: value,
+    };
+    setSearchTerm(value);
+    await handleGetJob(1, 9, query);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -225,22 +244,40 @@ export default function JobBoard() {
             </div>
           </div>
         </div>
+        <div className="flex flex-wrap justify-center items-center mt-5 gap-2">
+          <span className="text-[12px] text-gray-500">Popular searches:</span>
+          {popularSearches.map((term) => (
+            <button
+              onClick={() => onSearchPopular(term)}
+              key={term}
+              className="!text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200
+        sm:px-4 sm:py-2 sm:text-base 
+        md:px-5 md:py-2.5 md:text-lg"
+            >
+              {term}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Main Content */}
       <main className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters */}
-          <Sider collapsed={userDetail?.toggle_filter} className="bg-transparent" width={250}>
+          <Sider
+            collapsed={collapsed}
+            className="bg-transparent"
+            width={250}
+          >
             <div className="w-full lg:w-64 space-y-6">
               {/* Hiển thị biểu tượng Filter khi thu gọn */}
               <div className="flex items-center justify-between">
-                {userDetail?.toggle_filter ? (
+                {collapsed ? (
                   <CircleChevronLeft onClick={handleCollapse} />
                 ) : (
                   <CircleChevronRight onClick={handleCollapse} />
                 )}
-                {!userDetail?.toggle_filter && (
+                {!collapsed && (
                   <Button onClick={onFilter} className="ml-2">
                     Lọc
                   </Button>
@@ -248,7 +285,7 @@ export default function JobBoard() {
               </div>
 
               {/* Hiển thị nội dung lọc */}
-              {!userDetail?.toggle_filter && (
+              {!collapsed && (
                 <div>
                   <div className="pb-3">
                     <h3 className="font-semibold mb-4 text-[12px]">
@@ -329,8 +366,8 @@ export default function JobBoard() {
                     handleGetJob(1, 9, {}, paramsSort); // 1: trang đầu, 15: số lượng item trên mỗi trang
                   }}
                 >
-                  <option value={'desc'}>Mới nhất</option>
-                  <option value={'asc'}>Cũ nhất</option>
+                  <option value={"desc"}>Mới nhất</option>
+                  <option value={"asc"}>Cũ nhất</option>
                 </select>
 
                 <div className="flex gap-1 ml-4">
@@ -338,7 +375,7 @@ export default function JobBoard() {
                     onClick={() => setViewMode("grid")}
                     className={`p-2 rounded  ${
                       viewMode === "grid" ? "bg-gray-100" : ""
-                    } ${window.innerWidth < 768 ? 'hidden':'' }`}
+                    } ${window.innerWidth < 768 ? "hidden" : ""}`}
                   >
                     <Grid2X2 className="w-5 h-5" />
                   </button>

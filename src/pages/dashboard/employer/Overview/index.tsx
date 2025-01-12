@@ -25,13 +25,13 @@ const OverviewEmployer = () => {
       render: (text: string, record: any) => (
         <div>
           <div className="font-medium">{text}</div>
-          <div className="text-gray-500 text-sm">
+          <div className="text-gray-500 !text-[12px]">
             {record?.job_contract_type?.name} • {calculateTimeRemaining(record?.expire_date)}
           </div>
         </div>
       ),
       width: '30%',
-      className: "whitespace-nowrap overflow-hidden text-ellipsis", // Thêm class CSS để ngăn nội dung xuống dòng
+      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
       title: "Trạng thái",
@@ -40,12 +40,12 @@ const OverviewEmployer = () => {
       render: (isActive: any) => (
         <Badge
           status={isActive ? "success" : "error"}
-          text={isActive ? "Hoạt động" : "Đã hết hạn"}
-          className="whitespace-nowrap"
+          text={isActive ? <span className="text-[12px]">Hoạt động</span> : <span className="text-[12px]">Đã hết hạn</span>}
+          className="whitespace-nowrap "
         />
       ),
       width: '15%',
-      className: "whitespace-nowrap overflow-hidden text-ellipsis", // Thêm class CSS để ngăn nội dung xuống dòng
+      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
       title: "Số lượng ứng tuyển",
@@ -54,18 +54,18 @@ const OverviewEmployer = () => {
       render: (count: number) => (
         <div className="flex items-center gap-2">
           <TeamOutlined />
-          <span>{count || 0} Người ứng tuyển</span>
+          <span className="!text-[12px]">{count || 0} Người ứng tuyển</span>
         </div>
       ),
       width: '20%',
-      className: "whitespace-nowrap overflow-hidden text-ellipsis", // Thêm class CSS để ngăn nội dung xuống dòng
+      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
       title: "Hành động",
       key: "actions",
       render: () => (
         <div className="flex gap-2">
-          <Button type="primary" className="bg-blue-500">
+          <Button type="primary" className="bg-blue-500 !text-[12px]">
             Xem đơn ứng tuyển
           </Button>
           <Dropdown
@@ -83,7 +83,7 @@ const OverviewEmployer = () => {
         </div>
       ),
       width: '20%',
-      className: "whitespace-nowrap overflow-hidden text-ellipsis", // Thêm class CSS để ngăn nội dung xuống dòng
+      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
   ];
 
@@ -198,37 +198,37 @@ const OverviewEmployer = () => {
   }, [metaSaveCandidate.count]);
 
   return (
-    <div>
+    <div className="mx-2">
       <div className="mb-8 flex flex-col gap-1">
         <Text className="font-semibold text-3xl">
           Hello, {userDetail?.full_name}
         </Text>
-        <Text className="font-semibold text-1xl">
+        <Text className="font-semibold !text-[12px]">
           Company : {userDetail?.company_name}
         </Text>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="bg-blue-50 p-6 rounded-lg">
-          <div className="text-3xl font-bold">{countOpenJob}</div>
+          <div className="text-3xl font-bold !text-[16px]">{countOpenJob}</div>
           <div className="flex items-center gap-2">
             <FileTextOutlined />
-            <span>Việc làm mở</span>
+            <span className="!text-[12px]">Việc làm mở</span>
           </div>
         </div>
         <div className="bg-orange-50 p-6 rounded-lg">
-          <div className="text-3xl font-bold">{countSaveCandidate}</div>
+          <div className="text-3xl font-bold !text-[16px]">{countSaveCandidate}</div>
           <div className="flex items-center gap-2">
             <SaveOutlined />
-            <span>Lưu ứng viên</span>
+            <span className="!text-[12px]">Lưu ứng viên</span>
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
-          <p className="mb-0">Công việc đăng gần đây</p>
-          <Button type="link">Xem tất cả</Button>
+          <p className="mb-0 text-[12px]">Công việc đăng gần đây</p>
+          <Button className="!text-[12px]" type="link">Xem tất cả</Button>
         </div>
         <div className="overflow-y-auto max-h-96">
           <Table

@@ -22,6 +22,19 @@ export const API_APPLICATION = {
       })
     }
   },
+  getAll:async(params:any,accessToken:string)=>{
+  const resData = await axiosInstance.get(`${APPLICATIONS}`, {
+        params: {
+          ...params
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      });
+      if (resData.data) return resData.data;
+      return null;
+  },
   getApplicationById: async (id: string, accessToken: string) => {
     const res = await axiosInstance.get(`${APPLICATIONS}/${id}`, {
       headers: {

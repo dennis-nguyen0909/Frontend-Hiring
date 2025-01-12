@@ -53,13 +53,16 @@ export default function PostJob() {
   const [typeModal, setTypeModal] = useState<string>("");
   const [expireDate, setExpireDate] = useState("");
   const [listSkills, setListSkills] = useState<ListSkillsFormData[]>([]);
-  const [loading,setLoading]=useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
   const { data: listLevels, refreshData: refreshLevel } = useLevels(1, 30);
   const { data: listContractTypes, refreshData: refreshContractType } =
     useContractType(1, 30);
   const { data: listDegreeTypes, refreshData } = useDegreeType(1, 30); // Lấy dữ liệu từ hook
-  const { data: listJobTypes,refreshData:refreshJobType } = useJobType(1,30);
-  const { data: listCurrencies,refreshData:refreshMoneyType } = useCurrency(1,30);
+  const { data: listJobTypes, refreshData: refreshJobType } = useJobType(1, 30);
+  const { data: listCurrencies, refreshData: refreshMoneyType } = useCurrency(
+    1,
+    30
+  );
   const [meta, setMeta] = useState<Meta>({
     count: 0,
     current_page: 1,
@@ -172,11 +175,11 @@ export default function PostJob() {
     });
   };
   // SKILLS
-  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newSkill, setNewSkill] = useState("");
 
-  const handleSkillChange = (value) => {
+  const handleSkillChange = (value: string) => {
     setSelectedSkills(value);
   };
 
@@ -186,12 +189,14 @@ export default function PostJob() {
       userDetail.access_token
     );
     if (res.data) {
+      console.log("duydeptrai", res.data);
       notification.success({
         message: "Thông báo",
         description: "Thêm thành công",
       });
-      handleGetSkillByUser({});
-      setIsModalVisible(false);
+      await handleGetSkillByUser({});
+      handleSkillChange(res?.data?._id);
+      handleCloseModal();
     } else {
       notification.error({
         message: "Thông báo",
@@ -208,14 +213,14 @@ export default function PostJob() {
   const [formLevel] = Form.useForm();
   const [formContractType] = Form.useForm();
   const [formJobType] = Form.useForm();
-  const [formMoneyType]=Form.useForm()
+  const [formMoneyType] = Form.useForm();
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setNewSkill("");
   };
   const handleSubmit = async (values: any) => {
     try {
-      setLoading(true)
+      setLoading(true);
       if (!requirements.length) {
         notification.error({
           message: "Thông báo",
@@ -310,8 +315,8 @@ export default function PostJob() {
         message: "Thông báo",
         description: error,
       });
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -370,8 +375,7 @@ export default function PostJob() {
       });
       refreshContractType();
       handleCloseModal();
-      formContractType.resetFields()
-
+      formContractType.resetFields();
     } else {
       notification.error({
         message: "Thông báo",
@@ -379,43 +383,47 @@ export default function PostJob() {
       });
     }
   };
-  const onFinishJobType= async(values)=>{
-    const { name, description,key } = values
-    const res = await JOB_TYPE_API.create({ name, description, user_id: userDetail?._id,key}, userDetail.access_token)
+  const onFinishJobType = async (values) => {
+    const { name, description, key } = values;
+    const res = await JOB_TYPE_API.create(
+      { name, description, user_id: userDetail?._id, key },
+      userDetail.access_token
+    );
     if (res.data) {
-
       notification.success({
         message: "Thông báo",
         description: "Thêm thành công",
-      })
-      refreshJobType()
+      });
+      refreshJobType();
       handleCloseModal();
       formJobType.resetFields();
-      
     } else {
       notification.error({
         message: "Thông báo",
         description: "Thêm thất bại",
-      })
+      });
     }
-  }
-  const onFinishMoneyType = async(values)=>{
-    const res = await CURRENCY_API.create({user_id: userDetail?._id,...values}, userDetail.access_token)
+  };
+  const onFinishMoneyType = async (values) => {
+    const res = await CURRENCY_API.create(
+      { user_id: userDetail?._id, ...values },
+      userDetail.access_token
+    );
     if (res.data) {
       notification.success({
         message: "Thông báo",
         description: "Thêm thành công",
-      })
-      refreshMoneyType()
-      handleCloseModal()
-      formMoneyType.resetFields()
+      });
+      refreshMoneyType();
+      handleCloseModal();
+      formMoneyType.resetFields();
     } else {
       notification.error({
         message: "Thông báo",
         description: "Thêm thất bại",
-      })
+      });
     }
-  }
+  };
   const renderBody = (type: string) => {
     switch (type) {
       case "add-skill":
@@ -423,17 +431,27 @@ export default function PostJob() {
           <>
             <Space direction="vertical" style={{ width: "100%" }}>
               <Input
+                className="text-[12px]"
                 placeholder="Nhập tên kỹ năng"
                 value={newSkill}
                 onChange={(e) => setNewSkill(e.target.value)}
               />
             </Space>
             <div className="flex justify-between items-center mt-10">
-              <Button key="cancel" onClick={handleCloseModal}>
+              <Button
+                className="!text-[12px]"
+                key="cancel"
+                onClick={handleCloseModal}
+              >
                 Hủy
               </Button>
               ,
-              <Button key="submit" type="primary" onClick={handleAddNewSkill}>
+              <Button
+                className="!text-[12px]"
+                key="submit"
+                type="primary"
+                onClick={handleAddNewSkill}
+              >
                 Thêm kỹ năng
               </Button>
             </div>
@@ -585,7 +603,10 @@ export default function PostJob() {
                 name="name"
                 label="Tên loại hình làm việc"
                 rules={[
-                  { required: true, message: "Vui lòng nhập loại hình làm việc!" },
+                  {
+                    required: true,
+                    message: "Vui lòng nhập loại hình làm việc!",
+                  },
                 ]}
               >
                 <Input placeholder="Nhập tên ..." />
@@ -617,48 +638,53 @@ export default function PostJob() {
       case "add-money-type":
         return (
           <>
-          <Form
-            form={formMoneyType}
-            onFinish={onFinishMoneyType}
-            onValuesChange={(changedValues,allValues)=>onValuesChange(changedValues,allValues,formMoneyType)} // Hàm theo dõi thay đổi giá trị
-            layout="vertical"
-          >
-            <Form.Item
-              name="name"
-              label="Tên loại tiền tệ"
-              rules={[{ required: true, message: 'Vui lòng nhập tên loại tiền tệ' }]}
+            <Form
+              form={formMoneyType}
+              onFinish={onFinishMoneyType}
+              onValuesChange={(changedValues, allValues) =>
+                onValuesChange(changedValues, allValues, formMoneyType)
+              } // Hàm theo dõi thay đổi giá trị
+              layout="vertical"
             >
-              <Input placeholder="Ví dụ: Việt nam đồng" />
-            </Form.Item>
-      
-            <Form.Item
-              name="key"
-              label="Key"
-            >
-              <Input disabled />
-            </Form.Item>
-      
-            <Form.Item
-              name="symbol"
-              label="Ký hiệu"
-              rules={[{ required: true, message: 'Vui lòng nhập ký hiệu!' }]}
-            >
-              <Input placeholder="Ví dụ: $, đ..." />
-            </Form.Item>
+              <Form.Item
+                name="name"
+                label="Tên loại tiền tệ"
+                rules={[
+                  { required: true, message: "Vui lòng nhập tên loại tiền tệ" },
+                ]}
+              >
+                <Input placeholder="Ví dụ: Việt nam đồng" />
+              </Form.Item>
 
-            <Form.Item
-              name="code"
-              label="Code"
-              rules={[{ required: true, message: 'Vui lòng nhập code!' }]}
-            >
-              <Input placeholder="Ví dụ: USD, VND..." />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" className="w-full !bg-primaryColor">
-                Lưu
-              </Button>
-            </Form.Item>
-          </Form>
+              <Form.Item name="key" label="Key">
+                <Input disabled />
+              </Form.Item>
+
+              <Form.Item
+                name="symbol"
+                label="Ký hiệu"
+                rules={[{ required: true, message: "Vui lòng nhập ký hiệu!" }]}
+              >
+                <Input placeholder="Ví dụ: $, đ..." />
+              </Form.Item>
+
+              <Form.Item
+                name="code"
+                label="Code"
+                rules={[{ required: true, message: "Vui lòng nhập code!" }]}
+              >
+                <Input placeholder="Ví dụ: USD, VND..." />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="w-full !bg-primaryColor"
+                >
+                  Lưu
+                </Button>
+              </Form.Item>
+            </Form>
           </>
         );
       default:
@@ -684,6 +710,13 @@ export default function PostJob() {
       });
     }
   };
+  const [currencySymbol, setCurrencySymbol] = useState("USD");
+  const handleCurrencyChange = (value) => {
+    const selectedCurrency = listCurrencies.find(currency => currency._id === value);
+    if (selectedCurrency) {
+      setCurrencySymbol(selectedCurrency.code);
+    }
+  };
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <Form
@@ -697,34 +730,84 @@ export default function PostJob() {
       >
         {/* Job Title */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Đăng công việc</h2>
+          <h2 className="text-[16px] font-semibold mb-4">Đăng công việc</h2>
 
           <Form.Item
-            label="Tiêu đề"
+            label={<div className="text-[12px]">Tiêu đề</div>}
             name="title"
             rules={[
               { required: true, message: "Tiêu đề công việc là bắt buộc" },
             ]}
           >
-            <Input placeholder="Thêm tiêu đề công việc ..." />
+            <Input
+              placeholder="Thêm tiêu đề công việc ..."
+              className="text-[12px]"
+            />
           </Form.Item>
         </div>
 
         {/* Salary */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Lương</h2>
+          <h2 className="text-[16px] font-semibold mb-4">Lương</h2>
 
           <div className="flex justify-between flex-col">
             {/* Negotiable Salary Checkbox */}
             <Form.Item name="is_negotiable" valuePropName="checked">
-              <Checkbox onChange={handleNegotiableChange}>
+              <Checkbox
+                onChange={handleNegotiableChange}
+                className="text-[12px]"
+              >
                 Lương thỏa thuận
               </Checkbox>
             </Form.Item>
 
-            {/* Min Salary */}
+            {/* Salary Type */}
             <Form.Item
-              label="Mức lương tối thiểu"
+              label={<div className="text-[12px]">Loại tiền</div>}
+              name="type_money"
+              className="lg:w-[300px] w-full text-[12px]"
+              rules={[{ required: true, message: "Vui lòng chọn loại tiền!" }]}
+            >
+              <Select placeholder="Chọn loại tiền"  onChange={handleCurrencyChange} className="!text-[12px]">
+                {listCurrencies.map((currency) => {
+                  return (
+                    <Select.Option value={currency._id}>
+                      <div className="text-[12px]">{currency.code}</div>
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label={<div className="!text-[12px]">Loại trả lương</div>}
+              name="salary_type"
+              className="lg:w-[300px] w-full !text-[12px]"
+              rules={[
+                {
+                  required: !isNegotiable,
+                  message: "Vui lòng chọn loại trả lương",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Chọn loại trả lương"
+                 className="!text-[12px]"
+                disabled={isNegotiable}
+              >
+                <Select.Option clas value="yearly">
+                  <span className="text-[12px]">Theo tháng</span>
+                </Select.Option>
+                <Select.Option value="monthly">
+                  <span className="text-[12px]">Theo năm</span>
+                </Select.Option>
+                <Select.Option value="hourly">
+                  <span className="text-[12px]">Theo giờ</span>
+                </Select.Option>
+              </Select>
+            </Form.Item>
+             {/* Min Salary */}
+             <Form.Item
+              label={<div className="text-[12px]">Mức lương tối thiểu</div>}
               name="min_salary"
               rules={[
                 {
@@ -734,96 +817,51 @@ export default function PostJob() {
               ]}
             >
               <InputNumber
-                prefix={<DollarOutlined />}
-                className="w-[300px]"
+                prefix={<DollarOutlined size={12} />}
+                className="lg:w-[300px] w-full !text-[12px]"
                 placeholder="Lương tối thiểu..."
-                addonAfter="USD"
+                  addonAfter={currencySymbol}
                 disabled={isNegotiable}
               />
             </Form.Item>
 
             {/* Max Salary */}
             <Form.Item
-              label="Mức lương tối đa"
+              label={<div className="text-[12px]">Mức lương tối đa</div>}
               name="max_salary"
               rules={[
                 {
                   required: !isNegotiable,
-                  message: "Maximum salary is required",
+                  message: "Vui lòng nhập lương tối đa!",
                 },
               ]}
+              className="!text-[12px]"
             >
               <InputNumber
                 prefix={<DollarOutlined />}
-                className="w-[300px]"
-                placeholder="Maximum salary..."
-                addonAfter="USD"
+                className="lg:w-[300px] w-full !text-[12px]"
+                placeholder="Lương tối đa..."
+                  addonAfter={currencySymbol}
                 disabled={isNegotiable}
               />
-            </Form.Item>
-
-            {/* Salary Type */}
-            <Form.Item
-              label="Loại trả lương"
-              name="salary_type"
-              className="w-[300px]"
-              rules={[
-                {
-                  required: !isNegotiable,
-                  message: "Vui lòng chọn loại trả lương",
-                },
-              ]}
-            >
-              <Select placeholder="Select" disabled={isNegotiable}>
-                <Select.Option value="yearly">Theo tháng</Select.Option>
-                <Select.Option value="monthly">Theo năm</Select.Option>
-                <Select.Option value="hourly">Theo giờ</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              label="Loại tiền"
-              name="type_money"
-              className="w-[300px]"
-              rules={[
-                { required: true, message: "Please select a money type" },
-              ]}
-            >
-              <Select placeholder="Select money type">
-                {listCurrencies.map((currency) => {
-                  return (
-                    <Select.Option value={currency._id}>
-                      {currency.code}
-                    </Select.Option>
-                  );
-                })}
-                 {/* <Select.Option key="add-money-type" value="add-money-type" disabled>
-                  <Button
-                    type="dashed"
-                    icon={<PlusOutlined />}
-                    onClick={() => handleOpenModal("add-money-type")}
-                    style={{ width: "100%" }}
-                  >
-                    Thêm loại tiền
-                  </Button>
-                </Select.Option> */}
-              </Select>
             </Form.Item>
           </div>
         </div>
         <section className="p-6 bg-white rounded-lg shadow-md mb-4">
           <Title level={5} className="text-xl font-semibold">
-            <span className="text-red-500">*</span> Kỹ năng & Chuyên môn
+            <span className="text-red-500 text-[16px]">*</span> Kỹ năng & Chuyên
+            môn
           </Title>
 
           <div className="space-y-6">
             {requirements.map((section, index) => (
               <div key={index}>
-                <Text strong className="text-lg">
-                  {section.title}
+                <Text strong className="text-[14px]">
+                  - {section.title}
                 </Text>
                 <ul className="list-disc pl-6 space-y-2 mt-2">
                   {section.items.map((item, idx) => (
-                    <li key={idx} className="text-gray-700">
+                    <li key={idx} className="text-gray-700 text-[12px]">
                       {item}
                     </li>
                   ))}
@@ -838,18 +876,18 @@ export default function PostJob() {
                   placeholder="Nhập tựa đề (ví dụ: 2 năm kinh nghiệm)"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="shadow-sm rounded-md border-gray-300"
+                  className="shadow-sm rounded-md border-gray-300 text-[12px]"
                 />
                 <Input
                   placeholder="Nhập yêu cầu"
                   value={newRequirement}
                   onChange={(e) => setNewRequirement(e.target.value)}
-                  className="shadow-sm rounded-md border-gray-300"
+                  className="shadow-sm rounded-md border-gray-300 text-[12px]"
                 />
                 <Button
                   type="primary"
                   onClick={addRequirement}
-                  className="w-full py-2 mt-4"
+                  className="w-full py-2 mt-4 !text-[12px]"
                 >
                   Thêm yêu cầu
                 </Button>
@@ -859,7 +897,9 @@ export default function PostJob() {
             {/* Hiển thị tựa đề hiện tại mà người dùng đang chỉnh sửa */}
             {currentSection && (
               <div className="mt-4 text-gray-600">
-                <Text strong>Đang chỉnh sửa phần: {currentSection}</Text>
+                <Text className="!text-[12px]" strong>
+                  Đang chỉnh sửa phần: {currentSection}
+                </Text>
               </div>
             )}
 
@@ -868,7 +908,7 @@ export default function PostJob() {
               <Button
                 type="default"
                 onClick={handleAddNewSection}
-                className="mt-4 w-full py-2"
+                className="mt-4 w-full py-2 !text-[12px]"
               >
                 Thêm tựa đề mới
               </Button>
@@ -878,33 +918,38 @@ export default function PostJob() {
 
         {/* Advanced Information */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Thông tin nâng cao</h2>
+          <h2 className="text-[16px] font-semibold mb-4">Thông tin nâng cao</h2>
           <Form.Item
             name="min_age"
-            label="Tuổi tối thiểu"
+            label={<div className="text-[12px]">Tuổi tối thiểu</div>}
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập tuổi tối thiểu",
+                message: "Vui lòng nhập tuổi tối thiểu!",
               },
               {
                 type: "number",
                 min: 18,
                 max: 65,
-                message: "Tuổi phải từ 18 đến 65",
+                message: "Tuổi phải từ 18 đến 65!",
               },
             ]}
           >
-            <InputNumber min={18} max={65} placeholder="Tuổi tối thiểu" />
+            <InputNumber
+              min={18}
+              max={65}
+              placeholder="Tuổi tối thiểu"
+              className="text-[12px] w-auto"
+            />
           </Form.Item>
 
           <Form.Item
             name="max_age"
-            label="Tuổi tối đa"
+            label={<div className="text-[12px]">Tuổi tối đa</div>}
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập tuổi tối đa",
+                message: "Vui lòng nhập tuổi tối đa!",
               },
               {
                 type: "number",
@@ -914,29 +959,34 @@ export default function PostJob() {
               },
             ]}
           >
-            <InputNumber min={18} max={65} placeholder="Tuổi tối đa" />
+            <InputNumber
+              min={18}
+              max={65}
+              placeholder="Tuổi tối đa"
+              className="text-[12px] w-auto"
+            />
           </Form.Item>
           <div className="">
             <Form.Item
-              label="Kỹ năng yêu cầu"
+              label={<div className="text-[12px]">Kỹ năng yêu cầu</div>}
               name="skills"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn kỹ năng yêu cầu",
+                  message: "Vui lòng chọn kỹ năng yêu cầu!",
                 },
               ]}
             >
               <Select
                 placeholder="Chọn kỹ năng"
                 mode="multiple"
-                style={{ width: "100%" }}
+                style={{ width: "100%", fontSize: "12px" }}
                 value={selectedSkills}
                 onChange={handleSkillChange}
               >
                 {listSkills.map((skill) => (
                   <Select.Option key={skill._id} value={skill._id}>
-                    {skill.name}
+                    <div className="text-[12px]">{skill.name}</div>
                   </Select.Option>
                 ))}
 
@@ -946,7 +996,7 @@ export default function PostJob() {
                     type="dashed"
                     icon={<PlusOutlined />}
                     onClick={() => handleOpenModal("add-skill")}
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", fontSize: "12px" }}
                   >
                     Thêm kỹ năng mới
                   </Button>
@@ -955,66 +1005,42 @@ export default function PostJob() {
             </Form.Item>
 
             <Form.Item
-              label="Giáo dục"
+              label={<div className="text-[12px]">Giáo dục</div>}
               name="degree"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn trình độ giáo dục",
+                  message: "Vui lòng chọn trình độ giáo dục!",
                 },
               ]}
             >
-              <Select placeholder="Select" className="w-full">
+              <Select placeholder="Select" className="w-full text-[12px]">
                 {listDegreeTypes.map((degree) => (
                   <Select.Option key={degree._id} value={degree._id}>
-                    {degree.name}
+                    <span className="text-[12px]">{degree.name}</span>
                   </Select.Option>
                 ))}
-                {/* <Select.Option
-                  key="add-education"
-                  value="add-education"
-                  disabled
-                >
-                  <Button
-                    type="dashed"
-                    icon={<PlusOutlined />}
-                    onClick={() => handleOpenModal("add-education")}
-                    className="w-full text-blue-500 hover:bg-blue-100 mt-2"
-                  >
-                    Thêm giáo dục
-                  </Button>
-                </Select.Option> */}
               </Select>
             </Form.Item>
 
             <Form.Item
-              label="Cấp độ yêu cầu"
+              label={<div className="text-[12px]">Cấp độ yêu cầu</div>}
               name="level"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn cấp độ yêu cầu",
+                  message: "Vui lòng chọn cấp độ yêu cầu!",
                 },
               ]}
             >
               <Select placeholder="Select">
                 {listLevels.map((level, idx) => {
                   return (
-                    <Select.Option value={level._id}>
-                      {level.name}
+                    <Select.Option key={idx} value={level._id}>
+                      <span className="text-[12px]">{level.name}</span>
                     </Select.Option>
                   );
                 })}
-                {/* <Select.Option key="add-levels" value="add-levels" disabled>
-                  <Button
-                    type="dashed"
-                    icon={<PlusOutlined />}
-                    onClick={() => handleOpenModal("add-levels")}
-                    className="w-full text-blue-500 hover:bg-blue-100 mt-2"
-                  >
-                    Thêm cấp độ
-                  </Button>
-                </Select.Option> */}
               </Select>
             </Form.Item>
 
@@ -1022,9 +1048,9 @@ export default function PostJob() {
             <Form.List name="general_requirements">
               {(fields, { add, remove }) => (
                 <>
-                  <label>
-                    <span style={{ color: "red" }}>*</span>
-                    Yêu cầu chung:
+                  <label className="text-[12px]">
+                    <span className="text-red-500 mr-1">*</span>
+                    Yêu cầu chung
                   </label>
                   {fields.map((field, index) => (
                     <Space
@@ -1039,23 +1065,27 @@ export default function PostJob() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng nhập yêu cầu chung",
+                            message: "Vui lòng nhập yêu cầu chung!",
                           },
                         ]}
                       >
-                        <Input placeholder="Yêu cầu chung" />
+                        <Input
+                          placeholder="Yêu cầu chung"
+                          className="text-[12px]"
+                        />
                       </Form.Item>
                       <MinusCircleOutlined onClick={() => remove(field.name)} />
                     </Space>
                   ))}
                   <Form.Item>
                     <Button
+                      className="!text-[12px]"
                       type="dashed"
                       onClick={() => add()}
                       block
                       icon={<PlusOutlined />}
                     >
-                      Thêm Yêu cầu
+                      Thêm yêu cầu
                     </Button>
                   </Form.Item>
                 </>
@@ -1064,9 +1094,9 @@ export default function PostJob() {
             <Form.List name="job_responsibilities">
               {(fields, { add, remove }) => (
                 <>
-                  <label>
-                    <span style={{ color: "red" }}>*</span>
-                    Trách nhiệm công việc:
+                  <label className="text-[12px]">
+                    <span className="text-red-500 mr-1">*</span>
+                    Trách nhiệm công việc
                   </label>
                   {fields.map((field, index) => (
                     <Space
@@ -1081,23 +1111,27 @@ export default function PostJob() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng nhập trách nhiệm công việc",
+                            message: "Vui lòng nhập trách nhiệm công việc!",
                           },
                         ]}
                       >
-                        <Input placeholder="Trách nhiệm công việc" />
+                        <Input
+                          placeholder="Trách nhiệm công việc"
+                          className="text-[12px]"
+                        />
                       </Form.Item>
                       <MinusCircleOutlined onClick={() => remove(field.name)} />
                     </Space>
                   ))}
                   <Form.Item>
                     <Button
+                      className="!text-[12px]"
                       type="dashed"
                       onClick={() => add()}
                       block
                       icon={<PlusOutlined />}
                     >
-                      Thêm Trách nhiệm công việc
+                      Thêm trách nhiệm công việc
                     </Button>
                   </Form.Item>
                 </>
@@ -1108,8 +1142,8 @@ export default function PostJob() {
             <Form.List name="interview_process">
               {(fields, { add, remove }) => (
                 <>
-                  <label>
-                    <span style={{ color: "red" }}>*</span>
+                  <label className="text-[12px]">
+                    <span className="text-red-500 mr-1">*</span>
                     Quy trình phỏng vấn:
                   </label>
                   {fields.map((field, index) => (
@@ -1125,88 +1159,79 @@ export default function PostJob() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng nhập quy trình phỏng vấn",
+                            message: "Vui lòng nhập quy trình phỏng vấn!",
                           },
                         ]}
                       >
-                        <Input placeholder="Quy trình phỏng vấn" />
+                        <Input
+                          placeholder="Quy trình phỏng vấn"
+                          className="text-[12px]"
+                        />
                       </Form.Item>
                       <MinusCircleOutlined onClick={() => remove(field.name)} />
                     </Space>
                   ))}
                   <Form.Item>
                     <Button
+                      className="!text-[12px]"
                       type="dashed"
                       onClick={() => add()}
                       block
                       icon={<PlusOutlined />}
                     >
-                      Thêm Quy trình phỏng vấn
+                      Thêm quy trình phỏng vấn
                     </Button>
                   </Form.Item>
                 </>
               )}
             </Form.List>
             <Form.Item
-              label="Loại hợp đồng"
+              label={<div className="text-[12px]">Loại hợp đồng</div>}
               name="job_contract_type"
               rules={[
-                { required: true, message: "Vui lòng chọn loại hợp đồng" },
+                { required: true, message: "Vui lòng chọn loại hợp đồng!" },
               ]}
             >
-              <Select placeholder="Select">
+              <Select placeholder="Chọn loại hợp đồng" className="!text-[12px]">
                 {listContractTypes.map((type, idx) => {
                   return (
-                    <Select.Option key={type.key} value={type._id}>
-                      {type.name}
+                    <Select.Option key={idx} value={type._id}>
+                      <span className="text-[12px]">{type.name}</span>
                     </Select.Option>
                   );
                 })}
-                {/* <Select.Option
-                  key="add_job_contract_type"
-                  value="add_job_contract_type"
-                  disabled
-                >
-                  <Button
-                    type="dashed"
-                    icon={<PlusOutlined />}
-                    onClick={() => handleOpenModal("add_job_contract_type")}
-                    className="w-full text-blue-500 hover:bg-blue-100 mt-2"
-                  >
-                    Thêm loại hợp đồng
-                  </Button>
-                </Select.Option> */}
               </Select>
             </Form.Item>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Form.Item
-              label="Số lượng tuyển"
+              label={<div className="text-[12px]">Số lượng tuyển</div>}
               name="count_apply"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập số lượng tuyển",
+                  message: "Vui lòng nhập số lượng tuyển!",
                 },
               ]}
             >
               <InputNumber
-                className="w-full"
+                className="w-full text-[12px]"
                 placeholder="Số lượng cho vị trí tuyển.."
               />
             </Form.Item>
 
             <Form.Item
-              label="Ngày hết hạn"
+              label={<div className="text-[12px]">Ngày hết hạn</div>}
               name="expire_date"
               rules={[
-                { required: true, message: "Vui lòng chọn ngày hết hạn" },
+                { required: true, message: "Vui lòng chọn ngày hết hạn!" },
               ]}
             >
               <Input
                 type="date"
                 onChange={(e) => setExpireDate(e.target.value)}
+                className="text-[12px]"
               />
             </Form.Item>
           </div>
@@ -1214,17 +1239,18 @@ export default function PostJob() {
 
         {/* Location */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Vị trí làm việc</h2>
+          <h2 className="text-[16px] font-semibold mb-4">Vị trí làm việc</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* City Field */}
             <Form.Item
-              label="Thành phố"
+              label={<div className="text-[12px]">Thành phố / tỉnh</div>}
               name="city"
-              rules={[{ required: true, message: "Vui lòng chọn thành phố" }]}
+              rules={[{ required: true, message: "Vui lòng chọn thành phố / tỉnh!" }]}
             >
               <Select
-                placeholder="Chọn Thành Phố"
+                className="text-[12px]"
+                placeholder="Chọn thành phố / tỉnh"
                 value={city}
                 onChange={handleCityChange}
                 loading={citiesLoading}
@@ -1232,7 +1258,7 @@ export default function PostJob() {
                 {/* Render city options dynamically from the hook */}
                 {cities.map((cityItem) => (
                   <Select.Option key={cityItem._id} value={cityItem._id}>
-                    {cityItem.name}
+                    <span className="text-[12px]">{cityItem.name}</span>
                   </Select.Option>
                 ))}
               </Select>
@@ -1240,20 +1266,20 @@ export default function PostJob() {
 
             {/* District Field */}
             <Form.Item
-              label="Quận/Huyện"
+              label={<div className="text-[12px]">Quận / huyện</div>}
               name="district"
-              rules={[{ required: true, message: "Vui lòng chọn quận huyện" }]}
+              rules={[{ required: true, message: "Vui lòng chọn quận / huyện!" }]}
             >
               <Select
-                placeholder="Chọn Quận/Huyện"
+                className="text-[12px]"
+                placeholder="Chọn quận / huyện"
                 value={district}
                 onChange={handleDistrictChange}
                 loading={districtLoading}
               >
-                {/* Render city options dynamically from the hook */}
                 {districts.map((district) => (
                   <Select.Option key={district._id} value={district._id}>
-                    {district.name}
+                    <span className="text-[12px]">{district.name}</span>
                   </Select.Option>
                 ))}
               </Select>
@@ -1263,9 +1289,9 @@ export default function PostJob() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Ward Field */}
             <Form.Item
-              label="Xã"
+              label={<div className="text-[12px]">Xã / phường</div>}
               name="ward"
-              rules={[{ required: true, message: "Vui lòng chọn xã" }]}
+              rules={[{ required: true, message: "Vui lòng chọn xã / phường!" }]}
             >
               <Select
                 placeholder="Chọn xã..."
@@ -1275,40 +1301,43 @@ export default function PostJob() {
               >
                 {wards.map((ward) => (
                   <Select.Option key={ward._id} value={ward._id}>
-                    {ward.name}
+                    <span className="text-[12px]">{ward.name}</span>
                   </Select.Option>
                 ))}
               </Select>
             </Form.Item>
 
             {/* Address Field */}
-            <Form.Item label="Địa chỉ" name="address">
-              <Input placeholder="Vui lòng nhập địa chỉ" />
+            <Form.Item label={<div className="text-[12px]">Địa chỉ</div>} name="address">
+              <Input placeholder="Vui lòng nhập địa chỉ" className="text-[12px]" />
             </Form.Item>
           </div>
 
           <Form.Item name="isRemote" valuePropName="checked">
-            <Checkbox>Fully Remote Position / Worldwide</Checkbox>
+            <Checkbox className="text-[12px]">Fully Remote Position / Worldwide</Checkbox>
           </Form.Item>
         </div>
 
         {/* Job Benefits */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Phúc lợi cho ứng viên</h2>
+          <h2 className="text-[16px] font-semibold mb-4">
+            Phúc lợi cho ứng viên
+          </h2>
 
           <Form.Item
-            label="Phúc lợi"
+            label={<div className="text-[12px]">Phúc lợi</div>}
             rules={[
-              { required: true, message: "Vui lòng chọn ít nhất 1 lợi ích" },
+              { required: true, message: "Vui lòng chọn ít nhất 1 lợi ích!" },
             ]}
           >
             <Input
+            className="text-[12px]"
               placeholder="Vui lòng nhập phúc lợi cho ứng viên"
               value={benefitInput}
               onChange={(e) => setBenefitInput(e.target.value)}
               onPressEnter={handleAddBenefit}
             />
-            <Button type="primary" onClick={handleAddBenefit} className="mt-2">
+            <Button type="primary" onClick={handleAddBenefit} className="mt-2 !text-[12px]">
               Thêm
             </Button>
             <div className="mt-4">
@@ -1326,54 +1355,45 @@ export default function PostJob() {
           </Form.Item>
           <Form.Item
             name="min_experience"
-            label="Kinh nghiệm tối thiểu ( Năm )"
+            label={<div className="text-[12px]">Kinh nghiệm tối thiểu ( Năm )</div>}
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập kinh nghiệm tối thiểu",
+                message: "Vui lòng nhập kinh nghiệm tối thiểu!",
               },
             ]}
           >
-            <InputNumber min={2} placeholder="..." />
+            <InputNumber min={1} placeholder="1" defaultValue={1}  className="text-[12px]"/>
           </Form.Item>
 
           {/* Thêm trường Loại hình công việc */}
           <Form.Item
             name="job_type"
-            label="Loại hình làm việc"
+            label={
+              <div  className="text-[12px]">Loại hình làm việc</div>
+            }
             rules={[
               {
                 required: true,
-                message: "Vui lòng chọn loại hình làm việc",
+                message: "Vui lòng chọn loại hình làm việc!",
               },
             ]}
           >
-            <Select placeholder="Chọn loại hình">
+            <Select placeholder="Chọn loại hình"  className="!text-[12px]">
               {listJobTypes.map((jobType) => {
                 return (
                   <Select.Option key={jobType.key} value={jobType._id}>
-                    {jobType.name}
+                   <span className="text-[12px]">{jobType.name}</span>
                   </Select.Option>
                 );
               })}
-              {/* <Select.Option key="add_job_type" value="add_job_type" disabled>
-                <Button
-                  type="dashed"
-                  icon={<PlusOutlined />}
-                  onClick={() => handleOpenModal("add_job_type")}
-                  className="w-full text-blue-500 hover:bg-blue-100 mt-2"
-                >
-                  Thêm loại hình làm việc
-                </Button>
-              </Select.Option> */}
             </Select>
           </Form.Item>
         </div>
 
         {/* Job Mô tả */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Mô tả công việc</h2>
-
+          <h2 className="text-[16px] font-semibold mb-4">Mô tả công việc</h2>
           <Form.Item name="description">
             <Editor
               // apiKey={process.env.REACT_APP_TINYMCE_API_KEY} // Bạn có thể lấy API key miễn phí từ TinyMCE
@@ -1399,8 +1419,8 @@ export default function PostJob() {
 
         {/* Application Method */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">
-            Ứng tuyển công việc trên :
+          <h2 className="text-[16px] font-semibold mb-4">
+            Ứng tuyển công việc trên
           </h2>
 
           <Form.Item
@@ -1408,14 +1428,14 @@ export default function PostJob() {
             rules={[
               {
                 required: true,
-                message: "Vui lòng chọn loại nộp đơn xin việc",
+                message: "Vui lòng chọn loại nộp đơn xin việc!",
               },
             ]}
           >
             <Radio.Group>
-              <Radio value="linkedin">LinkedIn</Radio>
-              <Radio value="company">Company website</Radio>
-              <Radio value="email">Email</Radio>
+              <Radio className="text-[12px]" value="linkedin">LinkedIn</Radio>
+              <Radio className="text-[12px]" value="company">Company website</Radio>
+              <Radio className="text-[12px]" value="email">Email</Radio>
             </Radio.Group>
           </Form.Item>
 
@@ -1424,23 +1444,23 @@ export default function PostJob() {
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập liên kết đơn ứng tuyển",
+                message: "Vui lòng nhập liên kết đơn ứng tuyển!",
               },
             ]}
           >
-            <Input placeholder="Vui lòng nhập URL hoặc Email" />
+            <Input placeholder="Vui lòng nhập URL hoặc Email"  className="text-[12px]" />
           </Form.Item>
         </div>
 
         {/* Image Company s */}
         {/* Submit Button */}
-       <LoadingComponent isLoading={loading}>
-       <Form.Item>
-          <Button type="primary" htmlType="submit" className="w-full">
-            Lưu
-          </Button>
-        </Form.Item>
-       </LoadingComponent>
+        <LoadingComponent isLoading={loading}>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className="w-full !text-[12px]">
+              Lưu
+            </Button>
+          </Form.Item>
+        </LoadingComponent>
       </Form>
       <GeneralModal
         title="Thêm"

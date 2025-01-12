@@ -102,44 +102,45 @@ export default function Founding() {
        <LoadingComponentSkeleton isLoading={loading}>
        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <Form.Item
-            label="Loại tổ chức"
+            label={<div className="text-[12px]">Loại tổ chức</div>}
             name="organization_type"
             rules={[
-              { required: true, message: "Please select organization type" },
+              { required: true, message: "Vui lòng chọn loại tổ chức!" },
             ]}
           >
-            <Select placeholder="Select...">
+            <Select placeholder="Chọn"  className="text-[12px]" >
               {organizationTypes.map((type) => (
                 <Select.Option key={type._id} value={type.name}>
-                  {type.name}
+<span className="text-[12px]">{type.name}</span>
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
 
           <Form.Item
-            label="Loại ngành"
+            label={<div className="text-[12px]">Loại ngành</div>}
             name="industry_type"
-            rules={[{ required: true, message: "Please select industry type" }]}
+            rules={[{ required: true, message: "Vui lòng chọn loại ngành!" }]}
           >
-            <Select placeholder="Select...">
+            <Select placeholder="Chọn...">
               {industry_type.map((type) => (
                 <Select.Option key={type._id} value={type.name}>
-                  {type.name}
+                  <span className="text-[12px]">{type.name}</span>
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
 
           <Form.Item
-            label="Quy mô thành viên"
+            label={<div className="text-[12px]">Quy mô thành viên</div>}
+
             name="team_size"
-            rules={[{ required: true, message: "Please select team size" }]}
+            rules={[{ required: true, message: "Vui lòng chọn số lượng thành viên!" }]}
           >
-            <Select placeholder="Select...">
+            <Select placeholder="Chọn...">
               {teamSizes.map((size) => (
                 <Select.Option key={size._id} value={size.name}>
-                  {size.name}
+                  <span className="text-[12px]">                  {size.name}</span>
                 </Select.Option>
               ))}
             </Select>
@@ -148,32 +149,35 @@ export default function Founding() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <Form.Item
-            label="Năm thành lập"
+            label={<div className="text-[12px]">Năm thành lập</div>}
+
             name="year_of_establishment"
             rules={[
-              { required: true, message: "Please select establishment date" },
+              { required: true, message: "Vui lòng chọn ngày thành lập!" },
             ]}
           >
-            <Input placeholder="dd/mm/yyyy" />
+            <Input placeholder="dd/mm/yyyy"  className="text-[12px]"  />
           </Form.Item>
 
           <Form.Item
-            label="Trang web công ty"
+            label={<div className="text-[12px]">Trang web công ty</div>}
+
             name="company_website"
             rules={[
-              { required: true, message: "Please enter company_website URL" },
-              { type: "url", message: "Please enter a valid URL" },
+              { required: true, message: "Vui lòng nhập url website của công ty bạn!" },
+              { type: "url", message: "Vui lòng nhập url hợp lệ!" },
             ]}
           >
             <Input
               prefix={<LinkOutlined className="text-gray-400" />}
               placeholder="Website url..."
+              className="text-[12px]"
             />
           </Form.Item>
         </div>
 
         <div className="mb-6">
-          <label className="block mb-2">Tầm nhìn công ty</label>
+          <label className="block mb-2 text-[12px]">Tầm nhìn công ty</label>
           <Editor
             apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
             value={companyVision}
@@ -194,8 +198,8 @@ export default function Founding() {
           />
         </div>
 
-        <Button htmlType="submit" onClick={handleSave}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white mt-5">
-          Lưu thay đổi
+        <Button htmlType="submit" onClick={handleSave}  className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white mt-5 !text-[12px]">
+          Lưu thông tin
         </Button>
        </LoadingComponentSkeleton>
       </Form>

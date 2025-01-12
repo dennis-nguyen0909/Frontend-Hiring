@@ -8,6 +8,8 @@ import { Meta } from "../../types";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 import { useNavigate } from "react-router-dom";
 import { ROLE_API } from "../../services/modules/RoleServices";
+import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
+import { error } from "console";
 
 const popularSearches = [
   "Front-end",
@@ -22,20 +24,17 @@ const popularSearches = [
   "JavaScript",
 ];
 
-const jobListings = Array(12).fill({
-  company: "Dribbble",
-  location: "Dhaka, Bangladesh",
-  featured: true,
-  openPositions: 3,
-  logo: "/placeholder.svg",
-});
-
 export default function EmployeesPage() {
   const [searchValue, setSearchValue] = useState<string>("");
+  const [searchCity, setSearchCity] = useState<string>("");
+
   const userDetail = useSelector((state) => state.user);
+
   const [companies, setCompanies] = useState([]);
   const [meta, setMeta] = useState<Meta>({});
   const [roleEmployer, setRoleEmployer] = useState<string>("");
+  const [isLoading,setIsLoading]=useState<boolean>(false)
+  
   const navigate = useNavigate();
   const handleGetEmployerRole = async () => {
     try {
@@ -49,6 +48,7 @@ export default function EmployeesPage() {
   };
   const handleSearch = async (query: any, current = 1, pageSize = 15) => {
     try {
+      setIsLoading(true)
       const params = {
         current,
         pageSize,
@@ -64,6 +64,8 @@ export default function EmployeesPage() {
       }
     } catch (error) {
       console.error(error);
+    } finally{
+      setIsLoading(false)
     }
   };
   useEffect(() => {
@@ -80,6 +82,7 @@ export default function EmployeesPage() {
   const onSearch = async () => {
     await handleSearch({
       company_name: debounceSearchValue,
+      city_name:searchCity
     });
   };
   const handleNavigate = (id) => {
@@ -94,45 +97,51 @@ export default function EmployeesPage() {
             <div className="flex-1">
               <Input
                 size="large"
-                placeholder="Search by: Name company ..."
+
+                placeholder="Tìm kiếm : Tên công ty ..."
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 prefix={<Search className="text-gray-400" size={20} />}
-                className="w-full"
+                className="w-full text-[12px]"
               />
             </div>
             <div className="flex-1">
               <Input
                 size="large"
-                placeholder="City, state hoặc zip code"
+                value={searchCity}
+                onChange={(e) => setSearchCity(e.target.value)}
+
+                placeholder="Thành phố ..."
                 prefix={<MapPin className="text-gray-400" size={20} />}
-                className="w-full"
+                className="w-full text-[12px]"
               />
             </div>
             <button
               onClick={onSearch}
-              className="rounded-lg bg-blue-600 px-8 py-2 text-white transition-colors hover:bg-blue-700"
+              className="text-[12px] rounded-lg bg-blue-600 px-8 py-2 text-white transition-colors hover:bg-blue-700"
             >
               Tìm kiếm
             </button>
           </div>
 
           {/* Popular Searches */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-gray-500">Popular searches:</span>
+          {/* <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[12px] text-gray-500">Popular searches:</span>
             {popularSearches.map((term) => (
               <button
+              onClick={()=>onSearchPopular(term)}
                 key={term}
-                className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
+                className=" !text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
               >
                 {term}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
 
         {/* Job Listings Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+       <LoadingComponentSkeleton isLoading={isLoading}>
+       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {companies?.map((company, index) => (
             <div
               key={index}
@@ -154,26 +163,27 @@ export default function EmployeesPage() {
                     <h3 className="font-medium">{company?.company_name}</h3>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <MapPin size={14} />
-                      <span>{`${company?.district_id?.name},${company?.city_id?.name}`}</span>
+                      <span className="text-[12px]">{`${company?.district_id?.name},${company?.city_id?.name}`}</span>
                     </div>
                   </div>
                 </div>
-                <span className="rounded-full bg-pink-100 px-2 py-1 text-xs text-pink-600">
+                <span className="rounded-full bg-pink-100 px-2 py-1 text-xs text-pink-600 text-[12px]">
                   Featured
                 </span>
               </div>
               <button
                 onClick={() => handleNavigate(company?._id)}
-                className="w-full rounded-lg bg-blue-50 py-2 text-center text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
+                className="!text-[12px] w-full rounded-lg bg-blue-50 py-2 text-center text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
               >
                 Vị trí mở({company?.jobs_ids?.length || 0})
               </button>
             </div>
           ))}
         </div>
+       </LoadingComponentSkeleton>
 
         {/* Pagination */}
-        <div className="mt-8 flex justify-center">
+        {companies.length>0 && <div className="mt-8 flex justify-center">
           <CustomPagination
             currentPage={meta?.current_page}
             perPage={meta?.per_page}
@@ -182,7 +192,7 @@ export default function EmployeesPage() {
               handleSearch({}, current, pageSize)
             }
           />
-        </div>
+        </div>}
       </div>
     </div>
   );

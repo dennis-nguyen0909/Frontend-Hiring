@@ -151,123 +151,119 @@ const LoginPage = () => {
 
   const renderFormCreate = () => {
     return (
-      <div className="w-[500px]">
-        <div className="flex items-center lg:justify-start justify-center lg:mt-10 mt-4 gap-2">
-          <Image src={icon} width={45} height={45} preview={false} />
-          <h1
-            onClick={() => navigate("/")}
-            className="font-medium text-2xl cursor-pointer"
-          >
-            HireDev
-          </h1>
-        </div>
-        {/* Header */}
-        <div className="flex gap-10 items-center justify-between lg:mt-[200px] mt-[150px]">
-          <div>
-            <h1 className="font-medium text-3xl">Đăng nhập.</h1>
-            <div className="mt-2">
-              <span className="text-gray-500 text-1xl">
-                Bạn chưa có tài khoản?
-              </span>
-              <span
-                onClick={handleNavigateRegister}
-                className="text-blue-500 cursor-pointer"
-              >
-                {" "}
-                Tạo tài khoản
-              </span>
-            </div>
-          </div>
-        </div>
-        {/* Body */}
-        <Form
-          onFinish={handleLogin}
-          layout="vertical"
-          className="flex flex-col  mt-5"
+      <div className="mx-4 lg:mx-10">
+  <div className="flex items-center lg:justify-start justify-center lg:mt-10 mt-4 gap-2">
+    <Image src={icon} width={45} height={45} preview={false} />
+    <h1
+      onClick={() => navigate("/")}
+      className="font-medium text-2xl cursor-pointer"
+    >
+      HireDev
+    </h1>
+  </div>
+  {/* Header */}
+  <div className="flex flex-col lg:flex-row gap-4 lg:gap-10 items-center justify-between lg:mt-[200px] mt-[150px] px-4 lg:px-0">
+    <div>
+      <h1 className="font-medium text-2xl lg:text-3xl">Đăng nhập.</h1>
+      <div className="mt-2">
+        <span className="text-gray-500 text-sm lg:text-lg">
+          Bạn chưa có tài khoản?
+        </span>
+        <span
+          onClick={handleNavigateRegister}
+          className="text-blue-500 cursor-pointer"
         >
-          <Form.Item
-            name="email"
-            rules={[{ required: true, message: "Please input your email!" }]}
-          >
-            <Input
-              size="large"
-              placeholder="Địa chỉ email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
-          >
-            <Input.Password
-              size="large"
-              placeholder="Password"
-              iconRender={(visible) =>
-                visible ? <EyeFilled /> : <EyeInvisibleOutlined />
-              }
-            />
-          </Form.Item>
-          <div className="flex justify-between gap-3 mt-5">
-            <Checkbox
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            >
-              Ghi nhớ tài khoản
-            </Checkbox>
-            <span
-              onClick={() => navigate("/forgot-password")}
-              className="text-blue-500"
-            >
-              Quên mật khẩu?
-            </span>
-          </div>
-         <div className="w-full">
-         <LoadingComponent  isLoading={isLoading}>
-          <div className="flex flex-col  mt-5 justify-center items-center">
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="w-full"
-              size="large"
-              style={{ backgroundColor: "#0f65cc" }}
-            >
-              Đăng nhập{" "}
-              <ArrowRightOutlined
-                style={{ fontSize: "18px", fontWeight: "bold" }}
-              />
-            </Button>
-          </div>
-          </LoadingComponent>
-         </div>
-        </Form>
-        <div className="flex items-center justify-center mt-3 text-gray-500">
-          <hr className="w-full h-0.95 bg-gray-500" />
-          <p className="mx-2">hoặc</p>
-          <hr className="w-full h-0.95 bg-gray-500" />
-        </div>
-        <div className="flex justify-between mt-5 w-full gap-2">
-        <a href={`${import.meta.env.VITE_API_LOGIN_FACEBOOK}`}>
-          <Button
-            className="flex items-center"
-            size="large"
-            style={{ width: "240px" }}
-          >
-            <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
-            Đăng nhập với Facebook
-          </Button>
-          </a>
-          <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
-          <Button
-            className="flex items-center"
-            size="large"
-            style={{ width: "240px" }}      >
-            <img src={google} alt="Google" className="w-5 h-5 mr-2" />
-            Đăng nhập với Google
-          </Button>
-            </a>
-        </div>
+          {" "}
+          Tạo tài khoản
+        </span>
       </div>
+    </div>
+  </div>
+  {/* Body */}
+  <Form
+    onFinish={handleLogin}
+    layout="vertical"
+    className="flex flex-col mt-5 px-4 lg:px-0"
+  >
+    <Form.Item
+      className="w-full"
+      name="email"
+      rules={[{ required: true, message: "Please input your email!" }]}
+    >
+      <Input
+        size="large"
+        placeholder="Địa chỉ email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+    </Form.Item>
+    <Form.Item
+      className="w-full"
+      name="password"
+      rules={[{ required: true, message: "Please input your password!" }]}
+    >
+      <Input.Password
+        size="large"
+        placeholder="Password"
+        iconRender={(visible) =>
+          visible ? <EyeFilled /> : <EyeInvisibleOutlined />
+        }
+      />
+    </Form.Item>
+    <div className="flex justify-between gap-3 mt-5">
+      <Checkbox
+        checked={rememberMe}
+        onChange={(e) => setRememberMe(e.target.checked)}
+      >
+        Ghi nhớ tài khoản
+      </Checkbox>
+      <span
+        onClick={() => navigate("/forgot-password")}
+        className="text-blue-500"
+      >
+        Quên mật khẩu?
+      </span>
+    </div>
+    <div className="w-full">
+      <LoadingComponent isLoading={isLoading}>
+        <div className="flex flex-col mt-5 justify-center items-center">
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="w-full"
+            size="large"
+            style={{ backgroundColor: "#0f65cc" }}
+          >
+            Đăng nhập{" "}
+            <ArrowRightOutlined
+              style={{ fontSize: "18px", fontWeight: "bold" }}
+            />
+          </Button>
+        </div>
+      </LoadingComponent>
+    </div>
+  </Form>
+  <div className="flex items-center justify-center mt-3 text-gray-500">
+    <hr className="w-full h-0.95 bg-gray-500" />
+    <p className="mx-2">hoặc</p>
+    <hr className="w-full h-0.95 bg-gray-500" />
+  </div>
+  <div className="flex flex-col lg:flex-row justify-between mt-5 w-full gap-2">
+    <a href={`${import.meta.env.VITE_API_LOGIN_FACEBOOK}`}>
+      <Button className="flex items-center w-full lg:w-auto" size="large">
+        <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
+        Đăng nhập với Facebook
+      </Button>
+    </a>
+    <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
+      <Button className="flex items-center w-full lg:w-auto" size="large">
+        <img src={google} alt="Google" className="w-5 h-5 mr-2" />
+        Đăng nhập với Google
+      </Button>
+    </a>
+  </div>
+</div>
+
     );
   };
 
@@ -327,7 +323,7 @@ const LoginPage = () => {
   }
   return (
     <div className="flex justify-between items-center overflow-hidden">
-      <div className="flex flex-col gap-[100px] h-screen lg:w-3/6 w-full lg:pl-[150px] px-primaryx2">
+      <div className="flex flex-col gap-[100px] h-screen lg:w-3/6 w-full lg:pl-[150px]">
         <div className="flex align-center justify-center ">
           {renderFormCreate()}
         </div>

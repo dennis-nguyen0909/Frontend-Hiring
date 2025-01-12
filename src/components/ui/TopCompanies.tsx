@@ -70,13 +70,13 @@ const TopCompanies = () => {
         <>
             <div className="h-full px-5 md:px-primary"> 
                 <div>
-                    <h1 className="text-textBlack text-3xl font-medium">Top Công ty</h1>
+                    <h1 className="text-textBlack text-[16px] font-medium">Top công ty</h1>
                 </div>
                 <div className="mt-5 mb-5">
                     {renderCompanies()}
                 </div>
                 <div className="flex items-center justify-center mb-5">
-                    <Button onClick={()=>navigate('/employers')}>Xem thêm</Button>
+                    <Button className="!text-[12px]" onClick={()=>navigate('/employers')}>Xem thêm</Button>
                 </div>
             </div>  
         </>

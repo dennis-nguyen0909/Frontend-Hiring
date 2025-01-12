@@ -61,7 +61,7 @@ export default function SettingEmployer() {
   ]
 
   return (
-    <div className="setting-employer p-6 bg-gray-50 min-h-screen">
+    <div className="setting-employer lg:p-6 p-2 bg-gray-50 min-h-screen">
       <div className=" mx-auto">
         <h1 className="text-2xl font-semibold mb-6">Cài đặt</h1>
         <div className="bg-white rounded-lg shadow-sm">

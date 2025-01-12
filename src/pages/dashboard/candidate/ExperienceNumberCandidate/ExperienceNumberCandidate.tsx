@@ -1,13 +1,15 @@
 import { Checkbox, Form, InputNumber, notification, Button, Row, Col } from "antd";
 import * as userServices from "../../../../services/modules/userServices";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
 
 const ExperienceNumberCandidate = () => {
   const [form] = Form.useForm(); // Đảm bảo khai báo form đúng cách
   const userDetail = useSelector((state) => state.user);
   const { handleUpdateProfile } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+
+  const [noExperience, setNoExperience] = useState(userDetail?.no_experience || false); // Trạng thái "Không có kinh nghiệm"
 
   const onFinish = async (values: any) => {
     const params = {
@@ -37,10 +39,19 @@ const ExperienceNumberCandidate = () => {
     });
   }, []);
 
+  // Cập nhật trạng thái "Không có kinh nghiệm"
+  const handleCheckboxChange = (e: any) => {
+    setNoExperience(e.target.checked);
+    form.setFieldsValue({
+      total_experience_months: undefined,
+      total_experience_years: undefined,
+    });
+  };
+
   return (
     <div style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Số năm kinh nghiệm</h1>
-      
+      <h1 className="text-[12px]" style={{ textAlign: 'center', marginBottom: '20px' }}>Số năm kinh nghiệm</h1>
+
       <Form
         form={form}
         onFinish={onFinish}
@@ -50,11 +61,11 @@ const ExperienceNumberCandidate = () => {
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
-              label="Số tháng kinh nghiệm"
+              label={<div className="text-[12px]">Số tháng kinh nghiệm</div>}
               name="total_experience_months"
               rules={[
                 {
-                  required: !form.getFieldValue("no_experience"),
+                  required: !noExperience, // Yêu cầu nếu không có kinh nghiệm
                   message: "Vui lòng nhập số tháng kinh nghiệm",
                 },
               ]}
@@ -64,17 +75,19 @@ const ExperienceNumberCandidate = () => {
                 max={1000}
                 placeholder="Nhập số tháng"
                 style={{ width: "100%" }}
+                className="text-[12px]"
+                disabled={noExperience} // Disable nếu không có kinh nghiệm
               />
             </Form.Item>
           </Col>
 
           <Col span={12}>
             <Form.Item
-              label="Số năm kinh nghiệm"
+              label={<div className="text-[12px]">Số năm kinh nghiệm</div>}
               name="total_experience_years"
               rules={[
                 {
-                  required: form.getFieldValue("total_experience_months") === undefined,
+                  required: !noExperience && form.getFieldValue("total_experience_months") === undefined,
                   message: "Vui lòng nhập số năm kinh nghiệm",
                 },
               ]}
@@ -84,6 +97,8 @@ const ExperienceNumberCandidate = () => {
                 max={100}
                 placeholder="Nhập số năm"
                 style={{ width: "100%" }}
+                className="text-[12px]"
+                disabled={noExperience} // Disable nếu không có kinh nghiệm
               />
             </Form.Item>
           </Col>
@@ -92,12 +107,13 @@ const ExperienceNumberCandidate = () => {
           name="no_experience"
           valuePropName="checked"
         >
-          <Checkbox>Không có kinh nghiệm</Checkbox>
+          <Checkbox className="text-[12px]" onChange={handleCheckboxChange}>
+            Không có kinh nghiệm
+          </Checkbox>
         </Form.Item>
-
         <Form.Item style={{ textAlign: 'center' }}>
-        <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
-                    Cập nhật
+          <Button htmlType="submit" className="px-4 !bg-primaryColor !text-[12px] !text-white">
+            Cập nhật
           </Button>
         </Form.Item>
       </Form>

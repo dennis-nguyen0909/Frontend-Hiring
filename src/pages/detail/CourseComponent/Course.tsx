@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, Avatar, Typography, Button } from 'antd';
 import { BookOutlined, EditOutlined, LinkOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -49,7 +48,7 @@ export default function Course({
                 shape="square"
                 className="bg-gray-100 flex items-center justify-center"
               >
-                <BookOutlined className="text-2xl text-gray-400" />
+                <BookOutlined className="text-2xl text-gray-400" size={12} />
               </Avatar>
             )}
           </div>
@@ -58,12 +57,12 @@ export default function Course({
           <div className="flex-grow">
             <div className="flex justify-between items-start">
               <div>
-                <Title level={4} className="!mb-1">
+                <Title level={4} className="!mb-1 !text-[14px]">
                   {course_name}
                 </Title>
-                <Text className="block text-gray-600">{organization_name}</Text>
-                <Text className="block text-gray-500">{description}</Text>
-                <Text className="block text-gray-500 text-sm">
+                <Text className="block text-gray-600 !text-[12px]">{organization_name}</Text>
+                <Text className="block text-gray-500 !text-[12px]">{description}</Text>
+                <Text className="block text-gray-500 !text-[12px]">
                   {`Từ: ${moment(start_date).format('YYYY-MM-DD')} đến: ${end_date ? moment(end_date).format('YYYY-MM-DD') : 'Hiện tại'}`}
                 </Text>
               </div>

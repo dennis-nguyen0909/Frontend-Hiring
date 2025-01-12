@@ -226,13 +226,13 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       </div>
 
       <div className="mb-6 flex items-center justify-between">
-        <Title level={2} className="m-0">
+        <Title level={2} className="m-0 !text-[16px]">
           Đơn ứng tuyển
         </Title>
         <Space>
-          <Button>Filter</Button>
+          <Button className="!text-[12px]">Filter</Button>
           <Dropdown overlay={sortMenu} trigger={["click"]}>
-            <Button>
+            <Button className="!text-[12px]">
               Sort <DownloadOutlined />
             </Button>
           </Dropdown>
@@ -244,7 +244,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           <div className="flex items-center justify-between mb-4">
             <Title
               level={4}
-              className="m-0 bg-yellow-500 text-white px-[15px]  rounded-full"
+              className="m-0 bg-yellow-500 text-white px-[15px]  rounded-full !text-[14px]"
             >
               Đang chờ
             </Title>
@@ -274,7 +274,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           <div className="flex items-center justify-between mb-4">
             <Title
               level={4}
-              className="m-0 bg-red-500 text-white px-[15px]  rounded-full"
+              className="m-0 bg-red-500 text-white px-[15px]  rounded-full !text-[14px]"
             >
               Từ chối
             </Title>
@@ -299,7 +299,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           <div className="flex items-center justify-between mb-4">
             <Title
               level={4}
-              className="m-0 bg-green-500 text-white px-[15px]  rounded-full"
+              className="m-0 bg-green-500 text-white px-[15px]  rounded-full !text-[14px]"
             >
               Chấp nhận
             </Title>

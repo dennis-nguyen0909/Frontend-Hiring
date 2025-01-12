@@ -3,6 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
+const popularSearches = [
+  "Front-end",
+  "Back-end",
+  "Development",
+  "PHP",
+  "Laravel",
+  "Bootstrap",
+  "Developer",
+  "Team Lead",
+  "Product Testing",
+  "JavaScript",
+];
 const IntroduceV2 = () => {
   const [searchValue, setSearchValue] = useState("");
   const navigate = useNavigate();
@@ -13,6 +25,14 @@ const IntroduceV2 = () => {
       },
     });
   };
+  const onSearchPopular =(value:string)=>{
+    setSearchValue(value)
+    navigate("/jobs", {
+      state: {
+        keyword: value, // Dữ liệu muốn truyền
+      },
+    });
+  }
   return (
     <div className="h-auto bg-white px-4 md:px-primary pb-20">
       <div className="flex w-full flex-col h-auto">
@@ -52,6 +72,18 @@ const IntroduceV2 = () => {
                 </div>
               </div>
             </div>
+            <div className="flex flex-wrap items-center gap-2 mt-5">
+            <span className="text-[12px] text-gray-500">Popular searches:</span>
+            {popularSearches.map((term) => (
+              <button
+              onClick={()=>onSearchPopular(term)}
+                key={term}
+                className=" !text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
+              >
+                {term}
+              </button>
+            ))}
+          </div>
           </div>
         </div>
       </div>

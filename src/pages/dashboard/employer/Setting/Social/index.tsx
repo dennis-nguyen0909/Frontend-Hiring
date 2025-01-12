@@ -125,25 +125,28 @@ const onDeleted = async(id)=>{
       <h2 className="text-xl font-semibold mb-4">Liên kết xã hội</h2>
       {socialLinks.map((link, index) => (
         <div key={index} className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-[12px] font-medium text-gray-700 mb-1">
             Liên kết {index + 1}
           </label>
-          <div className="flex items-center space-x-2">
+          <div className="flex lg:items-center items-start space-x-2 flex-col md:flex-row">
             <Select
+            className="ml-2 text-[12px]"
               style={{ width: "150px" }}
               value={link.type}
               onChange={(value) =>
                 handleSocialLinkChange(index, "type", value)
               }
             >
-              <Select.Option value="Facebook">Facebook</Select.Option>
-              <Select.Option value="Twitter">Twitter</Select.Option>
-              <Select.Option value="Instagram">Instagram</Select.Option>
-              <Select.Option value="Youtube">Youtube</Select.Option>
-              <Select.Option value="LinkedIn">LinkedIn</Select.Option>
+              <Select.Option value="Facebook"><span className="text-[12px]">Facebook</span></Select.Option>
+              <Select.Option value="Twitter"><span className="text-[12px]">Twitter</span></Select.Option>
+              <Select.Option value="Instagram"><span className="text-[12px]">Instagram</span></Select.Option>
+              <Select.Option value="Youtube"><span className="text-[12px]">Youtube</span></Select.Option>
+              <Select.Option value="LinkedIn"><span className="text-[12px]">LinkedIn</span></Select.Option>
             </Select>
-            <Input
+           <div className="md:flex-row flex w-full justify-start flex-row mt-2 md:mt-0">
+           <Input
               placeholder="Profile link/url..."
+              className="text-[12px]"
               value={link.url}
               onChange={(e) =>
                 handleSocialLinkChange(index, "url", e.target.value)
@@ -152,22 +155,24 @@ const onDeleted = async(id)=>{
             />
             <Button
               type="text"
+              className="!text-[12px]"
               icon={<CloseOutlined />}
               onClick={() => onDeleted(link?._id)}
             />
+           </div>
           </div>
         </div>
       ))}
       <Button
         type="dashed"
         onClick={addNewSocialLink}
-        className="w-full mt-4"
+        className="w-full mt-4 !text-[12px]"
         icon={<PlusOutlined />}
       >
         
 Thêm liên kết xã hội mới
       </Button>
-      <Button htmlType="submit" onClick={handleSaveChanges}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white mt-5">
+      <Button htmlType="submit" onClick={handleSaveChanges}  className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white mt-5">
           Lưu thay đổi
         </Button>
     </LoadingComponentSkeleton>

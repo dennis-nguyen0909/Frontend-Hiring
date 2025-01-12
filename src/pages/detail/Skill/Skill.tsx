@@ -9,7 +9,7 @@ import {
 } from "antd";
 import { useSelector } from "react-redux";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
-import { BookOpen, Briefcase, Pencil } from "lucide-react";
+import { Briefcase, Feather, Pencil } from "lucide-react";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import { SkillApi } from "../../../services/modules/skillServices";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
@@ -161,26 +161,30 @@ const SkillComponent = () => {
       <LoadingComponent isLoading={isLoading}>
         <Form onFinish={onFinish} form={form} layout="vertical">
           <Form.Item
-            label="Tên kỹ năng"
+            label={<div className="text-[12px]">Tên kỹ năng</div>}
             name="name"
             required
             rules={[{ required: true, message: "Vui lòng nhập tên kỹ năng!" }]}
           >
-            <Input placeholder="Tên kỹ năng" />
+            <Input placeholder="Tên kỹ năng" className="text-[12px]" />
           </Form.Item>
 
           <Form.Item
-            label="Đánh giá"
+            label={<div className="text-[12px]">Đánh giá</div>}
+
             name="evalute"
             required
             rules={[{ required: true, message: "Vui lòng chọn đánh giá!" }]}
           >
             {/* Thay thế ngôi sao tĩnh bằng Ant Design's Rate component */}
-            <Rate allowHalf />
+            <Rate allowHalf/>
           </Form.Item>
+          <Form.Item 
+          label={<div className="text-[12px]">Mô tả chi tiết</div>}
 
-          <Form.Item label="Mô tả chi tiết" name="description">
+          name="description">
             <TextArea
+            className="text-[12px]"
               placeholder="Mô tả chi tiết công việc, những gì đạt được trong quá trình làm việc"
               rows={4}
             />
@@ -190,14 +194,14 @@ const SkillComponent = () => {
             {actionType === "create" ? (
               <Button
                 htmlType="submit"
-                className="w-full !bg-primaryColorH !text-white"
+                className="w-full !bg-primaryColorH !text-white !text-[12px]"
               >
                 Thêm
               </Button>
             ) : (
               <div className="flex items-center justify-between gap-4">
                 <Button
-                  className="!bg-primaryColorH text-white"
+                  className="!bg-primaryColorH text-white !text-[12px]"
                   onClick={handleUpdateSkill}
                   danger
                   style={{
@@ -208,6 +212,7 @@ const SkillComponent = () => {
                 </Button>
                 <Button
                   type="primary"
+                  className="!text-[12px]"
                   onClick={handleDeleteSkill}
                   style={{
                     width: "100%",
@@ -250,17 +255,16 @@ const SkillComponent = () => {
   return (
     <div>
       {listSkills.length > 0 ? (
-        <Card className="p-6">
+        <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-[#d3464f]" />
-              <h2 className="font-semibold">Kỹ năng</h2>
+            <Feather  className="h-6 w-6 text-[#d3464f]"  size={12}/>
+              <h2 className="font-semibold  text-[12px]">Kỹ năng</h2>
             </div>
-            <Button onClick={() => handleOpenSkill("create")}>
+            <Button className="!text-[12px]" onClick={() => handleOpenSkill("create")}>
               Thêm mục
             </Button>
           </div>
-          {/* <div className="flex items-center justify-start"> */}
           <div>
             {listSkills?.map((item: any, index: number) => (
               <Skill
@@ -271,20 +275,19 @@ const SkillComponent = () => {
               />
             ))}
           </div>
-          {/* </div> */}
         </Card>
       ) : (
-        <Card className="p-6">
+        <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-[#d3464f]" />
-              <h2 className="font-semibold">Kỹ năng</h2>
+            <Feather  className="h-6 w-6 text-[#d3464f]"  size={12}/>
+              <h2 className="font-semibold text-[12px]">Kỹ năng</h2>
             </div>
-            <Button onClick={() => handleOpenSkill("create")}>
+            <Button className="text-[12px]" onClick={() => handleOpenSkill("create")}>
               Thêm mục
             </Button>
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-[12px] text-gray-500">
             Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
             phần này theo CV.
           </p>

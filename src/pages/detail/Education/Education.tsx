@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Form,
   Input,
@@ -14,9 +14,11 @@ import { EducationApi } from "../../../services/modules/educationServices";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
-import { BookOpen, Pencil, School } from "lucide-react";
+import { GraduationCap, Pencil, School } from "lucide-react";
 import { updateUser } from "../../../redux/slices/userSlices";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
+import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
+import LoadingComponent from "../../../components/Loading/LoadingComponent";
 const { TextArea } = Input;
 
 interface typePostEducation {
@@ -32,6 +34,7 @@ interface typePostEducation {
 const EducationComponent = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isCurrentlyStudying, setIsCurrentlyStudying] = useState(false);
   const user = useSelector((state: any) => state.user);
   const [education, setEducation] = useState<typePostEducation | null>(null);
@@ -47,6 +50,7 @@ const EducationComponent = () => {
   } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
   const handleGetEducation = async (id: string, access_token: string) => {
     try {
+      setIsLoading(true)
       const res = await EducationApi.getEducationById(id, access_token);
       setEducation(res.data);
     } catch (error) {
@@ -54,6 +58,8 @@ const EducationComponent = () => {
         message: "Thông báo",
         description: error.message,
       });
+    } finally{
+      setIsLoading(false)
     }
   };
 
@@ -63,6 +69,7 @@ const EducationComponent = () => {
 
   const handleGetEducationByUserId = async () => {
     try {
+      setLoading(true)
       const res = await EducationApi.getEducationByUserId(userDetail.access_token);
       if(res.data){
         setListEducation(res.data)
@@ -73,6 +80,8 @@ const EducationComponent = () => {
         message: "Thông báo",
         description: error.message,
       });
+    } finally{
+      setLoading(false)
     }
   }
   const handleOpenModalEducation = (type: string, id?: string) => {
@@ -116,6 +125,7 @@ const EducationComponent = () => {
                 </p>
               </div>
               <Pencil
+              size={16}
                 className="text-primaryColor cursor-pointer"
                 onClick={() => handleOpenModalEducation('edit', id)}
               />
@@ -147,6 +157,7 @@ const EducationComponent = () => {
   };
   const handleDeleteEducation = async () => {
     try {
+      setLoading(true)
       if (education) {
        const res =  await EducationApi.deleteEducation(
           education._id,
@@ -170,11 +181,14 @@ const EducationComponent = () => {
         message: "Thông báo",
         description: error.message,
       });
+    } finally{
+      setLoading(false)
     }
   };
 
   const handleUpdateEducation = async () => {
     try {
+      setLoading(true)
       if (education) {
       const data = form.getFieldsValue();
        const res =  await EducationApi.updateEducation(
@@ -199,19 +213,20 @@ const EducationComponent = () => {
         message: "Thông báo",
         description: error.message,
       });
+    } finally {
+      setLoading(false)
     }
   };
 
 
   const onFinish = async (values: any) => {
-    setLoading(true);  // Bắt đầu trạng thái loading
+    setLoading(true);
     const params = {
       ...values,
       user_id: user._id,
     };
   
     try {
-      // Gọi API để tạo mới học vấn
       const res = await handlePostEducation(params, user.access_token);
       if (res.data) {
         notification.success({
@@ -244,6 +259,7 @@ const EducationComponent = () => {
       handleGetEducation(selectedEducationId, user.access_token);
     } else {
       form.resetFields();
+      setIsCurrentlyStudying(false)
     }
   }, [actionType, selectedEducationId, form]);
 
@@ -269,24 +285,32 @@ const EducationComponent = () => {
 
   const renderBody = () => {
     return (
-      <Form form={form} layout="vertical" onFinish={onFinish}>
+    <LoadingComponentSkeleton isLoading={isLoading}>
+       <LoadingComponent isLoading={loading}>
+       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
           name="school"
-          label="Trường"
+          label={<div className="text-[12px]">Trường</div>}
           rules={[{ required: true, message: "Vui lòng nhập tên trường" }]}
         >
           <Input
             prefix={<BookOutlined />}
             placeholder="Trường học"
+            className="text-[12px]"
           />
         </Form.Item>
 
-        <Form.Item name="major" label="Chuyên ngành">
-          <Input placeholder="Công nghệ phần mềm, Kinh tế, Tự động hóa, ...." />
+        <Form.Item name="major"
+          label={<div className="text-[12px]">Chuyên ngành</div>}
+          rules={[{ required: true, message: "Vui lòng nhập chuyên ngành" }]}
+        
+        >
+          <Input placeholder="Công nghệ phần mềm, Kinh tế, Tự động hóa, .... " className="text-[12px]"  />
         </Form.Item>
 
         <Form.Item name="currently_studying" valuePropName="checked">
           <Checkbox
+          className="text-[12px]"
             onChange={handleCheckboxChange}
           >
             Tôi đang học ở đây
@@ -299,29 +323,33 @@ const EducationComponent = () => {
         >
           <Form.Item
             name="start_date"
-            label="Bắt đầu"
+            label={<div className="text-[12px]">Bắt đầu</div>}
             style={{ width: "200px" }}
             rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu" }]}
           >
-            <DatePicker picker="month" style={{ width: "100%" }} />
+            <DatePicker picker="month" style={{ width: "100%",fontSize:'12px' }} />
           </Form.Item>
 
           {!isCurrentlyStudying && (
             <Form.Item
               name="end_date"
-              label="Kết thúc"
+            label={<div className="text-[12px]">Kết thúc</div>}
+
               style={{ width: "200px" }}
               rules={[
                 { required: true, message: "Vui lòng chọn ngày kết thúc" },
               ]}
             >
-              <DatePicker picker="month" style={{ width: "100%" }} />
+              <DatePicker picker="month" style={{ width: "100%",fontSize:'12px' }} />
             </Form.Item>
           )}
         </Space>
 
-        <Form.Item name="description" label="Mô tả chi tiết">
+        <Form.Item name="description"
+            label={<div className="text-[12px]">Mô tả chi tiết</div>}
+        >
           <TextArea
+           className="text-[12px]" 
             rows={4}
             placeholder="Mô tả chi tiết quá trình học của bạn để nhà tuyển dụng có thể hiểu bạn hơn"
           />
@@ -334,7 +362,7 @@ const EducationComponent = () => {
               type="primary"
               loading={loading}
               htmlType="submit"
-              className="!bg-primaryColor w-full"
+              className="!bg-primaryColor w-full !text-[12px]"
             >
               Thêm
             </Button>
@@ -361,6 +389,7 @@ const EducationComponent = () => {
                   borderColor: "#4CAF50",
                   border:'none'
                 }}
+                className="!text-[12px]"
               >
                 Xóa
               </Button>
@@ -368,6 +397,8 @@ const EducationComponent = () => {
           )}
         </Form.Item>
       </Form>
+       </LoadingComponent>
+    </LoadingComponentSkeleton>
     );
   };
 
@@ -380,13 +411,14 @@ const EducationComponent = () => {
   return (
     <div>
       {listEducations.length > 0 ? (
-        <Card className="p-6">
+        <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-[#d3464f]" />
-              <h2 className="font-semibold">Học vấn</h2>
+            <GraduationCap  className="h-6 w-6 text-[#d3464f]" size={12} />
+
+              <h2 className="font-semibold text-[12px]">Học vấn</h2>
             </div>
-            <Button onClick={() => handleOpenModalEducation("create")}>
+            <Button className="text-[12px]" onClick={() => handleOpenModalEducation("create")}>
               Thêm mục
             </Button>
           </div>
@@ -406,15 +438,15 @@ const EducationComponent = () => {
           {/* </div> */}
         </Card>
       ) : (
-        <Card className="p-6">
+        <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-[#d3464f]" />
-              <h2 className="font-semibold">Học vấn</h2>
+              <GraduationCap  className="h-6 w-6 text-[#d3464f]" size={12} />
+              <h2 className="font-semibold text-[12px]">Học vấn</h2>
             </div>
-            <Button onClick={() => handleOpenModalEducation("create")}>Thêm mục</Button>
+            <Button size="small" className="!text-[12px]" onClick={() => handleOpenModalEducation("create")}>Thêm mục</Button>
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-[12px] text-gray-500">
             Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
             phần này theo CV.
           </p>

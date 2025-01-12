@@ -39,6 +39,7 @@ export default function MyJobEmployer() {
           </div>
         </div>
       ),
+      className: "text-[12px]",
       // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
@@ -58,6 +59,8 @@ export default function MyJobEmployer() {
           </div>
         </div>
       ),
+      className: "text-[12px]",
+
       // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
@@ -74,12 +77,14 @@ export default function MyJobEmployer() {
       render: (isActive: string) => (
         <div>
           <Badge
-          status={isActive ? "success" : "error"}
-          text={isActive ? "Hoạt động" : "Đã hết hạn"}
-          className="whitespace-nowrap"
-        />
+            status={isActive ? "success" : "error"}
+            text={isActive ? "Hoạt động" : "Đã hết hạn"}
+            className="whitespace-nowrap"
+          />
         </div>
       ),
+      className: "text-[12px]",
+
       // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
@@ -101,6 +106,8 @@ export default function MyJobEmployer() {
           </span>
         </div>
       ),
+      className: "text-[12px]",
+
       // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
@@ -120,6 +127,8 @@ export default function MyJobEmployer() {
           onChange={(checked) => handleToggleActiveJob(record, checked)}
         />
       ),
+      className: "text-[12px]",
+
       // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
@@ -159,6 +168,8 @@ export default function MyJobEmployer() {
           </Dropdown>
         </div>
       ),
+      className: "text-[12px]",
+
       // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
@@ -290,15 +301,14 @@ export default function MyJobEmployer() {
       });
     }
   };
-  
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className=" bg-gray-50 min-h-screen p-2 lg:p-2">
       {!selectedJob && currentMenu === MY_JOB_HOME && (
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="p-6 border-b">
+        <div className="rounded-lg shadow-sm">
+          <div>
             <div className="flex flex-wrap justify-between items-center gap-4">
-              <h1 className="text-xl font-semibold">
+              <h1 className="text-[16px] font-semibold">
                 Công việc của tôi{" "}
                 <span className="text-gray-400">({meta && meta.total})</span>
               </h1>
@@ -306,50 +316,89 @@ export default function MyJobEmployer() {
                 <div className="flex gap-4 flex-wrap justify-start w-full sm:w-auto">
                   <Select
                     defaultValue="status"
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", fontSize: "12px" }}
                     options={[
-                      { value: "status", label: "Trạng thái công việc" },
-                      { value: "active", label: "Hoạt động" },
-                      { value: "expired", label: "Đã hết hạn" },
+                      {
+                        value: "status",
+                        label: (
+                          <span style={{ fontSize: "12px" }}>
+                            Trạng thái công việc
+                          </span>
+                        ),
+                      },
+                      {
+                        value: "active",
+                        label: (
+                          <span style={{ fontSize: "12px" }}>Hoạt động</span>
+                        ),
+                      },
+                      {
+                        value: "expired",
+                        label: (
+                          <span style={{ fontSize: "12px" }}>Đã hết hạn</span>
+                        ),
+                      },
                     ]}
                   />
+
                   <Select
                     defaultValue="all"
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", fontSize: "12px" }}
                     options={[
-                      { value: "all", label: "All Việc làm" },
-                      { value: "fulltime", label: "Full Time" },
-                      { value: "parttime", label: "Part Time" },
-                      { value: "contract", label: "Contract" },
+                      {
+                        value: "all",
+                        label: (
+                          <span style={{ fontSize: "12px" }}>
+                            Tất cả việc làm
+                          </span>
+                        ),
+                      },
+                      {
+                        value: "fulltime",
+                        label: (
+                          <span style={{ fontSize: "12px" }}>Full Time</span>
+                        ),
+                      },
+                      {
+                        value: "parttime",
+                        label: (
+                          <span style={{ fontSize: "12px" }}>Part Time</span>
+                        ),
+                      },
+                      {
+                        value: "contract",
+                        label: (
+                          <span style={{ fontSize: "12px" }}>Contract</span>
+                        ),
+                      },
                     ]}
                   />
                 </div>
               </div>
             </div>
           </div>
-                    {console.log("listjob",listMyJobs)}
           {/* Responsive table */}
-         <LoadingComponentSkeleton isLoading={isLoading}>
-         <div className="overflow-x-auto">
-            <Table
-              columns={columns}
-              dataSource={listMyJobs}
-              pagination={false}
-              className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
-            />
-          </div>
+          <LoadingComponentSkeleton isLoading={isLoading}>
+            <div className="overflow-x-auto mt-5">
+              <Table
+                columns={columns}
+                dataSource={listMyJobs}
+                pagination={false}
+                className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
+              />
+            </div>
 
-          {listMyJobs?.length > 0 && (
-            <CustomPagination
-              currentPage={meta?.current_page}
-              total={meta?.total}
-              perPage={meta?.per_page}
-              onPageChange={(current, pageSize) => {
-                handleGetMyJob({ current, pageSize });
-              }}
-            />
-          )}
-         </LoadingComponentSkeleton>
+            {listMyJobs?.length > 0 && (
+              <CustomPagination
+                currentPage={meta?.current_page}
+                total={meta?.total}
+                perPage={meta?.per_page}
+                onPageChange={(current, pageSize) => {
+                  handleGetMyJob({ current, pageSize });
+                }}
+              />
+            )}
+          </LoadingComponentSkeleton>
         </div>
       )}
 

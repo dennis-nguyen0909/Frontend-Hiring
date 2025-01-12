@@ -116,6 +116,7 @@ export default function SavedCandidate() {
           <Button
             key="bookmark"
             type="text"
+            className="!text-[12px]"
             icon={<BookOutlined className={isActive ? "text-blue-500" : ""} />}
             onClick={() => handleBookmark(candidate._id)}
             aria-label={isActive ? "Remove bookmark" : "Add bookmark"}
@@ -123,7 +124,7 @@ export default function SavedCandidate() {
           <Button
             key="view"
             type="primary"
-            className="bg-blue-500"
+            className="bg-blue-500 !text-[12px]"
             onClick={() => handleViewProfile(candidate)}
           >
             Xem thông tin
@@ -180,9 +181,9 @@ export default function SavedCandidate() {
         <div className="mx-auto max-w-7xl">
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-6 border-b">
-              <div className="flex justify-between items-center">
-                <h1 className="text-xl font-semibold">Ứng viên đã lưu</h1>
-                <p className="text-sm text-gray-500">
+              <div className="flex  lg:justify-between lg:items-center items-start flex-col lg:flex-row ">
+                <h1 className="text-[16px] font-semibold">Ứng viên đã lưu</h1>
+                <p className="text-[12px] text-gray-500">
                   All of the saveCandidates are visible until 24 March, 2021
                 </p>
               </div>
