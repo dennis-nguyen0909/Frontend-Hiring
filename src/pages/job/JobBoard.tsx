@@ -244,20 +244,18 @@ export default function JobBoard() {
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap justify-center items-center mt-5 gap-2">
-          <span className="text-[12px] text-gray-500">Popular searches:</span>
-          {popularSearches.map((term) => (
-            <button
-              onClick={() => onSearchPopular(term)}
-              key={term}
-              className="!text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200
-        sm:px-4 sm:py-2 sm:text-base 
-        md:px-5 md:py-2.5 md:text-lg"
-            >
-              {term}
-            </button>
-          ))}
-        </div>
+        <div className="flex flex-wrap justify-center items-center gap-2 mt-5">
+              <span className="text-[12px] text-gray-500">Popular searches:</span>
+              {popularSearches.map((term) => (
+                <button
+                onClick={()=>onSearchPopular(term)}
+                  key={term}
+                  className=" !text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
+                >
+                  {term}
+                </button>
+              ))}
+          </div>
       </div>
 
       {/* Main Content */}

@@ -428,7 +428,7 @@ const Header: React.FC = () => {
               <Popover
                 placement="bottomLeft"
                 overlayClassName="no-arrow"
-                opened={hovered}
+                // opened={hovered}
                 content={content}
                 onVisibleChange={() => setHovered(!hovered)}
               >
@@ -436,11 +436,12 @@ const Header: React.FC = () => {
                   <Avatar
                     size="large"
                     src={
+                      userDetail?.avatar_company || userDetail?.banner_company ||
                       userDetail?.avatar ||
-                      userDetail?.avatar_company ||
                       avtDefault
                     }
                   />
+                  {console.log("userDetail",userDetail)}
                   <ChevronDown
                     className="cursor-pointer text-white"
                     size={20}

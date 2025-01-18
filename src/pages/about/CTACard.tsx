@@ -28,11 +28,12 @@ export function CTACard({
         </Button>
       </div>
       <Image
+      preview={false}
         src={imageSrc}
         alt={title}
         width={300}
         height={200}
-        className="rounded-lg w-1/3 object-cover"
+        className="rounded-lg w-1/3 object-contain"
       />
     </div>
   )

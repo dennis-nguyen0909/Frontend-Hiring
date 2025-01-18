@@ -9,20 +9,6 @@ import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigat
 import { useNavigate } from "react-router-dom";
 import { ROLE_API } from "../../services/modules/RoleServices";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
-import { error } from "console";
-
-const popularSearches = [
-  "Front-end",
-  "Back-end",
-  "Development",
-  "PHP",
-  "Laravel",
-  "Bootstrap",
-  "Developer",
-  "Team Lead",
-  "Product Testing",
-  "JavaScript",
-];
 
 export default function EmployeesPage() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -97,7 +83,6 @@ export default function EmployeesPage() {
             <div className="flex-1">
               <Input
                 size="large"
-
                 placeholder="Tìm kiếm : Tên công ty ..."
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -118,7 +103,7 @@ export default function EmployeesPage() {
             </div>
             <button
               onClick={onSearch}
-              className="text-[12px] rounded-lg bg-blue-600 px-8 py-2 text-white transition-colors hover:bg-blue-700"
+              className="text-[12px] rounded-lg bg-primaryColor px-8 py-2 text-white transition-colors hover:bg-gray-700"
             >
               Tìm kiếm
             </button>
@@ -161,10 +146,13 @@ export default function EmployeesPage() {
                   </div>
                   <div>
                     <h3 className="font-medium">{company?.company_name}</h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                    {company?.district_id &&company?.city_id && (
+
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
                       <MapPin size={14} />
                       <span className="text-[12px]">{`${company?.district_id?.name},${company?.city_id?.name}`}</span>
                     </div>
+                    ) }
                   </div>
                 </div>
                 <span className="rounded-full bg-pink-100 px-2 py-1 text-xs text-pink-600 text-[12px]">

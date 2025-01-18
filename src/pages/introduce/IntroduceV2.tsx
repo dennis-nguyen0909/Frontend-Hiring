@@ -72,17 +72,17 @@ const IntroduceV2 = () => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 mt-5">
-            <span className="text-[12px] text-gray-500">Popular searches:</span>
-            {popularSearches.map((term) => (
-              <button
-              onClick={()=>onSearchPopular(term)}
-                key={term}
-                className=" !text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
-              >
-                {term}
-              </button>
-            ))}
+            <div className="flex flex-wrap justify-center items-center gap-2 mt-5">
+              <span className="text-[12px] text-gray-500">Popular searches:</span>
+              {popularSearches.map((term) => (
+                <button
+                onClick={()=>onSearchPopular(term)}
+                  key={term}
+                  className=" !text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
+                >
+                  {term}
+                </button>
+              ))}
           </div>
           </div>
         </div>
