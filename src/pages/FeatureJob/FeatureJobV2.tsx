@@ -10,6 +10,8 @@ import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigat
 import SliderSalary from "../../components/SalarySlider/SalarySlider";
 import { JobCard } from "../home/SuggestionJob/JobCard";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
+import ButtonComponent from "../../components/Button/ButtonComponent";
+import { useNavigate } from "react-router-dom";
 
 const FeatureJobV2 = () => {
   const [jobs, setJobs] = useState([]);
@@ -23,7 +25,7 @@ const FeatureJobV2 = () => {
   const userDetail = useSelector((state) => state.user);
   const [selectedSalary, setSelectedSalary] = useState("all");
   const [isLoading,setIsLoading]=useState<boolean>(false);
-
+  const navigate = useNavigate()
   // Fetch cities data
   const handleGetCities = async () => {
     try {
@@ -104,6 +106,9 @@ const FeatureJobV2 = () => {
     });
   }, [selectedCity, selectedDistrict, selectedFilter]);
 
+  const onViewAll = ()=>{
+    navigate('/jobs')
+  }
   const handleChangeSelectedSalary = async (salaryRange: {
     min?: number;
     max?: number;
@@ -148,29 +153,25 @@ const FeatureJobV2 = () => {
   };
 
   return (
-    <div className="px-5 md:px-primary h-auto mb-[150px] bg-[#f3f5f7] pb-[100px] pt-[10px]">
+    <div className="px-5 md:px-primary h-auto mb-[20px] bg-[#f3f5f7] pb-[100px] pt-[10px]">
       <div
         className="flex justify-between items-center"
-        style={{ margin: "50px 0" }}
+        // style={{ margin: "50px 0" }}
       >
         <h1 className="text-textBlack text-[16px] font-medium">
           Việc làm tốt nhất
         </h1>
-        <div className="relative flex items-center">
-          <Button className="text-primary w-[130px] h-[40px] !text-[12px]">
-            Xem tất cả
-            <ArrowRightOutlined className="font-bold" />
-          </Button>
-          <Image src={arrowRight} preview={false} className="z-100 absolute" />
-        </div>
+       <ButtonComponent onClick={onViewAll} ><div className="text-[12px]">Xem tất cả</div></ButtonComponent>
+
+        
       </div>
 
       {/* Filter Section */}
-      <div className="mb-4">
-        <div className="flex flex-wrap gap-4">
+      <div className="mb-4 mt-5">
+        <div className="flex flex-wrap items-center">
           <div className="w-full md:w-1/3">
             <Select
-              size="large"
+              size="middle"
               suffixIcon={<AlignLeftOutlined />}
               defaultValue={"dia_diem"}
               style={{ width: "100%",fontSize:'12px' }}
@@ -178,9 +179,9 @@ const FeatureJobV2 = () => {
               onChange={handleChangeFilter}
               options={[
                 { value: "dia_diem", label: <span className="!text-[12px]">Địa điểm</span> },
-                { value: "muc_luong", label: <span className="!text-[12px]">Mức lương</span> },
-                { value: "kinh_nghiem", label: <span className="!text-[12px]">Kinh Nghiệm</span> },
-                { value: "nghe_nghiep", label: <span className="!text-[12px]">Nghề nghiệp</span> },
+                // { value: "muc_luong", label: <span className="!text-[12px]">Mức lương</span> },
+                // { value: "kinh_nghiem", label: <span className="!text-[12px]">Kinh Nghiệm</span> },
+                // { value: "nghe_nghiep", label: <span className="!text-[12px]">Nghề nghiệp</span> },
               ]}
             />
           </div>

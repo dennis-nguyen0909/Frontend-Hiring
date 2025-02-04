@@ -12,23 +12,17 @@ const Completed = ({handleCompleted}:ICompletedProps) => {
         </div>
         
         <h1 className="text-2xl font-semibold text-center mb-2">
-          🎉 Congratulations, Your profile is 100% complete!
+          🎉 Xin chúc mừng, hồ sơ của bạn đã hoàn tất 100%!
         </h1>
         
         <p className="text-gray-500 text-center max-w-lg mb-8">
-          Donec hendrerit, ante mattis pellentesque eleifend, tortor urna
-          malesuada ante, eget aliquam nulla augue hendrerit ligula. Nunc
-          mauris arcu, mattis sed sem vitae.
+          Hãy nhấn "Bắt đầu" để khám phá thêm các cơ hội tuyển dụng và những thông tin hữu ích khác.
         </p>
         
         <div className="flex gap-4">
           <Button onClick={handleCompleted} size="large">
-            Get Start
+          Bắt đầu
           </Button>
-          {/* <Button onClick={()=>navigate(`/dashboard/${userDetail?._id}`)} type="primary" size="large" className="flex items-center">
-            Post Job
-            <ArrowRightOutlined className="ml-2" />
-          </Button> */}
         </div>
       </div>
     )

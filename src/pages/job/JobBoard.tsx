@@ -103,19 +103,19 @@ export default function JobBoard() {
     const newCollapsed = !collapsed;
     setCollapsed(newCollapsed); // Update local state immediately
 
-    const params = {
-      toggle_filter: newCollapsed, // Use the updated value
-      id: userDetail?._id,
-    };
+    // const params = {
+    //   toggle_filter: newCollapsed, // Use the updated value
+    //   id: userDetail?._id,
+    // };
 
-    try {
-      const res = await USER_API.updateUser(params, userDetail?.access_token);
-      if (res?.data) {
-        dispatch(updateUser({ ...res.data })); // Update Redux state with the new value
-      }
-    } catch (error) {
-      console.log("Error updating user", error);
-    }
+    // try {
+    //   const res = await USER_API.updateUser(params, userDetail?.access_token);
+    //   if (res?.data) {
+    //     dispatch(updateUser({ ...res.data })); // Update Redux state with the new value
+    //   }
+    // } catch (error) {
+    //   console.log("Error updating user", error);
+    // }
   };
 
   useEffect(() => {
@@ -428,7 +428,7 @@ export default function JobBoard() {
                             <div
                               className={`text-gray-500 mt-1 ${
                                 viewMode === "grid"
-                                  ? "text-[8px]"
+                                  ? "text-[12px]"
                                   : "text-[12px]"
                               }`}
                             >

@@ -936,9 +936,9 @@ export default function JobDetail({
             </Form.Item>
           </div>
 
-          <Form.Item name="isRemote" valuePropName="checked">
+          {/* <Form.Item name="isRemote" valuePropName="checked">
             <Checkbox>Fully Remote Position / Worldwide</Checkbox>
-          </Form.Item>
+          </Form.Item> */}
         </div>
 
         {/* Job Benefits */}

@@ -43,7 +43,7 @@ export default function NotificationModal() {
         <div className="text-[12px] font-bold ">Thông báo</div>
         <div className="flex items-center gap-2">
           <Button  className="text-green-600 text-[12px] border-none hover:text-green-700 p-0">
-            Đánh dấu là đã đọc
+            Đánh dấu là đã đọc1
           </Button>
         </div>
       </div>

@@ -47,7 +47,7 @@ export default function DashBoardAdmin() {
     },
   ]
 
-  const handleCollapse = async (collapsed) => {
+  const handleCollapse = async (collapsed:any) => {
     setCollapsed(collapsed)
     const res = await userServices.updateUser({
       id: userDetail?._id,

@@ -158,7 +158,7 @@ const FoundingInfo = ({ handleTabChange }) => {
             { required: true, message: "Please select establishment date" },
           ]}
         >
-          <Input placeholder="dd/mm/yyyy" />
+          <Input placeholder="VD: 1998" />
         </Form.Item>
 
         <Form.Item
@@ -204,7 +204,7 @@ const FoundingInfo = ({ handleTabChange }) => {
         </Form.Item>
       </div>
       <Button htmlType="submit" onClick={handleSave}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
-          Save & Next
+      Lưu & tiếp tục
         </Button>
       </LoadingComponentSkeleton>
     </Form>

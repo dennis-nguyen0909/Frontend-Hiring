@@ -149,7 +149,7 @@ const userDetail=useSelector(state=>state.user)
 
         <div className="mt-8 flex justify-between">
         <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
-          Save & Next
+        Lưu & tiếp tục
         </Button>
         </div>
       </Form>

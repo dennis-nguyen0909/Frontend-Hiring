@@ -1,8 +1,4 @@
 import {
-  EllipsisOutlined,
-  FileTextOutlined,
-  LinkOutlined,
-  PlusOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
 import {
@@ -12,13 +8,11 @@ import {
   Input,
   message,
   notification,
-  Popover,
   Select,
   Upload,
 } from "antd";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { CV_API } from "../../../../services/modules/CvServices";
 import { USER_API } from "../../../../services/modules/userServices";
 import { updateUser } from "../../../../redux/slices/userSlices";
@@ -28,7 +22,7 @@ import { useWards } from "../../../../hooks/useWards";
 import moment from "moment";
 import { MediaApi } from "../../../../services/modules/mediaServices";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
-
+import './style.css'
 interface CV {
   _id: string;
   user_id: string;
@@ -43,7 +37,6 @@ const Personal = () => {
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<string>("");
   const [listCv, setListCv] = useState<CV[]>([]);
-  const [iframeSrc, setIframeSrc] = useState("");
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -52,7 +45,6 @@ const Personal = () => {
 
   const userDetail = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const { cities, loading: citiesLoading } = useCities();
   const { districts, loading: districtLoading } = useDistricts(city);
@@ -105,21 +97,10 @@ const Personal = () => {
           refresh_token: userDetail?.refresh_token,
         })
       );
-      message.success("Changes saved successfully");
+      message.success("Cập nhật thành công");
     }
     setLoading(false);
   };
-
-  const handleFileUpload = (info: any) => {
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  };
-
-  const handlePopoverOpen = (index: number) => setOpenPopoverIndex(index);
-  const handlePopoverClose = () => setOpenPopoverIndex(null);
 
   const handleDeleteCv = async () => {
     try {
@@ -136,12 +117,6 @@ const Personal = () => {
     }
   };
 
-  const popoverContent = (
-    <div className="flex flex-col gap-1">
-      <Button>Edit</Button>
-      <Button onClick={handleDeleteCv}>Xóa</Button>
-    </div>
-  );
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -195,12 +170,16 @@ const Personal = () => {
                 />
               </div>
             ) : (
-              <Upload
+             <div className="flex items-center">
+               <Upload
               name="avatar"
               listType="picture-card"
               showUploadList={false}
+              className="upload-container"
+              
               customRequest={async ({ file, onSuccess, onError }) => {
                 try {
+                  setLoading(true)
                   // Kiểm tra loại file
                   const isImage = file.type.startsWith("image/");
                   if (!isImage) {
@@ -225,18 +204,22 @@ const Personal = () => {
                   }
                 } catch (error) {
                   onError && onError(error);  // Gọi hàm onError khi có lỗi
-                  message.error("Upload failed!");  // Hiển thị thông báo lỗi
+                  message.error("Tải lên thất bại!");  // Hiển thị thông báo lỗi
+                } finally {
+                  setLoading(false)
                 }
               }}
             >
-              <div className="text-center ">
+              <div className="text-center">
                 <UploadOutlined className="text-2xl mb-1" />
-                <div className="text-[12px] text-gray-500">Browse photo or drop here</div>
+                <div className="text-[12px] text-gray-500">Duyệt ảnh hoặc thả vào đây</div>
                 <div className="text-[12px] text-gray-400">
-                  A photo larger than 400px works best. Max 5MB.
+                Một bức ảnh lớn hơn 400px là tốt nhất. Tối đa 5 MB.
                 </div>
               </div>
-            </Upload>
+             </Upload>
+             {userDetail?.avatar &&  <Avatar className="ml-10" shape="square" size={100} src={userDetail?.avatar} />}
+              </div>
             
             )}
           </div>

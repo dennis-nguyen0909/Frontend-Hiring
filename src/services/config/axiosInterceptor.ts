@@ -31,6 +31,7 @@ axiosInstance.interceptors.response.use(
                 const res = await axiosInstance.post('/auth/refresh-token', {
                     refresh_token: localStorage.getItem('refresh_token')
                 });
+                
                 if (res.data.data && res.data.data.user) {
                     const { refresh_token, access_token } = res.data.data.user;
                     localStorage.setItem('access_token', access_token);
@@ -42,8 +43,8 @@ axiosInstance.interceptors.response.use(
                 if (error.response && error.response.status === 400) {
                     localStorage.removeItem('access_token');
                     localStorage.removeItem('refresh_token');
-                    // window.location.href = '/login';
                 }
+                // window.location.href = '/login';
                 return Promise.reject(error);
             }
         }

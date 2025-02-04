@@ -80,14 +80,15 @@ export default function LocationSlider({
       <div className="relative flex justify-between px-[25px] mx-5">
         <button
           onClick={() => scroll("left")}
-          className="!text-[12px] absolute left-[-20px] top-1/2 transform -translate-y-1/2 bg-white lg:p-2 p-1 rounded-full shadow-md z-10 focus:outline-none focus:ring-2 focus:ring-[#d3464f]"
+          className="!text-[10px] absolute left-[-12px] top-1/2 transform -translate-y-1/2 bg-white lg:p-1 p-0.5 rounded-full shadow-md z-10 focus:outline-none focus:ring-2 focus:ring-[#d3464f]"
           aria-label="Scroll left"
         >
-          <ArrowLeftOutlined className="h-6 w-6 text-gray-600" />
+          <ArrowLeftOutlined className="h-4 w-4 text-gray-600" size={10} />
         </button>
+
         <div
   ref={sliderRef}
-  className="flex overflow-x-auto scrollbar-hide space-x-4 py-[10px]"
+  className="flex overflow-x-auto scrollbar-hide space-x-2 py-[8px]"
   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
 >
   {/* Nút chọn thành phố */}
@@ -97,7 +98,7 @@ export default function LocationSlider({
       setSelectedCity(dataCity?._id); // Chọn thành phố
       setSelectedDistrict(""); // Reset quận/huyện khi thành phố được chọn
     }}
-    className={`flex-shrink-0 px-4 py-2 rounded-full text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-[#d3464f] ${
+    className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[10px] font-medium focus:outline-none focus:ring-2 focus:ring-[#d3464f] ${
       selectedCity === dataCity?._id && !selectedDistrict // Khi chỉ có thành phố được chọn
         ? "bg-[#d3464f] text-white"
         : "bg-gray-200 text-gray-800 hover:bg-gray-300"
@@ -111,7 +112,7 @@ export default function LocationSlider({
     <button
       key={district?._id}
       onClick={() => setSelectedDistrict(district?._id)} // Chọn quận/huyện
-      className={`flex-shrink-0 lg:px-4 lg:py-2 px-2 py-[1px] rounded-full text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-[#d3464f] ${
+      className={`flex-shrink-0 lg:px-3 lg:py-1.5 px-2 py-[0.5px] rounded-full text-[10px] font-medium focus:outline-none focus:ring-2 focus:ring-[#d3464f] ${
         selectedDistrict === district?._id // Khi quận/huyện được chọn
           ? "bg-[#d3464f] text-white"
           : "bg-gray-200 text-gray-800 hover:bg-gray-300"
@@ -125,10 +126,10 @@ export default function LocationSlider({
 
         <button
           onClick={() => scroll("right")}
-          className="!text-[12px] absolute lg:right-0 right-[-18px] top-1/2 transform -translate-y-1/2 bg-white lg:p-2 p-1  rounded-full shadow-md z-10 focus:outline-none focus:ring-2 focus:ring-[#d3464f]"
+          className="!text-[10px] absolute lg:right-0 right-[-12px] top-1/2 transform -translate-y-1/2 bg-white lg:p-1 p-0.5 rounded-full shadow-md z-10 focus:outline-none focus:ring-2 focus:ring-[#d3464f]"
           aria-label="Scroll right"
         >
-          <ArrowRightOutlined className="h-6 w-6 text-gray-600" size={12} />
+          <ArrowRightOutlined className="h-4 w-4 text-gray-600" size={10} />
         </button>
       </div>
     </div>

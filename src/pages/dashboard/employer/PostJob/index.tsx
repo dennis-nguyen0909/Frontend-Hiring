@@ -1313,9 +1313,9 @@ export default function PostJob() {
             </Form.Item>
           </div>
 
-          <Form.Item name="isRemote" valuePropName="checked">
+          {/* <Form.Item name="isRemote" valuePropName="checked">
             <Checkbox className="text-[12px]">Fully Remote Position / Worldwide</Checkbox>
-          </Form.Item>
+          </Form.Item> */}
         </div>
 
         {/* Job Benefits */}

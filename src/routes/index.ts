@@ -18,6 +18,7 @@ import JobDetail from '../pages/JobDetail/JobDetail';
 import EmployerDetail from '../pages/EmployerDetail/EmployerDetail';
 import AboutPage from '../pages/about';
 import EmployeesPage from '../pages/PageEmployers';
+import LandingPageExtended from '../components/LandingPageFeatures/LandingPageFeatures';
 
 const JobSearchPage = lazy(()=>import('../pages/job/JobPage'));
 const JobBoard = lazy(()=>import('../pages/job/JobBoard'));
@@ -128,9 +129,16 @@ export const routes: IRoute[] = [
         isShowFooter:true
     },
     {
+        path:'/features',
+        page: LandingPageExtended,
+        isShowHeader:false,
+        isShowFooter:true
+    },
+    {
         path: '*',
         page: NotFound,
         isShowHeader: false,
     },
+
     
 ];

@@ -10,6 +10,7 @@ import { Meta } from "../../types";
 import { ROLE_API } from "../../services/modules/RoleServices";
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
+import ButtonComponent from "../Button/ButtonComponent";
 const TopCompanies = () => {
     const [companies,setCompanies]=useState([]);
     const [roleEmployer,setRoleEmployer]=useState()
@@ -76,7 +77,7 @@ const TopCompanies = () => {
                     {renderCompanies()}
                 </div>
                 <div className="flex items-center justify-center mb-5">
-                    <Button className="!text-[12px]" onClick={()=>navigate('/employers')}>Xem thêm</Button>
+                    <ButtonComponent onClick={()=>navigate('/employers')}><div className="text-[12px]">Xem thêm</div></ButtonComponent>
                 </div>
             </div>  
         </>

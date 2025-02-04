@@ -87,6 +87,20 @@ const Header: React.FC = () => {
     };
   }, [userDetail]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 678) {
+        setNotificationsVisible(false); // Đặt về false khi màn hình lớn hơn 1024px
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Dọn dẹp sự kiện khi component bị unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   const onReaded = async (notificationIds: string[]) => {
     const result = await NOTIFICATION_API.markAsRead(
       notificationIds,
@@ -233,13 +247,13 @@ const Header: React.FC = () => {
             </Button>
           </div>
         </div>
-        <div className="max-h-[300px] w-full overflow-y-auto">
+        <div className="max-h-[300px] w-full overflow-y-auto px-2">
           <div className="space-y-2">
             {notifications.length > 0 ? (
               notifications?.map((notification) => (
                 <div
                   key={notification?._id}
-                  className="rounded-lg bg-slate-50 p-3 hover:bg-slate-100 transition-colors cursor-pointer px-2"
+                  className="rounded-lg bg-slate-50 p-3 hover:bg-slate-100 transition-colors cursor-pointer px-2 "
                 >
                   <h3 className="font-semibold text-slate-900 text-[10px]">
                     {notification.message}
@@ -406,6 +420,7 @@ const Header: React.FC = () => {
                 content={renderNotifications}
                 trigger="hover"
                 placement="bottom"
+                overlayClassName="custom-popover"
               >
                 <Badge
                   className="custom-badge"

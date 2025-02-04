@@ -8,7 +8,7 @@ import CustomPagination from "../../../../components/ui/CustomPanigation/CustomP
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import { useNavigate } from "react-router-dom";
 import { isExpired } from "../../../../untils";
-
+import avatarDefault from '../../../../assets/avatars/avatar-default.jpg'
 interface JobApplication {
   _id: ObjectId;
   user_id: string;
@@ -51,11 +51,11 @@ const FavoriteJob = () => {
           <Avatar
             size={55}
             shape="square"
-            src={record?.job_id?.user_id.avatar_company}
+            src={record?.job_id?.user_id?.avatar_company || avatarDefault}
           />
           <div className="flex flex-col">
             <div className="font-semibold">{record?.job_id?.title}</div>
-            <div className="text-gray-500 text-sm flex flex-col gap-1">
+            <div className="text-gray-500 text-[12px] flex flex-col gap-1">
               <span className="mr-2">
                 {record?.job_id?.district_id?.name +
                   ", " +
@@ -65,10 +65,9 @@ const FavoriteJob = () => {
                 <span className="mr-2">Lương: Thỏa thuận</span>
               ) : (
                 <span className="mr-2">
-                  Lương:{" "}
-                  {record?.job_id?.salary_range.min +
-                    record?.job_id?.salary_range.max +
-                    record?.job_id?.type_money}
+                  Lương:{" "} {record?.job_id?.salary_range?.min}{record?.job_id?.type_money?.symbol} - {record?.job_id?.salary_range?.max}{record?.job_id?.type_money?.symbol}
+                  {console.log("duydeptrai",record)}
+                  
                 </span>
               )}
               {record.jobExpire && (

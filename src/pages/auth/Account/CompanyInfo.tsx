@@ -106,7 +106,7 @@ const CompanyInfo = ({handleTabChange}) => {
       <div className="grid md:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Upload Logo
+            Ảnh logo
           </label>
          {userDetail?.avatar_company ? (
             <Avatar shape="square" size={140}  src={userDetail?.avatar_company} />
@@ -175,11 +175,11 @@ const CompanyInfo = ({handleTabChange}) => {
       >
         <div>
           <Form.Item
-            label="Company name"
+            label="Tên công ty"
             name="company_name"
-            rules={[{ required: true, message: "Please input company name!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập tên công ty!" }]}
           >
-            <Input placeholder="Enter company name" className="max-w-xl" />
+            <Input placeholder="Nhập tên công ty" className="max-w-xl" />
           </Form.Item>
         </div>
 
@@ -209,7 +209,7 @@ const CompanyInfo = ({handleTabChange}) => {
           </Form.Item>
         </div>
         <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
-          Save & Next
+          Lưu & tiếp tục
         </Button>
       </Form>
     </div>

@@ -45,32 +45,33 @@ export default function SliderSalary({
       setCurrentSelectedSalary(selectedSalary);
     }
   }, [selectedSalary]);
+
   return (
-    <div className="relative max-w-screen-lg">
-      <div className="relative flex justify-between px-[40px]">
+    <div className="relative max-w-screen-lg ml-5">
+      <div className="relative flex justify-between px-[30px]">
         {/* Left scroll button */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-[-20px] top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 focus:outline-none focus:ring-2 focus:ring-[#d3464f]"
+          className="!text-[10px] absolute left-[-12px] top-1/2 transform -translate-y-1/2 bg-white lg:p-1 p-0.5 rounded-full shadow-md z-10 focus:outline-none focus:ring-2 focus:ring-[#d3464f]"
           aria-label="Scroll left"
         >
-          <ArrowLeftOutlined className="h-6 w-6 text-gray-600" />
+          <ArrowLeftOutlined className="h-4 w-4 text-gray-600" size={10} />
         </button>
 
         {/* Salary range slider */}
         <div
           ref={sliderRef}
-          className="flex overflow-x-auto scrollbar-hide space-x-4 py-[10px]"
+          className="flex overflow-x-auto scrollbar-hide space-x-2 py-[8px]"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {salaryRanges.map((range,idx) => (
+          {salaryRanges.map((range, idx) => (
             <button
               key={idx}
               onClick={() => {
                 handleChangeSelectedSalary(range.value);
                 setCurrentSelectedSalary(range.value); 
               }}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#d3464f] transition duration-200 ease-in-out 
+              className={`flex-shrink-0 px-3 py-1 rounded-full text-[10px] font-medium focus:outline-none focus:ring-2 focus:ring-[#d3464f] transition duration-200 ease-in-out
                 ${currentSelectedSalary === range.value && `bg-[#d3464f] text-white`}
               `}
             >
@@ -78,14 +79,12 @@ export default function SliderSalary({
             </button>
           ))}
         </div>
-
-        {/* Right scroll button */}
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 focus:outline-none focus:ring-2 focus:ring-[#d3464f]"
+          className="!text-[10px] absolute lg:right-0 right-[-12px] top-1/2 transform -translate-y-1/2 bg-white lg:p-1 p-0.5 rounded-full shadow-md z-10 focus:outline-none focus:ring-2 focus:ring-[#d3464f]"
           aria-label="Scroll right"
         >
-          <ArrowRightOutlined className="h-6 w-6 text-gray-600" />
+          <ArrowRightOutlined className="h-4 w-4 text-gray-600" size={10} />
         </button>
       </div>
     </div>

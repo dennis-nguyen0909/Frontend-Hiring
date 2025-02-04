@@ -17,6 +17,7 @@ import { User } from "lucide-react";
 import { BuildOutlined } from "@ant-design/icons";
 import { ROLE_API } from "../../services/modules/RoleServices";
 import { handleDecoded } from "../../helper";
+import FooterV2 from "../../components/Footer/FooterV2";
 
 interface DefaultPageProps {
   children: React.ReactNode;
@@ -289,7 +290,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
     <div>
       <Header />
       <main>{children}</main>
-      {showFooter && <Footer />}
+      {showFooter && <FooterV2 />}
       <Modal
         footer={null}
         width={"85%"}

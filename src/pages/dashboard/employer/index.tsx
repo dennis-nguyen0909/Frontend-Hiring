@@ -29,7 +29,12 @@ export default function DashBoardEmployer() {
   const dispatch = useDispatch();
 
   const menuItems = [
-    { key: "1", icon: <UserOutlined />, label: "Tổng quan", className: "bg-blue-50" },
+    {
+      key: "1",
+      icon: <UserOutlined />,
+      label: "Tổng quan",
+      className: "bg-blue-50",
+    },
     { key: "3", icon: <FileTextOutlined />, label: "Đăng việc làm" },
     { key: "4", icon: <FileTextOutlined />, label: "Việc làm của tôi" },
     { key: "5", icon: <SaveOutlined />, label: "Lưu ứng viên" },
@@ -44,13 +49,18 @@ export default function DashBoardEmployer() {
   ];
 
   const handleCollapse = async (collapsed: boolean) => {
-    setCollapsed(collapsed);
-    const res = await userServices.updateUser({
-      id: userDetail?._id,
-      toggle_dashboard: collapsed,
-    });
-    dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }));
+    setCollapsed(collapsed);  // Cập nhật trạng thái collapsed ngay lập tức
+    try {
+      const res = await userServices.updateUser({
+        id: userDetail?._id,
+        toggle_dashboard: collapsed,
+      });
+      dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }));
+    } catch (error) {
+      console.error("Failed to update user:", error);
+    }
   };
+  
 
   const handleMenuClick = (e: any) => {
     setCurrentTab(e.key);
@@ -60,36 +70,37 @@ export default function DashBoardEmployer() {
   };
 
   useEffect(() => {
-    if (userDetail?.toggle_dashboard) {
-      setCollapsed(userDetail?.toggle_dashboard);
-    }
-
-    // Add listener to handle mobile view
     const handleResize = () => {
       setMobileView(window.innerWidth <= 768);
       if (window.innerWidth > 768) {
-        setCollapsed(false); // Ensure sidebar is expanded on larger screens
+        setCollapsed(false);  // Đảm bảo sidebar luôn mở khi ở màn hình lớn
+      }else{
+        setCollapsed(true)
       }
     };
-
-    handleResize();
+  
+    handleResize();  // Kiểm tra kích thước khi component mount
     window.addEventListener("resize", handleResize);
-
+  
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", handleResize);  // Dọn dẹp khi component unmount
     };
-  }, [userDetail?.toggle_dashboard]);
+  }, []);
+  
 
   return (
     <Layout className="min-h-screen flex">
       {/* Sidebar */}
       <Sider
-      style={{display:`${!collapsed ? 'block' : 'none'}`}}
         collapsible
         collapsed={collapsed}
         onCollapse={(collapsed) => handleCollapse(collapsed)}
         className={`bg-white transition-all duration-300 ease-in-out ${
-          mobileView ? "absolute z-10 w-[250px] left-0 h-full" : "relative"
+          mobileView
+            ? collapsed
+              ? "hidden"
+              : "absolute z-10 w-[250px] left-0 h-full"
+            : "relative"
         }`}
       >
         <div className="p-4 text-xl font-bold text-center border-b">
@@ -111,6 +122,7 @@ export default function DashBoardEmployer() {
           </Menu>
         </div>
       </Sider>
+
       {/* Main Content */}
       <Layout>
         {mobileView && (
@@ -119,10 +131,10 @@ export default function DashBoardEmployer() {
             onClick={() => setCollapsed(!collapsed)}
             type="primary"
           >
-            {collapsed ? "Dashboard Menu" : "Close Menu"}
+            {collapsed ? "Mở Menu" : "Đóng Menu"}
           </Button>
         )}
-        <Content className="lg:p-6  bg-gray-50 flex-1">
+        <Content className="lg:p-6 bg-gray-50 flex-1">
           {currentTab === "1" && <OverviewEmployer />}
           {currentTab === "3" && <PostJob />}
           {currentTab === "4" && <MyJobEmployer />}

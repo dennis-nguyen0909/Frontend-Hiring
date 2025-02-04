@@ -228,7 +228,7 @@ const ContactForm = () => {
                   ]}
                 >
                   <Select
-                    placeholder="Select City"
+                    placeholder="Chọn thành phố / tỉnh"
                     value={city}
                     onChange={handleCityChange}
                     loading={citiesLoading}
@@ -251,7 +251,7 @@ const ContactForm = () => {
                   ]}
                 >
                   <Select
-                    placeholder="Select District"
+                    placeholder="Chọn quận / huyện"
                     value={district}
                     onChange={handleDistrictChange}
                     loading={districtLoading}
@@ -275,7 +275,7 @@ const ContactForm = () => {
                   ]}
                 >
                   <Select
-                    placeholder="Select Ward"
+                    placeholder="Chọn phường / xã"
                     value={ward}
                     onChange={handleWardChange}
                     loading={wardsLoading}
@@ -295,7 +295,7 @@ const ContactForm = () => {
                   rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
                 >
                   <Input
-                    placeholder="Enter full address"
+                    placeholder="Nhập địa chỉ"
                     className="text-[12px]"
                   />
                 </Form.Item>
@@ -485,7 +485,8 @@ const ContactForm = () => {
           </Form.Item>
 
           <Form.Item
-            label="Mật khẩu mới"
+                    label={<div className="text-[12px]">Mật khẩu mới</div>}
+
             name="new_password"
             rules={[
               { required: true, message: "Vui lòng nhập mật khẩu mới" },
@@ -495,7 +496,8 @@ const ContactForm = () => {
           </Form.Item>
 
           <Form.Item
-            label="Xác nhận mật khẩu"
+               label={<div className="text-[12px]">Xác nhận mật khẩu</div>}
+
             name="confirm_password"
             dependencies={["new_password"]} // Thêm dependency để xác nhận mật khẩu
             rules={[
