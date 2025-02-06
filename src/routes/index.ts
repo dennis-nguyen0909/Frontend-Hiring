@@ -15,6 +15,8 @@ import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
 import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
 // import JobSearchPage from '../pages/job/JobPage';
 import JobDetail from '../pages/JobDetail/JobDetail';
+import MyJobDetail from '../pages/dashboard/employer/MyJob/JodDetail'
+import MyApplicationDetail from '../pages/dashboard/employer/MyJob/JobApplication'
 import EmployerDetail from '../pages/EmployerDetail/EmployerDetail';
 import AboutPage from '../pages/about';
 import EmployeesPage from '../pages/PageEmployers';
@@ -132,6 +134,18 @@ export const routes: IRoute[] = [
         path:'/features',
         page: LandingPageExtended,
         isShowHeader:false,
+        isShowFooter:true
+    },
+    {
+        path:'/my-job-detail/:id',
+        page: MyJobDetail,
+        isShowHeader:true,
+        isShowFooter:true
+    },
+    {
+        path:'/my-application/:id',
+        page: MyApplicationDetail,
+        isShowHeader:true,
         isShowFooter:true
     },
     {

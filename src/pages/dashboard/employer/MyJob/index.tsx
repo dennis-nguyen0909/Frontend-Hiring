@@ -72,17 +72,20 @@ export default function MyJobEmployer() {
     },
     {
       title: "Trạng thái",
-      dataIndex: "is_active",
-      key: "is_active",
-      render: (isActive: string) => (
-        <div>
-          <Badge
-            status={isActive ? "success" : "error"}
-            text={isActive ? "Hoạt động" : "Đã hết hạn"}
-            className="whitespace-nowrap"
-          />
-        </div>
-      ),
+      dataIndex: "expire_date",
+      key: "expire_date",
+      render: (expire_date: Date) => {
+        const isExpired = new Date(expire_date).getTime() < Date.now();
+        return (
+          <div>
+            <Badge
+              status={!isExpired ? "success" : "error"}
+              text={!isExpired ? <span className="text-[12px]">Hoạt động</span> : <span className="text-[12px]">Đã hết hạn</span>}
+              className="whitespace-nowrap"
+            />
+          </div>
+        );
+      },
       className: "text-[12px]",
 
       // Prevent title from wrapping
@@ -117,27 +120,27 @@ export default function MyJobEmployer() {
         },
       }),
     },
-    {
-      title: "Toggle trạng thái",
-      key: "toggle_active",
-      render: (record: Job) => (
-        <Switch
-          className="custom-switch truncate"
-          checked={record.is_active}
-          onChange={(checked) => handleToggleActiveJob(record, checked)}
-        />
-      ),
-      className: "text-[12px]",
+    // {
+    //   title: "Toggle trạng thái",
+    //   key: "toggle_active",
+    //   render: (record: Job) => (
+    //     <Switch
+    //       className="custom-switch truncate"
+    //       checked={record.is_active}
+    //       onChange={(checked) => handleToggleActiveJob(record, checked)}
+    //     />
+    //   ),
+    //   className: "text-[12px]",
 
-      // Prevent title from wrapping
-      onHeaderCell: () => ({
-        style: {
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-          overflow: "hidden",
-        },
-      }),
-    },
+    //   // Prevent title from wrapping
+    //   onHeaderCell: () => ({
+    //     style: {
+    //       whiteSpace: "nowrap",
+    //       textOverflow: "ellipsis",
+    //       overflow: "hidden",
+    //     },
+    //   }),
+    // },
     {
       title: "Hành động",
       key: "actions",
@@ -148,7 +151,7 @@ export default function MyJobEmployer() {
               handleOnChangeMenu({ key: VIEW_DETAIL_APPLICATION }, record)
             }
             type="primary"
-            className="bg-blue-500"
+            className="bg-blue-500 !text-[12px]"
           >
             Xem đơn ứng tuyển
           </Button>
@@ -258,6 +261,7 @@ export default function MyJobEmployer() {
         userDetail.access_token
       );
       if (res.data) {
+        console.log("duydeptrai",res.data.items)
         setListMyJobs(res.data.items);
         setMeta(res.data.meta);
       }

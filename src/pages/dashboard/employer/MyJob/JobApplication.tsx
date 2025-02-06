@@ -24,11 +24,12 @@ import { useForm } from "antd/es/form/Form";
 import { USER_API } from "../../../../services/modules/userServices";
 import moment from "moment";
 import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
+import { useNavigate, useParams } from "react-router-dom";
 
 const { Title, Text } = Typography;
 interface IPropJobApplication {
-  handleChangeHome: () => void;
-  selectedJob: Job;
+  handleChangeHome?: () => void;
+  selectedJob?: Job;
 }
 const JobApplication: React.FC<IPropJobApplication> = ({
   handleChangeHome,
@@ -58,9 +59,14 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     total: 0,
     total_pages: 0,
   });
+  const location = useParams()
+  const navigate = useNavigate()
 
   const handleEditSubmit = () => {};
-
+  const handleBack = ()=>{
+    navigate(-1)
+  }
+  const onBack = handleChangeHome || handleBack
   const renderEdit = () => {
     return (
       <Form onFinish={handleEditSubmit}>
@@ -182,6 +188,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
      </LoadingComponentSkeleton>
     );
   };
+  console.log("duydeptrai lo",location)
   const handleGetJobByEmployer = async ({ current = 1, pageSize = 10 }) => {
     const params = {
       current, // Trang hiện tại
@@ -190,7 +197,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
 
     try {
       const res = await API_APPLICATION.getApplicationByEmployerJobId(
-        selectedJob._id,
+        selectedJob?._id || location?.id,
         params,
         userDetail.access_token
       );
@@ -204,25 +211,16 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   };
   useEffect(() => {
     handleGetJobByEmployer({ current: 1, pageSize: 10 });
-  }, []);
+  }, [location?.id,selectedJob?._id]);
   return (
     <div className="p-6">
       <div className="mb-6 text-sm text-gray-500">
         {/* <ChevronLeft /> */}
         <ChevronsLeft
           className="cursor-pointer hover:text-primaryColor rounded-full"
-          onClick={handleChangeHome}
+          onClick={onBack}
           size={40}
         />
-        {/* <span className="hover:text-gray-700 cursor-pointer">Trang chủ</span>
-        {" / "}
-        <span className="hover:text-gray-700 cursor-pointer">Job</span>
-        {" / "}
-        <span className="hover:text-gray-700 cursor-pointer">
-          Senior UI/UX Designer
-        </span>
-        {" / "}
-        <span className="text-gray-700">Applications</span> */}
       </div>
 
       <div className="mb-6 flex items-center justify-between">

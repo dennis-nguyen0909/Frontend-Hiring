@@ -13,6 +13,16 @@ export const NOTIFICATION_API = {
     if (res.data) return res.data;
     return null;
   },
+  getNotificationsForEmployer: async (id: string, accessToken: string) => {
+    const res = await axiosInstance.get(`${NOTIFICATIONS}/employer/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (res.data) return res.data;
+    return null;
+  },
   
   // Hàm cập nhật thông báo
   update: async (id: string, data: any, accessToken: string) => {

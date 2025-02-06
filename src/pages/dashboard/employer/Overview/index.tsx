@@ -13,10 +13,12 @@ import { calculateTimeRemaining, defaultMeta } from "../../../../untils";
 import { JobApi } from "../../../../services/modules/jobServices";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import './styles.css'
+import { useNavigate } from "react-router-dom";
 
 const { Text, Title } = Typography;
 
 const OverviewEmployer = () => {
+  const navigate = useNavigate()
   const columns = [
     {
       title: "Công việc",
@@ -35,15 +37,20 @@ const OverviewEmployer = () => {
     },
     {
       title: "Trạng thái",
-      dataIndex: "is_active",
-      key: "is_active",
-      render: (isActive: any) => (
-        <Badge
-          status={isActive ? "success" : "error"}
-          text={isActive ? <span className="text-[12px]">Hoạt động</span> : <span className="text-[12px]">Đã hết hạn</span>}
-          className="whitespace-nowrap "
-        />
-      ),
+      dataIndex: "expire_date",
+      key: "expire_date",
+      render: (expire_date: Date) => { // Chú ý: expire_date có kiểu Date
+        const isExpired = new Date(expire_date).getTime() < Date.now(); // So sánh chính xác
+        return (
+          <div>
+            <Badge
+              status={!isExpired ? "success" : "error"} // Dùng !isExpired để xác định trạng thái
+              text={!isExpired ? <span className="text-[12px]">Hoạt động</span> : <span className="text-[12px]">Đã hết hạn</span>}
+              className="whitespace-nowrap !text-[12px]"
+            />
+          </div>
+        );
+      },
       width: '15%',
       className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
@@ -63,16 +70,17 @@ const OverviewEmployer = () => {
     {
       title: "Hành động",
       key: "actions",
-      render: () => (
+      render: (item) => (
         <div className="flex gap-2">
-          <Button type="primary" className="bg-blue-500 !text-[12px]">
+          <Button onClick={()=>navigate(`/my-application/${item?._id}`)} type="primary" className="bg-blue-500 !text-[12px]">
             Xem đơn ứng tuyển
           </Button>
+          {console.log("duydeptrai item",item)}
           <Dropdown
             menu={{
               items: [
                 { key: "1", label: "Quảng bá việc làm" },
-                { key: "2", label: "Xem chi tiết" },
+                { key: "2", label: "Xem chi tiết",onClick:()=>navigate(`/my-job-detail/${item?._id}`) },
                 { key: "3", label: "Đánh dấu là đã hết hạn" },
               ],
             }}

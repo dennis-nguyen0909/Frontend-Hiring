@@ -30,10 +30,11 @@ import { useContractType } from "../../../../hooks/useContractType";
 import { useDegreeType } from "../../../../hooks/useDegreeType";
 import { useJobType } from "../../../../hooks/useJobType";
 import GeneralModal from "../../../../components/ui/GeneralModal/GeneralModal";
+import { useNavigate, useParams } from "react-router-dom";
 const { Title, Text } = Typography;
 interface IPropsJobDetail {
-  idJob: string;
-  handleChangeHome: () => void;
+  idJob?: string;
+  handleChangeHome?: () => void;
 }
 export default function JobDetail({
   idJob,
@@ -73,10 +74,12 @@ export default function JobDetail({
   const [newRequirement, setNewRequirement] = useState("");
   const [currentSection, setCurrentSection] = useState(""); // Để theo dõi phần tựa đề hiện tại
   const [typeModal, setTypeModal] = useState<string>("");
-
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newSkill, setNewSkill] = useState("");
+  const navigate = useNavigate()
+  const location =useParams()
+  console.log("location",location)
   const handleOpenModal = (type: string) => {
     setTypeModal(type);
     setIsModalVisible(true);
@@ -187,7 +190,7 @@ export default function JobDetail({
     setWard(value);
   };
   const handleGetJobDetail = async () => {
-    const res = await JobApi.getJobById(idJob, userDetail.access_token);
+    const res = await JobApi.getJobById(idJob || location?.id , userDetail.access_token);
     if (res?.data) {
       let applicationMethod = "";
       let applicationLink = "";
@@ -381,12 +384,16 @@ export default function JobDetail({
       message.error(field.errors[0])
     });
   };
+  const handleNavigateBack = ()=>{
+    navigate(-1);
+  }
+  const onBack = handleChangeHome || handleNavigateBack
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex items-center gap-4">
         <ChevronsLeft
           className="cursor-pointer hover:text-primaryColor rounded-full"
-          onClick={handleChangeHome}
+          onClick={onBack}
           size={40}
         />
         <h2 className="text-lg font-semibold ">Thông tin chi tiết</h2>
