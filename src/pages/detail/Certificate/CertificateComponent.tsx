@@ -80,7 +80,7 @@ const CertificateComponent = () => {
         setCertificates(res.data.items);
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   };
 

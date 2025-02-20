@@ -261,7 +261,6 @@ export default function MyJobEmployer() {
         userDetail.access_token
       );
       if (res.data) {
-        console.log("duydeptrai",res.data.items)
         setListMyJobs(res.data.items);
         setMeta(res.data.meta);
       }

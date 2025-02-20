@@ -53,9 +53,6 @@ const JobCard = ({ job }) => {
                 src={dollarIcon}
                 preview={false}
               />
-              {console.log("duydeptrai salary",job?.salary_range)}
-              {console.log("duydeptrai job",job)}
-              {console.log("duydeptrai type_money",job?.type_money)}
             {formatCurrency(job?.salary_range?.min)}{job?.type_money?.symbol} - {formatCurrency(job?.salary_range?.max)}{job?.type_money?.symbol}
             </p>
             <p className="flex items-center gap-1 text-sm">

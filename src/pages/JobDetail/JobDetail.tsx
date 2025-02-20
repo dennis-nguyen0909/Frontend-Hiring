@@ -196,7 +196,7 @@ export default function JobDetail() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="max-w-7xl mx-auto px-4 py-6 h-screen">
       {/* Header Section */}
       <div className="flex justify-between items-start mb-6">
         <div className="flex gap-6">

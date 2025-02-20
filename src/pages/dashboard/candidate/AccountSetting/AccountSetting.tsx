@@ -46,7 +46,6 @@ const ContactForm = () => {
     setWard(value);
   };
   const handleSaveChanges = async (values: any) => {
-    console.log("values", values);
     const params = {
       phone: values.phone,
       id: userDetail?._id,
@@ -73,8 +72,6 @@ const ContactForm = () => {
   const [form] = Form.useForm();
   const [formPassword] = Form.useForm();
   const handleSavePassword = async (values: any) => {
-    // const values = form.getFieldsValue();
-    console.log("values", values);
     try {
       const params = {
         user_id: userDetail?._id,

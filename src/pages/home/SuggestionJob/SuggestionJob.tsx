@@ -48,7 +48,6 @@ export default function SuggestionJob() {
       setLoading(false)
     }
   };
-  console.log("duydeptrai vlvlvl",jobsSuggests)
   useEffect(() => {
     getJobSuggestionSkills();
   }, []);

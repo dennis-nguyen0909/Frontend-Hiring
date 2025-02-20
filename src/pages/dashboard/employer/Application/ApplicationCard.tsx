@@ -109,7 +109,6 @@ const ApplicationCard = ({
     const{primary_cv_id}=user_id
     const cvLink =applied?.cv_id?.cv_link
     const cvName =applied?.cv_id?.cv_name
-    console.log("user_id",user_id)
     const link = document.createElement("a");
     if(cvLink==="" || !cvLink){
       notification.error({

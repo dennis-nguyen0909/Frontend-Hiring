@@ -84,7 +84,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
         // window.location.href=`${import.meta.env.VITE_API_URL_APP}`
         window.history.replaceState(null, '', window.location.pathname);
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     }
     

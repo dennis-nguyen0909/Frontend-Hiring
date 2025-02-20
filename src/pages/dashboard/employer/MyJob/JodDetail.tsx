@@ -79,7 +79,6 @@ export default function JobDetail({
   const [newSkill, setNewSkill] = useState("");
   const navigate = useNavigate()
   const location =useParams()
-  console.log("location",location)
   const handleOpenModal = (type: string) => {
     setTypeModal(type);
     setIsModalVisible(true);

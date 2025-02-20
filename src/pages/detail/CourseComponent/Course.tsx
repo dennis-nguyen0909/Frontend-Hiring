@@ -25,7 +25,6 @@ export default function Course({
   course_image,
   onEdit,
 }: CourseProps) {
-  console.log("course_image",course_image)
   return (
     <div>
       <Card

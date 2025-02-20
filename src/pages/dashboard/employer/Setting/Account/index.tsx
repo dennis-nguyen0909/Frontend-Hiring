@@ -35,7 +35,6 @@ export default function AccountSettingEmployer() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const dispatch = useDispatch();
   const userDetail = useSelector((state) => state.user);
-  console.log("userDetail",userDetail)
   const [showPassword, setShowPassword] = useState({
     current: false,
     new: false,

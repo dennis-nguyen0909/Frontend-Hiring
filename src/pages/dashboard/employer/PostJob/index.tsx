@@ -175,12 +175,19 @@ export default function PostJob() {
     });
   };
   // SKILLS
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newSkill, setNewSkill] = useState("");
 
-  const handleSkillChange = (value: string) => {
-    setSelectedSkills(value);
+  const [selectedSkills, setSelectedSkills] = useState<{ _id: string; name: string }[]>([]);
+
+  const handleSkillChange = (value: any) => {
+    // Map lại từ giá trị `_id` sang đối tượng đầy đủ skill từ danh sách `listSkills`
+    const updatedSkills = value.map((skillId: string) => {
+      const skill = listSkills.find((s) => s._id === skillId);
+      return skill ? { _id: skill._id, name: skill.name } : null;
+    }).filter(Boolean); // Loại bỏ giá trị null
+  
+    setSelectedSkills(updatedSkills as { _id: string; name: string }[]);
   };
 
   const handleAddNewSkill = async () => {
@@ -189,13 +196,12 @@ export default function PostJob() {
       userDetail.access_token
     );
     if (res.data) {
-      console.log("duydeptrai", res.data);
       notification.success({
         message: "Thông báo",
         description: "Thêm thành công",
       });
       await handleGetSkillByUser({});
-      handleSkillChange(res?.data?._id);
+      await handleSkillChange(res?.data?._id);
       handleCloseModal();
     } else {
       notification.error({
@@ -276,7 +282,7 @@ export default function PostJob() {
         type_money: values.type_money, //
         degree: values.degree,
         expire_date: expireDate,
-        skills: values.skills,
+        skills: values.skills?.map((skill:string)=>skill?.key),
         is_negotiable: values.is_negotiable,
         count_apply: values.count_apply,
         apply_linkedin: "",
@@ -288,6 +294,8 @@ export default function PostJob() {
         interview_process: values.interview_process,
         job_type: values.job_type,
         min_experience: values.min_experience,
+        skill_name:values.skills?.map((skill:string)=>skill?.label?.props?.children),
+        company_name:userDetail?.company_name?.trim()
       };
       if (values.applicationMethod === "linkedin") {
         params.apply_linkedin = values.applicationLink;
@@ -299,10 +307,6 @@ export default function PostJob() {
       const res = await JobApi.postJob(params, userDetail.access_token);
       if (res?.data && +res.statusCode === 201) {
         message.success("Tạo thành công");
-        // notification.success({
-        //   message: "Success",
-        //   description: "Job posted successfully",
-        // });
       } else {
         notification.error({
           message: "Error",
@@ -967,42 +971,47 @@ export default function PostJob() {
             />
           </Form.Item>
           <div className="">
-            <Form.Item
-              label={<div className="text-[12px]">Kỹ năng yêu cầu</div>}
-              name="skills"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn kỹ năng yêu cầu!",
-                },
-              ]}
-            >
-              <Select
-                placeholder="Chọn kỹ năng"
-                mode="multiple"
-                style={{ width: "100%", fontSize: "12px" }}
-                value={selectedSkills}
-                onChange={handleSkillChange}
-              >
-                {listSkills.map((skill) => (
-                  <Select.Option key={skill._id} value={skill._id}>
-                    <div className="text-[12px]">{skill.name}</div>
-                  </Select.Option>
-                ))}
+          <Form.Item
+  label={<div className="text-[12px]">Kỹ năng yêu cầu</div>}
+  name="skills"
+  rules={[
+    {
+      required: true,
+      message: "Vui lòng chọn kỹ năng yêu cầu!",
+    },
+  ]}
+>
+  <Select
+    placeholder="Chọn kỹ năng"
+    mode="multiple"
+    style={{ width: "100%", fontSize: "12px" }}
+    value={selectedSkills.map(skill => ({
+      key: skill._id,
+      label: skill.name,
+    }))}
+    onChange={handleSkillChange}
+    labelInValue
+  >
+    {listSkills.map((skill) => (
+      <Select.Option key={skill._id} value={skill._id}>
+        <div className="text-[12px]">{skill?.name}</div>
+      </Select.Option>
+    ))}
 
-                {/* Hiển thị dấu + nếu chưa có kỹ năng nào được chọn */}
-                <Select.Option key="add-skill" value="add-skill" disabled>
-                  <Button
-                    type="dashed"
-                    icon={<PlusOutlined />}
-                    onClick={() => handleOpenModal("add-skill")}
-                    style={{ width: "100%", fontSize: "12px" }}
-                  >
-                    Thêm kỹ năng mới
-                  </Button>
-                </Select.Option>
-              </Select>
-            </Form.Item>
+    {/* Hiển thị dấu + nếu chưa có kỹ năng nào được chọn */}
+    <Select.Option key="add-skill" value="add-skill" disabled>
+      <Button
+        type="dashed"
+        icon={<PlusOutlined />}
+        onClick={() => handleOpenModal("add-skill")}
+        style={{ width: "100%", fontSize: "12px" }}
+      >
+        Thêm kỹ năng mới
+      </Button>
+    </Select.Option>
+  </Select>
+</Form.Item>
+
 
             <Form.Item
               label={<div className="text-[12px]">Giáo dục</div>}

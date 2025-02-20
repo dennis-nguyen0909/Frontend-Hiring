@@ -33,6 +33,7 @@ import { useDispatch } from "react-redux";
 const Header: React.FC = () => {
   const [hovered, setHovered] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); // New state to manage the menu visibility
+  const [activeMenu, setActiveMenu] = useState(menuHeader[0]?.path || "");
   const navigate = useNavigate();
   const userDetail = useSelector((state) => state.user);
   const [socket, setSocket] = useState<any>(null);
@@ -62,13 +63,11 @@ const Header: React.FC = () => {
       );
       if (res.data) {
         setNotifications(res.data.items);
-
       }
     } catch (error) {
       console.error(error);
     }
   };
-
 
   useEffect(() => {
     if (userDetail?.access_token) {
@@ -122,7 +121,7 @@ const Header: React.FC = () => {
         )
       );
     }
-  };console.log("userDetail",userDetail)
+  };
   const renderAccountHeader = (roleName: string) => {
     return (
       <div>
@@ -208,7 +207,9 @@ const Header: React.FC = () => {
     } else {
       navigate(`${item.path}`);
     }
+    setActiveMenu(item.path);
   };
+
 
   const handleLogout = async () => {
     // Gọi API đăng xuất ở đây
@@ -296,13 +297,13 @@ const Header: React.FC = () => {
   return (
     <header>
       <div
-        className="justify-between items-center md:px-4 lg:px-primary w-full sticky md:flex"
+        className="justify-between items-center md:px-4 lg:px-primary w-full sticky md:flex pt-[10px] pb-[10px]"
         style={{ backgroundColor: "black" }}
       >
         <div className="flex justify-between mx-5">
-          <div className="flex justify-center items-center gap-2">
-            <Avatar shape="circle" src={logo} size={45} />
-            <p className="text-white font-bold md:hidden lg:block">HireDev</p>
+          <div className="flex justify-center items-center gap-2 cursor-pointer">
+            <Avatar shape="circle" src={logo} size={60} />
+            <p className="text-white font-bold md:hidden text-[28px] lg:block">HireDev</p>
           </div>
 
           {/* Hamburger Menu for Small Screens */}
@@ -330,7 +331,9 @@ const Header: React.FC = () => {
 
         {/* Menu */}
         {menuVisible && (
-          <ul className="flex gap-[20px] md:gap-5 items-center flex-col flex-wrap py-2 w-full bg-black md:hidden">
+          <ul
+            className={`flex gap-[20px] md:gap-5 items-center flex-col flex-wrap py-2 w-full bg-black md:hidden`}
+          >
             {menuHeader.map((item, idx) => {
               if (item.id === "dashboard" && !userDetail.access_token) {
                 return null;
@@ -347,11 +350,21 @@ const Header: React.FC = () => {
               return (
                 <li key={idx}>
                   <div
-                    onClick={() => handleClick(item)}
-                    className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
-                  >
-                    {item.name}
-                  </div>
+                  onClick={() => handleClick(item)}
+                  className={`
+                    relative cursor-pointer 
+                    transition-all duration-300 
+                    transform hover:scale-105 
+                    !w-[200px]
+                    text-center
+                    ${activeMenu === item.path
+                      ? "text-white bg-gradient-to-r from-[#da4156] to-[#ff7a5c] shadow-lg shadow-[#da4156]/50 rounded-xl p-2"
+                      : "text-gray-400 hover:text-white hover:bg-clip-text hover:bg-gradient-to-r from-[#da4156] to-[#ff7a5c]"
+                    }
+                  `}
+                >
+                  <span className="relative z-10">{item.name}</span>
+                </div>
                 </li>
               );
             })}
@@ -396,7 +409,7 @@ const Header: React.FC = () => {
           </div>
         )}
 
-        <ul className="flex gap-[20px] md:gap-5 items-center flex-wrap py-2 hidden md:flex">
+        <ul className=" gap-[20px] md:gap-5 items-center flex-wrap py-2 hidden md:flex">
           {menuHeader.map((item, idx) => {
             if (item.id === "dashboard" && !userDetail.access_token) {
               return null;
@@ -414,10 +427,19 @@ const Header: React.FC = () => {
               <li key={idx}>
                 <div
                   onClick={() => handleClick(item)}
-                  className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer"
+                  className={`
+                    relative cursor-pointer 
+                    transition-all duration-300 
+                    transform hover:scale-105 
+                    ${activeMenu === item.path
+                      ? "text-white bg-gradient-to-r from-[#da4156] to-[#ff7a5c] shadow-lg shadow-[#da4156]/50 rounded-xl p-2"
+                      : "text-gray-400 hover:text-white hover:bg-clip-text hover:bg-gradient-to-r from-[#da4156] to-[#ff7a5c]"
+                    }
+                  `}
                 >
-                  {item.name}
+                  <span className="relative z-10">{item.name}</span>
                 </div>
+
               </li>
             );
           })}
@@ -457,12 +479,12 @@ const Header: React.FC = () => {
                   <Avatar
                     size="large"
                     src={
-                      userDetail?.avatar_company || userDetail?.banner_company ||
+                      userDetail?.avatar_company ||
+                      userDetail?.banner_company ||
                       userDetail?.avatar ||
                       avtDefault
                     }
                   />
-                  {console.log("userDetail",userDetail)}
                   <ChevronDown
                     className="cursor-pointer text-white"
                     size={20}

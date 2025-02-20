@@ -25,7 +25,6 @@ export default function requestApi(endpoint:string,method:string,body:string,res
         const originConfig = error.config;
         if(error.response && +error.response.data.status === 419){
             try {
-                console.log("call api refresh token");
                 const res = await instance.post(`${apiUrl}/auth/refresh-token`,{
                     refresh_token:localStorage.getItem('refresh_token')
                 })

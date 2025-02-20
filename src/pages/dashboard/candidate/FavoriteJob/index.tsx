@@ -66,8 +66,6 @@ const FavoriteJob = () => {
               ) : (
                 <span className="mr-2">
                   Lương:{" "} {record?.job_id?.salary_range?.min}{record?.job_id?.type_money?.symbol} - {record?.job_id?.salary_range?.max}{record?.job_id?.type_money?.symbol}
-                  {console.log("duydeptrai",record)}
-                  
                 </span>
               )}
               {record.jobExpire && (

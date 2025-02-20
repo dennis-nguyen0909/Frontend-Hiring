@@ -75,7 +75,7 @@ export default function JobBoard() {
         setMeta(response?.data?.meta);
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
@@ -101,21 +101,7 @@ export default function JobBoard() {
   }, []);
   const handleCollapse = async () => {
     const newCollapsed = !collapsed;
-    setCollapsed(newCollapsed); // Update local state immediately
-
-    // const params = {
-    //   toggle_filter: newCollapsed, // Use the updated value
-    //   id: userDetail?._id,
-    // };
-
-    // try {
-    //   const res = await USER_API.updateUser(params, userDetail?.access_token);
-    //   if (res?.data) {
-    //     dispatch(updateUser({ ...res.data })); // Update Redux state with the new value
-    //   }
-    // } catch (error) {
-    //   console.log("Error updating user", error);
-    // }
+    setCollapsed(newCollapsed);
   };
 
   useEffect(() => {
@@ -157,7 +143,6 @@ export default function JobBoard() {
     },
   ];
   const handleChange = (value: string) => {
-    console.log(`Selected city: ${value}`);
     setSearchCity(value);
   };
   const handleSearch = async () => {

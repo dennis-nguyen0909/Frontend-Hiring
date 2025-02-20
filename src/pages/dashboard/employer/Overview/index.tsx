@@ -75,7 +75,6 @@ const OverviewEmployer = () => {
           <Button onClick={()=>navigate(`/my-application/${item?._id}`)} type="primary" className="bg-blue-500 !text-[12px]">
             Xem đơn ứng tuyển
           </Button>
-          {console.log("duydeptrai item",item)}
           <Dropdown
             menu={{
               items: [

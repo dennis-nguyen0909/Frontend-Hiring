@@ -188,7 +188,6 @@ const JobApplication: React.FC<IPropJobApplication> = ({
      </LoadingComponentSkeleton>
     );
   };
-  console.log("duydeptrai lo",location)
   const handleGetJobByEmployer = async ({ current = 1, pageSize = 10 }) => {
     const params = {
       current, // Trang hiện tại
@@ -213,7 +212,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     handleGetJobByEmployer({ current: 1, pageSize: 10 });
   }, [location?.id,selectedJob?._id]);
   return (
-    <div className="p-6">
+    <div className="md:px-4 lg:px-primary mt-10 h-screen">
       <div className="mb-6 text-sm text-gray-500">
         {/* <ChevronLeft /> */}
         <ChevronsLeft
@@ -264,7 +263,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
               );
             })
           ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Không có dữ liệu" />
           )}
         </div>
 
@@ -278,7 +277,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
-          {applications?.map((applied) => {
+          {applications?.length>0 ? applications?.map((applied) => {
             return (
               <>
                 {applied.status === "rejected" && (
@@ -291,7 +290,9 @@ const JobApplication: React.FC<IPropJobApplication> = ({
                 )}
               </>
             );
-          })}
+          }):(
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Không có dữ liệu" />
+          )}
         </div>
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -303,7 +304,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
-          {applications?.map((applied) => {
+          {applications.length>0 ? applications?.map((applied) => {
             return (
               <>
                 {applied.status === "accepted" && (
@@ -317,7 +318,9 @@ const JobApplication: React.FC<IPropJobApplication> = ({
                 )}
               </>
             );
-          })}
+          }) :(
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Không có dữ liệu" />
+          )}
         </div>
       </div>
       <GeneralModal
