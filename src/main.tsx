@@ -10,7 +10,7 @@ import viMessages from "./translations/vi.json";
 import "typeface-inter";
 import { PersistGate } from "redux-persist/integration/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import { ToastContainer, toast } from 'react-toastify';
 const messages = {
   en: enMessages,
   vi: viMessages,
@@ -31,6 +31,7 @@ createRoot(document.getElementById("root")!).render(
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <App />
+            <ToastContainer />
           </PersistGate>
         </Provider>
       </IntlProvider>

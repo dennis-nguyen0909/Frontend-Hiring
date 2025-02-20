@@ -71,3 +71,38 @@ export const refreshToken = async (token:string) => {
     throw new Error(error.response?.data?.message || 'Đăng xuất thất bại');
   }
 };
+
+export const forgotPassword = async (email:string) => {
+  try {
+    const response = await axiosInstance.post('/auth/forgot-password', {email}, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error: any) {
+    console.log("errror",error)
+    throw new Error(error.response?.data?.message);
+  }
+};
+
+export const verifyOtp = async (email:string,otp:string) => {
+  try {
+    const response = await axiosInstance.post('/auth/verify-otp', {email,otp}, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message);
+  }
+};
+
+
+export const resetNewPassword = async (email:string,new_password:string) => {
+  try {
+    const response = await axiosInstance.post('/auth/reset-new-password', {email,new_password}, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message);
+  }
+};
