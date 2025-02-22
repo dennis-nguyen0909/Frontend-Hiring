@@ -12,13 +12,13 @@ import { Meta } from "../../../../types";
 import { calculateTimeRemaining, defaultMeta } from "../../../../untils";
 import { JobApi } from "../../../../services/modules/jobServices";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
-import './styles.css'
+import "./styles.css";
 import { useNavigate } from "react-router-dom";
 
 const { Text, Title } = Typography;
 
 const OverviewEmployer = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const columns = [
     {
       title: "Công việc",
@@ -28,30 +28,38 @@ const OverviewEmployer = () => {
         <div>
           <div className="font-medium">{text}</div>
           <div className="text-gray-500 !text-[12px]">
-            {record?.job_contract_type?.name} • {calculateTimeRemaining(record?.expire_date)}
+            {record?.job_contract_type?.name} •{" "}
+            {calculateTimeRemaining(record?.expire_date)}
           </div>
         </div>
       ),
-      width: '30%',
+      width: "30%",
       className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
       title: "Trạng thái",
       dataIndex: "expire_date",
       key: "expire_date",
-      render: (expire_date: Date) => { // Chú ý: expire_date có kiểu Date
+      render: (expire_date: Date) => {
+        // Chú ý: expire_date có kiểu Date
         const isExpired = new Date(expire_date).getTime() < Date.now(); // So sánh chính xác
         return (
           <div>
             <Badge
               status={!isExpired ? "success" : "error"} // Dùng !isExpired để xác định trạng thái
-              text={!isExpired ? <span className="text-[12px]">Hoạt động</span> : <span className="text-[12px]">Đã hết hạn</span>}
+              text={
+                !isExpired ? (
+                  <span className="text-[12px]">Hoạt động</span>
+                ) : (
+                  <span className="text-[12px]">Đã hết hạn</span>
+                )
+              }
               className="whitespace-nowrap !text-[12px]"
             />
           </div>
         );
       },
-      width: '15%',
+      width: "15%",
       className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
@@ -64,7 +72,7 @@ const OverviewEmployer = () => {
           <span className="!text-[12px]">{count || 0} Người ứng tuyển</span>
         </div>
       ),
-      width: '20%',
+      width: "20%",
       className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
@@ -72,14 +80,22 @@ const OverviewEmployer = () => {
       key: "actions",
       render: (item) => (
         <div className="flex gap-2">
-          <Button onClick={()=>navigate(`/my-application/${item?._id}`)} type="primary" className="bg-blue-500 !text-[12px]">
+          <Button
+            onClick={() => navigate(`/my-application/${item?._id}`)}
+            type="primary"
+            className="bg-blue-500 !text-[12px]"
+          >
             Xem đơn ứng tuyển
           </Button>
           <Dropdown
             menu={{
               items: [
                 { key: "1", label: "Quảng bá việc làm" },
-                { key: "2", label: "Xem chi tiết",onClick:()=>navigate(`/my-job-detail/${item?._id}`) },
+                {
+                  key: "2",
+                  label: "Xem chi tiết",
+                  onClick: () => navigate(`/my-job-detail/${item?._id}`),
+                },
                 { key: "3", label: "Đánh dấu là đã hết hạn" },
               ],
             }}
@@ -89,7 +105,7 @@ const OverviewEmployer = () => {
           </Dropdown>
         </div>
       ),
-      width: '20%',
+      width: "20%",
       className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
   ];
@@ -217,14 +233,16 @@ const OverviewEmployer = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="bg-blue-50 p-6 rounded-lg">
-          <div className="text-3xl font-bold !text-[16px]">{countOpenJob}</div>
+          <div className="text-3xl font-bold !text-[20px]">{countOpenJob}</div>
           <div className="flex items-center gap-2">
             <FileTextOutlined />
             <span className="!text-[12px]">Việc làm mở</span>
           </div>
         </div>
         <div className="bg-orange-50 p-6 rounded-lg">
-          <div className="text-3xl font-bold !text-[16px]">{countSaveCandidate}</div>
+          <div className="text-3xl font-bold !text-[20px]">
+            {countSaveCandidate}
+          </div>
           <div className="flex items-center gap-2">
             <SaveOutlined />
             <span className="!text-[12px]">Lưu ứng viên</span>
@@ -235,14 +253,16 @@ const OverviewEmployer = () => {
       <div className="bg-white rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <p className="mb-0 text-[12px]">Công việc đăng gần đây</p>
-          <Button className="!text-[12px]" type="link">Xem tất cả</Button>
+          <Button className="!text-[12px]" type="link">
+            Xem tất cả
+          </Button>
         </div>
         <div className="overflow-y-auto max-h-96">
           <Table
             columns={columns}
             dataSource={jobRecents}
             pagination={false}
-            tableLayout="auto"  // Cho phép các cột tự động co giãn
+            tableLayout="auto" // Cho phép các cột tự động co giãn
             className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
           />
         </div>

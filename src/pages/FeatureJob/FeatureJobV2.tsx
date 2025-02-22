@@ -1,7 +1,6 @@
-import { Button, Empty, Image, Select } from "antd";
+import { Empty, Select } from "antd";
 import { useEffect, useState } from "react";
-import arrowRight from "../../assets/icons/arrowRight.png";
-import { AlignLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import { AlignLeftOutlined } from "@ant-design/icons";
 import LocationSlider from "../../components/LocationSlider/LocationSlider";
 import { JobApi } from "../../services/modules/jobServices";
 import { CitiesAPI } from "../../services/modules/citiesServices";
@@ -24,12 +23,15 @@ const FeatureJobV2 = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>("dia_diem");
   const userDetail = useSelector((state) => state.user);
   const [selectedSalary, setSelectedSalary] = useState("all");
-  const [isLoading,setIsLoading]=useState<boolean>(false);
-  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
   // Fetch cities data
   const handleGetCities = async () => {
     try {
-      const res = await CitiesAPI.getCitiesByCode("79", userDetail.access_token);
+      const res = await CitiesAPI.getCitiesByCode(
+        "79",
+        userDetail.access_token
+      );
       if (res.data) {
         setCities(res.data);
       }
@@ -106,9 +108,9 @@ const FeatureJobV2 = () => {
     });
   }, [selectedCity, selectedDistrict, selectedFilter]);
 
-  const onViewAll = ()=>{
-    navigate('/jobs')
-  }
+  const onViewAll = () => {
+    navigate("/jobs");
+  };
   const handleChangeSelectedSalary = async (salaryRange: {
     min?: number;
     max?: number;
@@ -120,34 +122,37 @@ const FeatureJobV2 = () => {
     // Handle salary ranges
     switch (salaryRange) {
       case "all":
-        query = {}; 
+        query = {};
         break;
       case "thoa_thuan":
-        query = { is_negotiable: true }; 
+        query = { is_negotiable: true };
         break;
       case "under_10m":
-        query = { salary_range_min: 0, salary_range_max: 10000000 }; 
+        query = { salary_range_min: 0, salary_range_max: 10000000 };
         break;
       case "10m_to_15m":
-        query = { salary_range_min: 10000000, salary_range_max: 15000000 }; 
+        query = { salary_range_min: 10000000, salary_range_max: 15000000 };
         break;
       case "15m_to_20m":
-        query = { salary_range_min: 15000000, salary_range_max: 20000000 }; 
+        query = { salary_range_min: 15000000, salary_range_max: 20000000 };
         break;
       case "20m_to_25m":
-        query = { salary_range_min: 20000000, salary_range_max: 25000000 }; 
+        query = { salary_range_min: 20000000, salary_range_max: 25000000 };
         break;
       case "25m_to_30m":
-        query = { salary_range_min: 25000000, salary_range_max: 30000000 }; 
+        query = { salary_range_min: 25000000, salary_range_max: 30000000 };
         break;
       case "30m_to_50m":
-        query = { salary_range_min: 30000000, salary_range_max: 50000000 }; 
+        query = { salary_range_min: 30000000, salary_range_max: 50000000 };
         break;
       case "above_50m":
-        query = { salary_range_min: 50000000, salary_range_max: Infinity }; 
+        query = { salary_range_min: 50000000, salary_range_max: Infinity };
         break;
       default:
-        query = { salary_range_min: salaryRange.min, salary_range_max: salaryRange.max };
+        query = {
+          salary_range_min: salaryRange.min,
+          salary_range_max: salaryRange.max,
+        };
     }
     await handleGetAllJobs({ query });
   };
@@ -158,12 +163,12 @@ const FeatureJobV2 = () => {
         className="flex justify-between items-center"
         // style={{ margin: "50px 0" }}
       >
-        <h1 className="text-textBlack text-[16px] font-medium">
+        <h1 className="text-textBlack text-[20px] font-medium">
           Việc làm tốt nhất
         </h1>
-       <ButtonComponent onClick={onViewAll} ><div className="text-[12px]">Xem tất cả</div></ButtonComponent>
-
-        
+        <ButtonComponent onClick={onViewAll}>
+          <div className="text-[12px]">Xem tất cả</div>
+        </ButtonComponent>
       </div>
 
       {/* Filter Section */}
@@ -174,11 +179,14 @@ const FeatureJobV2 = () => {
               size="middle"
               suffixIcon={<AlignLeftOutlined />}
               defaultValue={"dia_diem"}
-              style={{ width: "100%",fontSize:'12px' }}
+              style={{ width: "100%", fontSize: "12px" }}
               className="!text-[12px]"
               onChange={handleChangeFilter}
               options={[
-                { value: "dia_diem", label: <span className="!text-[12px]">Địa điểm</span> },
+                {
+                  value: "dia_diem",
+                  label: <span className="!text-[12px]">Địa điểm</span>,
+                },
                 // { value: "muc_luong", label: <span className="!text-[12px]">Mức lương</span> },
                 // { value: "kinh_nghiem", label: <span className="!text-[12px]">Kinh Nghiệm</span> },
                 // { value: "nghe_nghiep", label: <span className="!text-[12px]">Nghề nghiệp</span> },
@@ -218,7 +226,10 @@ const FeatureJobV2 = () => {
           </div>
         ) : (
           <div className="min-h-[300px] flex items-center justify-center">
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'Không có dữ liệu'} />
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={"Không có dữ liệu"}
+            />
           </div>
         )}
 

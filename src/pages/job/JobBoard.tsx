@@ -230,28 +230,24 @@ export default function JobBoard() {
           </div>
         </div>
         <div className="flex flex-wrap justify-center items-center gap-2 mt-5">
-              <span className="text-[12px] text-gray-500">Popular searches:</span>
-              {popularSearches.map((term) => (
-                <button
-                onClick={()=>onSearchPopular(term)}
-                  key={term}
-                  className=" !text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
-                >
-                  {term}
-                </button>
-              ))}
-          </div>
+          <span className="text-[12px] text-gray-500">Popular searches:</span>
+          {popularSearches.map((term) => (
+            <button
+              onClick={() => onSearchPopular(term)}
+              key={term}
+              className=" !text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
+            >
+              {term}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Main Content */}
       <main className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters */}
-          <Sider
-            collapsed={collapsed}
-            className="bg-transparent"
-            width={250}
-          >
+          <Sider collapsed={collapsed} className="bg-transparent" width={250}>
             <div className="w-full lg:w-64 space-y-6">
               {/* Hiển thị biểu tượng Filter khi thu gọn */}
               <div className="flex items-center justify-between">
@@ -321,7 +317,7 @@ export default function JobBoard() {
           {/* Job Listings */}
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-[16px] font-semibold">Tất cả công việc</h2>
+              <h2 className="text-[20px] font-semibold">Tất cả công việc</h2>
               <div className="flex items-center gap-2">
                 <span className="text-[12px] text-gray-500">Sắp xếp theo:</span>
                 <select

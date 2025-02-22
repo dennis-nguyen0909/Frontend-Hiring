@@ -9,6 +9,7 @@ import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigat
 import { useNavigate } from "react-router-dom";
 import { ROLE_API } from "../../services/modules/RoleServices";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
+import { getRandomColor } from "../../utils/color.utils";
 
 export default function EmployeesPage() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -19,8 +20,8 @@ export default function EmployeesPage() {
   const [companies, setCompanies] = useState([]);
   const [meta, setMeta] = useState<Meta>({});
   const [roleEmployer, setRoleEmployer] = useState<string>("");
-  const [isLoading,setIsLoading]=useState<boolean>(false)
-  
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const navigate = useNavigate();
   const handleGetEmployerRole = async () => {
     try {
@@ -34,7 +35,7 @@ export default function EmployeesPage() {
   };
   const handleSearch = async (query: any, current = 1, pageSize = 15) => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const params = {
         current,
         pageSize,
@@ -50,8 +51,8 @@ export default function EmployeesPage() {
       }
     } catch (error) {
       console.error(error);
-    } finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   };
   useEffect(() => {
@@ -59,7 +60,7 @@ export default function EmployeesPage() {
     const query = {
       role: roleEmployer,
     };
-    if(roleEmployer){
+    if (roleEmployer) {
       handleSearch(query);
     }
   }, [roleEmployer]);
@@ -68,7 +69,7 @@ export default function EmployeesPage() {
   const onSearch = async () => {
     await handleSearch({
       company_name: debounceSearchValue,
-      city_name:searchCity
+      city_name: searchCity,
     });
   };
   const handleNavigate = (id) => {
@@ -95,7 +96,6 @@ export default function EmployeesPage() {
                 size="large"
                 value={searchCity}
                 onChange={(e) => setSearchCity(e.target.value)}
-
                 placeholder="Thành phố ..."
                 prefix={<MapPin className="text-gray-400" size={20} />}
                 className="w-full text-[12px]"
@@ -125,62 +125,68 @@ export default function EmployeesPage() {
         </div>
 
         {/* Job Listings Grid */}
-       <LoadingComponentSkeleton isLoading={isLoading}>
-       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {companies?.map((company, index) => (
-            <div
-              key={index}
-              className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
-            >
-              <div className="mb-4 flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-pink-500">
-                    <Image
-                      src={company?.avatar_company}
-                      alt={company?.avatar_company}
-                      width={48}
-                      height={48}
-                      preview={false}
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{company?.company_name}</h3>
-                    {company?.district_id &&company?.city_id && (
-
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <MapPin size={14} />
-                      <span className="text-[12px]">{`${company?.district_id?.name},${company?.city_id?.name}`}</span>
-                    </div>
-                    ) }
-                  </div>
-                </div>
-                <span className="rounded-full bg-pink-100 px-2 py-1 text-xs text-pink-600 text-[12px]">
-                  Featured
-                </span>
-              </div>
-              <button
-                onClick={() => handleNavigate(company?._id)}
-                className="!text-[12px] w-full rounded-lg bg-blue-50 py-2 text-center text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
+        <LoadingComponentSkeleton isLoading={isLoading}>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {companies?.map((company, index) => (
+              <div
+                key={index}
+                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
               >
-                Vị trí mở ({company?.jobs_ids?.length || 0})
-              </button>
-            </div>
-          ))}
-        </div>
-       </LoadingComponentSkeleton>
+                <div className="mb-4 flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-gray-800">
+                      <Image
+                        src={company?.avatar_company}
+                        alt={company?.avatar_company}
+                        width={48}
+                        height={48}
+                        preview={false}
+                        className="object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-black">
+                        {company?.company_name}
+                      </h3>
+                      {company?.district_id && company?.city_id && (
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <MapPin size={14} />
+                          <span className="text-[12px] text-black">{`${company?.district_id?.name},${company?.city_id?.name}`}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <span
+                    className="rounded-full px-2 py-1 text-xs text-white text-[12px]"
+                    style={{ backgroundColor: getRandomColor() }}
+                  >
+                    Featured
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleNavigate(company?._id)}
+                  className="!text-[12px] w-full rounded-lg bg-black py-2 text-center text-sm font-medium text-white transition-colors hover:bg-gray-700"
+                >
+                  Vị trí mở ({company?.jobs_ids?.length || 0})
+                </button>
+              </div>
+            ))}
+          </div>
+        </LoadingComponentSkeleton>
 
         {/* Pagination */}
-        {companies.length>0 && <div className="mt-8 flex justify-center">
-          <CustomPagination
-            currentPage={meta?.current_page}
-            perPage={meta?.per_page}
-            total={meta?.total}
-            onPageChange={(current, pageSize) =>
-              handleSearch({}, current, pageSize)
-            }
-          />
-        </div>}
+        {companies.length > 0 && (
+          <div className="mt-8 flex justify-center">
+            <CustomPagination
+              currentPage={meta?.current_page}
+              perPage={meta?.per_page}
+              total={meta?.total}
+              onPageChange={(current, pageSize) =>
+                handleSearch({}, current, pageSize)
+              }
+            />
+          </div>
+        )}
       </div>
     </div>
   );

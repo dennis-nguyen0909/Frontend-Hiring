@@ -1,6 +1,6 @@
-import { Card, Avatar, Typography, Button } from 'antd';
-import { BookOutlined, EditOutlined, LinkOutlined } from '@ant-design/icons';
-import moment from 'moment';
+import { Card, Avatar, Typography, Button } from "antd";
+import { BookOutlined, EditOutlined, LinkOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 const { Title, Text } = Typography;
 
@@ -29,7 +29,7 @@ export default function Course({
     <div>
       <Card
         className="w-full shadow-sm hover:shadow-md transition-shadow mt-5"
-        bodyStyle={{ padding: '16px' }}
+        bodyStyle={{ padding: "20px" }}
       >
         <div className="flex items-start gap-4">
           {/* Course Icon/Image */}
@@ -59,10 +59,18 @@ export default function Course({
                 <Title level={4} className="!mb-1 !text-[14px]">
                   {course_name}
                 </Title>
-                <Text className="block text-gray-600 !text-[12px]">{organization_name}</Text>
-                <Text className="block text-gray-500 !text-[12px]">{description}</Text>
+                <Text className="block text-gray-600 !text-[12px]">
+                  {organization_name}
+                </Text>
                 <Text className="block text-gray-500 !text-[12px]">
-                  {`Từ: ${moment(start_date).format('YYYY-MM-DD')} đến: ${end_date ? moment(end_date).format('YYYY-MM-DD') : 'Hiện tại'}`}
+                  {description}
+                </Text>
+                <Text className="block text-gray-500 !text-[12px]">
+                  {`Từ: ${moment(start_date).format("YYYY-MM-DD")} đến: ${
+                    end_date
+                      ? moment(end_date).format("YYYY-MM-DD")
+                      : "Hiện tại"
+                  }`}
                 </Text>
               </div>
 

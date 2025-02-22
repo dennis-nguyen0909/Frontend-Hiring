@@ -149,13 +149,14 @@ export default function AccountSettingEmployer() {
     },
   ];
 
-
   return (
     <div className=" min-h-screen">
       <div className="mx-auto">
         <div>
           <div className="mb-8">
-            <h2 className="text-[16px] font-semibold mb-4">Thông tin liên hệ</h2>
+            <h2 className="text-[20px] font-semibold mb-4">
+              Thông tin liên hệ
+            </h2>
             <Form
               form={form}
               layout="vertical"
@@ -173,7 +174,7 @@ export default function AccountSettingEmployer() {
                   ]}
                 >
                   <Input
-                  className="!text-[12px]"
+                    className="!text-[12px]"
                     // addonBefore={
                     //   <Select defaultValue="+880" style={{ width: 100 }}>
                     //     <Select.Option value="+880">+880</Select.Option>
@@ -185,10 +186,12 @@ export default function AccountSettingEmployer() {
                   />
                 </Form.Item>
 
-                <Form.Item                   label={<div className="text-[12px]">Email</div>}
- name="email">
+                <Form.Item
+                  label={<div className="text-[12px]">Email</div>}
+                  name="email"
+                >
                   <Input
-                  className="!text-[12px]"
+                    className="!text-[12px]"
                     disabled
                     prefix={<MailOutlined className="text-gray-400" />}
                     placeholder="Địa chỉ email"
@@ -207,44 +210,61 @@ export default function AccountSettingEmployer() {
           </div>
 
           <div className="mb-4">
-  <div className="space-y-6">
-    <div className="bg-muted/50 rounded-lg">
-      <h2 className="text-xl font-semibold mb-4">OAuth Provider</h2>
-      <div className="space-y-4">
-        {userDetail?.auth_providers?.map((provider: any, idx: number) => (
-          <div
-            key={idx}
-            className="flex flex-col sm:flex-row items-center justify-between bg-background bg-[#ccc] p-4 rounded-lg"
-          >
-            <div className="flex items-center gap-3 mb-3 sm:mb-0">
-              {provider?.provider_id === 'google' && <Chrome className="h-5 w-5"  size={12}/>}
-              {provider?.provider_id === 'facebook' && <Facebook className="h-5 w-5"  size={12}/>}
-              {provider?.provider_id === 'github' && <Github className="h-5 w-5" size={12} />}
-              {provider?.provider_id === 'local' && <House className="h-5 w-5" size={12} />}
-              <span className="text-[12px] font-medium">
-                {provider?.provider_id?.charAt(0).toUpperCase() + provider?.provider_id?.slice(1)}
-              </span>
-              <span className="text-emerald-500 ml-4 text-[12px]">Đã bật</span>
+            <div className="space-y-6">
+              <div className="bg-muted/50 rounded-lg">
+                <h2 className="text-xl font-semibold mb-4">OAuth Provider</h2>
+                <div className="space-y-4">
+                  {userDetail?.auth_providers?.map(
+                    (provider: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className="flex flex-col sm:flex-row items-center justify-between bg-background bg-[#ccc] p-4 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3 mb-3 sm:mb-0">
+                          {provider?.provider_id === "google" && (
+                            <Chrome className="h-5 w-5" size={12} />
+                          )}
+                          {provider?.provider_id === "facebook" && (
+                            <Facebook className="h-5 w-5" size={12} />
+                          )}
+                          {provider?.provider_id === "github" && (
+                            <Github className="h-5 w-5" size={12} />
+                          )}
+                          {provider?.provider_id === "local" && (
+                            <House className="h-5 w-5" size={12} />
+                          )}
+                          <span className="text-[12px] font-medium">
+                            {provider?.provider_id?.charAt(0).toUpperCase() +
+                              provider?.provider_id?.slice(1)}
+                          </span>
+                          <span className="text-emerald-500 ml-4 text-[12px]">
+                            Đã bật
+                          </span>
+                        </div>
+                        <Button
+                          onClick={() =>
+                            notification.info({
+                              message: "Thông báo",
+                              description: "Tính năng chưa phát triển",
+                            })
+                          }
+                          variant="link"
+                          className="text-blue-500 hover:text-blue-600 w-full sm:w-auto text-[12px]"
+                        >
+                          Quản lý quyền
+                        </Button>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
             </div>
-            <Button
-            onClick={()=>notification.info({
-              message:'Thông báo',
-              description:"Tính năng chưa phát triển"
-            })}
-              variant="link"
-              className="text-blue-500 hover:text-blue-600 w-full sm:w-auto text-[12px]"
-            >
-              Quản lý quyền
-            </Button>
           </div>
-        ))}
-      </div>
-    </div>
-  </div>
-</div>
 
           <div className="mb-8">
-            <h2 className="text-[16px] font-semibold mb-4">Thay đổi mật khẩu</h2>
+            <h2 className="text-[20px] font-semibold mb-4">
+              Thay đổi mật khẩu
+            </h2>
             <Form form={passwordForm} layout="vertical">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Form.Item
@@ -258,7 +278,7 @@ export default function AccountSettingEmployer() {
                   ]}
                 >
                   <Input.Password
-                  className="text-[12px]"
+                    className="text-[12px]"
                     placeholder="Mật khẩu hiện tại"
                     iconRender={(visible) =>
                       visible ? <EyeOutlined /> : <EyeInvisibleOutlined />
@@ -268,14 +288,13 @@ export default function AccountSettingEmployer() {
 
                 <Form.Item
                   label={<div className="text-[12px]">Mật khẩu mới</div>}
-
                   name="new_password"
                   rules={[
                     { required: true, message: "Vui lòng nhập mật khẩu mới!" },
                   ]}
                 >
                   <Input.Password
-                  className="text-[12px]"
+                    className="text-[12px]"
                     placeholder="Mật khẩu mới"
                     iconRender={(visible) =>
                       visible ? <EyeOutlined /> : <EyeInvisibleOutlined />
@@ -294,14 +313,16 @@ export default function AccountSettingEmployer() {
           </div>
 
           <div>
-            <h2 className="text-[16px] font-semibold mb-4">Xóa công ty của bạn</h2>
+            <h2 className="text-[20px] font-semibold mb-4">
+              Xóa công ty của bạn
+            </h2>
             <p className="text-gray-500 mb-4 text-[12px]">
               Nếu bạn xóa công ty của mình, bạn sẽ không thể quay trở lại. Xin
               hãy chắc chắn. Tất cả thông tin sẽ bị xóa khỏi nền tảng. Bạn sẽ bị
               loại khỏi tất cả các dịch vụ của jobplat.com
             </p>
             <Button
-            className="!text-[12px]"
+              className="!text-[12px]"
               danger
               icon={<DeleteOutlined />}
               onClick={() => setShowDeleteModal(true)}

@@ -105,205 +105,213 @@ const LoginPage = () => {
   const renderFormCreate = () => {
     return (
       <Form
-      className="w-full max-w-[500px] mt-5 mx-4 lg:mx-10"
-      layout="vertical"
-      onFinish={handleSubmit}
-      initialValues={{ role }}
-    >
-      {/* header */}
-      <div className="flex items-center lg:justify-start justify-center gap-2">
-        <Avatar shape="square" src={icon} />
-        <h1
-          onClick={() => navigate("/")}
-          className="font-medium text-2xl cursor-pointer"
-        >
-          HireDev
-        </h1>
-      </div>
-    
-      <Card className="bg-gray-50 border-0 mt-10">
-        <h2 className="text-center text-gray-500 text-[16px] mb-4">
-          TẠO TÀI KHOẢN NHƯ MỘT
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div
-            className={`p-2 bg-white rounded-lg border cursor-pointer flex items-center gap-3 ${
-              selectedType === "user" ? "ring-2 ring-blue-500" : "hover:bg-gray-50"
-            }`}
-            style={{
-              transform:
-                isTransitioning && selectedType === "user" ? "scale(1.05)" : "scale(1)",
-              opacity: isTransitioning && selectedType !== "user" ? 0.5 : 1,
-              transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-            }}
-            onClick={() => handleTypeSelect("user")}
+        className="w-full max-w-[500px] mt-5 mx-4 lg:mx-10"
+        layout="vertical"
+        onFinish={handleSubmit}
+        initialValues={{ role }}
+      >
+        {/* header */}
+        <div className="flex items-center lg:justify-start justify-center gap-2">
+          <Avatar shape="square" src={icon} />
+          <h1
+            onClick={() => navigate("/")}
+            className="font-medium text-2xl cursor-pointer"
           >
-            <User className="w-6 h-6 text-gray-600" />
-            <span className=" text-gray-600 text-[12px]">Ứng viên</span>
-          </div>
-          <div
-            className={`p-2 bg-[#0A2647] rounded-lg cursor-pointer flex items-center gap-3 ${
-              selectedType === "employer" ? "ring-2 ring-blue-500" : "hover:bg-[#0A2647]/90"
-            }`}
-            style={{
-              transform:
-                isTransitioning && selectedType === "employer" ? "scale(1.05)" : "scale(1)",
-              opacity: isTransitioning && selectedType !== "employer" ? 0.5 : 1,
-              transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-            }}
-            onClick={() => handleTypeSelect("employer")}
-          >
-            <Building className="w-6 h-6 text-white" />
-            <span className=" text-white text-[12px]">Nhà tuyển dụng</span>
-          </div>
+            HireDev
+          </h1>
         </div>
-      </Card>
-      
-      {/* body */}
-      <div className="flex flex-col mt-5">
-        <div className="flex flex-col sm:flex-row gap-0 md:gap-5 justify-between">
-          <Form.Item
-            name="fullName"
-            rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
-            className="w-full"
-          >
-            <Input
-            className="!text-[12px]"
-              size="large"
-              placeholder="Họ Tên"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item
-            className="!text-[12px] w-full"
-            name="username"
-            rules={[{ required: true, message: "Vui lòng nhập username!" }]}
-          >
-            <Input
-              size="large"
-              className="!text-[12px]"
 
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </Form.Item>
-        </div>
-        <Form.Item
-          name="email"
-          rules={[
-            { required: true, message: "Vui lòng nhập email!" },
-            { type: "email", message: "Email không hợp lệ!" },
-          ]}
-        >
-          <Input
-            className="!text-[12px]"
-
-            size="large"
-            placeholder="Địa chỉ email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
-        >
-          <Input.Password
-            className="!text-[12px]"
-
-            size="large"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            iconRender={(visible) =>
-              !visible ? <EyeFilled /> : <EyeInvisibleOutlined />
-            }
-          />
-        </Form.Item>
-        <Form.Item
-          name="confirmPassword"
-          dependencies={["password"]}
-          hasFeedback
-          rules={[
-            { required: true, message: "Vui lòng nhập xác nhận mật khẩu!" },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error("Passwords do not match!"));
-              },
-            }),
-          ]}
-        >
-          <Input.Password
-            className="!text-[12px]"
-
-            size="large"
-            placeholder="Xác nhận mật khẩu"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            iconRender={(visible) =>
-              !visible ? <EyeFilled /> : <EyeInvisibleOutlined />
-            }
-          />
-        </Form.Item>
-        <Form.Item name="terms" valuePropName="checked" >
-          <Checkbox className="text-[12px]">
-            Tôi đã đọc và đồng ý với bạn{" "}
-            <span className="text-blue-500">Điều khoản dịch vụ</span>
-          </Checkbox>
-          <div className="mt-2">
-            <span className="text-gray-500 text-[12px]">Đã có tài khoản?</span>
-            <span
-              onClick={handleNextRegister}
-              className="text-blue-500 cursor-pointer text-[12px]"
+        <Card className="bg-gray-50 border-0 mt-10">
+          <h2 className="text-center text-gray-500 text-[20px] mb-4">
+            TẠO TÀI KHOẢN NHƯ MỘT
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div
+              className={`p-2 bg-white rounded-lg border cursor-pointer flex items-center gap-3 ${
+                selectedType === "user"
+                  ? "ring-2 ring-blue-500"
+                  : "hover:bg-gray-50"
+              }`}
+              style={{
+                transform:
+                  isTransitioning && selectedType === "user"
+                    ? "scale(1.05)"
+                    : "scale(1)",
+                opacity: isTransitioning && selectedType !== "user" ? 0.5 : 1,
+                transition:
+                  "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+              }}
+              onClick={() => handleTypeSelect("user")}
             >
-              {" "}
-              Đăng nhập
-            </span>
+              <User className="w-6 h-6 text-gray-600" />
+              <span className=" text-gray-600 text-[12px]">Ứng viên</span>
+            </div>
+            <div
+              className={`p-2 bg-[#0A2647] rounded-lg cursor-pointer flex items-center gap-3 ${
+                selectedType === "employer"
+                  ? "ring-2 ring-blue-500"
+                  : "hover:bg-[#0A2647]/90"
+              }`}
+              style={{
+                transform:
+                  isTransitioning && selectedType === "employer"
+                    ? "scale(1.05)"
+                    : "scale(1)",
+                opacity:
+                  isTransitioning && selectedType !== "employer" ? 0.5 : 1,
+                transition:
+                  "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+              }}
+              onClick={() => handleTypeSelect("employer")}
+            >
+              <Building className="w-6 h-6 text-white" />
+              <span className=" text-white text-[12px]">Nhà tuyển dụng</span>
+            </div>
           </div>
-        </Form.Item>
-      </div>
-      
-      <LoadingComponent isLoading={isLoading}>
-        <div className="flex flex-col gap-5 mt-5 justify-center items-center">
-          <Button
-            htmlType="submit"
-            className="bg-primaryBlue text-white font-bold w-full text-[12px]"
-            size="large"
-            style={{ backgroundColor: "#0f65cc" }}
+        </Card>
+
+        {/* body */}
+        <div className="flex flex-col mt-5">
+          <div className="flex flex-col sm:flex-row gap-0 md:gap-5 justify-between">
+            <Form.Item
+              name="fullName"
+              rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
+              className="w-full"
+            >
+              <Input
+                className="!text-[12px]"
+                size="large"
+                placeholder="Họ Tên"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item
+              className="!text-[12px] w-full"
+              name="username"
+              rules={[{ required: true, message: "Vui lòng nhập username!" }]}
+            >
+              <Input
+                size="large"
+                className="!text-[12px]"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </Form.Item>
+          </div>
+          <Form.Item
+            name="email"
+            rules={[
+              { required: true, message: "Vui lòng nhập email!" },
+              { type: "email", message: "Email không hợp lệ!" },
+            ]}
           >
-            Đăng ký
-            {/* <ArrowRightOutlined style={{ fontSize: "18px", fontWeight: "bold" }} /> */}
-          </Button>
+            <Input
+              className="!text-[12px]"
+              size="large"
+              placeholder="Địa chỉ email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+          >
+            <Input.Password
+              className="!text-[12px]"
+              size="large"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              iconRender={(visible) =>
+                !visible ? <EyeFilled /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name="confirmPassword"
+            dependencies={["password"]}
+            hasFeedback
+            rules={[
+              { required: true, message: "Vui lòng nhập xác nhận mật khẩu!" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Passwords do not match!"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              className="!text-[12px]"
+              size="large"
+              placeholder="Xác nhận mật khẩu"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              iconRender={(visible) =>
+                !visible ? <EyeFilled /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
+          <Form.Item name="terms" valuePropName="checked">
+            <Checkbox className="text-[12px]">
+              Tôi đã đọc và đồng ý với bạn{" "}
+              <span className="text-blue-500">Điều khoản dịch vụ</span>
+            </Checkbox>
+            <div className="mt-2">
+              <span className="text-gray-500 text-[12px]">
+                Đã có tài khoản?
+              </span>
+              <span
+                onClick={handleNextRegister}
+                className="text-blue-500 cursor-pointer text-[12px]"
+              >
+                {" "}
+                Đăng nhập
+              </span>
+            </div>
+          </Form.Item>
         </div>
-      </LoadingComponent>
-      
-      <div className="flex items-center justify-center mt-3 text-gray-500">
-        <hr className="w-full h-0.5 bg-gray-500" />
-        <p className="mx-2 text-[12px]">hoặc</p>
-        <hr className="w-full h-0.5 bg-gray-500" />
-      </div>
-    
-      <div className="flex flex-col lg:flex-row justify-between mt-5 w-full gap-2 pb-5">
-    <a href={`${import.meta.env.VITE_API_LOGIN_FACEBOOK}`}>
-      <Button className="flex items-center w-full lg:w-auto" size="large">
-        <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
-        Đăng nhập với Facebook
-      </Button>
-    </a>
-    <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
-      <Button className="flex items-center w-full lg:w-auto" size="large">
-        <img src={google} alt="Google" className="w-5 h-5 mr-2" />
-        Đăng nhập với Google
-      </Button>
-    </a>
-  </div>
-    </Form>
-    
+
+        <LoadingComponent isLoading={isLoading}>
+          <div className="flex flex-col gap-5 mt-5 justify-center items-center">
+            <Button
+              htmlType="submit"
+              className="bg-primaryBlue text-white font-bold w-full text-[12px]"
+              size="large"
+              style={{ backgroundColor: "#0f65cc" }}
+            >
+              Đăng ký
+              {/* <ArrowRightOutlined style={{ fontSize: "18px", fontWeight: "bold" }} /> */}
+            </Button>
+          </div>
+        </LoadingComponent>
+
+        <div className="flex items-center justify-center mt-3 text-gray-500">
+          <hr className="w-full h-0.5 bg-gray-500" />
+          <p className="mx-2 text-[12px]">hoặc</p>
+          <hr className="w-full h-0.5 bg-gray-500" />
+        </div>
+
+        <div className="flex flex-col lg:flex-row justify-between mt-5 w-full gap-2 pb-5">
+          <a href={`${import.meta.env.VITE_API_LOGIN_FACEBOOK}`}>
+            <Button className="flex items-center w-full lg:w-auto" size="large">
+              <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
+              Đăng nhập với Facebook
+            </Button>
+          </a>
+          <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
+            <Button className="flex items-center w-full lg:w-auto" size="large">
+              <img src={google} alt="Google" className="w-5 h-5 mr-2" />
+              Đăng nhập với Google
+            </Button>
+          </a>
+        </div>
+      </Form>
     );
   };
 

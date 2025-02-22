@@ -80,7 +80,13 @@ export default function MyJobEmployer() {
           <div>
             <Badge
               status={!isExpired ? "success" : "error"}
-              text={!isExpired ? <span className="text-[12px]">Hoạt động</span> : <span className="text-[12px]">Đã hết hạn</span>}
+              text={
+                !isExpired ? (
+                  <span className="text-[12px]">Hoạt động</span>
+                ) : (
+                  <span className="text-[12px]">Đã hết hạn</span>
+                )
+              }
               className="whitespace-nowrap"
             />
           </div>
@@ -311,7 +317,7 @@ export default function MyJobEmployer() {
         <div className="rounded-lg shadow-sm">
           <div>
             <div className="flex flex-wrap justify-between items-center gap-4">
-              <h1 className="text-[16px] font-semibold">
+              <h1 className="text-[20px] font-semibold">
                 Công việc của tôi{" "}
                 <span className="text-gray-400">({meta && meta.total})</span>
               </h1>

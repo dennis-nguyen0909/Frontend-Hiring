@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 import { useEffect, useState } from "react";
 import CompanyCard from "./CompanyCard";
@@ -12,80 +12,83 @@ import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import ButtonComponent from "../Button/ButtonComponent";
 const TopCompanies = () => {
-    const [companies,setCompanies]=useState([]);
-    const [roleEmployer,setRoleEmployer]=useState()
-    const [meta,setMeta]=useState<Meta>({})
-    const userDetail = useSelector(state=>state.user)
-    const navigate =useNavigate()
-    const handleGetEmployerRole= async ()=>{
-        try {
-            const res = await ROLE_API.getEmployerRole(userDetail?.access_token);
-            if(res.data){
-                setRoleEmployer(res.data._id)
-            }
-        } catch (error) {
-            console.error(error)
-        }
-    }
-    const handleGetAllCompanys = async (query?:any,current=1,pageSize=12) => {
-        try {
-            const params={
-                current,
-                pageSize,
-                query:{
-                    ...query,
-                }
-            }
-          const res = await USER_API.getAllCompany(params,userDetail?.access_token)
-          if (res.data) {
-            setCompanies(res.data.items);
-            setMeta(res.data.meta)
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      };
-    
-      useEffect(() => {
-        handleGetEmployerRole()
-        if(roleEmployer){
-            const query={
-                role:roleEmployer
-            }
-            handleGetAllCompanys(query);
-        }
-      }, [roleEmployer]);
-      
-      const renderCompanies = ()=>{
-            return (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {companies?.map((item,idx)=>{
-                        return (
-                            <CompanyCard item={item} key={idx}/>
-                        )
-                    })}
-                </div>
-            )
+  const [companies, setCompanies] = useState([]);
+  const [roleEmployer, setRoleEmployer] = useState();
+  const [meta, setMeta] = useState<Meta>({});
+  const userDetail = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const handleGetEmployerRole = async () => {
+    try {
+      const res = await ROLE_API.getEmployerRole(userDetail?.access_token);
+      if (res.data) {
+        setRoleEmployer(res.data._id);
       }
-    return(
-        <>
-            <div className="h-full px-5 md:px-primary"> 
-                <div>
-                    <h1 className="text-textBlack text-[16px] font-medium">Top công ty</h1>
-                </div>
-                <div className="mt-5 mb-5">
-                    {renderCompanies()}
-                </div>
-                <div className="flex items-center justify-center mb-5">
-                    <ButtonComponent onClick={()=>navigate('/employers')}><div className="text-[12px]">Xem thêm</div></ButtonComponent>
-                </div>
-            </div>  
-        </>
-    )
-}
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleGetAllCompanys = async (
+    query?: any,
+    current = 1,
+    pageSize = 12
+  ) => {
+    try {
+      const params = {
+        current,
+        pageSize,
+        query: {
+          ...query,
+        },
+      };
+      const res = await USER_API.getAllCompany(
+        params,
+        userDetail?.access_token
+      );
+      if (res.data) {
+        setCompanies(res.data.items);
+        setMeta(res.data.meta);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  useEffect(() => {
+    handleGetEmployerRole();
+    if (roleEmployer) {
+      const query = {
+        role: roleEmployer,
+      };
+      handleGetAllCompanys(query);
+    }
+  }, [roleEmployer]);
 
-export default TopCompanies
+  const renderCompanies = () => {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {companies?.map((item, idx) => {
+          return <CompanyCard item={item} key={idx} />;
+        })}
+      </div>
+    );
+  };
+  return (
+    <>
+      <div className="h-full px-5 md:px-primary">
+        <div>
+          <h1 className="text-textBlack text-[20px] font-medium">
+            Top công ty
+          </h1>
+        </div>
+        <div className="mt-5 mb-5">{renderCompanies()}</div>
+        <div className="flex items-center justify-center mb-5">
+          <ButtonComponent onClick={() => navigate("/employers")}>
+            <div className="text-[12px]">Xem thêm</div>
+          </ButtonComponent>
+        </div>
+      </div>
+    </>
+  );
+};
 
-
-  
+export default TopCompanies;

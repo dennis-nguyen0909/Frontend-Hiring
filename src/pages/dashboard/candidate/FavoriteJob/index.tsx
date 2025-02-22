@@ -8,7 +8,7 @@ import CustomPagination from "../../../../components/ui/CustomPanigation/CustomP
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import { useNavigate } from "react-router-dom";
 import { isExpired } from "../../../../untils";
-import avatarDefault from '../../../../assets/avatars/avatar-default.jpg'
+import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
 interface JobApplication {
   _id: ObjectId;
   user_id: string;
@@ -65,7 +65,10 @@ const FavoriteJob = () => {
                 <span className="mr-2">Lương: Thỏa thuận</span>
               ) : (
                 <span className="mr-2">
-                  Lương:{" "} {record?.job_id?.salary_range?.min}{record?.job_id?.type_money?.symbol} - {record?.job_id?.salary_range?.max}{record?.job_id?.type_money?.symbol}
+                  Lương: {record?.job_id?.salary_range?.min}
+                  {record?.job_id?.type_money?.symbol} -{" "}
+                  {record?.job_id?.salary_range?.max}
+                  {record?.job_id?.type_money?.symbol}
                 </span>
               )}
               {record.jobExpire && (
@@ -87,23 +90,25 @@ const FavoriteJob = () => {
       key: "bookmark",
       render: (_, record) => (
         <div className="flex justify-start items-center gap-4">
-          {userDetail?.favorite_jobs.some(job => job.job_id === record?.job_id?._id) ? (
-        // Nếu công việc nằm trong danh sách yêu thích, hiển thị Bookmark với màu xanh
-        <BookmarkCheck
-          size={20}
-          onClick={() => handleFavorite(record?.job_id?._id)}
-          className="text-blue-500 cursor-pointer"
-        />
-      ) : (
-        // Nếu không nằm trong danh sách yêu thích, hiển thị Bookmark với màu xám
-        <Bookmark
-          size={20}
-          onClick={() => handleFavorite(record?.job_id?._id)}
-          className="text-gray-400 cursor-pointer"
-        />
-      )}
+          {userDetail?.favorite_jobs.some(
+            (job) => job.job_id === record?.job_id?._id
+          ) ? (
+            // Nếu công việc nằm trong danh sách yêu thích, hiển thị Bookmark với màu xanh
+            <BookmarkCheck
+              size={20}
+              onClick={() => handleFavorite(record?.job_id?._id)}
+              className="text-blue-500 cursor-pointer"
+            />
+          ) : (
+            // Nếu không nằm trong danh sách yêu thích, hiển thị Bookmark với màu xám
+            <Bookmark
+              size={20}
+              onClick={() => handleFavorite(record?.job_id?._id)}
+              className="text-gray-400 cursor-pointer"
+            />
+          )}
           <Button
-          size="small"
+            size="small"
             onClick={() => onApplyNow(record?.job_id?._id)}
             type={
               isExpired(record?.job_id?.expire_date) ? "default" : "primary"
@@ -154,7 +159,7 @@ const FavoriteJob = () => {
 
   return (
     <div className="">
-      <h1 className="text-[16px] font-semibold mb-6">
+      <h1 className="text-[20px] font-semibold mb-6">
         Công việc yêu thích ({jobFavorites.length || 0})
       </h1>
 

@@ -59,14 +59,14 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     total: 0,
     total_pages: 0,
   });
-  const location = useParams()
-  const navigate = useNavigate()
+  const location = useParams();
+  const navigate = useNavigate();
 
   const handleEditSubmit = () => {};
-  const handleBack = ()=>{
-    navigate(-1)
-  }
-  const onBack = handleChangeHome || handleBack
+  const handleBack = () => {
+    navigate(-1);
+  };
+  const onBack = handleChangeHome || handleBack;
   const renderEdit = () => {
     return (
       <Form onFinish={handleEditSubmit}>
@@ -94,7 +94,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   };
 
   const onFinish = async (values: any) => {
-    setIsLoading(true)
+    setIsLoading(true);
     const params = {
       ...values,
       interviewDate: moment(values.interviewDate).format("DD/MM/YYYY"),
@@ -109,7 +109,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       setSelectedApplie({});
       message.success("Gửi email thành công!");
     }
-    setIsLoading(false)
+    setIsLoading(false);
   };
   const [form] = useForm();
   const handleOpenModalEmail = (applied: any) => {
@@ -119,73 +119,76 @@ const JobApplication: React.FC<IPropJobApplication> = ({
 
   const renderBodyEmail = () => {
     return (
-     <LoadingComponentSkeleton isLoading={isLoading}>
-       <Form
-        form={form}
-        onFinish={onFinish}
-        initialValues={{
-          recruiterCompany: userDetail?.company_name,
-          recruiterEmail: userDetail?.email,
-          candidateName: selectedApplied?.user_id?.full_name,
-          jobTitle: selectedApplied?.job_id?.title,
-          candidateEmail: selectedApplied?.user_id?.email,
-        }}
-        layout="vertical"
-      >
-        <Form.Item label="Tên công ty" name="recruiterCompany">
-          <Input placeholder="Enter company name" disabled />
-        </Form.Item>
-        <Form.Item label="Recruiter Email" name="recruiterEmail">
-          <Input type="email" placeholder="Enter recruiter email" disabled />
-        </Form.Item>
-
-        <Form.Item label="Ứng Viên Name" name="candidateName">
-          <Input placeholder="Enter candidate name" disabled />
-        </Form.Item>
-
-        <Form.Item label="Ứng Viên Email" name="candidateEmail">
-          <Input placeholder="Enter candidate name" disabled />
-        </Form.Item>
-
-        <Form.Item label="Job Title" name="jobTitle">
-          <Input placeholder="Enter job title" disabled />
-        </Form.Item>
-
-        <Form.Item
-          label="Interview Date"
-          name="interviewDate"
-          rules={[
-            { required: true, message: "Please select the interview date!" },
-          ]}
+      <LoadingComponentSkeleton isLoading={isLoading}>
+        <Form
+          form={form}
+          onFinish={onFinish}
+          initialValues={{
+            recruiterCompany: userDetail?.company_name,
+            recruiterEmail: userDetail?.email,
+            candidateName: selectedApplied?.user_id?.full_name,
+            jobTitle: selectedApplied?.job_id?.title,
+            candidateEmail: selectedApplied?.user_id?.email,
+          }}
+          layout="vertical"
         >
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
+          <Form.Item label="Tên công ty" name="recruiterCompany">
+            <Input placeholder="Enter company name" disabled />
+          </Form.Item>
+          <Form.Item label="Recruiter Email" name="recruiterEmail">
+            <Input type="email" placeholder="Enter recruiter email" disabled />
+          </Form.Item>
 
-        <Form.Item
-          label="Interview Time"
-          name="interviewTime"
-          rules={[
-            { required: true, message: "Please select the interview time!" },
-          ]}
-        >
-          <TimePicker style={{ width: "100%" }} format="HH:mm" />
-        </Form.Item>
+          <Form.Item label="Ứng Viên Name" name="candidateName">
+            <Input placeholder="Enter candidate name" disabled />
+          </Form.Item>
 
-        <Form.Item
-          label="Interview Location"
-          name="interviewLocation"
-          rules={[
-            { required: true, message: "Please input the interview location!" },
-          ]}
-        >
-          <Input placeholder="Enter interview location" />
-        </Form.Item>
+          <Form.Item label="Ứng Viên Email" name="candidateEmail">
+            <Input placeholder="Enter candidate name" disabled />
+          </Form.Item>
 
-        <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
-          Generate Email
-        </Button>
-      </Form>
-     </LoadingComponentSkeleton>
+          <Form.Item label="Job Title" name="jobTitle">
+            <Input placeholder="Enter job title" disabled />
+          </Form.Item>
+
+          <Form.Item
+            label="Interview Date"
+            name="interviewDate"
+            rules={[
+              { required: true, message: "Please select the interview date!" },
+            ]}
+          >
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item
+            label="Interview Time"
+            name="interviewTime"
+            rules={[
+              { required: true, message: "Please select the interview time!" },
+            ]}
+          >
+            <TimePicker style={{ width: "100%" }} format="HH:mm" />
+          </Form.Item>
+
+          <Form.Item
+            label="Interview Location"
+            name="interviewLocation"
+            rules={[
+              {
+                required: true,
+                message: "Please input the interview location!",
+              },
+            ]}
+          >
+            <Input placeholder="Enter interview location" />
+          </Form.Item>
+
+          <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+            Generate Email
+          </Button>
+        </Form>
+      </LoadingComponentSkeleton>
     );
   };
   const handleGetJobByEmployer = async ({ current = 1, pageSize = 10 }) => {
@@ -210,7 +213,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   };
   useEffect(() => {
     handleGetJobByEmployer({ current: 1, pageSize: 10 });
-  }, [location?.id,selectedJob?._id]);
+  }, [location?.id, selectedJob?._id]);
   return (
     <div className="md:px-4 lg:px-primary mt-10 h-screen">
       <div className="mb-6 text-sm text-gray-500">
@@ -223,7 +226,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       </div>
 
       <div className="mb-6 flex items-center justify-between">
-        <Title level={2} className="m-0 !text-[16px]">
+        <Title level={2} className="m-0 !text-[20px]">
           Đơn ứng tuyển
         </Title>
         <Space>
@@ -263,7 +266,10 @@ const JobApplication: React.FC<IPropJobApplication> = ({
               );
             })
           ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Không có dữ liệu" />
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description="Không có dữ liệu"
+            />
           )}
         </div>
 
@@ -277,21 +283,26 @@ const JobApplication: React.FC<IPropJobApplication> = ({
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
-          {applications?.length>0 ? applications?.map((applied) => {
-            return (
-              <>
-                {applied.status === "rejected" && (
-                  <ApplicationCard
-                    applied={applied}
-                    handleFetchData={() =>
-                      handleGetJobByEmployer({ current: 1, pageSize: 10 })
-                    }
-                  />
-                )}
-              </>
-            );
-          }):(
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Không có dữ liệu" />
+          {applications?.length > 0 ? (
+            applications?.map((applied) => {
+              return (
+                <>
+                  {applied.status === "rejected" && (
+                    <ApplicationCard
+                      applied={applied}
+                      handleFetchData={() =>
+                        handleGetJobByEmployer({ current: 1, pageSize: 10 })
+                      }
+                    />
+                  )}
+                </>
+              );
+            })
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description="Không có dữ liệu"
+            />
           )}
         </div>
         <div>
@@ -304,22 +315,27 @@ const JobApplication: React.FC<IPropJobApplication> = ({
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
-          {applications.length>0 ? applications?.map((applied) => {
-            return (
-              <>
-                {applied.status === "accepted" && (
-                  <ApplicationCard
-                    handleOpenModalEmail={handleOpenModalEmail}
-                    applied={applied}
-                    handleFetchData={() =>
-                      handleGetJobByEmployer({ current: 1, pageSize: 10 })
-                    }
-                  />
-                )}
-              </>
-            );
-          }) :(
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Không có dữ liệu" />
+          {applications.length > 0 ? (
+            applications?.map((applied) => {
+              return (
+                <>
+                  {applied.status === "accepted" && (
+                    <ApplicationCard
+                      handleOpenModalEmail={handleOpenModalEmail}
+                      applied={applied}
+                      handleFetchData={() =>
+                        handleGetJobByEmployer({ current: 1, pageSize: 10 })
+                      }
+                    />
+                  )}
+                </>
+              );
+            })
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description="Không có dữ liệu"
+            />
           )}
         </div>
       </div>

@@ -24,7 +24,7 @@ const SettingCandidate = () => {
   };
   return (
     <div className="setting-candidate">
-      <h1 className="text-[16px] font-semibold mb-6">Cài đặt</h1>
+      <h1 className="text-[20px] font-semibold mb-6">Cài đặt</h1>
 
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <TabPane

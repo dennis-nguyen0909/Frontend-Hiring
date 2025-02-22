@@ -183,7 +183,7 @@ const ContactForm = () => {
         {/* Thông tin liên hệ */}
         <div className="space-y-8">
           <div>
-            <h2 className="text-[16px] font-semibold mb-4">
+            <h2 className="text-[20px] font-semibold mb-4">
               Thông tin liên hệ
             </h2>
             <div className="space-y-4">
@@ -291,10 +291,7 @@ const ContactForm = () => {
                   name="address"
                   rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
                 >
-                  <Input
-                    placeholder="Nhập địa chỉ"
-                    className="text-[12px]"
-                  />
+                  <Input placeholder="Nhập địa chỉ" className="text-[12px]" />
                 </Form.Item>
               </div>
             </div>
@@ -309,7 +306,7 @@ const ContactForm = () => {
           </Form.Item>
           {/* Notifications */}
           <div>
-            <h2 className="text-[16px] font-semibold mb-4">Thông báo</h2>
+            <h2 className="text-[20px] font-semibold mb-4">Thông báo</h2>
             <div className="space-y-2">
               <Form.Item
                 name="notifyShortlisted"
@@ -375,11 +372,11 @@ const ContactForm = () => {
               </Form.Item>
             </div>
           </div>
-          
+
           {/* Quyền riêng tư hồ sơ */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h2 className="text-[16px] font-semibold mb-4">
+              <h2 className="text-[20px] font-semibold mb-4">
                 Quyền riêng tư hồ sơ
               </h2>
               <Form.Item name="profilePrivacy" valuePropName="checked" noStyle>
@@ -399,7 +396,7 @@ const ContactForm = () => {
               </Form.Item>
             </div>
             <div>
-              <h2 className="text-[16px] font-semibold mb-4">Resume Privacy</h2>
+              <h2 className="text-[20px] font-semibold mb-4">Resume Privacy</h2>
               <Form.Item name="resumePrivacy" valuePropName="checked" noStyle>
                 <Space>
                   <Switch
@@ -417,7 +414,7 @@ const ContactForm = () => {
               </Form.Item>
             </div>
             <div>
-              <h2 className="text-[16px] font-semibold mb-4">Gợi ý việc làm</h2>
+              <h2 className="text-[20px] font-semibold mb-4">Gợi ý việc làm</h2>
               <Form.Item name="resumePrivacy" valuePropName="checked" noStyle>
                 <Space>
                   <Switch
@@ -437,7 +434,7 @@ const ContactForm = () => {
               </Form.Item>
             </div>
             <div>
-              <h2 className="text-[16px] font-semibold mb-4">Đang tìm việc</h2>
+              <h2 className="text-[20px] font-semibold mb-4">Đang tìm việc</h2>
               <Form.Item name="resumePrivacy" valuePropName="checked" noStyle>
                 <Space>
                   <Switch
@@ -462,7 +459,7 @@ const ContactForm = () => {
       </Form>
       {/* Thay đổi mật khẩu */}
       <div className="mt-5">
-        <h2 className="text-[16px] font-semibold mb-4">Thay đổi mật khẩu</h2>
+        <h2 className="text-[20px] font-semibold mb-4">Thay đổi mật khẩu</h2>
         <Form
           form={formPassword}
           onFinish={handleSavePassword}
@@ -478,23 +475,25 @@ const ContactForm = () => {
               },
             ]}
           >
-            <Input.Password placeholder="Mật khẩu hiện tại" className="text-[12px]" />
+            <Input.Password
+              placeholder="Mật khẩu hiện tại"
+              className="text-[12px]"
+            />
           </Form.Item>
 
           <Form.Item
-                    label={<div className="text-[12px]">Mật khẩu mới</div>}
-
+            label={<div className="text-[12px]">Mật khẩu mới</div>}
             name="new_password"
-            rules={[
-              { required: true, message: "Vui lòng nhập mật khẩu mới" },
-            ]}
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu mới" }]}
           >
-            <Input.Password placeholder="Mật khẩu mới"  className="text-[12px]" />
+            <Input.Password
+              placeholder="Mật khẩu mới"
+              className="text-[12px]"
+            />
           </Form.Item>
 
           <Form.Item
-               label={<div className="text-[12px]">Xác nhận mật khẩu</div>}
-
+            label={<div className="text-[12px]">Xác nhận mật khẩu</div>}
             name="confirm_password"
             dependencies={["new_password"]} // Thêm dependency để xác nhận mật khẩu
             rules={[
@@ -508,25 +507,28 @@ const ContactForm = () => {
                     return Promise.resolve();
                   }
                   return Promise.reject(
-                    new Error(
-                      "Hai mật khẩu không giống nhau!"
-                    )
+                    new Error("Hai mật khẩu không giống nhau!")
                   );
                 },
               }),
             ]}
           >
-            <Input.Password placeholder="Xác nhận mật khẩu" className="text-[12px]" />
+            <Input.Password
+              placeholder="Xác nhận mật khẩu"
+              className="text-[12px]"
+            />
           </Form.Item>
 
           <Form.Item>
-            <Button className="!text-[12px]" htmlType="submit">Lưu mật khẩu</Button>
+            <Button className="!text-[12px]" htmlType="submit">
+              Lưu mật khẩu
+            </Button>
           </Form.Item>
         </Form>
       </div>
       {/* Xóa Account */}
       <div>
-        <h2 className="text-[16px] font-semibold mb-4">
+        <h2 className="text-[20px] font-semibold mb-4">
           Xóa tài khoản của bạn
         </h2>
         <p className="text-gray-600 mb-4 text-[12px]">

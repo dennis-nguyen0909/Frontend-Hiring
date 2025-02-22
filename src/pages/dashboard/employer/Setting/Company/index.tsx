@@ -156,7 +156,7 @@ const CompanyInfo = () => {
     <LoadingComponent isLoading={isLoading}>
       <Form form={form} layout="vertical" onFinish={handleSave}>
         <div className="mb-8">
-          <h2 className="text-[16px] font-semibold mb-4">Logo & Ảnh nền</h2>
+          <h2 className="text-[20px] font-semibold mb-4">Logo & Ảnh nền</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="mb-2 text-[12px]">Upload Logo</p>
@@ -286,7 +286,10 @@ const CompanyInfo = () => {
               initialValue={userDetail?.company_name}
               rules={[{ required: true, message: "Please enter company name" }]}
             >
-              <Input placeholder="Enter company name" className="max-w-md text-[12px]" />
+              <Input
+                placeholder="Enter company name"
+                className="max-w-md text-[12px]"
+              />
             </Form.Item>
           </div>
 
@@ -323,7 +326,6 @@ const CompanyInfo = () => {
 
           <Form.Item>
             <Button
-
               htmlType="submit"
               className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white !text-[12px]"
             >

@@ -10,8 +10,8 @@ import LoadingComponentSkeleton from "../../../components/Loading/LoadingCompone
 
 export default function SuggestionJob() {
   const [jobsSuggests, setJobSuggests] = useState<[]>([]);
-  const [loading,setLoading]=useState<boolean>(false);
-  const [loadingCity,setLoadingCity]=useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingCity, setLoadingCity] = useState<boolean>(false);
   const [meta, setMeta] = useState<Meta>({});
   const [jobSuggestionCity, setJobSuggestionCity] = useState<[]>([]);
   const userDetail = useSelector((state) => state.user);
@@ -25,7 +25,7 @@ export default function SuggestionJob() {
 
   const getJobSuggestionSkills = async (current = 1, pageSize = 12) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const params = { current, pageSize };
       const res = await JobApi.getJobSuggestions(
         params,
@@ -33,7 +33,6 @@ export default function SuggestionJob() {
         userDetail?.access_token
       );
       if (res.data) {
-        
         setJobSuggests(res.data.items);
         setMeta(res.data.meta);
       } else {
@@ -45,7 +44,7 @@ export default function SuggestionJob() {
       console.error(error);
       return []; // return an empty array in case of an error
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -54,7 +53,7 @@ export default function SuggestionJob() {
 
   const getJobSuggestionCity = async (current = 1, pageSize = 12) => {
     try {
-      setLoadingCity(true)
+      setLoadingCity(true);
       const params = {
         current,
         pageSize,
@@ -69,8 +68,8 @@ export default function SuggestionJob() {
       }
     } catch (error) {
       console.error(error);
-    } finally{
-      setLoadingCity(false)
+    } finally {
+      setLoadingCity(false);
     }
   };
   useEffect(() => {
@@ -80,31 +79,36 @@ export default function SuggestionJob() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-[16px] font-bold text-gray-900">Gợi ý việc làm</h1>
+        <h1 className="text-[20px] font-bold text-gray-900">Gợi ý việc làm</h1>
       </div>
       <LoadingComponentSkeleton isLoading={loading}>
-      {jobsSuggests.length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Use data from the query hoặc fallback to the FEATURED_JOBS */}
-            {(jobsSuggests?.length ? jobsSuggests : jobsSuggests).map((job) => (
-              <JobCard key={job?._id} job={job} onSave={handleSaveJob} />
-            ))}
-          </div>
-        </>
-      ) : (
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={`Chưa tìm thấy việc làm phù hợp vui lòng cập nhật thêm thông tin để có cơ hội hơn nhé !`} />
-      )}
-      {jobsSuggests.length > 0 && (
-        <CustomPagination
-          currentPage={meta.current_page}
-          total={meta.total}
-          perPage={meta.per_page}
-          onPageChange={(current, pageSize) =>
-            getJobSuggestionSkills(current, pageSize)
-          }
-        />
-      )}
+        {jobsSuggests.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Use data from the query hoặc fallback to the FEATURED_JOBS */}
+              {(jobsSuggests?.length ? jobsSuggests : jobsSuggests).map(
+                (job) => (
+                  <JobCard key={job?._id} job={job} onSave={handleSaveJob} />
+                )
+              )}
+            </div>
+          </>
+        ) : (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={`Chưa tìm thấy việc làm phù hợp vui lòng cập nhật thêm thông tin để có cơ hội hơn nhé !`}
+          />
+        )}
+        {jobsSuggests.length > 0 && (
+          <CustomPagination
+            currentPage={meta.current_page}
+            total={meta.total}
+            perPage={meta.per_page}
+            onPageChange={(current, pageSize) =>
+              getJobSuggestionSkills(current, pageSize)
+            }
+          />
+        )}
       </LoadingComponentSkeleton>
     </div>
   );

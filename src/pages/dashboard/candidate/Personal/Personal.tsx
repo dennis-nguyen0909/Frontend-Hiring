@@ -1,6 +1,4 @@
-import {
-  UploadOutlined,
-} from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import {
   Avatar,
   Button,
@@ -22,7 +20,7 @@ import { useWards } from "../../../../hooks/useWards";
 import moment from "moment";
 import { MediaApi } from "../../../../services/modules/mediaServices";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
-import './style.css'
+import "./style.css";
 interface CV {
   _id: string;
   user_id: string;
@@ -79,14 +77,14 @@ const Personal = () => {
       ...values,
       id: userDetail?._id,
     };
-    if(values.city){
-      params['city_id']=city
+    if (values.city) {
+      params["city_id"] = city;
     }
-    if(values.city){
-      params['district_id']=district
+    if (values.city) {
+      params["district_id"] = district;
     }
-    if(values.city){
-      params['ward_id']=ward
+    if (values.city) {
+      params["ward_id"] = ward;
     }
     const res = await USER_API.updateUser(params, userDetail?.access_token);
     if (res.data) {
@@ -104,7 +102,10 @@ const Personal = () => {
 
   const handleDeleteCv = async () => {
     try {
-      const res = await CV_API.deleteManyCVByUser([selectedId], userDetail?._id);
+      const res = await CV_API.deleteManyCVByUser(
+        [selectedId],
+        userDetail?._id
+      );
       if (+res.statusCode === 200) {
         notification.success({
           message: "Thông báo",
@@ -116,7 +117,6 @@ const Personal = () => {
       console.error(error);
     }
   };
-
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -133,7 +133,7 @@ const Personal = () => {
 
   return (
     <LoadingComponent isLoading={loading}>
-      <h2 className="text-[16px] font-semibold mb-4">Thông tin cơ bản</h2>
+      <h2 className="text-[20px] font-semibold mb-4">Thông tin cơ bản</h2>
       <Form
         layout="vertical"
         onFinish={handleSaveChanges}
@@ -146,7 +146,9 @@ const Personal = () => {
           district: userDetail?.district_id?.name,
           ward: userDetail?.ward_id?.name,
           address: userDetail?.address,
-          birthday: userDetail?.birthday ? moment(userDetail?.birthday).format("YYYY-MM-DD") : "",
+          birthday: userDetail?.birthday
+            ? moment(userDetail?.birthday).format("YYYY-MM-DD")
+            : "",
         }}
       >
         <div className="flex flex-col gap-6">
@@ -170,65 +172,85 @@ const Personal = () => {
                 />
               </div>
             ) : (
-             <div className="flex items-center">
-               <Upload
-              name="avatar"
-              listType="picture-card"
-              showUploadList={false}
-              className="upload-container"
-              
-              customRequest={async ({ file, onSuccess, onError }) => {
-                try {
-                  setLoading(true)
-                  // Kiểm tra loại file
-                  const isImage = file.type.startsWith("image/");
-                  if (!isImage) {
-                    message.error("Chỉ hỗ trợ tải lên ảnh!");
-                    return;
-                  }
-            
-                  // Kiểm tra kích thước file (5MB)
-                  const isSmallEnough = file.size / 1024 / 1024 < 5;
-                  if (!isSmallEnough) {
-                    message.error("Kích thước ảnh phải nhỏ hơn 5MB!");
-                    return;
-                  }
-            
-                  // Gọi API tải lên ảnh
-                  const res = await MediaApi.postMedia(file, userDetail?.access_token);
-            
-                  if (res) {
-                    setAvatar(res.data.url); // Cập nhật avatar mới
-                    await handleSaveChanges({ avatar: res.data.url }); // Lưu URL avatar mới
-                    onSuccess && onSuccess(res);  // Gọi hàm onSuccess khi upload thành công
-                  }
-                } catch (error) {
-                  onError && onError(error);  // Gọi hàm onError khi có lỗi
-                  message.error("Tải lên thất bại!");  // Hiển thị thông báo lỗi
-                } finally {
-                  setLoading(false)
-                }
-              }}
-            >
-              <div className="text-center">
-                <UploadOutlined className="text-2xl mb-1" />
-                <div className="text-[12px] text-gray-500">Duyệt ảnh hoặc thả vào đây</div>
-                <div className="text-[12px] text-gray-400">
-                Một bức ảnh lớn hơn 400px là tốt nhất. Tối đa 5 MB.
-                </div>
+              <div className="flex items-center">
+                <Upload
+                  name="avatar"
+                  listType="picture-card"
+                  showUploadList={false}
+                  className="upload-container"
+                  customRequest={async ({ file, onSuccess, onError }) => {
+                    try {
+                      setLoading(true);
+                      // Kiểm tra loại file
+                      const isImage = file.type.startsWith("image/");
+                      if (!isImage) {
+                        message.error("Chỉ hỗ trợ tải lên ảnh!");
+                        return;
+                      }
+
+                      // Kiểm tra kích thước file (5MB)
+                      const isSmallEnough = file.size / 1024 / 1024 < 5;
+                      if (!isSmallEnough) {
+                        message.error("Kích thước ảnh phải nhỏ hơn 5MB!");
+                        return;
+                      }
+
+                      // Gọi API tải lên ảnh
+                      const res = await MediaApi.postMedia(
+                        file,
+                        userDetail?.access_token
+                      );
+
+                      if (res) {
+                        setAvatar(res.data.url); // Cập nhật avatar mới
+                        await handleSaveChanges({ avatar: res.data.url }); // Lưu URL avatar mới
+                        onSuccess && onSuccess(res); // Gọi hàm onSuccess khi upload thành công
+                      }
+                    } catch (error) {
+                      onError && onError(error); // Gọi hàm onError khi có lỗi
+                      message.error("Tải lên thất bại!"); // Hiển thị thông báo lỗi
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                >
+                  <div className="text-center">
+                    <UploadOutlined className="text-2xl mb-1" />
+                    <div className="text-[12px] text-gray-500">
+                      Duyệt ảnh hoặc thả vào đây
+                    </div>
+                    <div className="text-[12px] text-gray-400">
+                      Một bức ảnh lớn hơn 400px là tốt nhất. Tối đa 5 MB.
+                    </div>
+                  </div>
+                </Upload>
+                {userDetail?.avatar && (
+                  <Avatar
+                    className="ml-10"
+                    shape="square"
+                    size={100}
+                    src={userDetail?.avatar}
+                  />
+                )}
               </div>
-             </Upload>
-             {userDetail?.avatar &&  <Avatar className="ml-10" shape="square" size={100} src={userDetail?.avatar} />}
-              </div>
-            
             )}
           </div>
 
-          <Form.Item className="md:w-[400px]" label={<span className="text-[12px]">Họ và tên</span>} name="full_name" rules={[{ required: true, message: "Please enter your full name" }]}>
+          <Form.Item
+            className="md:w-[400px]"
+            label={<span className="text-[12px]">Họ và tên</span>}
+            name="full_name"
+            rules={[{ required: true, message: "Please enter your full name" }]}
+          >
             <Input placeholder="Enter your full name" className="text-[12px]" />
           </Form.Item>
 
-          <Form.Item className="md:w-[400px]" label={<span className="text-[12px]">Giới tính</span>} name="gender" rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}>
+          <Form.Item
+            className="md:w-[400px]"
+            label={<span className="text-[12px]">Giới tính</span>}
+            name="gender"
+            rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+          >
             <Select placeholder="Chọn giới tính" className="text-[12px]">
               <Select.Option value={0}>Nam</Select.Option>
               <Select.Option value={1}>Nữ</Select.Option>
@@ -236,20 +258,47 @@ const Personal = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item className="md:w-[400px]" label={<span className="text-[12px]">Ngày sinh</span>} name="birthday" rules={[{ required: true, message: "Please enter your birthday" }]}>
+          <Form.Item
+            className="md:w-[400px]"
+            label={<span className="text-[12px]">Ngày sinh</span>}
+            name="birthday"
+            rules={[{ required: true, message: "Please enter your birthday" }]}
+          >
             <Input type="date" className="text-[12px]" />
           </Form.Item>
 
-          <Form.Item label={<span className="text-[12px]">Giới thiệu</span>} name="introduce" rules={[{ required: true, message: "Please input your introduction!" }]}>
-            <Input.TextArea placeholder="Enter your introduction" autoSize={{ minRows: 3, maxRows: 6 }} showCount maxLength={200} className="text-[12px]" />
+          <Form.Item
+            label={<span className="text-[12px]">Giới thiệu</span>}
+            name="introduce"
+            rules={[
+              { required: true, message: "Please input your introduction!" },
+            ]}
+          >
+            <Input.TextArea
+              placeholder="Enter your introduction"
+              autoSize={{ minRows: 3, maxRows: 6 }}
+              showCount
+              maxLength={200}
+              className="text-[12px]"
+            />
           </Form.Item>
 
-          <Form.Item label={<span className="text-[12px]">Port Folio</span>} name="port_folio" rules={[{ type: "url", message: "Please enter a valid URL" }]}>
-            <Input placeholder="Enter your portfolio URL" className="text-[12px]" />
+          <Form.Item
+            label={<span className="text-[12px]">Port Folio</span>}
+            name="port_folio"
+            rules={[{ type: "url", message: "Please enter a valid URL" }]}
+          >
+            <Input
+              placeholder="Enter your portfolio URL"
+              className="text-[12px]"
+            />
           </Form.Item>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Form.Item label={<span className="text-[12px]">City</span>} name="city">
+            <Form.Item
+              label={<span className="text-[12px]">City</span>}
+              name="city"
+            >
               <Select
                 className="text-[12px]"
                 value={city}
@@ -265,7 +314,10 @@ const Personal = () => {
               </Select>
             </Form.Item>
 
-            <Form.Item label={<span className="text-[12px]">District</span>} name="district">
+            <Form.Item
+              label={<span className="text-[12px]">District</span>}
+              name="district"
+            >
               <Select
                 className="text-[12px]"
                 value={district}
@@ -281,7 +333,10 @@ const Personal = () => {
               </Select>
             </Form.Item>
 
-            <Form.Item label={<span className="text-[12px]">Ward</span>} name="ward">
+            <Form.Item
+              label={<span className="text-[12px]">Ward</span>}
+              name="ward"
+            >
               <Select
                 className="text-[12px]"
                 value={ward}
@@ -298,21 +353,26 @@ const Personal = () => {
             </Form.Item>
           </div>
 
-          <Form.Item className="md:w-[400px]" label={<span className="text-[12px]">Địa chỉ</span>} name="address" rules={[{ required: true, message: "Please enter your address!" }]}>
+          <Form.Item
+            className="md:w-[400px]"
+            label={<span className="text-[12px]">Địa chỉ</span>}
+            name="address"
+            rules={[{ required: true, message: "Please enter your address!" }]}
+          >
             <Input placeholder="Enter your address" className="text-[12px]" />
           </Form.Item>
 
           <div className="flex justify-end">
-  <Button
-    size="small"
-    type="primary"
-    htmlType="submit"
-    className="py-2 px-8 !text-[12px]"
-    style={{ backgroundColor: "#d64453", borderColor: "#d64453" }}
-  >
-    Save Changes
-  </Button>
-</div>
+            <Button
+              size="small"
+              type="primary"
+              htmlType="submit"
+              className="py-2 px-8 !text-[12px]"
+              style={{ backgroundColor: "#d64453", borderColor: "#d64453" }}
+            >
+              Save Changes
+            </Button>
+          </div>
         </div>
       </Form>
     </LoadingComponent>

@@ -25,7 +25,7 @@ export default function DashBoardEmployer() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileView, setMobileView] = useState(false);
   const [currentTab, setCurrentTab] = useState("1"); // Initialize state for the current tab
-  const userDetail = useSelector((state) => state.user);
+  const userDetail = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
 
   const menuItems = [
@@ -49,18 +49,19 @@ export default function DashBoardEmployer() {
   ];
 
   const handleCollapse = async (collapsed: boolean) => {
-    setCollapsed(collapsed);  // Cập nhật trạng thái collapsed ngay lập tức
+    setCollapsed(collapsed); // Cập nhật trạng thái collapsed ngay lập tức
     try {
       const res = await userServices.updateUser({
         id: userDetail?._id,
         toggle_dashboard: collapsed,
       });
-      dispatch(updateUser({ ...res.data, access_token: userDetail.access_token }));
+      dispatch(
+        updateUser({ ...res.data, access_token: userDetail.access_token })
+      );
     } catch (error) {
       console.error("Failed to update user:", error);
     }
   };
-  
 
   const handleMenuClick = (e: any) => {
     setCurrentTab(e.key);
@@ -73,20 +74,25 @@ export default function DashBoardEmployer() {
     const handleResize = () => {
       setMobileView(window.innerWidth <= 768);
       if (window.innerWidth > 768) {
-        setCollapsed(false);  // Đảm bảo sidebar luôn mở khi ở màn hình lớn
-      }else{
-        setCollapsed(true)
+        setCollapsed(false); // Đảm bảo sidebar luôn mở khi ở màn hình lớn
+      } else {
+        setCollapsed(true);
       }
     };
-  
-    handleResize();  // Kiểm tra kích thước khi component mount
+
+    handleResize(); // Kiểm tra kích thước khi component mount
     window.addEventListener("resize", handleResize);
-  
+
     return () => {
-      window.removeEventListener("resize", handleResize);  // Dọn dẹp khi component unmount
+      window.removeEventListener("resize", handleResize); // Dọn dẹp khi component unmount
     };
   }, []);
-  
+
+  useEffect(() => {
+    if (userDetail?.toggle_dashboard !== undefined) {
+      setCollapsed(userDetail.toggle_dashboard);
+    }
+  }, [userDetail?.toggle_dashboard]);
 
   return (
     <Layout className="min-h-screen flex">

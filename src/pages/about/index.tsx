@@ -34,26 +34,32 @@ export default function AboutPage() {
     {
       name: "Minh Duy",
       sourceUrl: "src/assets/avatars/team_3.jpg",
-      role:"Frontend Developer"
+      role: "Frontend Developer",
     },
     {
       name: "John",
       sourceUrl: "src/assets/avatars/team_1.webp",
-      role:"Backend Developer"
+      role: "Backend Developer",
     },
     {
       name: "KrasKa",
       sourceUrl: "src/assets/avatars/team_7.jpg",
-      role:"CTO"
+      role: "CTO",
     },
-    { name: "Dennis", sourceUrl: "src/assets/avatars/team_4.jpg",
-      role:"Frontend Developer"
-     },
-    { name: "Kroaske", sourceUrl: "src/assets/avatars/team_5.jpg",
-      role:"Design Analyst"
-     },
-    { name: "Celine", sourceUrl: "src/assets/avatars/team_6.jpg" ,
-      role:"Tester"
+    {
+      name: "Dennis",
+      sourceUrl: "src/assets/avatars/team_4.jpg",
+      role: "Frontend Developer",
+    },
+    {
+      name: "Kroaske",
+      sourceUrl: "src/assets/avatars/team_5.jpg",
+      role: "Design Analyst",
+    },
+    {
+      name: "Celine",
+      sourceUrl: "src/assets/avatars/team_6.jpg",
+      role: "Tester",
     },
   ];
 
@@ -114,18 +120,20 @@ export default function AboutPage() {
       <section className="container mx-auto px-4 py-12 text-[12px]">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {teams.map((team, index) => (
-            <div key={index} className="rounded-lg overflow-hidden flex flex-col">
+            <div
+              key={index}
+              className="rounded-lg overflow-hidden flex flex-col"
+            >
               <Image
-              preview={false}
-
+                preview={false}
                 src={`${team.sourceUrl}`}
                 alt={`Thành viên ${index}`}
-                width={'100%'}
-                height={'100%'}
+                width={"100%"}
+                height={"100%"}
                 className="w-full h-[300px] object-cover"
               />
               <div className="flex flex-col items-center justify-center">
-                <div className="font-bold text-[16px]">{team?.name}</div>
+                <div className="font-bold text-[20px]">{team?.name}</div>
                 <div>{team?.role}</div>
               </div>
             </div>
@@ -167,10 +175,10 @@ export default function AboutPage() {
       <section className="container mx-auto px-4 py-12 bg-gray-50 text-[12px]">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <Image
-          preview={false}
+            preview={false}
             src="src/assets/avatars/johnwick.jpg"
             alt="Testimonial"
-            style={{objectFit:'contain'}}
+            style={{ objectFit: "contain" }}
             width={500}
             height={400}
             className="rounded-lg object-cover"
@@ -197,14 +205,12 @@ export default function AboutPage() {
       <section className="container mx-auto px-4 py-12 text-[12px]">
         <div className="grid md:grid-cols-2 gap-8">
           <CTACard
-            
             title="Trở thành ứng viên"
             description="Tìm những công việc thú vị nhất từ các nhà tuyển dụng hàng đầu. Đăng ký ngay!"
             buttonText="Đăng ký ngay"
             imageSrc="src/assets/avatars/candidate.png"
           />
           <CTACard
-            
             title="Trở thành nhà tuyển dụng"
             description="Tìm kiếm nhân tài tốt nhất cho công ty của bạn. Đăng ký ngay!"
             buttonText="Đăng ký ngay"

@@ -210,7 +210,6 @@ const Header: React.FC = () => {
     setActiveMenu(item.path);
   };
 
-
   const handleLogout = async () => {
     // Gọi API đăng xuất ở đây
     try {
@@ -294,6 +293,18 @@ const Header: React.FC = () => {
   const openNotifications = () => {
     setNotificationsVisible(!notificationsVisible);
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 678) {
+        setNotificationsVisible(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <header>
       <div
@@ -303,7 +314,9 @@ const Header: React.FC = () => {
         <div className="flex justify-between mx-5">
           <div className="flex justify-center items-center gap-2 cursor-pointer">
             <Avatar shape="circle" src={logo} size={60} />
-            <p className="text-white font-bold md:hidden text-[28px] lg:block">HireDev</p>
+            <p className="text-white font-bold md:hidden text-[28px] lg:block">
+              HireDev
+            </p>
           </div>
 
           {/* Hamburger Menu for Small Screens */}
@@ -350,21 +363,22 @@ const Header: React.FC = () => {
               return (
                 <li key={idx}>
                   <div
-                  onClick={() => handleClick(item)}
-                  className={`
+                    onClick={() => handleClick(item)}
+                    className={`
                     relative cursor-pointer 
                     transition-all duration-300 
                     transform hover:scale-105 
                     !w-[200px]
                     text-center
-                    ${activeMenu === item.path
-                      ? "text-white bg-gradient-to-r from-[#da4156] to-[#ff7a5c] shadow-lg shadow-[#da4156]/50 rounded-xl p-2"
-                      : "text-gray-400 hover:text-white hover:bg-clip-text hover:bg-gradient-to-r from-[#da4156] to-[#ff7a5c]"
+                    ${
+                      activeMenu === item.path
+                        ? "text-white bg-gradient-to-r from-[#da4156] to-[#ff7a5c] shadow-lg shadow-[#da4156]/50 rounded-xl p-2"
+                        : "text-gray-400 hover:text-white hover:bg-clip-text hover:bg-gradient-to-r from-[#da4156] to-[#ff7a5c]"
                     }
                   `}
-                >
-                  <span className="relative z-10">{item.name}</span>
-                </div>
+                  >
+                    <span className="relative z-10">{item.name}</span>
+                  </div>
                 </li>
               );
             })}
@@ -431,15 +445,15 @@ const Header: React.FC = () => {
                     relative cursor-pointer 
                     transition-all duration-300 
                     transform hover:scale-105 
-                    ${activeMenu === item.path
-                      ? "text-white bg-gradient-to-r from-[#da4156] to-[#ff7a5c] shadow-lg shadow-[#da4156]/50 rounded-xl p-2"
-                      : "text-gray-400 hover:text-white hover:bg-clip-text hover:bg-gradient-to-r from-[#da4156] to-[#ff7a5c]"
+                    ${
+                      activeMenu === item.path
+                        ? "text-white bg-gradient-to-r from-[#da4156] to-[#ff7a5c] shadow-lg shadow-[#da4156]/50 rounded-xl p-2"
+                        : "text-gray-400 hover:text-white hover:bg-clip-text hover:bg-gradient-to-r from-[#da4156] to-[#ff7a5c]"
                     }
                   `}
                 >
                   <span className="relative z-10">{item.name}</span>
                 </div>
-
               </li>
             );
           })}

@@ -178,15 +178,19 @@ export default function PostJob() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newSkill, setNewSkill] = useState("");
 
-  const [selectedSkills, setSelectedSkills] = useState<{ _id: string; name: string }[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<
+    { _id: string; name: string }[]
+  >([]);
 
   const handleSkillChange = (value: any) => {
     // Map lại từ giá trị `_id` sang đối tượng đầy đủ skill từ danh sách `listSkills`
-    const updatedSkills = value.map((skillId: string) => {
-      const skill = listSkills.find((s) => s._id === skillId);
-      return skill ? { _id: skill._id, name: skill.name } : null;
-    }).filter(Boolean); // Loại bỏ giá trị null
-  
+    const updatedSkills = value
+      .map((skillId: string) => {
+        const skill = listSkills.find((s) => s._id === skillId);
+        return skill ? { _id: skill._id, name: skill.name } : null;
+      })
+      .filter(Boolean); // Loại bỏ giá trị null
+
     setSelectedSkills(updatedSkills as { _id: string; name: string }[]);
   };
 
@@ -282,7 +286,7 @@ export default function PostJob() {
         type_money: values.type_money, //
         degree: values.degree,
         expire_date: expireDate,
-        skills: values.skills?.map((skill:string)=>skill?.key),
+        skills: values.skills?.map((skill: string) => skill?.key),
         is_negotiable: values.is_negotiable,
         count_apply: values.count_apply,
         apply_linkedin: "",
@@ -294,8 +298,10 @@ export default function PostJob() {
         interview_process: values.interview_process,
         job_type: values.job_type,
         min_experience: values.min_experience,
-        skill_name:values.skills?.map((skill:string)=>skill?.label?.props?.children),
-        company_name:userDetail?.company_name?.trim()
+        skill_name: values.skills?.map(
+          (skill: string) => skill?.label?.props?.children
+        ),
+        company_name: userDetail?.company_name?.trim(),
       };
       if (values.applicationMethod === "linkedin") {
         params.apply_linkedin = values.applicationLink;
@@ -716,7 +722,9 @@ export default function PostJob() {
   };
   const [currencySymbol, setCurrencySymbol] = useState("USD");
   const handleCurrencyChange = (value) => {
-    const selectedCurrency = listCurrencies.find(currency => currency._id === value);
+    const selectedCurrency = listCurrencies.find(
+      (currency) => currency._id === value
+    );
     if (selectedCurrency) {
       setCurrencySymbol(selectedCurrency.code);
     }
@@ -734,7 +742,7 @@ export default function PostJob() {
       >
         {/* Job Title */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[16px] font-semibold mb-4">Đăng công việc</h2>
+          <h2 className="text-[20px] font-semibold mb-4">Đăng công việc</h2>
 
           <Form.Item
             label={<div className="text-[12px]">Tiêu đề</div>}
@@ -752,7 +760,7 @@ export default function PostJob() {
 
         {/* Salary */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[16px] font-semibold mb-4">Lương</h2>
+          <h2 className="text-[20px] font-semibold mb-4">Lương</h2>
 
           <div className="flex justify-between flex-col">
             {/* Negotiable Salary Checkbox */}
@@ -772,7 +780,11 @@ export default function PostJob() {
               className="lg:w-[300px] w-full text-[12px]"
               rules={[{ required: true, message: "Vui lòng chọn loại tiền!" }]}
             >
-              <Select placeholder="Chọn loại tiền"  onChange={handleCurrencyChange} className="!text-[12px]">
+              <Select
+                placeholder="Chọn loại tiền"
+                onChange={handleCurrencyChange}
+                className="!text-[12px]"
+              >
                 {listCurrencies.map((currency) => {
                   return (
                     <Select.Option value={currency._id}>
@@ -795,7 +807,7 @@ export default function PostJob() {
             >
               <Select
                 placeholder="Chọn loại trả lương"
-                 className="!text-[12px]"
+                className="!text-[12px]"
                 disabled={isNegotiable}
               >
                 <Select.Option clas value="yearly">
@@ -809,8 +821,8 @@ export default function PostJob() {
                 </Select.Option>
               </Select>
             </Form.Item>
-             {/* Min Salary */}
-             <Form.Item
+            {/* Min Salary */}
+            <Form.Item
               label={<div className="text-[12px]">Mức lương tối thiểu</div>}
               name="min_salary"
               rules={[
@@ -824,7 +836,7 @@ export default function PostJob() {
                 prefix={<DollarOutlined size={12} />}
                 className="lg:w-[300px] w-full !text-[12px]"
                 placeholder="Lương tối thiểu..."
-                  addonAfter={currencySymbol}
+                addonAfter={currencySymbol}
                 disabled={isNegotiable}
               />
             </Form.Item>
@@ -845,7 +857,7 @@ export default function PostJob() {
                 prefix={<DollarOutlined />}
                 className="lg:w-[300px] w-full !text-[12px]"
                 placeholder="Lương tối đa..."
-                  addonAfter={currencySymbol}
+                addonAfter={currencySymbol}
                 disabled={isNegotiable}
               />
             </Form.Item>
@@ -853,7 +865,7 @@ export default function PostJob() {
         </div>
         <section className="p-6 bg-white rounded-lg shadow-md mb-4">
           <Title level={5} className="text-xl font-semibold">
-            <span className="text-red-500 text-[16px]">*</span> Kỹ năng & Chuyên
+            <span className="text-red-500 text-[20px]">*</span> Kỹ năng & Chuyên
             môn
           </Title>
 
@@ -922,7 +934,7 @@ export default function PostJob() {
 
         {/* Advanced Information */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[16px] font-semibold mb-4">Thông tin nâng cao</h2>
+          <h2 className="text-[20px] font-semibold mb-4">Thông tin nâng cao</h2>
           <Form.Item
             name="min_age"
             label={<div className="text-[12px]">Tuổi tối thiểu</div>}
@@ -971,47 +983,46 @@ export default function PostJob() {
             />
           </Form.Item>
           <div className="">
-          <Form.Item
-  label={<div className="text-[12px]">Kỹ năng yêu cầu</div>}
-  name="skills"
-  rules={[
-    {
-      required: true,
-      message: "Vui lòng chọn kỹ năng yêu cầu!",
-    },
-  ]}
->
-  <Select
-    placeholder="Chọn kỹ năng"
-    mode="multiple"
-    style={{ width: "100%", fontSize: "12px" }}
-    value={selectedSkills.map(skill => ({
-      key: skill._id,
-      label: skill.name,
-    }))}
-    onChange={handleSkillChange}
-    labelInValue
-  >
-    {listSkills.map((skill) => (
-      <Select.Option key={skill._id} value={skill._id}>
-        <div className="text-[12px]">{skill?.name}</div>
-      </Select.Option>
-    ))}
+            <Form.Item
+              label={<div className="text-[12px]">Kỹ năng yêu cầu</div>}
+              name="skills"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn kỹ năng yêu cầu!",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Chọn kỹ năng"
+                mode="multiple"
+                style={{ width: "100%", fontSize: "12px" }}
+                value={selectedSkills.map((skill) => ({
+                  key: skill._id,
+                  label: skill.name,
+                }))}
+                onChange={handleSkillChange}
+                labelInValue
+              >
+                {listSkills.map((skill) => (
+                  <Select.Option key={skill._id} value={skill._id}>
+                    <div className="text-[12px]">{skill?.name}</div>
+                  </Select.Option>
+                ))}
 
-    {/* Hiển thị dấu + nếu chưa có kỹ năng nào được chọn */}
-    <Select.Option key="add-skill" value="add-skill" disabled>
-      <Button
-        type="dashed"
-        icon={<PlusOutlined />}
-        onClick={() => handleOpenModal("add-skill")}
-        style={{ width: "100%", fontSize: "12px" }}
-      >
-        Thêm kỹ năng mới
-      </Button>
-    </Select.Option>
-  </Select>
-</Form.Item>
-
+                {/* Hiển thị dấu + nếu chưa có kỹ năng nào được chọn */}
+                <Select.Option key="add-skill" value="add-skill" disabled>
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() => handleOpenModal("add-skill")}
+                    style={{ width: "100%", fontSize: "12px" }}
+                  >
+                    Thêm kỹ năng mới
+                  </Button>
+                </Select.Option>
+              </Select>
+            </Form.Item>
 
             <Form.Item
               label={<div className="text-[12px]">Giáo dục</div>}
@@ -1248,14 +1259,16 @@ export default function PostJob() {
 
         {/* Location */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[16px] font-semibold mb-4">Vị trí làm việc</h2>
+          <h2 className="text-[20px] font-semibold mb-4">Vị trí làm việc</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* City Field */}
             <Form.Item
               label={<div className="text-[12px]">Thành phố / tỉnh</div>}
               name="city"
-              rules={[{ required: true, message: "Vui lòng chọn thành phố / tỉnh!" }]}
+              rules={[
+                { required: true, message: "Vui lòng chọn thành phố / tỉnh!" },
+              ]}
             >
               <Select
                 className="text-[12px]"
@@ -1277,7 +1290,9 @@ export default function PostJob() {
             <Form.Item
               label={<div className="text-[12px]">Quận / huyện</div>}
               name="district"
-              rules={[{ required: true, message: "Vui lòng chọn quận / huyện!" }]}
+              rules={[
+                { required: true, message: "Vui lòng chọn quận / huyện!" },
+              ]}
             >
               <Select
                 className="text-[12px]"
@@ -1300,7 +1315,9 @@ export default function PostJob() {
             <Form.Item
               label={<div className="text-[12px]">Xã / phường</div>}
               name="ward"
-              rules={[{ required: true, message: "Vui lòng chọn xã / phường!" }]}
+              rules={[
+                { required: true, message: "Vui lòng chọn xã / phường!" },
+              ]}
             >
               <Select
                 placeholder="Chọn xã..."
@@ -1317,8 +1334,14 @@ export default function PostJob() {
             </Form.Item>
 
             {/* Address Field */}
-            <Form.Item label={<div className="text-[12px]">Địa chỉ</div>} name="address">
-              <Input placeholder="Vui lòng nhập địa chỉ" className="text-[12px]" />
+            <Form.Item
+              label={<div className="text-[12px]">Địa chỉ</div>}
+              name="address"
+            >
+              <Input
+                placeholder="Vui lòng nhập địa chỉ"
+                className="text-[12px]"
+              />
             </Form.Item>
           </div>
 
@@ -1329,7 +1352,7 @@ export default function PostJob() {
 
         {/* Job Benefits */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[16px] font-semibold mb-4">
+          <h2 className="text-[20px] font-semibold mb-4">
             Phúc lợi cho ứng viên
           </h2>
 
@@ -1340,13 +1363,17 @@ export default function PostJob() {
             ]}
           >
             <Input
-            className="text-[12px]"
+              className="text-[12px]"
               placeholder="Vui lòng nhập phúc lợi cho ứng viên"
               value={benefitInput}
               onChange={(e) => setBenefitInput(e.target.value)}
               onPressEnter={handleAddBenefit}
             />
-            <Button type="primary" onClick={handleAddBenefit} className="mt-2 !text-[12px]">
+            <Button
+              type="primary"
+              onClick={handleAddBenefit}
+              className="mt-2 !text-[12px]"
+            >
               Thêm
             </Button>
             <div className="mt-4">
@@ -1364,7 +1391,9 @@ export default function PostJob() {
           </Form.Item>
           <Form.Item
             name="min_experience"
-            label={<div className="text-[12px]">Kinh nghiệm tối thiểu ( Năm )</div>}
+            label={
+              <div className="text-[12px]">Kinh nghiệm tối thiểu ( Năm )</div>
+            }
             rules={[
               {
                 required: true,
@@ -1372,15 +1401,18 @@ export default function PostJob() {
               },
             ]}
           >
-            <InputNumber min={1} placeholder="1" defaultValue={1}  className="text-[12px]"/>
+            <InputNumber
+              min={1}
+              placeholder="1"
+              defaultValue={1}
+              className="text-[12px]"
+            />
           </Form.Item>
 
           {/* Thêm trường Loại hình công việc */}
           <Form.Item
             name="job_type"
-            label={
-              <div  className="text-[12px]">Loại hình làm việc</div>
-            }
+            label={<div className="text-[12px]">Loại hình làm việc</div>}
             rules={[
               {
                 required: true,
@@ -1388,11 +1420,11 @@ export default function PostJob() {
               },
             ]}
           >
-            <Select placeholder="Chọn loại hình"  className="!text-[12px]">
+            <Select placeholder="Chọn loại hình" className="!text-[12px]">
               {listJobTypes.map((jobType) => {
                 return (
                   <Select.Option key={jobType.key} value={jobType._id}>
-                   <span className="text-[12px]">{jobType.name}</span>
+                    <span className="text-[12px]">{jobType.name}</span>
                   </Select.Option>
                 );
               })}
@@ -1402,7 +1434,7 @@ export default function PostJob() {
 
         {/* Job Mô tả */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[16px] font-semibold mb-4">Mô tả công việc</h2>
+          <h2 className="text-[20px] font-semibold mb-4">Mô tả công việc</h2>
           <Form.Item name="description">
             <Editor
               // apiKey={process.env.REACT_APP_TINYMCE_API_KEY} // Bạn có thể lấy API key miễn phí từ TinyMCE
@@ -1428,7 +1460,7 @@ export default function PostJob() {
 
         {/* Application Method */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[16px] font-semibold mb-4">
+          <h2 className="text-[20px] font-semibold mb-4">
             Ứng tuyển công việc trên
           </h2>
 
@@ -1442,9 +1474,15 @@ export default function PostJob() {
             ]}
           >
             <Radio.Group>
-              <Radio className="text-[12px]" value="linkedin">LinkedIn</Radio>
-              <Radio className="text-[12px]" value="company">Company website</Radio>
-              <Radio className="text-[12px]" value="email">Email</Radio>
+              <Radio className="text-[12px]" value="linkedin">
+                LinkedIn
+              </Radio>
+              <Radio className="text-[12px]" value="company">
+                Company website
+              </Radio>
+              <Radio className="text-[12px]" value="email">
+                Email
+              </Radio>
             </Radio.Group>
           </Form.Item>
 
@@ -1457,7 +1495,10 @@ export default function PostJob() {
               },
             ]}
           >
-            <Input placeholder="Vui lòng nhập URL hoặc Email"  className="text-[12px]" />
+            <Input
+              placeholder="Vui lòng nhập URL hoặc Email"
+              className="text-[12px]"
+            />
           </Form.Item>
         </div>
 
@@ -1465,7 +1506,11 @@ export default function PostJob() {
         {/* Submit Button */}
         <LoadingComponent isLoading={loading}>
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="w-full !text-[12px]">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="w-full !text-[12px]"
+            >
               Lưu
             </Button>
           </Form.Item>
