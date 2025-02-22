@@ -1,4 +1,4 @@
-import { Button, Card, Avatar, Image } from "antd";
+import { Button, Card, Avatar, Image, Empty } from "antd";
 import {
   InstagramOutlined,
   FacebookOutlined,
@@ -13,7 +13,8 @@ import parse from "html-react-parser";
 import { JobApi } from "../../services/modules/jobServices";
 import JobCard from "./JobCard";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
-import SocialLogin from "../../components/ui/SocialLogin/SocialLogin";
+import { Meta } from "../../types";
+import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 
 export default function EmployerDetail() {
   const { id } = useParams();
@@ -21,6 +22,7 @@ export default function EmployerDetail() {
   const [employerDetail, setEmployerDetail] = useState();
   const [loading, setLoading] = useState<boolean>(false);
   const [jobs, setJobs] = useState<Array<any>>([]);
+  const [meta,setMeta] = useState<Meta>()
   const navigate = useNavigate();
   
   useEffect(()=>{
@@ -32,7 +34,7 @@ export default function EmployerDetail() {
   const handleGetDetailEmployerDetail = async () => {
     try {
       setLoading(true)
-      const res = await USER_API.getDetailUser(id, userDetail?.access_token);
+      const res = await USER_API.getDetailUser(id || userDetail?._id, userDetail?.access_token);
       if (res.data) {
         setEmployerDetail(res.data.items);
       }
@@ -48,7 +50,7 @@ export default function EmployerDetail() {
     }
   }, [id]);
 
-  const handleGetJob = async (current = 1, pageSize = 10) => {
+  const handleGetJob = async (current = 1, pageSize = 9) => {
     try {
       const params = {
         current,
@@ -60,6 +62,7 @@ export default function EmployerDetail() {
       const res = await JobApi.getAllJobs(params, userDetail?.access_token);
       if (res.data) {
         setJobs(res.data.items);
+        setMeta(res.data.meta)
       }
     } catch (error) {
       console.error(error);
@@ -116,7 +119,20 @@ export default function EmployerDetail() {
                 </p>
               </div>
             </div>
-            <Button type="primary" size="large" className="bg-blue-600">
+            {console.log("employerDetail",employerDetail)}
+            <Button onClick={()=>{
+              navigate(`/employer/${id}/jobs`,{state:{
+                company_name:employerDetail?.company_name,
+                avatar_company:employerDetail?.avatar_company,
+                banner_company:employerDetail?.banner_company,
+                description:employerDetail?.description,
+                organization:employerDetail?.organization,
+                social_links:employerDetail?.social_links,
+                phone:employerDetail?.phone,
+                email:employerDetail?.email,
+              }});
+
+            }} type="primary" size="large" className="bg-blue-600">
               Xem vị trí mở→
             </Button>
           </div>
@@ -158,7 +174,7 @@ export default function EmployerDetail() {
 
             {/* Share Profile */}
             <div className="flex items-center gap-4">
-              <span className="text-gray-600">Share profile:</span>
+              <span className="text-gray-600">Chia sẻ hồ sơ:</span>
               <div className="flex gap-4 ">
                 {facebookLink && (
                   <Link
@@ -337,7 +353,7 @@ export default function EmployerDetail() {
 
         {/* Open Positions */}
         <div className="mt-12 pb-10">
-          <h2 className="text-2xl font-semibold mb-6">Vị trí mở({jobs.length || 0})</h2>
+          <h2 className="text-2xl font-semibold mb-6">Vị trí mở({meta?.total || 0})</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {jobs.map((job, idx) => {
               return (
@@ -359,6 +375,13 @@ export default function EmployerDetail() {
               );
             })}
           </div>
+            {jobs.length > 0 ?  <CustomPagination
+          className="mt-20"
+          currentPage={meta?.current_page}
+          perPage={meta?.per_page}
+          total={meta?.total}
+          onPageChange={(current,pageSize)=>handleGetJob(current,pageSize)}
+        /> : <Empty description="Không có vị trí mở" image={Empty.PRESENTED_IMAGE_SIMPLE}/>}
         </div>
       </div>
       </LoadingComponentSkeleton>

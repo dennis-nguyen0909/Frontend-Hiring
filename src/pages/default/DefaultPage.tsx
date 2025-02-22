@@ -106,12 +106,12 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
     },
     {
       id: "contact",
-      label: "Contact",
+      label: "Liên hệ",
       content: <Contact handleTabChange={handleTabChange} />,
     },
     {
       id: "completed",
-      label: "Completed",
+      label: "Hoàn thành",
       content: <Completed handleCompleted={handleCompleted} />,
     },
   ];

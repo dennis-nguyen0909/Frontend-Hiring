@@ -990,7 +990,7 @@ export default function JobDetail({
               }
             ]}
           >
-            <InputNumber min={2} placeholder="..." />
+            <InputNumber defaultValue={1} min={2} placeholder="..." />
           </Form.Item>
 
           <Form.Item

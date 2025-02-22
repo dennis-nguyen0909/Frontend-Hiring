@@ -21,6 +21,7 @@ import EmployerDetail from '../pages/EmployerDetail/EmployerDetail';
 import AboutPage from '../pages/about';
 import EmployeesPage from '../pages/PageEmployers';
 import LandingPageExtended from '../components/LandingPageFeatures/LandingPageFeatures';
+import EmployerJob from '../pages/EmployerJob/EmployerJob';
 
 const JobSearchPage = lazy(()=>import('../pages/job/JobPage'));
 const JobBoard = lazy(()=>import('../pages/job/JobBoard'));
@@ -115,6 +116,12 @@ export const routes: IRoute[] = [
     {
         path:'/profile-cv',
         page: ProfileCV,
+        isShowHeader:true,
+        isShowFooter:false
+    },
+    {
+        path:'/employer/:id/jobs',
+        page: EmployerJob,
         isShowHeader:true,
         isShowFooter:false
     },

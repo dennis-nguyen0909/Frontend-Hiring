@@ -163,7 +163,7 @@ export default function EmployeesPage() {
                 onClick={() => handleNavigate(company?._id)}
                 className="!text-[12px] w-full rounded-lg bg-blue-50 py-2 text-center text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
               >
-                Vị trí mở({company?.jobs_ids?.length || 0})
+                Vị trí mở ({company?.jobs_ids?.length || 0})
               </button>
             </div>
           ))}
