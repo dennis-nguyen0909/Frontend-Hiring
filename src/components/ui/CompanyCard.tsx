@@ -19,25 +19,24 @@ const CompanyCard = ({ item }) => {
           src={item?.avatar_company || avtDefault}
           preview={false}
         />
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 justify-between md:justify-start">
-            <p className="text-lg font-semibold text-textBlack">
+        <div className="flex flex-col gap-1 flex-1">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-base font-semibold text-textBlack md:text-lg">
               {item?.company_name}
             </p>
-            <p className="font-light text-xs bg-[#fbf0e8] text-[#de5057] px-3 py-1 rounded-full">
+            <p className="font-light text-xs bg-[#fbf0e8] text-[#de5057] px-2 py-1 rounded-full">
               Featured
             </p>
           </div>
           {item?.city_id?.name && (
             <div className="flex items-center gap-2">
-              {console.log("duydeptrai", item)}
               <Image
                 width={14}
                 height={14}
                 src={locationIcon}
                 preview={false}
               />
-              <p className="text-sm text-graySecondary">
+              <p className="text-sm text-graySecondary truncate md:max-w-[200px]">
                 {item?.city_id?.name || item?.address}
               </p>
             </div>
@@ -48,7 +47,7 @@ const CompanyCard = ({ item }) => {
         <Button
           onClick={handleNavigate}
           size="middle"
-          className="!bg-black text-white w-full font-semibold rounded-full border-none py-2 hover:!text-primaryColor"
+          className="!bg-black text-white !w-auto font-semibold rounded-full border-none py-2 hover:!text-primaryColor"
         >
           Vị trí mở
         </Button>

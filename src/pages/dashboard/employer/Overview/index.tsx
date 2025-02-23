@@ -116,7 +116,7 @@ const OverviewEmployer = () => {
   const userDetail = useSelector((state) => state.user);
   const [countJobActive, setCountJobActive] = useState<number>(0);
   const [countOpenJob, setCountOpenJob] = useState(0);
-  const [countSaveCandidate, setCountSaveCandidate] = useState(1);
+  const [countSaveCandidate, setCountSaveCandidate] = useState(0);
 
   const handleGetSaveCandidate = async ({ current = 1, pageSize = 10 }) => {
     const params = {
@@ -201,9 +201,10 @@ const OverviewEmployer = () => {
       setCountSaveCandidate(0);
       return;
     }
+    console.log("metaSaveCandidate", metaSaveCandidate);
 
-    let start = 1;
-    const end = metaSaveCandidate.count;
+    let start = 0;
+    const end = metaSaveCandidate.total_pages;
     const duration = 500;
 
     const intervalTime = duration / (end - start);

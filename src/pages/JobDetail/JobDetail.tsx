@@ -24,7 +24,7 @@ import { API_FAVORITE_JOB } from "../../services/modules/FavoriteJobServices";
 import TextArea from "antd/es/input/TextArea";
 import { CV_API } from "../../services/modules/CvServices";
 import { useForm } from "antd/es/form/Form";
-import parse from 'html-react-parser';
+import parse from "html-react-parser";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 interface JobDetail {
@@ -67,11 +67,11 @@ export default function JobDetail() {
   const [cvUser, setCvUser] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [like, setLike] = useState<any>();
-  const [selectedCV,setSelectedCV]=useState<string>('')
+  const [selectedCV, setSelectedCV] = useState<string>("");
   const url = useParams();
   const { id } = useParams();
   const [coverLetter, setCoverLetter] = useState<string>("");
-  const [form]=useForm()
+  const [form] = useForm();
   const handleGetDetail = async () => {
     try {
       const res = await JobApi.getJobById(id + "", userDetail?.access_token);
@@ -80,9 +80,9 @@ export default function JobDetail() {
       }
     } catch (error) {}
   };
-  const handleCvChange = (value)=>{
-    setSelectedCV(value)
-  }
+  const handleCvChange = (value) => {
+    setSelectedCV(value);
+  };
   const handleGetCV = async () => {
     try {
       const params = {
@@ -107,20 +107,20 @@ export default function JobDetail() {
   }, []);
 
   const handleOpenModel = async () => {
-    if(!userDetail?.access_token){
-        navigate('/login')
-        return;
+    if (!userDetail?.access_token) {
+      navigate("/login");
+      return;
     }
     setIsModalOpen(true);
   };
 
   const onAppliedJob = async () => {
-    if(selectedCV.trim() === ""){
-      message.error("Vui lòng chọn cv!")
+    if (selectedCV.trim() === "") {
+      message.error("Vui lòng chọn cv!");
       return;
     }
-    if(coverLetter.trim() === ""){
-      message.error("Vui lòng nhập thư ứng tuyển!")
+    if (coverLetter.trim() === "") {
+      message.error("Vui lòng nhập thư ứng tuyển!");
       return;
     }
 
@@ -130,7 +130,7 @@ export default function JobDetail() {
         employer_id: jobDetail?.user_id?._id,
         job_id: jobDetail?._id,
         cover_letter: coverLetter,
-        cv_id:selectedCV
+        cv_id: selectedCV,
       };
 
       const res = await API_APPLICATION.createApplication(
@@ -143,17 +143,17 @@ export default function JobDetail() {
           description: "Ứng tuyển thành công",
         });
         handleGetDetail();
-        setIsModalOpen(false)
+        setIsModalOpen(false);
       }
     } else {
       navigate("/login");
     }
   };
   const handleCreateCV = () => {
-    if(!userDetail?.access_token){
-      navigate('/login')
+    if (!userDetail?.access_token) {
+      navigate("/login");
       return;
-  }
+    }
     navigate("/profile-cv");
   };
   const getFavoriteJobDetailByUserId = async () => {
@@ -299,7 +299,6 @@ export default function JobDetail() {
               <Share />
             </div>
           </div>
-
           {new Date(jobDetail?.expire_date) < new Date() ? (
             <Button disabled className="py-5 px-6 rounded-full">
               Đã hết hạn
@@ -397,23 +396,38 @@ export default function JobDetail() {
               <TabPane tab="Giới thiệu về công ty" key="2">
                 <div className="space-y-4">
                   <Paragraph>
-                    {parse(jobDetail?.user_id?.description || '') }
+                    {parse(jobDetail?.user_id?.description || "")}
                   </Paragraph>
-                  {jobDetail?.user_id?.organization?.company_vision &&  <Paragraph>
-                    {parse(jobDetail?.user_id?.organization?.company_vision || '') }
-                  </Paragraph>}
-                  <div>Năm thành lập: {jobDetail?.user_id?.organization?.year_of_establishment}</div>
-                <div>Loại ngành nghề: {jobDetail?.user_id?.organization?.industry_type}</div>
-                <div>Số lượng nhân sự: {jobDetail?.user_id?.organization?.team_size}</div>
+                  {jobDetail?.user_id?.organization?.company_vision && (
+                    <Paragraph>
+                      {parse(
+                        jobDetail?.user_id?.organization?.company_vision || ""
+                      )}
+                    </Paragraph>
+                  )}
+                  <div>
+                    Năm thành lập:{" "}
+                    {jobDetail?.user_id?.organization?.year_of_establishment}
+                  </div>
+                  <div>
+                    Loại ngành nghề:{" "}
+                    {jobDetail?.user_id?.organization?.industry_type}
+                  </div>
+                  <div>
+                    Số lượng nhân sự:{" "}
+                    {jobDetail?.user_id?.organization?.team_size}
+                  </div>
                   <div>
                     <div>Liên kết của công ty</div>
-                    <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
-                    {jobDetail?.user_id?.social_links?.map((link, idx) => (
-                      <li key={idx}>
-                        <a  target="_blank" href={`${link.url}`}>{link.type}</a>
-                      </li>
-                    ))}
-                </ul>
+                    <ul style={{ listStyleType: "disc", paddingLeft: "20px" }}>
+                      {jobDetail?.user_id?.social_links?.map((link, idx) => (
+                        <li key={idx}>
+                          <a target="_blank" href={`${link.url}`}>
+                            {link.type}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                   {/* <div className="grid grid-cols-3 gap-4">
                     <Image
@@ -439,7 +453,6 @@ export default function JobDetail() {
                     />
                   </div> */}
                 </div>
-              
               </TabPane>
             </Tabs>
           </Card>
@@ -520,55 +533,54 @@ export default function JobDetail() {
         onCancel={() => setIsModalOpen(false)}
         footer={false}
       >
-         <Form form={form}layout="vertical">
-      <div className="space-y-4 py-4">
-        {/* CV Selection */}
-        <div>
-          <Form.Item
-            label={'Chọn cv'}
-            name="cv"
-            rules={[{ required: true, message: 'Vui lòng chọn một CV!' }]}
-          >
-            <Select
-              className="w-full"
-              placeholder="Select..."
-              onChange={handleCvChange}
-              value={selectedCV}
-            >
-              {cvUser.map((cv) => (
-                <Select.Option key={cv?._id} value={cv?._id}>
-                  {cv?.cv_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </div>
+        <Form form={form} layout="vertical">
+          <div className="space-y-4 py-4">
+            {/* CV Selection */}
+            <div>
+              <Form.Item
+                label={"Chọn cv"}
+                name="cv"
+                rules={[{ required: true, message: "Vui lòng chọn một CV!" }]}
+              >
+                <Select
+                  className="w-full"
+                  placeholder="Select..."
+                  onChange={handleCvChange}
+                  value={selectedCV}
+                >
+                  {cvUser.map((cv) => (
+                    <Select.Option key={cv?._id} value={cv?._id}>
+                      {cv?.cv_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
 
-        {/* Cover Letter */}
-        <div>
-          <Form.Item
-            label={'Thư giới thiệu'}
-            name="coverLetter"
-            rules={[{ required: true, message: 'Vui lòng nhập thư giới thiệu!' }]}
-          >
-            <TextArea
-              value={coverLetter}
-              onChange={(e) => setCoverLetter(e.target.value)}
-              rows={4}
-              placeholder="Write down your biography here. Let the employers know who you are..."
-              className="w-full"
-            />
-          </Form.Item>
-        </div>
-      </div>
+            {/* Cover Letter */}
+            <div>
+              <Form.Item
+                label={"Thư giới thiệu"}
+                name="coverLetter"
+                rules={[
+                  { required: true, message: "Vui lòng nhập thư giới thiệu!" },
+                ]}
+              >
+                <TextArea
+                  value={coverLetter}
+                  onChange={(e) => setCoverLetter(e.target.value)}
+                  rows={4}
+                  placeholder="Write down your biography here. Let the employers know who you are..."
+                  className="w-full"
+                />
+              </Form.Item>
+            </div>
+          </div>
 
-      <Button
-        type="primary"
-        onClick={onAppliedJob}
-      >
-        Ứng tuyển ngay
-      </Button>
-    </Form>
+          <Button type="primary" onClick={onAppliedJob}>
+            Ứng tuyển ngay
+          </Button>
+        </Form>
       </Modal>
     </div>
   );

@@ -1,14 +1,9 @@
-import React from "react";
-
 import { useEffect, useState } from "react";
 import CompanyCard from "./CompanyCard";
-import { JobApi } from "../../services/modules/jobServices";
 import { USER_API } from "../../services/modules/userServices";
 import { useSelector } from "react-redux";
-import { Satellite } from "lucide-react";
 import { Meta } from "../../types";
 import { ROLE_API } from "../../services/modules/RoleServices";
-import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import ButtonComponent from "../Button/ButtonComponent";
 const TopCompanies = () => {

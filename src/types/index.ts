@@ -80,6 +80,14 @@ export interface IBackendRes<T> {
     is_active:boolean;       // ID phường/xã
     __v: number;                  // Phiên bản tài liệu
     _id: string;                  // ID công việc
+    job_responsibilities: string[];
+    is_negotiable:boolean;
+    count_apply:number;
+    interview_process:string[];
+    job_type:string;
+    min_experience:number;
+    candidate_ids:string[];
+    is_expired:boolean;
   }
   
 
