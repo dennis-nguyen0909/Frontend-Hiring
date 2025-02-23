@@ -4,7 +4,6 @@ import {
   EditOutlined,
   HeartFilled,
   HeartOutlined,
-  SaveOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -16,27 +15,28 @@ import {
   notification,
   Typography,
 } from "antd";
-import moment from "moment";
 import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useSelector } from "react-redux";
+import useMomentFn from "../../../../hooks/useMomentFn";
 
 const { Text } = Typography;
 interface IPropsApplicationCard {
   applied: any;
   handleFetchData: () => void;
   className?: any;
-  handleOpenModalEmail:()=>void;
+  handleOpenModalEmail: () => void;
 }
 
 const ApplicationCard = ({
   applied,
   handleFetchData,
   className,
-  handleOpenModalEmail
+  handleOpenModalEmail,
 }: IPropsApplicationCard) => {
-  const { user_id, applied_date, job_id,save_candidates } = applied;
-    const userDetail = useSelector(state=>state.user)
+  const { formatDate } = useMomentFn();
+  const { user_id, applied_date, job_id, save_candidates } = applied;
+  const userDetail = useSelector((state) => state.user);
   const items: MenuProps["items"] = [
     {
       key: "rejected",
@@ -93,35 +93,40 @@ const ApplicationCard = ({
 
   const handleSaveCandidate = async (userId: string) => {
     try {
-    const res = await API_APPLICATION.saveCandidate(applied?._id, userId, user_id?.access_token,userDetail?.access_token);
+      const res = await API_APPLICATION.saveCandidate(
+        applied?._id,
+        userId,
+        user_id?.access_token,
+        userDetail?.access_token
+      );
       if (res.data) {
         handleFetchData();
       }
     } catch (error) {
-        notification.error({
-          message: "Thông báo",
-          description: error.message,
-        })
+      notification.error({
+        message: "Thông báo",
+        description: error.message,
+      });
     }
   };
-  
-  const onDownloadCvCandidate = ()=>{
-    const{primary_cv_id}=user_id
-    const cvLink =applied?.cv_id?.cv_link
-    const cvName =applied?.cv_id?.cv_name
+
+  const onDownloadCvCandidate = () => {
+    const { primary_cv_id } = user_id;
+    const cvLink = applied?.cv_id?.cv_link;
+    const cvName = applied?.cv_id?.cv_name;
     const link = document.createElement("a");
-    if(cvLink==="" || !cvLink){
+    if (cvLink === "" || !cvLink) {
       notification.error({
-        message:'Thông báo',
-        description:'Ứng viên chưa cập nhật CV'
-      })
+        message: "Thông báo",
+        description: "Ứng viên chưa cập nhật CV",
+      });
     }
     link.href = cvLink || primary_cv_id.cv_link;
-    link.download = cvName||  primary_cv_id.cv_name;
+    link.download = cvName || primary_cv_id.cv_name;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
+  };
   const isSaved = save_candidates && save_candidates.includes(user_id?._id);
   return (
     <Card className={`mb-4 ${className}`}>
@@ -167,22 +172,35 @@ const ApplicationCard = ({
           <p className="text-[12px]">Kinh nghiệm: Chưa có kinh nghiệm</p>
         )}
         {user_id?.education_ids?.map((edu, index) => (
-          <p className="text-[12px]"key={index}>Education: {edu.school}</p>
+          <p className="text-[12px]" key={index}>
+            Education: {edu.school}
+          </p>
         ))}
         <div className="flex justify-between items-center">
-          <p className="text-[12px]">Ngày nộp: {moment(applied_date).format("MM/DD/YYYY")}</p>
+          <p className="text-[12px]">Ngày nộp: {formatDate(applied_date)}</p>
           <div
             className="cursor-pointer text-xl text-red-500"
             onClick={() => handleSaveCandidate(user_id?._id)}
           >
-              {isSaved ? <HeartFilled/> : <HeartOutlined />}
+            {isSaved ? <HeartFilled /> : <HeartOutlined />}
           </div>
         </div>
       </div>
-      <Button onClick={onDownloadCvCandidate} icon={<DownloadOutlined />} className="w-full mt-4 !border-black !text-black !hover:text-primaryColor !text-[12px]">
+      <Button
+        onClick={onDownloadCvCandidate}
+        icon={<DownloadOutlined />}
+        className="w-full mt-4 !border-black !text-black !hover:text-primaryColor !text-[12px]"
+      >
         Download CV
       </Button>
-      {applied.status === 'accepted' && <Button className="!text-[12px]" onClick={()=>handleOpenModalEmail(applied)}>Gửi email</Button>}
+      {applied.status === "accepted" && (
+        <Button
+          className="!text-[12px]"
+          onClick={() => handleOpenModalEmail(applied)}
+        >
+          Gửi email
+        </Button>
+      )}
     </Card>
   );
 };

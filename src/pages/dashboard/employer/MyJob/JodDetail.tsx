@@ -13,7 +13,11 @@ import {
   Typography,
 } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
-import { DollarOutlined, MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  DollarOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useCities } from "../../../../hooks/useCities";
 import { useDistricts } from "../../../../hooks/useDistricts";
@@ -23,7 +27,6 @@ import { useSelector } from "react-redux";
 import { EmployerSkillApi } from "../../../../services/modules/EmployerSkillServices";
 import { Meta, ListSkillsFormData } from "../../../../types";
 import { ChevronsLeft } from "lucide-react";
-import moment from "moment";
 import { useCurrency } from "../../../../hooks/useCurrency";
 import { useLevels } from "../../../../hooks/useLevels";
 import { useContractType } from "../../../../hooks/useContractType";
@@ -31,6 +34,7 @@ import { useDegreeType } from "../../../../hooks/useDegreeType";
 import { useJobType } from "../../../../hooks/useJobType";
 import GeneralModal from "../../../../components/ui/GeneralModal/GeneralModal";
 import { useNavigate, useParams } from "react-router-dom";
+import useMomentFn from "../../../../hooks/useMomentFn";
 const { Title, Text } = Typography;
 interface IPropsJobDetail {
   idJob?: string;
@@ -50,14 +54,14 @@ export default function JobDetail({
   const [benefitList, setBenefitList] = useState([]);
   const [city, setCity] = useState(jobDetail?.city_id?._id || "");
   const [district, setDistrict] = useState(jobDetail?.district_id?._id || "");
-  const [ward, setWard] = useState( jobDetail?.ward_id?._id ||"");
+  const [ward, setWard] = useState(jobDetail?.ward_id?._id || "");
   const [expireDate, setExpireDate] = useState("");
   const [listSkills, setListSkills] = useState<ListSkillsFormData[]>([]);
-  const {data:listLevels}=useLevels();
-  const {data:listContractTypes}=useContractType();
-  const {data:listDegreeTypes}=useDegreeType();
-  const {data:listJobTypes}=useJobType();
-  const {data:listCurrencies} =useCurrency();
+  const { data: listLevels } = useLevels();
+  const { data: listContractTypes } = useContractType();
+  const { data: listDegreeTypes } = useDegreeType();
+  const { data: listJobTypes } = useJobType();
+  const { data: listCurrencies } = useCurrency();
   const [meta, setMeta] = useState<Meta>({
     count: 0,
     current_page: 1,
@@ -65,6 +69,7 @@ export default function JobDetail({
     total: 0,
     total_pages: 0,
   });
+  const { formatDate } = useMomentFn();
   const { cities, loading: citiesLoading } = useCities();
   const { districts, loading: districtLoading } = useDistricts(city);
   const { wards, loading: wardsLoading } = useWards(district);
@@ -77,8 +82,8 @@ export default function JobDetail({
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newSkill, setNewSkill] = useState("");
-  const navigate = useNavigate()
-  const location =useParams()
+  const navigate = useNavigate();
+  const location = useParams();
   const handleOpenModal = (type: string) => {
     setTypeModal(type);
     setIsModalVisible(true);
@@ -133,8 +138,8 @@ export default function JobDetail({
             </div>
           </>
         );
-      }
-  }
+    }
+  };
   // Thêm yêu cầu vào đúng tựa đề
   const addRequirement = () => {
     if (!newTitle || !newRequirement) {
@@ -189,7 +194,10 @@ export default function JobDetail({
     setWard(value);
   };
   const handleGetJobDetail = async () => {
-    const res = await JobApi.getJobById(idJob || location?.id , userDetail.access_token);
+    const res = await JobApi.getJobById(
+      idJob || location?.id,
+      userDetail.access_token
+    );
     if (res?.data) {
       let applicationMethod = "";
       let applicationLink = "";
@@ -205,34 +213,34 @@ export default function JobDetail({
         applicationMethod = "company";
         applicationLink = res.data.apply_website;
       }
-      const formattedExpireDate = moment(res.data.expire_date).format('YYYY-MM-DD');
+      const formattedExpireDate = formatDate(res.data.expire_date);
       form.setFieldsValue({
         ...res.data,
         min_salary: res.data.salary_range.min,
         max_salary: res.data.salary_range.max,
-        min_age:res.data.age_range.min,
-        max_age:res.data.age_range.max,
+        min_age: res.data.age_range.min,
+        max_age: res.data.age_range.max,
         applicationMethod: applicationMethod,
         applicationLink: applicationLink,
-        professional_skills:res.data.professional_skills,
-        city:res.data.city_id._id,
-        district:res.data.district_id._id,
-        ward:res.data.ward_id._id,
-        expire_date:formattedExpireDate,
-        skills:skillIds,
+        professional_skills: res.data.professional_skills,
+        city: res.data.city_id._id,
+        district: res.data.district_id._id,
+        ward: res.data.ward_id._id,
+        expire_date: formattedExpireDate,
+        skills: skillIds,
         type_money: res.data.type_money._id,
         degree: res.data.degree._id,
         level: res.data.level._id,
-        job_contract_type:res?.data?.job_contract_type?._id,
-        job_type:res.data.job_type._id,
+        job_contract_type: res?.data?.job_contract_type?._id,
+        job_type: res.data.job_type._id,
       });
-      setRequirements(res.data.professional_skills)
-      setExpireDate(formattedExpireDate); 
+      setRequirements(res.data.professional_skills);
+      setExpireDate(formattedExpireDate);
       setIsNegotiable(res.data.is_negotiable);
       setExperienceList(res.data.require_experience);
       setJobDetail(res.data);
       setBenefitList(res.data.benefit);
-      setListSkills([...res.data.skills])
+      setListSkills([...res.data.skills]);
     }
   };
   useEffect(() => {
@@ -287,7 +295,7 @@ export default function JobDetail({
         message: "Thông báo",
         description: "Vui lòng nhập kỹ năng và chuyên môn",
       });
-      message.error("Vui lòng nhập kỹ năng và chuyên môn")
+      message.error("Vui lòng nhập kỹ năng và chuyên môn");
       return;
     }
     if (!values.general_requirements.length) {
@@ -295,7 +303,7 @@ export default function JobDetail({
         message: "Thông báo",
         description: "Vui lòng nhập yêu cầu chung",
       });
-      message.error("Vui lòng nhập yêu cầu chung")
+      message.error("Vui lòng nhập yêu cầu chung");
 
       return;
     }
@@ -304,16 +312,16 @@ export default function JobDetail({
         message: "Thông báo",
         description: "Vui lòng nhập trách nhiệm công việc",
       });
-      message.error("Vui lòng nhập trách nhiệm công việc")
+      message.error("Vui lòng nhập trách nhiệm công việc");
 
       return;
     }
-    if(!values.interview_process.length){
+    if (!values.interview_process.length) {
       notification.error({
         message: "Thông báo",
         description: "Vui lòng nhập quy trình phỏng vấn",
       });
-      message.error("Vui lòng nhập quy trình phỏng vấn")
+      message.error("Vui lòng nhập quy trình phỏng vấn");
 
       return;
     }
@@ -321,7 +329,7 @@ export default function JobDetail({
       user_id: userDetail?._id,
       title: values.title,
       description: content,
-      address:values.address,
+      address: values.address,
       city_id: city,
       district_id: district,
       ward_id: ward,
@@ -329,7 +337,7 @@ export default function JobDetail({
       salary_type: values.salary_type,
       job_contract_type: values.job_contract_type,
       benefit: benefitList,
-      // time_work: values.time_work, 
+      // time_work: values.time_work,
       require_experience: experienceList,
       level: values.level,
       type_money: values.type_money,
@@ -337,7 +345,7 @@ export default function JobDetail({
       expire_date: expireDate,
       skills: values.skills,
       is_negotiable: values.is_negotiable,
-      count_apply:values.count_apply,
+      count_apply: values.count_apply,
       apply_linkedin: "",
       apply_website: "",
       apply_email: "",
@@ -366,7 +374,7 @@ export default function JobDetail({
       //   message: "Success",
       //   description: "Update successfully",
       // });
-      message.success("Update successfully")
+      message.success("Update successfully");
     } else {
       notification.error({
         message: "Error",
@@ -380,13 +388,13 @@ export default function JobDetail({
         message: "Validation Error",
         description: field.errors[0], // Display the first validation error for each field
       });
-      message.error(field.errors[0])
+      message.error(field.errors[0]);
     });
   };
-  const handleNavigateBack = ()=>{
+  const handleNavigateBack = () => {
     navigate(-1);
-  }
-  const onBack = handleChangeHome || handleNavigateBack
+  };
+  const onBack = handleChangeHome || handleNavigateBack;
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex items-center gap-4">
@@ -404,7 +412,7 @@ export default function JobDetail({
         onFinishFailed={handleFinishFailed}
         onFinish={handleSubmit}
         initialValues={{
-          city:jobDetail?.city_id
+          city: jobDetail?.city_id,
         }}
       >
         {/* Job Title */}
@@ -414,7 +422,9 @@ export default function JobDetail({
           <Form.Item
             label="Tiêu đề công việc"
             name="title"
-            rules={[{ required: true, message: "Tiêu đề công việc là bắt buộc" }]}
+            rules={[
+              { required: true, message: "Tiêu đề công việc là bắt buộc" },
+            ]}
           >
             <Input placeholder="Thêm tiêu đề công việc ..." />
           </Form.Item>
@@ -499,10 +509,12 @@ export default function JobDetail({
               ]}
             >
               <Select placeholder="Select money type">
-                {listCurrencies.map((currency)=>{
-                  return(
-                    <Select.Option key={currency._id} value={currency._id}>{currency.code}</Select.Option>
-                  )
+                {listCurrencies.map((currency) => {
+                  return (
+                    <Select.Option key={currency._id} value={currency._id}>
+                      {currency.code}
+                    </Select.Option>
+                  );
                 })}
               </Select>
             </Form.Item>
@@ -614,7 +626,7 @@ export default function JobDetail({
             <InputNumber min={18} max={65} placeholder="Tuổi tối đa" />
           </Form.Item>
           <div className="">
-          <Form.Item
+            <Form.Item
               label="Kỹ năng yêu cầu"
               name="skills"
               rules={[
@@ -662,10 +674,12 @@ export default function JobDetail({
               ]}
             >
               <Select placeholder="Select">
-                {listDegreeTypes.map((degree,idx)=>{
+                {listDegreeTypes.map((degree, idx) => {
                   return (
-                    <Select.Option key={degree.key} value={degree._id}>{degree.name}</Select.Option>
-                  )
+                    <Select.Option key={degree.key} value={degree._id}>
+                      {degree.name}
+                    </Select.Option>
+                  );
                 })}
               </Select>
             </Form.Item>
@@ -680,20 +694,22 @@ export default function JobDetail({
               ]}
             >
               <Select placeholder="Select">
-              {listLevels.map((level,idx)=>{
-                return (
-                <Select.Option value={level._id}>{level.name}</Select.Option>
-                )
-              })}
+                {listLevels.map((level, idx) => {
+                  return (
+                    <Select.Option value={level._id}>
+                      {level.name}
+                    </Select.Option>
+                  );
+                })}
               </Select>
             </Form.Item>
 
             <Form.List name="general_requirements">
               {(fields, { add, remove }) => (
                 <>
-         <label>
+                  <label>
                     <span style={{ color: "red" }}>*</span>
-                    Yêu cầu chung: 
+                    Yêu cầu chung:
                   </label>
                   {fields.map((field, index) => (
                     <Space
@@ -733,7 +749,7 @@ export default function JobDetail({
             <Form.List name="job_responsibilities">
               {(fields, { add, remove }) => (
                 <>
-    <label>
+                  <label>
                     <span style={{ color: "red" }}>*</span>
                     Trách nhiệm công việc:
                   </label>
@@ -772,13 +788,13 @@ export default function JobDetail({
                 </>
               )}
             </Form.List>
-            <Form.List name="interview_process"
-            >
+            <Form.List name="interview_process">
               {(fields, { add, remove }) => (
                 <>
                   <label>
-                  <span style={{ color: "red" }}>*</span>
-                    Quy trình phỏng vấn:</label>
+                    <span style={{ color: "red" }}>*</span>
+                    Quy trình phỏng vấn:
+                  </label>
                   {fields.map((field, index) => (
                     <Space
                       key={field.key}
@@ -815,7 +831,7 @@ export default function JobDetail({
               )}
             </Form.List>
 
-<Form.Item
+            <Form.Item
               label="Loại hợp đồng"
               name="job_contract_type"
               rules={[
@@ -823,17 +839,19 @@ export default function JobDetail({
               ]}
             >
               <Select placeholder="Select">
-                {listContractTypes.map((type,idx)=>{
+                {listContractTypes.map((type, idx) => {
                   return (
-                    <Select.Option key={type.key} value={type._id}>{type.name}</Select.Option>
-                  )
+                    <Select.Option key={type.key} value={type._id}>
+                      {type.name}
+                    </Select.Option>
+                  );
                 })}
               </Select>
             </Form.Item>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Form.Item
+            <Form.Item
               label="Số lượng tuyển"
               name="count_apply"
               rules={[
@@ -875,11 +893,9 @@ export default function JobDetail({
               label="Thành phố"
               name="city"
               rules={[{ required: true, message: "Vui lòng chọn thành phố" }]}
-
             >
               <Select
-                     placeholder="Chọn Thành Phố"
-
+                placeholder="Chọn Thành Phố"
                 value={city}
                 onChange={handleCityChange}
                 loading={citiesLoading}
@@ -987,7 +1003,7 @@ export default function JobDetail({
               {
                 required: true,
                 message: "Vui lòng nhập kinh nghiệm tối thiểu",
-              }
+              },
             ]}
           >
             <InputNumber defaultValue={1} min={2} placeholder="..." />
@@ -1004,11 +1020,12 @@ export default function JobDetail({
             ]}
           >
             <Select placeholder="Chọn loại hình">
-
-              {listJobTypes?.map((jobType)=>{
+              {listJobTypes?.map((jobType) => {
                 return (
-                  <Select.Option key={jobType._id} value={jobType._id}>{jobType.name}</Select.Option>
-                )
+                  <Select.Option key={jobType._id} value={jobType._id}>
+                    {jobType.name}
+                  </Select.Option>
+                );
               })}
             </Select>
           </Form.Item>
@@ -1018,9 +1035,7 @@ export default function JobDetail({
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-lg font-semibold mb-4">Mô tả công việc</h2>
 
-          <Form.Item
-            name="description"
-          >
+          <Form.Item name="description">
             <Editor
               // apiKey={process.env.REACT_APP_TINYMCE_API_KEY} // Bạn có thể lấy API key miễn phí từ TinyMCE
               apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
@@ -1045,7 +1060,9 @@ export default function JobDetail({
 
         {/* Application Method */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Ứng tuyển công việc trên :</h2>
+          <h2 className="text-lg font-semibold mb-4">
+            Ứng tuyển công việc trên :
+          </h2>
 
           <Form.Item
             name="applicationMethod"
@@ -1066,7 +1083,10 @@ export default function JobDetail({
           <Form.Item
             name="applicationLink"
             rules={[
-              { required: true, message: "Vui lòng nhập liên kết đơn ứng tuyển" },
+              {
+                required: true,
+                message: "Vui lòng nhập liên kết đơn ứng tuyển",
+              },
             ]}
           >
             <Input placeholder="Vui lòng nhập URL hoặc Email" />

@@ -1,4 +1,4 @@
-import { Share2, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { Avatar, Button, Card, Form, Modal, Select, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { Job } from "../../types";
@@ -6,7 +6,6 @@ import { JobApi } from "../../services/modules/jobServices";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { useNavigate, useParams } from "react-router-dom";
-import moment from "moment";
 import { getRandomColor } from "../../utils/color.utils";
 import { useForm } from "antd/es/form/Form";
 import TextArea from "antd/es/input/TextArea";
@@ -15,8 +14,10 @@ import { toast } from "react-toastify";
 import { CV_API } from "../../services/modules/CvServices";
 import { HeartFilled, HeartOutlined } from "@ant-design/icons";
 import { API_FAVORITE_JOB } from "../../services/modules/FavoriteJobServices";
+import useMomentFn from "../../hooks/useMomentFn";
 
 export default function JobPosting() {
+  const { formatDate } = useMomentFn();
   const [jobDetail, setJobDetail] = useState<Job>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [form] = useForm();
@@ -296,11 +297,11 @@ export default function JobPosting() {
                 </div>
                 <InfoRow
                   label="Hạn nộp hồ sơ"
-                  value={moment(jobDetail?.expire_date).format("DD/MM/YYYY")}
+                  value={formatDate(jobDetail?.expire_date)}
                 />
                 <InfoRow
                   label="Ngày đăng"
-                  value={moment(jobDetail?.createdAt).format("DD/MM/YYYY")}
+                  value={formatDate(jobDetail?.createdAt)}
                 />
                 <InfoRow
                   label="Loại công việc"

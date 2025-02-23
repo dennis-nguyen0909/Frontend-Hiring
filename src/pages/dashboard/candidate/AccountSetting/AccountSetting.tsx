@@ -9,14 +9,9 @@ import {
   notification,
   message,
 } from "antd";
-import {
-  PhoneOutlined,
-  EnvironmentOutlined,
-  MailOutlined,
-  FileTextOutlined,
-} from "@ant-design/icons";
+import { PhoneOutlined, MailOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCities } from "../../../../hooks/useCities";
 import { useDistricts } from "../../../../hooks/useDistricts";
 import { useWards } from "../../../../hooks/useWards";
@@ -25,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { updateUser } from "../../../../redux/slices/userSlices";
 import { useNavigate } from "react-router-dom";
 import * as userServices from "../../../../services/modules/userServices";
+import DateFormatSelect from "../../../../components/DateFormatSelect/DateFormatSelect";
 const ContactForm = () => {
   const userDetail = useSelector((state) => state.user);
   const [city, setCity] = useState(userDetail?.city_id?._id || "");
@@ -35,6 +31,14 @@ const ContactForm = () => {
   const { districts, loading: districtLoading } = useDistricts(city);
   const { wards, loading: wardsLoading } = useWards(district);
   const navigate = useNavigate();
+  const [selectedFormat, setSelectedFormat] = useState(
+    userDetail?.dateFormat || "DD/MM/YYYY"
+  );
+
+  const handleChange = (value: string) => {
+    setSelectedFormat(value);
+  };
+
   const handleCityChange = (value) => {
     setCity(value);
   };
@@ -53,6 +57,7 @@ const ContactForm = () => {
       city_id: city,
       ward_id: ward,
       address: values.address,
+      dateFormat: selectedFormat,
     };
     try {
       const res = await USER_API.updateUser(params, userDetail?.access_token);
@@ -156,6 +161,7 @@ const ContactForm = () => {
         break;
     }
   };
+  console.log("selectedFormat", selectedFormat);
   return (
     <>
       <Form
@@ -295,6 +301,11 @@ const ContactForm = () => {
                 </Form.Item>
               </div>
             </div>
+            <DateFormatSelect
+              selectedFormat={selectedFormat}
+              setSelectedFormat={setSelectedFormat}
+              handleChange={handleChange}
+            />
           </div>
           <Form.Item>
             <Button

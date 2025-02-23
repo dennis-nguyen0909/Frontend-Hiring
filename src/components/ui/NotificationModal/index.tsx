@@ -1,10 +1,9 @@
-import { Badge, Button, Card, Empty } from "antd";
-import { Bell } from "lucide-react";
+import { Button, Empty } from "antd";
 import { useEffect, useState } from "react";
 import { NOTIFICATION_API } from "../../../services/modules/NotificationService";
 import { useSelector } from "react-redux";
 import { Meta } from "../../../types";
-import moment from "moment";
+import useMomentFn from "../../../hooks/useMomentFn";
 export interface INotification {
   _id: string;
   candidateId: any; // Ứng viên
@@ -19,6 +18,8 @@ export interface INotification {
 export default function NotificationModal() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [meta, setMeta] = useState<Meta>({});
+  const { formatDate } = useMomentFn();
+
   const userDetail = useSelector((state) => state.user);
   const getNotificationsForCandidate = async () => {
     try {
@@ -58,13 +59,13 @@ export default function NotificationModal() {
                 className="rounded-lg bg-slate-50 p-3 hover:bg-slate-100 transition-colors cursor-pointer px-2"
               >
                 <h3 className="font-semibold text-slate-900 text-[10px]">
-                  {notification.title}
+                  {notification?.title}
                 </h3>
                 <p className="mt-1 text-[10px] text-slate-700">
-                  {notification.message}
+                  {notification?.message}
                 </p>
                 <p className="mt-2 text-[10px] text-slate-500">
-                  {moment(notification.createdAt).fromNow()}
+                  {formatDate(notification?.createdAt)}
                 </p>
               </div>
             ))

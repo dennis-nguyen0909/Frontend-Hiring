@@ -1,6 +1,6 @@
 import { Card, Avatar, Typography, Button } from "antd";
 import { BookOutlined, EditOutlined, LinkOutlined } from "@ant-design/icons";
-import moment from "moment";
+import useMomentFn from "../../../hooks/useMomentFn";
 
 const { Title, Text } = Typography;
 
@@ -25,6 +25,7 @@ export default function Course({
   course_image,
   onEdit,
 }: CourseProps) {
+  const { formatDate } = useMomentFn();
   return (
     <div>
       <Card
@@ -66,10 +67,8 @@ export default function Course({
                   {description}
                 </Text>
                 <Text className="block text-gray-500 !text-[12px]">
-                  {`Từ: ${moment(start_date).format("YYYY-MM-DD")} đến: ${
-                    end_date
-                      ? moment(end_date).format("YYYY-MM-DD")
-                      : "Hiện tại"
+                  {`Từ: ${formatDate(start_date)} đến: ${
+                    end_date ? formatDate(end_date) : "Hiện tại"
                   }`}
                 </Text>
               </div>

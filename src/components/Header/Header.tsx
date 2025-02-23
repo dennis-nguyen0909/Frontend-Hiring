@@ -23,13 +23,14 @@ import {
   ROLE_NAME_EMPLOYEE,
   ROLE_NAME_USER,
 } from "../../utils/role.utils";
-import moment from "moment";
 import { io } from "socket.io-client";
 import { NOTIFICATION_API } from "../../services/modules/NotificationService";
 import { INotification } from "../ui/NotificationModal";
 import * as authServices from "../../services/modules/authServices";
 import { resetUser } from "../../redux/slices/userSlices";
 import { useDispatch } from "react-redux";
+import ButtonComponent from "../Button/ButtonComponent";
+import useMomentFn from "../../hooks/useMomentFn";
 const Header: React.FC = () => {
   const [hovered, setHovered] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); // New state to manage the menu visibility
@@ -41,6 +42,7 @@ const Header: React.FC = () => {
   const [notificationsVisible, setNotificationsVisible] =
     useState<boolean>(false);
   const dispatch = useDispatch();
+  const { formatDate } = useMomentFn();
   const getNotificationsForCandidate = async () => {
     try {
       const res = await NOTIFICATION_API.getNotificationsForCandidate(
@@ -267,7 +269,7 @@ const Header: React.FC = () => {
                   </h3>
                   <div className="flex justify-between items-center">
                     <p className="mt-2 text-[10px] text-slate-500">
-                      {moment(notification.createdAt).fromNow()}
+                      {formatDate(notification.createdAt)}
                     </p>
                     <p className="mt-2 text-[10px] text-slate-500">
                       {notification.isRead ? "Đã xem" : ""}
@@ -388,9 +390,12 @@ const Header: React.FC = () => {
                   className="block md:hidden"
                   onClick={() => navigate("/login")}
                 >
-                  <div className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer">
+                  {/* <div className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer">
                     Đăng nhập
-                  </div>
+                  </div> */}
+                  <ButtonComponent onClick={() => navigate("/login")}>
+                    Đăng nhập
+                  </ButtonComponent>
                 </li>
                 <li
                   className="block md:hidden"
@@ -507,7 +512,14 @@ const Header: React.FC = () => {
               </Popover>
             </>
           ) : (
-            <Button onClick={() => navigate("/login")}>Đăng nhập</Button>
+            <div className="flex gap-2">
+              <ButtonComponent onClick={() => navigate("/login")}>
+                Đăng nhập
+              </ButtonComponent>
+              <ButtonComponent onClick={() => navigate("/register")}>
+                Đăng ký
+              </ButtonComponent>
+            </div>
           )}
         </div>
       </div>

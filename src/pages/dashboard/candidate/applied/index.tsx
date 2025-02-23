@@ -4,10 +4,9 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Meta } from "../../../../types";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
-import moment from "moment";
 import { Circle, CircleCheck, CircleX, MapPin } from "lucide-react";
 import { capitalizeFirstLetter } from "../../../../untils";
-import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
+import useMomentFn from "../../../../hooks/useMomentFn";
 
 interface Applied {
   _id: string;
@@ -25,6 +24,7 @@ const Applied = () => {
   const [listApplied, setListApplied] = useState<Applied[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [meta, setMeta] = useState<Meta>({});
+  const { formatDate } = useMomentFn();
 
   const columns = [
     {
@@ -68,9 +68,7 @@ const Applied = () => {
       dataIndex: "dateApplied",
       key: "dateApplied",
       render: (record) => (
-        <span className=" text-[12px]">
-          {moment(record?.applied_date).format("DD-MM-YYYY")}
-        </span>
+        <span className=" text-[12px]">{formatDate(record?.applied_date)}</span>
       ),
       className: "text-[12px]",
     },

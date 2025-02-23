@@ -6,6 +6,7 @@ import { Meta } from "../../types";
 import { ROLE_API } from "../../services/modules/RoleServices";
 import { useNavigate } from "react-router-dom";
 import ButtonComponent from "../Button/ButtonComponent";
+import { Empty } from "antd";
 const TopCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [roleEmployer, setRoleEmployer] = useState();
@@ -75,12 +76,24 @@ const TopCompanies = () => {
             Top công ty
           </h1>
         </div>
-        <div className="mt-5 mb-5">{renderCompanies()}</div>
-        <div className="flex items-center justify-center mb-5">
-          <ButtonComponent onClick={() => navigate("/employers")}>
-            <div className="text-[12px]">Xem thêm</div>
-          </ButtonComponent>
+        <div className="mt-5 mb-5">
+          {companies?.length > 0 ? (
+            renderCompanies()
+          ) : (
+            <Empty
+              className="my-10"
+              description="Không có dữ liệu"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          )}
         </div>
+        {companies.length > 0 && (
+          <div className="flex items-center justify-center mb-5">
+            <ButtonComponent onClick={() => navigate("/employers")}>
+              <div className="text-[12px]">Xem thêm</div>
+            </ButtonComponent>
+          </div>
+        )}
       </div>
     </>
   );

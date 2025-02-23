@@ -22,3 +22,4 @@ export const ORGANIZATION_TYPE = `organization-types`;
 export const INDUSTRY_TYPE = `industry-types`;
 export const TEAMSIZE = `team-sizes`;
 export const NOTIFICATIONS = `notifications`;
+export const SYSTEM_ACTIVITIES = `logs/system-activities`;

@@ -1,24 +1,13 @@
-import { Avatar, Button, Form, Image, Input, notification, Popconfirm } from "antd";
-import {
-  Edit2,
-  Share2,
-  Download,
-  Trash2,
-  Star,
-  Share2Icon,
-  DownloadCloud,
-  Forward,
-  Trash,
-  Pencil,
-} from "lucide-react";
+import { Avatar, Button, Form, Input, notification, Popconfirm } from "antd";
+import { Download, Star, Forward, Trash, Pencil } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CV_API } from "../../../services/modules/CvServices";
 import { useEffect, useState } from "react";
 import { Meta } from "../../../types";
-import moment from "moment";
 import avtDefault from "../../../assets/avatars/avatar-default.jpg";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
+import useMomentFn from "../../../hooks/useMomentFn";
 
 interface CV {
   _id: string;
@@ -27,13 +16,26 @@ interface CV {
   isPrimary?: boolean;
 }
 
-const CVCard = ({ cv, userDetail,onDelete,onUpdate,handleShare }: { cv: CV; userDetail: any,onDelete:any,onUpdate:any ,handleShare}) => {
-    const onDownloadCV = () => {
-        const link = document.createElement('a');
-        link.href = cv?.cv_link;
-        link.download = cv?.cv_name;
-        link.click();
-    }
+const CVCard = ({
+  cv,
+  userDetail,
+  onDelete,
+  onUpdate,
+  handleShare,
+}: {
+  cv: CV;
+  userDetail: any;
+  onDelete: any;
+  onUpdate: any;
+  handleShare;
+}) => {
+  const onDownloadCV = () => {
+    const link = document.createElement("a");
+    link.href = cv?.cv_link;
+    link.download = cv?.cv_name;
+    link.click();
+  };
+  const { formatDate } = useMomentFn();
   return (
     <div className="relative overflow-hidden rounded-lg bg-gradient-to-b from-green-100/80 to-gray-800 max-w-lg shadow-lg mt-5">
       {/* Avatar and Badge */}
@@ -55,30 +57,38 @@ const CVCard = ({ cv, userDetail,onDelete,onUpdate,handleShare }: { cv: CV; user
           <h3 className="text-[12px] font-semibold text-white truncate">
             {cv.cv_name}
           </h3>
-          <div onClick={onUpdate} className="bg-[#5c6674] hover:bg-[#ccc] cursor-pointer px-1 py-1 rounded-full">
-          <Pencil  size={14} color="white" />
-            
+          <div
+            onClick={onUpdate}
+            className="bg-[#5c6674] hover:bg-[#ccc] cursor-pointer px-1 py-1 rounded-full"
+          >
+            <Pencil size={14} color="white" />
           </div>
         </div>
         <p className="text-[12px] text-white/80 mb-5">
-          Cập nhật lần cuối {moment(cv.updatedAt).format("DD/MM/YYYY HH:mm")}
+          Cập nhật lần cuối {formatDate(cv.updatedAt)}
         </p>
 
         {/* Actions */}
         <div className="flex items-center gap-3 justify-between">
           <div className="flex items-center gap-3">
-            <div onClick={handleShare} className="bg-[#5c6674] w-[90px] rounded-full flex items-center justify-center gap-2 px-2 py-1 hover:bg-[#ccc] cursor-pointer">
+            <div
+              onClick={handleShare}
+              className="bg-[#5c6674] w-[90px] rounded-full flex items-center justify-center gap-2 px-2 py-1 hover:bg-[#ccc] cursor-pointer"
+            >
               <Forward size={14} color="white" />
               <p className="text-[10px] text-white ">Chia sẻ</p>
             </div>
-            <div onClick={onDownloadCV} className="bg-[#5c6674] w-[90px] rounded-full flex items-center justify-center gap-2 px-2 py-1 hover:bg-[#ccc] cursor-pointer">
+            <div
+              onClick={onDownloadCV}
+              className="bg-[#5c6674] w-[90px] rounded-full flex items-center justify-center gap-2 px-2 py-1 hover:bg-[#ccc] cursor-pointer"
+            >
               <Download size={14} color="white" />
               <p className="text-[10px] text-white ">Tải xuống</p>
             </div>
           </div>
           <div className="hover:bg-[#ccc] cursor-pointer px-1 py-1 rounded-full">
-            <Popconfirm onConfirm={onDelete} title={'Bạn có chắc xóa ?'}>
-            <Trash size={14} color="white" />
+            <Popconfirm onConfirm={onDelete} title={"Bạn có chắc xóa ?"}>
+              <Trash size={14} color="white" />
             </Popconfirm>
           </div>
         </div>
@@ -87,7 +97,7 @@ const CVCard = ({ cv, userDetail,onDelete,onUpdate,handleShare }: { cv: CV; user
   );
 };
 interface CV {
-    _id:string
+  _id: string;
   user_id: string;
   createdAt: string;
 
@@ -104,8 +114,8 @@ export default function ListCV() {
   const userDetail = useSelector((state) => state.user);
   const [listCv, setListCv] = useState<CV[]>([]);
   const [meta, setMeta] = useState<Meta>({});
-  const [visible,setVisible] = useState<boolean>(false)
-  const [cv,setCv] = useState<CV>({} as CV)
+  const [visible, setVisible] = useState<boolean>(false);
+  const [cv, setCv] = useState<CV>({} as CV);
   const handleGetCvByUserId = async (current = 1, pageSize = 10) => {
     try {
       const params = {
@@ -125,69 +135,67 @@ export default function ListCV() {
     }
   };
   const onClose = () => {
-    setVisible(false)
-    setCv({} as CV)
-  }
+    setVisible(false);
+    setCv({} as CV);
+  };
   useEffect(() => {
     handleGetCvByUserId();
   }, []);
 
   const handleShare = () => {
     notification.info({
-        message:'Thông báo',
-        description:'Tính năng chưa phát triển'
-    })
-}
-  const onDelete = async (id:string) => {
+      message: "Thông báo",
+      description: "Tính năng chưa phát triển",
+    });
+  };
+  const onDelete = async (id: string) => {
     try {
-        const res = await CV_API.deleteByUser(id,userDetail?.access_token)
-        if(+res.statusCode === 200){
-            notification.success({
-                message: "Thông báo",
-                description:'Xóa thành công'
-            })
-            handleGetCvByUserId()
-        }
+      const res = await CV_API.deleteByUser(id, userDetail?.access_token);
+      if (+res.statusCode === 200) {
+        notification.success({
+          message: "Thông báo",
+          description: "Xóa thành công",
+        });
+        handleGetCvByUserId();
+      }
     } catch (error) {
-        notification.error({
-            message: "Thông báo",
-            description: "Xóa thất bại",
-        })
+      notification.error({
+        message: "Thông báo",
+        description: "Xóa thất bại",
+      });
     }
-}
-const handleSubmit = async () => {
+  };
+  const handleSubmit = async () => {
     try {
-        const res = await CV_API.update(cv._id,form.getFieldsValue(),userDetail?.access_token)
-        if(res.data){
-            notification.success({
-                message: "Thông báo",
-                description:'Tạo CV thành công'
-            })
-            handleGetCvByUserId()
-            onClose()
-        }
+      const res = await CV_API.update(
+        cv._id,
+        form.getFieldsValue(),
+        userDetail?.access_token
+      );
+      if (res.data) {
+        notification.success({
+          message: "Thông báo",
+          description: "Tạo CV thành công",
+        });
+        handleGetCvByUserId();
+        onClose();
+      }
     } catch (error) {
-        notification.error({
-            message: "Thông báo",
-            description: "Cập nhật thất bại",
-        })
+      notification.error({
+        message: "Thông báo",
+        description: "Cập nhật thất bại",
+      });
     }
-}
-const [form]=Form.useForm()
-const renderBody = ()=>{
+  };
+  const [form] = Form.useForm();
+  const renderBody = () => {
     return (
-        <Form
-        form={form}
-        layout="vertical"
-        className="mt-4"
-      >
+      <Form form={form} layout="vertical" className="mt-4">
         <Form.Item
-        className="!text-[12px]"
+          className="!text-[12px]"
           label="Tên CV (thường là vị trí ứng tuyển)"
           name="cv_name"
-          rules={[
-            { required: true, message: 'Vui lòng nhập tên CV' }
-          ]}
+          rules={[{ required: true, message: "Vui lòng nhập tên CV" }]}
         >
           <Input
             placeholder="Nhập tên CV"
@@ -196,14 +204,14 @@ const renderBody = ()=>{
         </Form.Item>
 
         <div className="flex justify-end gap-3 mt-6">
-          <Button 
+          <Button
             onClick={onClose}
             className="px-6 hover:bg-gray-100 !text-[12px]"
           >
             Hủy
           </Button>
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             onClick={handleSubmit}
             className="px-6 bg-green-500 hover:bg-green-600 border-none !text-[12px]"
           >
@@ -211,25 +219,25 @@ const renderBody = ()=>{
           </Button>
         </div>
       </Form>
-    )
-}
-const onUpdate = async (id:string) => {
+    );
+  };
+  const onUpdate = async (id: string) => {
     try {
-        const res = await CV_API.findById(id,userDetail?.access_token)
-        if(res.data){
-            setVisible(true)
-            setCv(res.data)
-            form.setFieldsValue({
-                cv_name:res.data.cv_name
-            })
-        }
+      const res = await CV_API.findById(id, userDetail?.access_token);
+      if (res.data) {
+        setVisible(true);
+        setCv(res.data);
+        form.setFieldsValue({
+          cv_name: res.data.cv_name,
+        });
+      }
     } catch (error) {
-        notification.error({
-            message: "Thông báo",
-            description: "Cập nhật thất bại",
-        })
+      notification.error({
+        message: "Thông báo",
+        description: "Cập nhật thất bại",
+      });
     }
-}
+  };
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
@@ -245,12 +253,17 @@ const onUpdate = async (id:string) => {
       <div className="flex gap-10 flex-wrap">
         {listCv.map((cv) => (
           <div key={cv._id} className="w-[300px] ">
-            <CVCard handleShare={handleShare} cv={cv} userDetail={userDetail} onDelete={()=>onDelete(cv._id)} onUpdate={()=>onUpdate(cv._id)} />
+            <CVCard
+              handleShare={handleShare}
+              cv={cv}
+              userDetail={userDetail}
+              onDelete={() => onDelete(cv._id)}
+              onUpdate={() => onUpdate(cv._id)}
+            />
           </div>
         ))}
       </div>
-      <GeneralModal 
-      
+      <GeneralModal
         visible={visible}
         title="Chỉnh sửa"
         renderBody={renderBody}

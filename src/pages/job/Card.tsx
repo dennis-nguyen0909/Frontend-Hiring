@@ -1,11 +1,9 @@
 import { Card, Divider, Image, Tag } from "antd";
-import { Bookmark, Divide, Dot } from "lucide-react";
-import moment from "moment";
+import { Bookmark } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import 'moment/locale/vi';  // Import locale tiếng Việt
-import React from 'react';
-moment.locale('vi'); 
+import "moment/locale/vi";
+import useMomentFn from "../../hooks/useMomentFn";
 interface JobCardType {
   id: string;
   company: string;
@@ -18,7 +16,7 @@ interface JobCardType {
   isHot: boolean;
   description: string;
   type_of_work: any;
-  skills:[];
+  skills: [];
 }
 export default function JobCard({
   id,
@@ -32,13 +30,14 @@ export default function JobCard({
   isHot = false,
   description,
   type_of_work,
-  skills
+  skills,
 }: JobCardType) {
   const navigate = useNavigate();
   const userDetail = useSelector((state) => state.user);
   const onItemClick = () => {
     navigate(`/job-information/${id}`);
   };
+  const { formatDate } = useMomentFn();
   return (
     <Card
       className="relative bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer"
@@ -99,18 +98,18 @@ export default function JobCard({
             ))}
           </div>
           <div className="text-sm text-gray-500">
-          Đăng {moment(postedDays).fromNow()}
+            Đăng {formatDate(postedDays)}
           </div>
-         {skills.length>0 &&  <Divider />}
-          {skills?.length>0 && skills.map((skill,idx)=>(
-            <>
-               <Tag color="blue" key={idx}>
-               {skill?.name}
-             </Tag>
-            </>
-          ))}
+          {skills.length > 0 && <Divider />}
+          {skills?.length > 0 &&
+            skills.map((skill, idx) => (
+              <>
+                <Tag color="blue" key={idx}>
+                  {skill?.name}
+                </Tag>
+              </>
+            ))}
         </div>
-        
       </div>
     </Card>
   );

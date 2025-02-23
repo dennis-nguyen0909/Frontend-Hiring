@@ -6,8 +6,10 @@ import {
 } from "lucide-react";
 import { CTACard } from "./CTACard";
 import { StatsCard } from "./StatsCard";
+import { useNavigate } from "react-router-dom";
 
 export default function AboutPage() {
+  const navigate = useNavigate();
   const arrayData = [
     {
       name: "amazon",
@@ -208,12 +210,14 @@ export default function AboutPage() {
             title="Trở thành ứng viên"
             description="Tìm những công việc thú vị nhất từ các nhà tuyển dụng hàng đầu. Đăng ký ngay!"
             buttonText="Đăng ký ngay"
+            onClick={() => navigate("/register")}
             imageSrc="src/assets/avatars/candidate.png"
           />
           <CTACard
             title="Trở thành nhà tuyển dụng"
             description="Tìm kiếm nhân tài tốt nhất cho công ty của bạn. Đăng ký ngay!"
             buttonText="Đăng ký ngay"
+            onClick={() => navigate("/register")}
             imageSrc="src/assets/avatars/employer.png"
             variant="primary"
           />

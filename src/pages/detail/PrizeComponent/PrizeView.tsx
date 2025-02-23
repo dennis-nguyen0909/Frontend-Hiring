@@ -11,6 +11,7 @@ import { MediaApi } from "../../../services/modules/mediaServices";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
+import useMomentFn from "../../../hooks/useMomentFn";
 interface Prize {
   _id: string;
   user_id: string;
@@ -21,6 +22,7 @@ interface Prize {
   prize_image?: string;
 }
 export default function PrizeView() {
+  const { formatDate } = useMomentFn();
   const userDetail = useSelector((state) => state.user);
   const [prizes, setPrizes] = useState<Prize[]>([]);
   const [type, setType] = useState<string>("");
@@ -210,108 +212,108 @@ export default function PrizeView() {
     return (
       <LoadingComponentSkeleton isLoading={isLoadingDetail}>
         <LoadingComponent isLoading={isLoading}>
-        <Form form={form} layout="vertical" onFinish={onSubmit}>
-  <Form.Item
-    label={
-      <span className="text-[12px]">
-        Tên giải thưởng
-      </span>
-    }
-    name="prize_name"
-    rules={[
-      { required: true, message: "Vui lòng nhập Tên giải thưởng" },
-    ]}
-  >
-    <Input placeholder="Tên giải thưởng" className="w-full text-[12px]" />
-  </Form.Item>
+          <Form form={form} layout="vertical" onFinish={onSubmit}>
+            <Form.Item
+              label={<span className="text-[12px]">Tên giải thưởng</span>}
+              name="prize_name"
+              rules={[
+                { required: true, message: "Vui lòng nhập Tên giải thưởng" },
+              ]}
+            >
+              <Input
+                placeholder="Tên giải thưởng"
+                className="w-full text-[12px]"
+              />
+            </Form.Item>
 
-  <Form.Item
-    label={<div className="text-[12px]">Tổ chức</div>}
-    name="organization_name"
-    rules={[{ required: true, message: "Vui lòng nhập tên tổ chức" }]}
-  >
-    <Input placeholder="Tổ chức" className="w-full text-[12px]" />
-  </Form.Item>
+            <Form.Item
+              label={<div className="text-[12px]">Tổ chức</div>}
+              name="organization_name"
+              rules={[{ required: true, message: "Vui lòng nhập tên tổ chức" }]}
+            >
+              <Input placeholder="Tổ chức" className="w-full text-[12px]" />
+            </Form.Item>
 
-  <div className="mb-4">
-    <div className="grid ">
-      <div>
-      <label className="block mb-2 text-[12px]">
-      <span className="text-red-500 mr-1">*</span>
-      Ngày nhận
-    </label>
-        <div className="grid grid-cols-2 gap-2">
-          <Form.Item
-            name={["date_of_receipt", "month"]}
-            rules={[{ required: true, message: "Vui lòng chọn tháng" }]}
-          >
-            <Select placeholder="Chọn tháng">
-              {Array.from({ length: 12 }, (_, i) => (
-                <Select.Option key={i + 1} value={i + 1}>
-                  Tháng {i + 1}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+            <div className="mb-4">
+              <div className="grid ">
+                <div>
+                  <label className="block mb-2 text-[12px]">
+                    <span className="text-red-500 mr-1">*</span>
+                    Ngày nhận
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Form.Item
+                      name={["date_of_receipt", "month"]}
+                      rules={[
+                        { required: true, message: "Vui lòng chọn tháng" },
+                      ]}
+                    >
+                      <Select placeholder="Chọn tháng">
+                        {Array.from({ length: 12 }, (_, i) => (
+                          <Select.Option key={i + 1} value={i + 1}>
+                            Tháng {i + 1}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
 
-          <Form.Item
-            name={["date_of_receipt", "year"]}
-            rules={[{ required: true, message: "Vui lòng chọn năm" }]}
-          >
-            <Select placeholder="Chọn năm">
-              {Array.from({ length: 10 }, (_, i) => {
-                const year = new Date().getFullYear() - i;
-                return (
-                  <Select.Option key={year} value={year}>
-                    {year}
-                  </Select.Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
-        </div>
-      </div>
-    </div>
-  </div>
+                    <Form.Item
+                      name={["date_of_receipt", "year"]}
+                      rules={[{ required: true, message: "Vui lòng chọn năm" }]}
+                    >
+                      <Select placeholder="Chọn năm">
+                        {Array.from({ length: 10 }, (_, i) => {
+                          const year = new Date().getFullYear() - i;
+                          return (
+                            <Select.Option key={year} value={year}>
+                              {year}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-  <div className="mt-4 mb-6">
-    <UploadForm
-      onFileChange={handleOnchangeFile}
-      link={link}
-      setLink={setLink}
-    />
-  </div>
+            <div className="mt-4 mb-6">
+              <UploadForm
+                onFileChange={handleOnchangeFile}
+                link={link}
+                setLink={setLink}
+              />
+            </div>
 
-  {type === "edit" && (
-    <div className="flex justify-between gap-4">
-      <Button
-        type="primary"
-        onClick={onUpdate}
-        className="!bg-primaryColor hover:bg-green-600 text-white px-8 w-full"
-      >
-        Cập nhật
-      </Button>
-      <Button
-        type="danger"
-        onClick={() => onDelete()}
-        className="!bg-black hover:bg-green-600 text-white px-8 w-full"
-      >
-        Xóa
-      </Button>
-    </div>
-  )}
+            {type === "edit" && (
+              <div className="flex justify-between gap-4">
+                <Button
+                  type="primary"
+                  onClick={onUpdate}
+                  className="!bg-primaryColor hover:bg-green-600 text-white px-8 w-full"
+                >
+                  Cập nhật
+                </Button>
+                <Button
+                  type="danger"
+                  onClick={() => onDelete()}
+                  className="!bg-black hover:bg-green-600 text-white px-8 w-full"
+                >
+                  Xóa
+                </Button>
+              </div>
+            )}
 
-  {type === "create" && (
-    <Button
-      type="primary"
-      htmlType="submit"
-      className="!bg-primaryColor !text-white px-8 w-full !text-[12px]"
-    >
-      Thêm
-    </Button>
-  )}
-</Form>
-
+            {type === "create" && (
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="!bg-primaryColor !text-white px-8 w-full !text-[12px]"
+              >
+                Thêm
+              </Button>
+            )}
+          </Form>
         </LoadingComponent>
       </LoadingComponentSkeleton>
     );
@@ -325,7 +327,12 @@ export default function PrizeView() {
               <Award className="h-6 w-6 text-[#d3464f] text-[12px]" />
               <h2 className="font-semibold text-[12px]">Giải thưởng</h2>
             </div>
-            <Button className="!text-[12px]" onClick={() => handleOpenModel("create")}>Thêm mục</Button>
+            <Button
+              className="!text-[12px]"
+              onClick={() => handleOpenModel("create")}
+            >
+              Thêm mục
+            </Button>
           </div>
           {prizes.map((prize) => (
             <Prize
@@ -344,10 +351,15 @@ export default function PrizeView() {
         <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-            <Award className="h-6 w-6 text-[#d3464f] text-[12px]" />
-            <h2 className="font-semibold text-[12px]">Giải thưởng</h2>
+              <Award className="h-6 w-6 text-[#d3464f] text-[12px]" />
+              <h2 className="font-semibold text-[12px]">Giải thưởng</h2>
             </div>
-            <Button className="!text-[12px]" onClick={() => handleOpenModel("create")}>Thêm mục</Button>
+            <Button
+              className="!text-[12px]"
+              onClick={() => handleOpenModel("create")}
+            >
+              Thêm mục
+            </Button>
           </div>
           <p className="text-[12px] text-gray-500">
             Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền

@@ -22,9 +22,9 @@ import ApplicationCard from "../Application/ApplicationCard";
 import { ChevronsLeft } from "lucide-react";
 import { useForm } from "antd/es/form/Form";
 import { USER_API } from "../../../../services/modules/userServices";
-import moment from "moment";
 import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
 import { useNavigate, useParams } from "react-router-dom";
+import useMomentFn from "../../../../hooks/useMomentFn";
 
 const { Title, Text } = Typography;
 interface IPropJobApplication {
@@ -59,6 +59,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     total: 0,
     total_pages: 0,
   });
+  const { formatDate } = useMomentFn();
   const location = useParams();
   const navigate = useNavigate();
 
@@ -97,8 +98,8 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     setIsLoading(true);
     const params = {
       ...values,
-      interviewDate: moment(values.interviewDate).format("DD/MM/YYYY"),
-      interviewTime: moment(values.interviewTime).format(" HH:mm:ss"),
+      interviewDate: formatDate(values.interviewDate),
+      interviewTime: formatDate(values.interviewTime),
     };
     const res = await USER_API.employerSendMailtoCandidate(
       params,

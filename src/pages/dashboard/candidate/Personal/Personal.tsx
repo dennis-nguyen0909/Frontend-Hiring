@@ -1,14 +1,5 @@
 import { UploadOutlined } from "@ant-design/icons";
-import {
-  Avatar,
-  Button,
-  Form,
-  Input,
-  message,
-  notification,
-  Select,
-  Upload,
-} from "antd";
+import { Avatar, Button, Form, Input, message, Select, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { CV_API } from "../../../../services/modules/CvServices";
@@ -17,10 +8,10 @@ import { updateUser } from "../../../../redux/slices/userSlices";
 import { useCities } from "../../../../hooks/useCities";
 import { useDistricts } from "../../../../hooks/useDistricts";
 import { useWards } from "../../../../hooks/useWards";
-import moment from "moment";
 import { MediaApi } from "../../../../services/modules/mediaServices";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import "./style.css";
+import useMomentFn from "../../../../hooks/useMomentFn";
 interface CV {
   _id: string;
   user_id: string;
@@ -32,18 +23,15 @@ interface CV {
 }
 
 const Personal = () => {
-  const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
-  const [selectedId, setSelectedId] = useState<string>("");
   const [listCv, setListCv] = useState<CV[]>([]);
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
   const [avatar, setAvatar] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-
   const userDetail = useSelector((state) => state.user);
   const dispatch = useDispatch();
-
+  const { formatDate } = useMomentFn();
   const { cities, loading: citiesLoading } = useCities();
   const { districts, loading: districtLoading } = useDistricts(city);
   const { wards, loading: wardsLoading } = useWards(district);
@@ -100,24 +88,6 @@ const Personal = () => {
     setLoading(false);
   };
 
-  const handleDeleteCv = async () => {
-    try {
-      const res = await CV_API.deleteManyCVByUser(
-        [selectedId],
-        userDetail?._id
-      );
-      if (+res.statusCode === 200) {
-        notification.success({
-          message: "Thông báo",
-          description: "Xóa thành công",
-        });
-        handleGetCVbyUser();
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -147,7 +117,7 @@ const Personal = () => {
           ward: userDetail?.ward_id?.name,
           address: userDetail?.address,
           birthday: userDetail?.birthday
-            ? moment(userDetail?.birthday).format("YYYY-MM-DD")
+            ? formatDate(userDetail?.birthday)
             : "",
         }}
       >

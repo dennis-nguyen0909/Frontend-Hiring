@@ -22,18 +22,19 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { useEffect, useState } from "react";
 import { Job, Meta } from "../../types";
-import moment from "moment";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDebounce } from "../../hooks/useDebounce"; // Assuming you have a debounce hook
 import { getRandomColor } from "../../utils/color.utils";
 import { useJobType } from "../../hooks/useJobType";
 import { useContractType } from "../../hooks/useContractType";
+import useMomentFn from "../../hooks/useMomentFn";
 
 const { Title } = Typography;
 const { Option } = Select;
 
 const EmployerJob: React.FC = () => {
+  const { formatDate } = useMomentFn();
   const userDetail = useSelector((state: RootState) => state.user);
   const params = useParams();
   const { state } = useLocation();
@@ -223,7 +224,7 @@ const EmployerJob: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <CalendarOutlined />
-                    Đăng ngày {moment(job?.createdAt).format("DD/MM/YYYY")}
+                    Đăng ngày {formatDate(job?.createdAt)}
                   </div>
                 </Space>
                 <div className="mt-2">

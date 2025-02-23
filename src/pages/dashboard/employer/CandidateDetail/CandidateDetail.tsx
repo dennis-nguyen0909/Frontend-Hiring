@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
-import {
-  Avatar,
-  Card,
-  Image,
-  Space,
-} from "antd";
+import { Avatar, Card, Image, Space } from "antd";
 import { CheckCircle, XCircle } from "lucide-react";
-import moment from "moment";
 import { StarFilled } from "@ant-design/icons";
 import { USER_API } from "../../../../services/modules/userServices";
+import useMomentFn from "../../../../hooks/useMomentFn";
 
-const CandidateDetailView = ({ candidateId, userDetail }:{candidateId:string,userDetail:any}) => {
+const CandidateDetailView = ({
+  candidateId,
+  userDetail,
+}: {
+  candidateId: string;
+  userDetail: any;
+}) => {
   const [candidateDetail, setCandidateDetail] = useState();
-
+  const { formatDate } = useMomentFn();
   const handleGetCandidateDetail = async () => {
-    const res = await USER_API.viewProfileCandidate(candidateId,userDetail?.access_token);
+    const res = await USER_API.viewProfileCandidate(
+      candidateId,
+      userDetail?.access_token
+    );
     if (res?.data?.items) {
       setCandidateDetail(res?.data?.items);
     }
@@ -23,24 +27,6 @@ const CandidateDetailView = ({ candidateId, userDetail }:{candidateId:string,use
   useEffect(() => {
     handleGetCandidateDetail();
   }, []);
-
-  // const downloadCV = async (userId: string) => {
-  //   try {
-  //     const response = await axiosInstance.get(`http://localhost:8082/api/v1/cvs/download/${userId}`, {
-  //       responseType: 'blob',
-  //     });
-
-  //     const blob = response.data;
-  //     const link = document.createElement('a');
-  //     link.href = URL.createObjectURL(blob);
-  //     link.download = 'CV.pdf';
-  //     link.click();
-  //   } catch (error) {
-  //     console.error('Error downloading CV:', error);
-  //   }
-  // };
-
-  // Gọi hàm downloadCV khi người dùng nhấn nút hoặc trigger sự kiện
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
@@ -91,10 +77,7 @@ const CandidateDetailView = ({ candidateId, userDetail }:{candidateId:string,use
         </div>
         <div className="flex justify-between">
           <div className="font-medium">Ngày sinh:</div>
-          <div>
-            {moment(candidateDetail?.birthday).format("MM/DD/YYYY") ||
-              "Chưa cập nhật"}
-          </div>
+          <div>{formatDate(candidateDetail?.birthday) || "Chưa cập nhật"}</div>
         </div>
 
         {/* Search Job Status */}
@@ -297,8 +280,7 @@ const CandidateDetailView = ({ candidateId, userDetail }:{candidateId:string,use
                       {item.organization_name}
                     </div>
                     <div className="text-gray-400">
-                      Ngày nhận:{" "}
-                      {moment(item.date_of_receipt).format("DD/MM/YYYY")}
+                      Ngày nhận: {formatDate(item.date_of_receipt)}
                     </div>
                     {item.prize_link && (
                       <a
@@ -344,8 +326,8 @@ const CandidateDetailView = ({ candidateId, userDetail }:{candidateId:string,use
                       Khách hàng: {item.customer_name}
                     </div>
                     <div className="text-gray-400">
-                      Thời gian: {moment(item.start_date).format("DD/MM/YYYY")}{" "}
-                      - {moment(item.end_date).format("DD/MM/YYYY")}
+                      Thời gian: {formatDate(item.start_date)} -{" "}
+                      {formatDate(item.end_date)}
                     </div>
                     <div className="text-gray-400">
                       Công nghệ: {item.technology}
@@ -399,8 +381,8 @@ const CandidateDetailView = ({ candidateId, userDetail }:{candidateId:string,use
                       {item.organization_name}
                     </div>
                     <div className="text-gray-400">
-                      Thời gian: {moment(item.start_date).format("DD/MM/YYYY")}{" "}
-                      - {moment(item.end_date).format("DD/MM/YYYY")}
+                      Thời gian: {formatDate(item.start_date)} -{" "}
+                      {formatDate(item.end_date)}
                     </div>
                     {item.course_link && (
                       <a

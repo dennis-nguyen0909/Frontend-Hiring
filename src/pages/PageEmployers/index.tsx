@@ -1,4 +1,4 @@
-import { Image, Input } from "antd";
+import { Empty, Image, Input } from "antd";
 import { Search, MapPin } from "lucide-react";
 import { USER_API } from "../../services/modules/userServices";
 import { useSelector } from "react-redux";
@@ -14,9 +14,7 @@ import { getRandomColor } from "../../utils/color.utils";
 export default function EmployeesPage() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchCity, setSearchCity] = useState<string>("");
-
   const userDetail = useSelector((state) => state.user);
-
   const [companies, setCompanies] = useState([]);
   const [meta, setMeta] = useState<Meta>({});
   const [roleEmployer, setRoleEmployer] = useState<string>("");
@@ -108,71 +106,64 @@ export default function EmployeesPage() {
               Tìm kiếm
             </button>
           </div>
-
-          {/* Popular Searches */}
-          {/* <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[12px] text-gray-500">Popular searches:</span>
-            {popularSearches.map((term) => (
-              <button
-              onClick={()=>onSearchPopular(term)}
-                key={term}
-                className=" !text-[12px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
-              >
-                {term}
-              </button>
-            ))}
-          </div> */}
         </div>
 
         {/* Job Listings Grid */}
         <LoadingComponentSkeleton isLoading={isLoading}>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {companies?.map((company, index) => (
-              <div
-                key={index}
-                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="mb-4 flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-gray-800">
-                      <Image
-                        src={company?.avatar_company}
-                        alt={company?.avatar_company}
-                        width={48}
-                        height={48}
-                        preview={false}
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-black">
-                        {company?.company_name}
-                      </h3>
-                      {company?.district_id && company?.city_id && (
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <MapPin size={14} />
-                          <span className="text-[12px] text-black">{`${company?.district_id?.name},${company?.city_id?.name}`}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <span
-                    className="rounded-full px-2 py-1 text-xs text-white text-[12px]"
-                    style={{ backgroundColor: getRandomColor() }}
-                  >
-                    Featured
-                  </span>
-                </div>
-                <button
-                  onClick={() => handleNavigate(company?._id)}
-                  className="!text-[12px] w-full rounded-lg bg-black py-2 text-center text-sm font-medium text-white transition-colors hover:bg-gray-700"
+            {companies?.length > 0 &&
+              companies?.map((company, index) => (
+                <div
+                  key={index}
+                  className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
                 >
-                  Vị trí mở ({company?.jobs_ids?.length || 0})
-                </button>
-              </div>
-            ))}
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-gray-800">
+                        <Image
+                          src={company?.avatar_company}
+                          alt={company?.avatar_company}
+                          width={48}
+                          height={48}
+                          preview={false}
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-black">
+                          {company?.company_name}
+                        </h3>
+                        {company?.district_id && company?.city_id && (
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <MapPin size={14} />
+                            <span className="text-[12px] text-black">{`${company?.district_id?.name},${company?.city_id?.name}`}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <span
+                      className="rounded-full px-2 py-1 text-xs text-white text-[12px]"
+                      style={{ backgroundColor: getRandomColor() }}
+                    >
+                      Featured
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleNavigate(company?._id)}
+                    className="!text-[12px] w-full rounded-lg bg-black py-2 text-center text-sm font-medium text-white transition-colors hover:bg-gray-700"
+                  >
+                    Vị trí mở ({company?.jobs_ids?.length || 0})
+                  </button>
+                </div>
+              ))}
           </div>
         </LoadingComponentSkeleton>
+        {companies?.length === 0 && (
+          <Empty
+            description="Không có dữ liệu"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        )}
 
         {/* Pagination */}
         {companies.length > 0 && (

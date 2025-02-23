@@ -1,8 +1,6 @@
-import React from "react";
 import { Card, Avatar, Typography, Button } from "antd";
 import { TrophyOutlined, EditOutlined, LinkOutlined } from "@ant-design/icons";
-import Image from "next/image";
-import moment from "moment";
+import useMomentFn from "../../../hooks/useMomentFn";
 
 const { Title, Text } = Typography;
 
@@ -24,6 +22,7 @@ export default function PrizeComponent({
   prize_image,
   onEdit,
 }: PrizeProps) {
+  const { formatDate } = useMomentFn();
   return (
     <div>
       <Card
@@ -62,7 +61,7 @@ export default function PrizeComponent({
                   {organization_name}
                 </Text>
                 <Text className="block text-gray-500 !text-[12px]">
-                  {moment(date_of_receipt).format("YYYY-MM")}
+                  {formatDate(date_of_receipt)}
                 </Text>
               </div>
 

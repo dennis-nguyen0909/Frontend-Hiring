@@ -13,11 +13,10 @@ import {
 } from "antd";
 import { HeartFilled, HeartOutlined } from "@ant-design/icons";
 import { Share } from "lucide-react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { JobApi } from "../../services/modules/jobServices";
 import { useEffect, useState } from "react";
-import moment from "moment";
 import "./styles.css";
 import { API_APPLICATION } from "../../services/modules/ApplicationServices";
 import { API_FAVORITE_JOB } from "../../services/modules/FavoriteJobServices";
@@ -25,6 +24,7 @@ import TextArea from "antd/es/input/TextArea";
 import { CV_API } from "../../services/modules/CvServices";
 import { useForm } from "antd/es/form/Form";
 import parse from "html-react-parser";
+import useMomentFn from "../../hooks/useMomentFn";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 interface JobDetail {
@@ -61,6 +61,7 @@ interface JobDetail {
 }
 
 export default function JobDetail() {
+  const { formatDate } = useMomentFn();
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [jobDetail, setJobDetail] = useState<JobDetail>();
@@ -253,7 +254,7 @@ export default function JobDetail() {
                 />
               </svg>
               <Text className="text-gray-500">
-                Ngày đăng {moment(jobDetail?.posted_date).format("DD/MM/yyyy")}
+                Ngày đăng {formatDate(jobDetail?.posted_date)}
               </Text>
             </div>
 

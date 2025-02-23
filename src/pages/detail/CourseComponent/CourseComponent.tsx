@@ -1,18 +1,17 @@
 import { useSelector } from "react-redux";
-import CourseComponent from "./CourseComponent";
 import { useEffect, useState } from "react";
-import { Button, Card, Form, Input, notification, Select } from "antd";
+import { Button, Card, Form, Input, notification } from "antd";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import UploadForm from "../../../components/ui/UploadForm/UploadForm";
-import moment from "moment";
 import { MediaApi } from "../../../services/modules/mediaServices";
 import { COURSE_API } from "../../../services/modules/CourseServices";
 import Course from "./Course";
-import { Book, BookOpen } from "lucide-react";
+import { Book } from "lucide-react";
 import TextArea from "antd/es/input/TextArea";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
+import useMomentFn from "../../../hooks/useMomentFn";
 
 interface Course {
   _id: string;
@@ -27,6 +26,7 @@ interface Course {
 }
 
 export default function CourseView() {
+  const { formatDate } = useMomentFn();
   const userDetail = useSelector((state) => state.user);
   const [courses, setCourses] = useState<Course[]>([]);
   const [type, setType] = useState<string>("");
@@ -82,11 +82,11 @@ export default function CourseView() {
       if (res.data) {
         form.setFieldsValue({
           ...res.data,
-          start_date: moment(res.data.start_date).isValid()
-            ? moment(res.data.start_date).format("YYYY-MM-DD")
+          start_date: formatDate(res.data.start_date)
+            ? formatDate(res.data.start_date)
             : "",
-          end_date: moment(res.data.end_date).isValid()
-            ? moment(res.data.end_date).format("YYYY-MM-DD")
+          end_date: formatDate(res.data.end_date)
+            ? formatDate(res.data.end_date)
             : "",
         });
         setLink(res.data.course_link);
@@ -116,9 +116,8 @@ export default function CourseView() {
       setLoading(true);
       const { start_date, end_date } = values;
 
-      // Chuyển đổi start_date và end_date thành moment với giờ
-      const formattedStartDate = moment(start_date).toDate();
-      const formattedEndDate = moment(end_date).toDate();
+      const formattedStartDate = formatDate(start_date);
+      const formattedEndDate = formatDate(end_date);
 
       const params = {
         user_id: userDetail?._id,
@@ -227,25 +226,20 @@ export default function CourseView() {
           <Form form={form} layout="vertical" onFinish={onSubmit}>
             <LoadingComponent isLoading={loading}>
               <Form.Item
-                label={
-                  <span className="text-[12px]">
-                    Tên khóa học
-                  </span>
-                }
+                label={<span className="text-[12px]">Tên khóa học</span>}
                 name="course_name"
                 rules={[
                   { required: true, message: "Vui lòng nhập tên khóa học" },
                 ]}
               >
-                <Input placeholder="Tên khóa học" className="w-full text-[12px]" />
+                <Input
+                  placeholder="Tên khóa học"
+                  className="w-full text-[12px]"
+                />
               </Form.Item>
 
               <Form.Item
-                label={
-                    <span className="text-[12px]">
-                      Tổ chức
-                    </span>
-                  }
+                label={<span className="text-[12px]">Tổ chức</span>}
                 name="organization_name"
                 rules={[
                   { required: true, message: "Vui lòng nhập tên tổ chức" },
@@ -255,10 +249,7 @@ export default function CourseView() {
               </Form.Item>
 
               <Form.Item
-                label={ <span className="text-[12px]">
-                    Ngày bắt đầu
-                  </span>}
-                
+                label={<span className="text-[12px]">Ngày bắt đầu</span>}
                 name="start_date"
                 rules={[
                   { required: true, message: "Vui lòng nhập ngày bắt đầu" },
@@ -268,9 +259,7 @@ export default function CourseView() {
               </Form.Item>
 
               <Form.Item
-                label={ <span className="text-[12px]">
-                    Ngày kết thúc
-                  </span>}
+                label={<span className="text-[12px]">Ngày kết thúc</span>}
                 name="end_date"
                 rules={[
                   { required: true, message: "Vui lòng nhập ngày kết thúc" },
@@ -279,10 +268,15 @@ export default function CourseView() {
                 <Input type="date" className="text-[12px]" />
               </Form.Item>
 
-              <Form.Item label={ <span className="text-[12px]">
-                    Mô tả
-                  </span>} name="description">
-                <TextArea placeholder="Mô tả ngắn gọn ..." className="text-[12px]" rows={3} />
+              <Form.Item
+                label={<span className="text-[12px]">Mô tả</span>}
+                name="description"
+              >
+                <TextArea
+                  placeholder="Mô tả ngắn gọn ..."
+                  className="text-[12px]"
+                  rows={3}
+                />
               </Form.Item>
 
               <div className="mt-4 mb-6">
@@ -335,7 +329,12 @@ export default function CourseView() {
               <Book className="h-6 w-6 text-[#d3464f] text-[12px]" />
               <h2 className="font-semibold  text-[12px]">Khóa học</h2>
             </div>
-            <Button className="!text-[12px]" onClick={() => handleOpenModel("create")}>Thêm mục</Button>
+            <Button
+              className="!text-[12px]"
+              onClick={() => handleOpenModel("create")}
+            >
+              Thêm mục
+            </Button>
           </div>
           {courses?.map((course) => (
             <Course
@@ -355,14 +354,19 @@ export default function CourseView() {
         <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-            <Book className="h-6 w-6 text-[#d3464f] text-[12px]" />
-            <h2 className="font-semibold  text-[12px]">Khóa học</h2>
+              <Book className="h-6 w-6 text-[#d3464f] text-[12px]" />
+              <h2 className="font-semibold  text-[12px]">Khóa học</h2>
             </div>
-            <Button className="!text-[12px]" onClick={() => handleOpenModel("create")}>Thêm mục</Button>
+            <Button
+              className="!text-[12px]"
+              onClick={() => handleOpenModel("create")}
+            >
+              Thêm mục
+            </Button>
           </div>
           <div className="text-[12px]">
-          Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
-          phần này theo CV.
+            Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
+            phần này theo CV.
           </div>
         </Card>
       )}

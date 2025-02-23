@@ -1,7 +1,4 @@
-import {
-  DeleteOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import {
   Avatar,
   Button,
@@ -21,10 +18,10 @@ import { useEffect, useState } from "react";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import { FolderOpenDot } from "lucide-react";
 import { PROJECT_API } from "../../../services/modules/ProjectServices";
-import moment from "moment";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
+import useMomentFn from "../../../hooks/useMomentFn";
 interface Project {
   _id: string;
   user_id: string;
@@ -52,6 +49,7 @@ const ProjectComponent = () => {
   const [selectedId, setSelectedId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { formatDate } = useMomentFn();
   const { handleUpdateProfile } = useCalculateUserProfile(
     userDetail?._id,
     userDetail?.access_token
@@ -182,8 +180,8 @@ const ProjectComponent = () => {
           mission: res.data.mission || "",
           technology: res.data.technology || "",
           project_time: [
-            res.data.start_date ? moment(res.data.start_date) : null,
-            res.data.end_date ? moment(res.data.end_date) : null,
+            res.data.start_date ? formatDate(res.data.start_date) : null,
+            res.data.end_date ? formatDate(res.data.end_date) : null,
           ],
           project_link: res.data.project_link || "",
           description: res.data.description || "",
@@ -231,11 +229,7 @@ const ProjectComponent = () => {
     return (
       <LoadingComponentSkeleton isLoading={isLoading}>
         <LoadingComponent isLoading={loading}>
-          <Form
-            form={form}
-            layout="vertical"
-            className="space-y-4"
-          >
+          <Form form={form} layout="vertical" className="space-y-4">
             <Form.Item
               label={<div className="text-[12px]">Tên dự án</div>}
               name="project_name"
@@ -376,73 +370,87 @@ const ProjectComponent = () => {
   };
   return (
     <div>
-        {projects.length > 0 && (
-          <Card className=" mt-6 !border-none">
-            <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-            <FolderOpenDot className="h-6 w-6 text-[#d3464f] text-[12px]"  />
-            <h2 className="text-[12px] font-semibold">Dự án</h2>
-            </div>
-            <Button className="!text-[12px]" onClick={() => showModal("create")} >Thêm mục</Button>
-          </div>
-            {projects.map((project: Project) => (
-              <Card key={project._id} className="mb-4 ">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      {project?.project_image && (
-                        <Avatar
-                          shape="square"
-                          size={64}
-                          src={project?.project_image}
-                          alt={project?.project_image}
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[14px]">
-                        {project.project_name}
-                      </h3>
-                      <p className="text-[12px]">Khách hàng: {project.customer_name}</p>
-                      <p  className="text-[12px]">Thời gian:{" "}
-                        {moment(project.start_date).format("MM/YYYY")} -{" "}
-                        {moment(project.end_date).format("MM/YYYY")}
-                      </p>
-                      <p  className="text-[12px]">Nhiệm vụ: {project.mission}</p>
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button
-                      icon={<EditOutlined />}
-                      onClick={() => showModal("edit", project?._id)}
-                    />
-                    <Popconfirm
-                      title="Bạn có chắc muốn xóa dự án này?"
-                      onConfirm={() => onDelete(project?._id)}
-                      okText="Xóa"
-                      cancelText="Hủy"
-                    >
-                      <Button icon={<DeleteOutlined />} />
-                    </Popconfirm>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </Card>
-        )}
-        {!projects.length>0 &&  <Card>
+      {projects.length > 0 && (
+        <Card className=" mt-6 !border-none">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-            <FolderOpenDot className="h-6 w-6 text-[#d3464f] text-[12px]"  />
-            <h2 className="text-[12px] font-semibold">Dự án</h2>
+              <FolderOpenDot className="h-6 w-6 text-[#d3464f] text-[12px]" />
+              <h2 className="text-[12px] font-semibold">Dự án</h2>
             </div>
-            <Button className="!text-[12px]" onClick={() => showModal("create")} >Thêm mục</Button>
+            <Button
+              className="!text-[12px]"
+              onClick={() => showModal("create")}
+            >
+              Thêm mục
+            </Button>
+          </div>
+          {projects.map((project: Project) => (
+            <Card key={project._id} className="mb-4 ">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                  <div>
+                    {project?.project_image && (
+                      <Avatar
+                        shape="square"
+                        size={64}
+                        src={project?.project_image}
+                        alt={project?.project_image}
+                      />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-[14px]">
+                      {project.project_name}
+                    </h3>
+                    <p className="text-[12px]">
+                      Khách hàng: {project.customer_name}
+                    </p>
+                    <p className="text-[12px]">
+                      Thời gian: {formatDate(project.start_date)} -{" "}
+                      {formatDate(project.end_date)}
+                    </p>
+                    <p className="text-[12px]">Nhiệm vụ: {project.mission}</p>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    icon={<EditOutlined />}
+                    onClick={() => showModal("edit", project?._id)}
+                  />
+                  <Popconfirm
+                    title="Bạn có chắc muốn xóa dự án này?"
+                    onConfirm={() => onDelete(project?._id)}
+                    okText="Xóa"
+                    cancelText="Hủy"
+                  >
+                    <Button icon={<DeleteOutlined />} />
+                  </Popconfirm>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </Card>
+      )}
+      {!projects.length > 0 && (
+        <Card>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <FolderOpenDot className="h-6 w-6 text-[#d3464f] text-[12px]" />
+              <h2 className="text-[12px] font-semibold">Dự án</h2>
+            </div>
+            <Button
+              className="!text-[12px]"
+              onClick={() => showModal("create")}
+            >
+              Thêm mục
+            </Button>
           </div>
           <div className="text-[12px]">
-          Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
-          phần này theo CV.
+            Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
+            phần này theo CV.
           </div>
-        </Card>}
+        </Card>
+      )}
       <GeneralModal
         width={"1000px"}
         centered={false}
@@ -458,11 +466,13 @@ const ProjectComponent = () => {
 
 export default ProjectComponent;
 
-{/* <Card className="!border-none flex items-center">
+{
+  /* <Card className="!border-none flex items-center">
             <div className="border-gray-50 border-e-2">
               <p className="text-muted-foreground text-[12px]">
                 Bạn có thể mô tả rõ hơn trong CV bằng cách chèn thêm hình ảnh
                 hoặc liên kết mô tả dự án.
               </p>
             </div>
-          </Card> */}
+          </Card> */
+}

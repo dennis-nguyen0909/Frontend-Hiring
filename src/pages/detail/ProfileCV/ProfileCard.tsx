@@ -1,12 +1,12 @@
-import { Avatar, Button, Modal, Form, Select, notification } from 'antd';
-import { Edit, Eye, Star } from 'lucide-react';
-import moment from 'moment';
-import avatarDefault from '../../../assets/avatars/avatar-default.jpg';
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { CV_API } from '../../../services/modules/CvServices';
-import { Meta } from '../../../types';
-import { USER_API } from '../../../services/modules/userServices';
+import { Avatar, Button, Modal, Form, Select, notification } from "antd";
+import { Edit, Star } from "lucide-react";
+import avatarDefault from "../../../assets/avatars/avatar-default.jpg";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { CV_API } from "../../../services/modules/CvServices";
+import { Meta } from "../../../types";
+import { USER_API } from "../../../services/modules/userServices";
+import useMomentFn from "../../../hooks/useMomentFn";
 
 interface CV {
   _id: string;
@@ -22,8 +22,10 @@ export default function ProfileCard({ userDetail }: any) {
   const [listCv, setListCv] = useState<CV[]>([]);
   const [meta, setMeta] = useState<Meta>();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  
-  const [selectedCV, setSelectedCV] = useState<string | null>(userDetail.primary_cv_id|| null);
+  const { formatDate } = useMomentFn();
+  const [selectedCV, setSelectedCV] = useState<string | null>(
+    userDetail.primary_cv_id || null
+  );
   const navigate = useNavigate();
 
   const handleGetCvByUserId = async (current = 1, pageSize = 10) => {
@@ -51,16 +53,19 @@ export default function ProfileCard({ userDetail }: any) {
 
   const handleSetCVMain = async () => {
     if (selectedCV) {
-      const params ={
-        primary_cv_id:selectedCV,
+      const params = {
+        primary_cv_id: selectedCV,
         id: userDetail?._id,
       };
-      const updateCVMain = await USER_API.updateUser(params,userDetail?.access_token);
-      if(updateCVMain.data){
+      const updateCVMain = await USER_API.updateUser(
+        params,
+        userDetail?.access_token
+      );
+      if (updateCVMain.data) {
         notification.success({
-          message:"Thông báo",
-          description:"Cập nhật thành công"
-        })
+          message: "Thông báo",
+          description: "Cập nhật thành công",
+        });
       }
       setIsModalVisible(false);
     }
@@ -71,7 +76,7 @@ export default function ProfileCard({ userDetail }: any) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-[14px] font-bold">TopCV Profile</h2>
         <span className="text-gray-500 text-[12px]">
-          Cập nhật lần cuối {moment(userDetail?.updatedAt).format('DD/MM/YYYY HH:mm')}
+          Cập nhật lần cuối {formatDate(userDetail?.updatedAt)}
         </span>
       </div>
 
@@ -79,7 +84,13 @@ export default function ProfileCard({ userDetail }: any) {
         {/* Banner */}
         <div className="h-48 bg-gradient-to-r  to-green-400 relative">
           <div className="absolute inset-0 opacity-30">
-            <div className="w-full h-full" style={{ backgroundImage: `url(${userDetail?.background})`, backgroundSize: 'cover' }} />
+            <div
+              className="w-full h-full"
+              style={{
+                backgroundImage: `url(${userDetail?.background})`,
+                backgroundSize: "cover",
+              }}
+            />
           </div>
         </div>
 
@@ -88,7 +99,11 @@ export default function ProfileCard({ userDetail }: any) {
           {/* Avatar */}
           <div className="relative -mt-16 mb-4">
             <div className="w-32 h-32 rounded-full border-4 border-white overflow-hidden bg-gray-100">
-              <Avatar src={userDetail?.avatar || avatarDefault} alt="Profile" className="w-full h-full object-cover" />
+              <Avatar
+                src={userDetail?.avatar || avatarDefault}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
 
@@ -117,9 +132,13 @@ export default function ProfileCard({ userDetail }: any) {
 
           {/* Mô tả */}
           <p className="text-gray-600 mb-2 text-[12px]">
-            TopCV Profile là tính năng giúp bạn giới thiệu với mọi người mình là ai, đã làm gì và những thành tích nổi bật của bạn.
+            TopCV Profile là tính năng giúp bạn giới thiệu với mọi người mình là
+            ai, đã làm gì và những thành tích nổi bật của bạn.
           </p>
-          <a href="#" className="text-green-600 hover:text-green-700 font-medium !text-[12px]">
+          <a
+            href="#"
+            className="text-green-600 hover:text-green-700 font-medium !text-[12px]"
+          >
             Tìm hiểu ngay
           </a>
         </div>

@@ -92,6 +92,40 @@ export interface IBackendRes<T> {
   
 
 
+
+  interface ChangeDetail {
+    old?: string;
+    new: string;
+  }
+  
+  interface Changes {
+    [key: string]: ChangeDetail;
+  }
+  
+  interface DeviceInfo {
+    os: string;
+    device: string;
+    browser: string;
+  }
+  
+  export interface Activities {
+    _id: string;
+    userId: string;
+    action: string;
+    entityId: string;
+    entityCollection: string;
+    description: string;
+    changes: Changes;
+    ipAddress: string;
+    deviceInfo: DeviceInfo;
+    activityDetail: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  }
+  
+
+
   interface EmployerApplication {
     _id: string;
     full_name: string;

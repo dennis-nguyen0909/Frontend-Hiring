@@ -17,10 +17,10 @@ import { BookOpen, CheckCircle, ShieldCheck, XCircle } from "lucide-react";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import UploadForm from "../../../components/ui/UploadForm/UploadForm";
 import { CERTIFICATE_API } from "../../../services/modules/CertificateServices";
-import moment from "moment";
 import { MediaApi } from "../../../services/modules/mediaServices";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
+import useMomentFn from "../../../hooks/useMomentFn";
 
 interface Certificate {
   _id: string;
@@ -38,6 +38,7 @@ interface Certificate {
 
 const CertificateComponent = () => {
   const userDetail = useSelector((state) => state.user);
+  const { formatDate } = useMomentFn();
   const [file, setFile] = useState("");
   const [form] = Form.useForm();
   const [link, setLink] = useState("");
@@ -80,7 +81,7 @@ const CertificateComponent = () => {
         setCertificates(res.data.items);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   };
 
@@ -90,7 +91,7 @@ const CertificateComponent = () => {
 
   const handleGetDetailCertificate = async () => {
     try {
-      setIsLoadingDetail(true)
+      setIsLoadingDetail(true);
       const res = await CERTIFICATE_API.findByCertificateId(
         selectedId,
         userDetail?._id
@@ -108,8 +109,8 @@ const CertificateComponent = () => {
         form.setFieldsValue({
           certificate_name: certificate_name,
           organization_name: organization_name,
-          start_date: start_date ? moment(start_date) : null,
-          end_date: end_date ? moment(end_date) : null,
+          start_date: start_date ? formatDate(start_date) : null,
+          end_date: end_date ? formatDate(end_date) : null,
           is_not_expired,
         });
         setIsNotExpired(is_not_expired);
@@ -121,7 +122,7 @@ const CertificateComponent = () => {
         description: error.response.data.message,
       });
     } finally {
-      setIsLoadingDetail(false)
+      setIsLoadingDetail(false);
     }
   };
   useEffect(() => {
@@ -131,7 +132,7 @@ const CertificateComponent = () => {
   }, [selectedId]);
 
   const onFinish = async (values: any) => {
-    setIsLoading(true)
+    setIsLoading(true);
     let params = {
       ...values,
       candidate_id: userDetail?._id,
@@ -149,20 +150,18 @@ const CertificateComponent = () => {
       await handleGetSkillByUserId({});
       closeModal();
       await handleUpdateProfile();
-    setIsLoading(false)
-
+      setIsLoading(false);
     } else {
       notification.error({
         message: "Thông báo",
         description: "Lỗi từ server",
       });
-    setIsLoading(false)
-
+      setIsLoading(false);
     }
   };
   const handleDeleteCertificate = async (id: string) => {
     try {
-    setIsLoading(true)
+      setIsLoading(true);
       const res = await CERTIFICATE_API.deleteByUser(
         id,
         userDetail?.access_token
@@ -175,8 +174,7 @@ const CertificateComponent = () => {
         await handleGetSkillByUserId({});
         closeModal();
         await handleUpdateProfile();
-    setIsLoading(false)
-
+        setIsLoading(false);
       }
     } catch (error) {
       notification.error({
@@ -184,14 +182,13 @@ const CertificateComponent = () => {
         description: error.response.data.message,
       });
     } finally {
-    setIsLoading(false)
-
+      setIsLoading(false);
     }
   };
 
   const handleUpdateCertificate = async (id: string) => {
     try {
-    setIsLoading(true)
+      setIsLoading(true);
       const data = form.getFieldsValue();
       const params = {
         ...data,
@@ -213,9 +210,7 @@ const CertificateComponent = () => {
         await handleGetSkillByUserId({});
         closeModal();
         await handleUpdateProfile();
-    setIsLoading(false)
-
-
+        setIsLoading(false);
       }
     } catch (error) {
       notification.error({
@@ -223,9 +218,7 @@ const CertificateComponent = () => {
         description: error.response.data.message,
       });
     } finally {
-      setIsLoading(false)
-
-
+      setIsLoading(false);
     }
   };
   const handleFileChange = async (file) => {
@@ -246,134 +239,137 @@ const CertificateComponent = () => {
 
   const renderBody = () => {
     return (
-     <LoadingComponentSkeleton isLoading={isLoadingDetail}>
-       <LoadingComponent isLoading={isLoading}>
-        <Form onFinish={onFinish} form={form} layout="vertical">
-          <Form.Item
-            label={<div className="text-[12px]">Tên chứng chỉ</div>}
-            name="certificate_name"
-            required
-            rules={[
-              { required: true, message: "Vui lòng nhập tên chứng chỉ!" },
-            ]}
-          >
-            <Input placeholder="Tên chứng chỉ" className="text-[12px]" />
-          </Form.Item>
-          <Form.Item
-            label={<div className="text-[12px]">Tên tổ chức</div>}
-            name="organization_name"
-            required
-            rules={[{ required: true, message: "Vui lòng nhập tên tổ chức!" }]}
-          >
-            <Input placeholder="Tên tổ chức" className="text-[12px]" />
-          </Form.Item>
-
-          <Form.Item name="is_not_expired" valuePropName="checked">
-            <Checkbox
-              checked={isNotExpired}
-              onChange={(e) => setIsNotExpired(e.target.checked)}
-              className="text-[12px]"
+      <LoadingComponentSkeleton isLoading={isLoadingDetail}>
+        <LoadingComponent isLoading={isLoading}>
+          <Form onFinish={onFinish} form={form} layout="vertical">
+            <Form.Item
+              label={<div className="text-[12px]">Tên chứng chỉ</div>}
+              name="certificate_name"
+              required
+              rules={[
+                { required: true, message: "Vui lòng nhập tên chứng chỉ!" },
+              ]}
             >
-              Chứng chỉ vô hạn
-            </Checkbox>
-          </Form.Item>
+              <Input placeholder="Tên chứng chỉ" className="text-[12px]" />
+            </Form.Item>
+            <Form.Item
+              label={<div className="text-[12px]">Tên tổ chức</div>}
+              name="organization_name"
+              required
+              rules={[
+                { required: true, message: "Vui lòng nhập tên tổ chức!" },
+              ]}
+            >
+              <Input placeholder="Tên tổ chức" className="text-[12px]" />
+            </Form.Item>
 
-          <div className="flex items-center ">
-            <div className="mr-4">
-              <Typography.Text className="text-[12px]">
-                <span className="text-red-500 mr-1">*</span>
-                Bắt đầu</Typography.Text>
-              <div className="flex justify-between items-center">
+            <Form.Item name="is_not_expired" valuePropName="checked">
+              <Checkbox
+                checked={isNotExpired}
+                onChange={(e) => setIsNotExpired(e.target.checked)}
+                className="text-[12px]"
+              >
+                Chứng chỉ vô hạn
+              </Checkbox>
+            </Form.Item>
+
+            <div className="flex items-center ">
+              <div className="mr-4">
+                <Typography.Text className="text-[12px]">
+                  <span className="text-red-500 mr-1">*</span>
+                  Bắt đầu
+                </Typography.Text>
+                <div className="flex justify-between items-center">
+                  <Form.Item
+                    className="text-[12px]"
+                    label=""
+                    name="start_date"
+                    required
+                    rules={[
+                      { required: true, message: "Vui lòng chọn ngày bắt đầu" },
+                    ]}
+                  >
+                    <DatePicker
+                      picker="date"
+                      placeholder="Chọn ngày bắt đầu"
+                      format="DD/MM/YYYY"
+                      className="text-[12px] w-full"
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="ml-10">
+                <Typography.Text className="text-[12px]">
+                  <span className="text-red-500 mr-1">*</span>
+                  Kết thúc
+                </Typography.Text>
                 <Form.Item
-                  className="text-[12px]"
                   label=""
-                  name="start_date"
-                  required
+                  name="end_date"
                   rules={[
-                    { required: true, message: "Vui lòng chọn ngày bắt đầu" },
+                    {
+                      validator: (_, value) =>
+                        !value ||
+                        value.isAfter(form.getFieldValue("start_date"))
+                          ? Promise.resolve()
+                          : Promise.reject(
+                              new Error("Ngày kết thúc phải sau ngày bắt đầu")
+                            ),
+                    },
                   ]}
                 >
                   <DatePicker
+                    disabled={isNotExpired}
                     picker="date"
-                    placeholder="Chọn ngày bắt đầu"
+                    placeholder="Chọn ngày, tháng, năm"
                     format="DD/MM/YYYY"
                     className="text-[12px] w-full"
                   />
                 </Form.Item>
               </div>
             </div>
-            <div className="ml-10">
-              <Typography.Text className="text-[12px]">
-              <span className="text-red-500 mr-1">*</span>
-                Kết thúc
-              </Typography.Text>
-              <Form.Item
-                label=""
-                name="end_date"
-                
-                rules={[
-                  {
-                    validator: (_, value) =>
-                      !value || value.isAfter(form.getFieldValue("start_date"))
-                        ? Promise.resolve()
-                        : Promise.reject(
-                            new Error("Ngày kết thúc phải sau ngày bắt đầu")
-                          ),
-                  },
-                ]}
-              >
-                <DatePicker
-                  disabled={isNotExpired}
-                  picker="date"
-                  placeholder="Chọn ngày, tháng, năm"
-                  format="DD/MM/YYYY"
-                  className="text-[12px] w-full"
-                />
-              </Form.Item>
-            </div>
-          </div>
-          <UploadForm
-            link={link}
-            setLink={setLink}
-            onFileChange={handleFileChange}
-          />
-          <Form.Item>
-            {actionType === "create" ? (
-              <Button
-                htmlType="submit"
-                className="w-full !bg-primaryColorH !text-white"
-              >
-                Thêm
-              </Button>
-            ) : (
-              <div className="flex items-center justify-between gap-4 mt-4">
+            <UploadForm
+              link={link}
+              setLink={setLink}
+              onFileChange={handleFileChange}
+            />
+            <Form.Item>
+              {actionType === "create" ? (
                 <Button
-                  className="!bg-primaryColorH text-white !text-[12px]"
-                  onClick={() => handleDeleteCertificate(selectedId)}
-                  danger
-                  style={{
-                    width: "100%",
-                  }}
+                  htmlType="submit"
+                  className="w-full !bg-primaryColorH !text-white"
                 >
-                  Xóa
+                  Thêm
                 </Button>
-                <Button
-                  type="primary"
-                  className="!text-[12px]"
-                  onClick={() => handleUpdateCertificate(selectedId)}
-                  style={{
-                    width: "100%",
-                    backgroundColor: "black"
-                  }}
-                >
-                  Cập nhật
-                </Button>
-              </div>
-            )}
-          </Form.Item>
-        </Form>
-      </LoadingComponent>
-     </LoadingComponentSkeleton>
+              ) : (
+                <div className="flex items-center justify-between gap-4 mt-4">
+                  <Button
+                    className="!bg-primaryColorH text-white !text-[12px]"
+                    onClick={() => handleDeleteCertificate(selectedId)}
+                    danger
+                    style={{
+                      width: "100%",
+                    }}
+                  >
+                    Xóa
+                  </Button>
+                  <Button
+                    type="primary"
+                    className="!text-[12px]"
+                    onClick={() => handleUpdateCertificate(selectedId)}
+                    style={{
+                      width: "100%",
+                      backgroundColor: "black",
+                    }}
+                  >
+                    Cập nhật
+                  </Button>
+                </div>
+              )}
+            </Form.Item>
+          </Form>
+        </LoadingComponent>
+      </LoadingComponentSkeleton>
     );
   };
 
@@ -386,7 +382,12 @@ const CertificateComponent = () => {
               <ShieldCheck className="h-6 w-6 text-[#d3464f]" size={12} />
               <h2 className="font-semibold text-[12px]">Chứng chỉ</h2>
             </div>
-            <Button className="text-[12px]" onClick={() => handleOpenSkill("create")}>Thêm mục</Button>
+            <Button
+              className="text-[12px]"
+              onClick={() => handleOpenSkill("create")}
+            >
+              Thêm mục
+            </Button>
           </div>
           <div>
             {certificates?.map((item: Certificate, index: number) => (
@@ -406,8 +407,12 @@ const CertificateComponent = () => {
                 <div className="space-y-3 flex items-center justify-between">
                   <div>
                     <div className="flex items-center">
-                      <strong className="text-[12px]">Tổ chức cấp chứng chỉ: </strong>
-                      <span className="ml-2 text-[12px]">{item.organization_name}</span>
+                      <strong className="text-[12px]">
+                        Tổ chức cấp chứng chỉ:{" "}
+                      </strong>
+                      <span className="ml-2 text-[12px]">
+                        {item.organization_name}
+                      </span>
                     </div>
                     <div className="flex items-center">
                       <strong className="text-[12px]">Ngày bắt đầu: </strong>
@@ -416,7 +421,9 @@ const CertificateComponent = () => {
                       </span>
                     </div>
                     <div className="flex items-center">
-                      <strong className="text-[12px]">Chứng chỉ còn hiệu lực: </strong>
+                      <strong className="text-[12px]">
+                        Chứng chỉ còn hiệu lực:{" "}
+                      </strong>
                       <span
                         className={`ml-2 text-[12px] ${
                           item.is_not_expired
@@ -427,7 +434,10 @@ const CertificateComponent = () => {
                         {item.is_not_expired ? "Còn hiệu lực" : "Hết hiệu lực"}
                       </span>
                       {item.is_not_expired ? (
-                        <CheckCircle size={12} className="ml-2 text-green-500" />
+                        <CheckCircle
+                          size={12}
+                          className="ml-2 text-green-500"
+                        />
                       ) : (
                         <XCircle size={12} className="ml-2 text-red-500" />
                       )}

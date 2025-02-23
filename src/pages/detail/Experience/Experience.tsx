@@ -8,19 +8,19 @@ import {
   Card,
   Typography,
   Select,
-  Image,
   Avatar,
 } from "antd";
 import { LinkOutlined, PictureOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import moment from "moment";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
-import { BookOpen, Brain, Briefcase, Pencil } from "lucide-react";
+import { Brain, Briefcase, Pencil } from "lucide-react";
 import { ExperienceApi } from "../../../services/modules/experienceServices";
 import { MediaApi } from "../../../services/modules/mediaServices";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
+import useMomentFn from "../../../hooks/useMomentFn";
 const { TextArea } = Input;
 
 interface WorkExperienceProps {
@@ -35,6 +35,7 @@ interface WorkExperienceProps {
 }
 
 const ExperienceComponent = () => {
+  const { formatDate } = useMomentFn();
   const [currentlyWorking, setCurrentlyWorking] = useState(false);
   const months = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,
@@ -114,7 +115,6 @@ const ExperienceComponent = () => {
     setIsLoading(true);
     const { currently_working, company, position, description } = values;
 
-    // Sử dụng moment.utc để đảm bảo thời gian không bị thay đổi do múi giờ
     const start_date = moment
       .utc(`${values.startYear}-${values.startMonth}-01`, "YYYY-MM-DD")
       .toDate();
@@ -419,7 +419,10 @@ const ExperienceComponent = () => {
               </div>
             </div>
 
-            <Form.Item label={<div className="text-[12px]">Mô tả chi tiết</div>} name="description">
+            <Form.Item
+              label={<div className="text-[12px]">Mô tả chi tiết</div>}
+              name="description"
+            >
               <TextArea
                 placeholder="Mô tả chi tiết công việc, những gì đạt được trong quá trình làm việc"
                 rows={4}
@@ -460,14 +463,12 @@ const ExperienceComponent = () => {
                     type="primary"
                     onClick={() => handleUpdateExperience()}
                     className="!bg-primaryColorH text-white w-full"
-                  size="small"
-
+                    size="small"
                   >
                     Cập nhật
                   </Button>
                   <Button
-                  size="small"
-
+                    size="small"
                     danger
                     onClick={() => handleDeleteExperience()}
                     style={{
@@ -502,11 +503,6 @@ const ExperienceComponent = () => {
     image,
     id,
   }: WorkExperienceProps) => {
-    const formatDate = (date: string | null) => {
-      if (!date) return "Hiện tại";
-      return moment(date).format("MM/YYYY");
-    };
-
     return (
       <Card className="mt-3">
         <div className="flex items-start gap-4">
@@ -529,7 +525,7 @@ const ExperienceComponent = () => {
                 <p style={{ margin: 0 }}>{company}</p>
                 <p className="block text-gray-600 text-[10px]">{position}</p>
                 <p className="block text-gray-500 text-[10px]">
-                  {formatDate(start_date)} - {formatDate(end_date)}
+                  {formatDate(start_date)} - {formatDate(end_date + "")}
                 </p>
               </div>
               <Pencil
