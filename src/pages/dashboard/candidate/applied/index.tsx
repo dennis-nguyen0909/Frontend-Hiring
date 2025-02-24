@@ -7,6 +7,7 @@ import CustomPagination from "../../../../components/ui/CustomPanigation/CustomP
 import { Circle, CircleCheck, CircleX, MapPin } from "lucide-react";
 import { capitalizeFirstLetter } from "../../../../untils";
 import useMomentFn from "../../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 
 interface Applied {
   _id: string;
@@ -25,10 +26,10 @@ const Applied = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [meta, setMeta] = useState<Meta>({});
   const { formatDate } = useMomentFn();
-
+  const { t } = useTranslation();
   const columns = [
     {
-      title: "Công việc",
+      title: t("job"),
       dataIndex: "job",
       key: "job",
       render: (text, record) => (
@@ -64,7 +65,7 @@ const Applied = () => {
       className: "text-[12px]",
     },
     {
-      title: "Ngày nộp",
+      title: t("date_applied"),
       dataIndex: "dateApplied",
       key: "dateApplied",
       render: (record) => (
@@ -73,7 +74,7 @@ const Applied = () => {
       className: "text-[12px]",
     },
     {
-      title: "Trạng thái",
+      title: t("status"),
       dataIndex: "status",
       key: "status",
       render: (text) => (
@@ -103,14 +104,14 @@ const Applied = () => {
       className: "text-[12px]",
     },
     {
-      title: "Hành động",
+      title: t("action"),
       key: "action",
       render: () => (
         <Button
           type="primary"
           className="bg-blue-500 hover:bg-blue-600 !text-[12px]"
         >
-          Xem chi tiết
+          {t("view_detail")}
         </Button>
       ),
       className: "text-[12px]",
@@ -149,7 +150,7 @@ const Applied = () => {
   return (
     <div>
       <h1 className="text-[20px] font-semibold mb-6">
-        Việc làm đã ứng tuyển ({listApplied.length || 0})
+        {t("job_applied")} ({listApplied.length || 0})
       </h1>
 
       <div className="bg-white rounded-lg shadow overflow-x-auto">

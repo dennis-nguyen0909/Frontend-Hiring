@@ -29,7 +29,9 @@ import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import { useViewerCandidateProfile } from "../../../hooks/useViewerCandidateProfile";
 import { useViewerCandidateProfileMonth } from "../../../hooks/useViewerCandidateProfileMonth";
 import { useViewerCandidateProfileYear } from "../../../hooks/useViewerCandidateProfileYear";
+import { useTranslation } from "react-i18next";
 const Profile = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
   const fileInputAvtRef = useRef(null);
@@ -73,13 +75,13 @@ const Profile = () => {
           updateUser({ ...res.data, access_token: userDetail.access_token })
         );
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
@@ -160,20 +162,23 @@ const Profile = () => {
     error,
     refetch,
   } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
-  const {meta:metaViewerWeek,refreshData:refreshWeek} =useViewerCandidateProfile(1,10);
-  const {meta:metaViewerMonth,refreshData:refreshMonth}= useViewerCandidateProfileMonth(1,10);
-  const {meta:metaViewerYear,refreshData:refreshYear}= useViewerCandidateProfileYear(1,10);
+  const { meta: metaViewerWeek, refreshData: refreshWeek } =
+    useViewerCandidateProfile(1, 10);
+  const { meta: metaViewerMonth, refreshData: refreshMonth } =
+    useViewerCandidateProfileMonth(1, 10);
+  const { meta: metaViewerYear, refreshData: refreshYear } =
+    useViewerCandidateProfileYear(1, 10);
   useEffect(() => {
     refreshWeek();
-    refetch()
-    refreshMonth()
-    refreshYear()
+    refetch();
+    refreshMonth();
+    refreshYear();
   }, []);
   return (
     <div className="px-primaryx2 bg-[#f0f0f0] flex h-auto mt-10 py-2 gap-5 ">
       <Col span={16} className="max-w-3xl mx-auto p-4 space-y-6 rounded-xl">
         <div
-          className="relative "
+          className="relative"
           onMouseEnter={() => setVisible(true)}
           onMouseLeave={() => setVisible(false)}
         >
@@ -192,7 +197,7 @@ const Profile = () => {
               icon={<Camera size={12} />}
               className="absolute top-4 left-4 text-[12px] bg-gray-200 bg-opacity-50 "
             >
-              Cập nhật ảnh bìa
+              {t("update_background")}
             </Button>
           )}
           <input
@@ -225,7 +230,7 @@ const Profile = () => {
               icon={<Camera size={12} />}
               className="absolute bottom-0 right-0 bg-gray-200 bg-opacity-50 text-[12px]"
             >
-              Upload
+              {t("upload_avatar")}
             </Button>
           )}
         </div>
@@ -239,17 +244,17 @@ const Profile = () => {
                 className="flex items-center gap-2"
               >
                 <Download className="h-4 w-4" />
-                Tải lên PDF
+                {t("upload_pdf")}
               </Button>
               <Button className="flex items-center gap-2">
                 <Share2 className="h-4 w-4" />
-                Chia sẻ profile
+                {t("share_profile")}
               </Button>
             </div>
           </div>
 
           <Card className="p-6 space-y-4">
-            <h2 className="font-semibold">Mức độ hoàn thành hồ sơ</h2>
+            <h2 className="font-semibold">{t("profile_completion_level")}</h2>
 
             <div className="relative pt-6">
               <Progress
@@ -267,9 +272,11 @@ const Profile = () => {
                 <Pencil className="h-6 w-6 text-primaryColor" />
               </div>
               <div>
-                <h3 className="font-medium">Cập nhật thông tin cá nhân</h3>
+                <h3 className="font-medium">
+                  {t("update_personal_information")}
+                </h3>
                 <p className="text-sm text-gray-500">
-                  Mức độ hoàn thành hồ sơ {caculateProfile}%
+                  {t("profile_completion_level")} {caculateProfile}%
                 </p>
               </div>
             </div>
@@ -278,23 +285,35 @@ const Profile = () => {
           {/* Statistics */}
           <Card className="p-6">
             <h2 className="font-semibold mb-4">
-              Thống kê số lượt xem từ Nhà tuyển dụng
+              {t("recruitment_statistics")}
             </h2>
             <p className="text-sm text-red-500 mb-4">
-              Phần này chỉ hiển thị với riêng bạn
+              {t("this_part_is_only_displayed_for_you")}
             </p>
             <div className="grid grid-cols-3 gap-4">
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">{metaViewerWeek.total || 0}</p>
-                <p className="text-sm text-gray-500">Lượt xem trong tuần</p>
+                <p className="text-3xl font-bold">
+                  {metaViewerWeek.total || 0}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {t("views_in_the_week")}
+                </p>
               </div>
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">{metaViewerMonth.total || 0}</p>
-                <p className="text-sm text-gray-500">Lượt xem trong tháng</p>
+                <p className="text-3xl font-bold">
+                  {metaViewerMonth.total || 0}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {t("views_in_the_month")}
+                </p>
               </div>
               <div className="p-4 border rounded-lg text-center">
-                <p className="text-3xl font-bold">{metaViewerYear.total || 0}</p>
-                <p className="text-sm text-gray-500">Lượt xem trong năm</p>
+                <p className="text-3xl font-bold">
+                  {metaViewerYear.total || 0}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {t("views_in_the_year")}
+                </p>
               </div>
             </div>
           </Card>
@@ -326,10 +345,10 @@ const Profile = () => {
             <Avatar size={70} src={userDetail?.avatar || avtDefault} />
           </div>
           <div className="text-[12px]">
-            <p>Chào bạn trở lại</p>
+            <p>{t("hello")}</p>
             <b>{userDetail?.full_name}</b>
             <div className="bg-[#7b8381] px-1 py-1 rounded-sm text-white text-[12px] w-fit">
-              <p>Tài khoản đã xác thực</p>
+              <p>{t("account_has_been_verified")}</p>
             </div>
           </div>
         </div>
@@ -342,11 +361,12 @@ const Profile = () => {
             value={userDetail?.is_search_jobs_status}
           />
           <span className="ml-2 text-[12px] font-semibold text-grayPrimary">
-            Đang Tắt tìm việc
+            {t("is_search_jobs_status")}
           </span>
           <div className=" mt-2 text-[12px] text-grayPrimary">
-            Bật tìm việc giúp hồ sơ của bạn nổi bật hơn và được chú ý nhiều hơn
-            trong danh sách tìm kiếm của NTD.
+            {t(
+              "turn_on_job_search_to_help_your_profile_stand_out_and_be_noticed_more_in_the_search_list_of_employers"
+            )}
           </div>
         </div>
         <div className="mt-8">
@@ -357,23 +377,24 @@ const Profile = () => {
             size="default"
           />
           <span className="ml-2 text-[12px] font-semibold text-grayPrimary">
-            Bật gợi ý việc làm
+            {t("turn_on_job_suggestion")}
           </span>
           <div className=" mt-2 text-[12px] text-grayPrimary">
-            Khi có cơ hội việc làm phù hợp, NTD sẽ liên hệ và trao đổi với bạn
-            qua:
+            {t(
+              "when_there_is_a_suitable_job_opportunity_employers_will_contact_and_discuss_with_you_via"
+            )}
           </div>
           <div className="mt-2">
             <div>
               <CheckCircleOutlined />
               <span className="ml-2 text-[12px] font-light text-grayPrimary ">
-                Nhắn tin qua Top Connect trên HireDev
+                {t("send_a_message_via_top_connect_on_hire_dev")}
               </span>
             </div>
             <div>
               <CheckCircleOutlined />
               <span className="ml-2 text-[12px] font-light text-grayPrimary ">
-                Email và Số điện thoại của bạn
+                {t("your_email_and_phone_number")}
               </span>
             </div>
           </div>
@@ -381,15 +402,17 @@ const Profile = () => {
         <Divider />
         <div>
           <div className=" mt-2 text-[12px] text-grayPrimary">
-            <InfoCircleOutlined /> Bạn cần hoàn thiện trên 70% TopCV Profile để
-            bắt đầu tiếp cận với nhà tuyển dụng
+            <InfoCircleOutlined />{" "}
+            {t(
+              "you_need_to_complete_over_70_top_cv_profile_to_start_contacting_employers"
+            )}
           </div>
           <div className="mt-2">
             <Button
               onClick={() => navigate(`/profile/${userDetail?._id}`)}
               className="!border-primaryColor !text-primaryColor !hover:text-primaryColor !hover:border-primaryColor"
             >
-              Cập nhật Profile
+              {t("update_profile")}
             </Button>
           </div>
         </div>

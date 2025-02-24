@@ -1,18 +1,12 @@
 import { useState, useEffect } from "react";
-import {
-  Form,
-  Input,
-  Button,
-  notification,
-  Card,
-  Rate,
-} from "antd";
+import { Form, Input, Button, notification, Card, Rate } from "antd";
 import { useSelector } from "react-redux";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import { Briefcase, Feather, Pencil } from "lucide-react";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import { SkillApi } from "../../../services/modules/skillServices";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
+import { useTranslation } from "react-i18next";
 const { TextArea } = Input;
 
 interface SkillProps {
@@ -23,6 +17,7 @@ interface SkillProps {
 }
 
 const SkillComponent = () => {
+  const { t } = useTranslation();
   const userDetail = useSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [form] = Form.useForm();
@@ -35,14 +30,14 @@ const SkillComponent = () => {
   const handleOpenSkill = (type: string, id?: string) => {
     setVisibleModal(true);
     setActionType(type);
-    if(id){
-      handleGetDetailSkill(id)
+    if (id) {
+      handleGetDetailSkill(id);
     }
   };
-  const handleGetDetailSkill = async(id)=>{
+  const handleGetDetailSkill = async (id) => {
     try {
-      const res = await SkillApi.getSkillById(id,user.access_token);
-      setSelectedId(id)
+      const res = await SkillApi.getSkillById(id, user.access_token);
+      setSelectedId(id);
       if (res.data) {
         setSkill(res.data);
         form.setFieldsValue({
@@ -53,11 +48,11 @@ const SkillComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
-  }
+  };
   const closeModal = () => {
     setVisibleModal(false);
     setSkill(null);
@@ -74,14 +69,15 @@ const SkillComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
   };
-  const {
-    handleUpdateProfile
-  } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
+  const { handleUpdateProfile } = useCalculateUserProfile(
+    userDetail?._id,
+    userDetail?.access_token
+  );
   useEffect(() => {
     handleGetSkillByUserId();
   }, []);
@@ -99,93 +95,97 @@ const SkillComponent = () => {
       if (res.data) {
         await handleGetSkillByUserId();
         notification.success({
-          message: "Thông báo",
-          description: "Thêm Thành công",
+          message: t("notification"),
+          description: t("create_success"),
         });
-        
+
         closeModal();
         await handleUpdateProfile();
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
       closeModal();
     }
   };
-  const handleDeleteSkill = async()=>{
+  const handleDeleteSkill = async () => {
     try {
-      const res = await SkillApi.deleteManySkill([selectedId],userDetail.access_token);
-      if(res.data){
+      const res = await SkillApi.deleteManySkill(
+        [selectedId],
+        userDetail.access_token
+      );
+      if (res.data) {
         await handleGetSkillByUserId();
         notification.success({
-          message:'Thông báo',
-          description:'Xóa thanh cong'
-        })
+          message: t("notification"),
+          description: t("delete_success"),
+        });
         closeModal();
         await handleUpdateProfile();
-
       }
     } catch (error) {
       notification.error({
-        message:'Thông báo',
-        description:error.message
-      })
+        message: t("notification"),
+        description: error.message,
+      });
     }
-  }
+  };
 
-  const handleUpdateSkill = async()=>{
+  const handleUpdateSkill = async () => {
     try {
       const data = form.getFieldsValue();
-      const res = await SkillApi.updateSkill(selectedId,data,userDetail.access_token);
-      if(res.data){
+      const res = await SkillApi.updateSkill(
+        selectedId,
+        data,
+        userDetail.access_token
+      );
+      if (res.data) {
         await handleGetSkillByUserId();
         notification.success({
-          message:'Thông báo',
-          description:'Cập nhật thành công'
-        })
+          message: t("notification"),
+          description: t("update_success"),
+        });
         closeModal();
         await handleUpdateProfile();
-
       }
     } catch (error) {
       notification.error({
-        message:'Thông báo',
-        description:error.message
-      })
+        message: t("notification"),
+        description: error.message,
+      });
     }
-  }
+  };
   const renderBody = () => {
     return (
       <LoadingComponent isLoading={isLoading}>
         <Form onFinish={onFinish} form={form} layout="vertical">
           <Form.Item
-            label={<div className="text-[12px]">Tên kỹ năng</div>}
+            label={<div className="text-[12px]">{t("skill_name")}</div>}
             name="name"
             required
-            rules={[{ required: true, message: "Vui lòng nhập tên kỹ năng!" }]}
+            rules={[{ required: true, message: t("please_enter_skill_name") }]}
           >
-            <Input placeholder="Tên kỹ năng" className="text-[12px]" />
+            <Input placeholder={t("skill_name")} className="text-[12px]" />
           </Form.Item>
 
           <Form.Item
-            label={<div className="text-[12px]">Đánh giá</div>}
-
+            label={<div className="text-[12px]">{t("evaluation")}</div>}
             name="evalute"
             required
-            rules={[{ required: true, message: "Vui lòng chọn đánh giá!" }]}
+            rules={[{ required: true, message: t("please_select_evaluation") }]}
           >
             {/* Thay thế ngôi sao tĩnh bằng Ant Design's Rate component */}
-            <Rate allowHalf/>
+            <Rate allowHalf />
           </Form.Item>
-          <Form.Item 
-          label={<div className="text-[12px]">Mô tả chi tiết</div>}
-
-          name="description">
+          <Form.Item
+            label={<div className="text-[12px]">{t("description")}</div>}
+            name="description"
+          >
             <TextArea
-            className="text-[12px]"
-              placeholder="Mô tả chi tiết công việc, những gì đạt được trong quá trình làm việc"
+              className="text-[12px]"
+              placeholder={t("descript_skill")}
               rows={4}
             />
           </Form.Item>
@@ -193,10 +193,11 @@ const SkillComponent = () => {
           <Form.Item>
             {actionType === "create" ? (
               <Button
+                size="middle"
                 htmlType="submit"
                 className="w-full !bg-primaryColorH !text-white !text-[12px]"
               >
-                Thêm
+                {t("add")}
               </Button>
             ) : (
               <div className="flex items-center justify-between gap-4">
@@ -208,7 +209,7 @@ const SkillComponent = () => {
                     width: "100%",
                   }}
                 >
-                  Cập nhật
+                  {t("update")}
                 </Button>
                 <Button
                   type="primary"
@@ -218,10 +219,10 @@ const SkillComponent = () => {
                     width: "100%",
                     backgroundColor: "black",
                     borderColor: "#4CAF50",
-                    border:'none'
+                    border: "none",
                   }}
                 >
-                  Xóa
+                  {t("delete")}
                 </Button>
               </div>
             )}
@@ -244,7 +245,10 @@ const SkillComponent = () => {
                 <p style={{ margin: 0 }}>{name}</p>
                 <p className="block text-gray-600 text-[10px]">{evalute}</p>
               </div>
-              <Pencil className="text-primaryColor cursor-pointer" onClick={()=>handleOpenSkill('edit',id)}/>
+              <Pencil
+                className="text-primaryColor cursor-pointer"
+                onClick={() => handleOpenSkill("edit", id)}
+              />
             </div>
           </div>
         </div>
@@ -258,11 +262,15 @@ const SkillComponent = () => {
         <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-            <Feather  className="h-6 w-6 text-[#d3464f]"  size={12}/>
-              <h2 className="font-semibold  text-[12px]">Kỹ năng</h2>
+              <Feather className="h-6 w-6 text-[#d3464f]" size={12} />
+              <h2 className="font-semibold  text-[12px]">{t("skill")}</h2>
             </div>
-            <Button className="!text-[12px]" onClick={() => handleOpenSkill("create")}>
-              Thêm mục
+            <Button
+              size="middle"
+              className="!text-[12px]"
+              onClick={() => handleOpenSkill("create")}
+            >
+              {t("add")}
             </Button>
           </div>
           <div>
@@ -280,16 +288,21 @@ const SkillComponent = () => {
         <Card>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
-            <Feather  className="h-6 w-6 text-[#d3464f]"  size={12}/>
-              <h2 className="font-semibold text-[12px]">Kỹ năng</h2>
+              <Feather className="h-6 w-6 text-[#d3464f]" size={12} />
+              <h2 className="font-semibold text-[12px]">{t("skill")}</h2>
             </div>
-            <Button className="text-[12px]" onClick={() => handleOpenSkill("create")}>
-              Thêm mục
+            <Button
+              size="middle"
+              className="text-[12px]"
+              onClick={() => handleOpenSkill("create")}
+            >
+              {t("add")}
             </Button>
           </div>
           <p className="text-[12px] text-gray-500">
-            Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
-            phần này theo CV.
+            {t(
+              "if_you_have_a_CV_on_DevHire_click_update_to_automatically_fill_this_part_according_to_the_CV"
+            )}
           </p>
         </Card>
       )}
@@ -300,10 +313,10 @@ const SkillComponent = () => {
         renderBody={renderBody}
         title={
           actionType === "create"
-            ? "Kỹ năng"
+            ? t("skill")
             : actionType === "edit"
-            ? "Cập nhật"
-            : "Xóa Kỹ năng"
+            ? t("update")
+            : t("delete")
         }
       />
     </div>

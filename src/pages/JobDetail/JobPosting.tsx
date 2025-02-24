@@ -15,8 +15,11 @@ import { CV_API } from "../../services/modules/CvServices";
 import { HeartFilled, HeartOutlined } from "@ant-design/icons";
 import { API_FAVORITE_JOB } from "../../services/modules/FavoriteJobServices";
 import useMomentFn from "../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
+import CustomAvatar from "../../components/CustomAvatar/CustomAvatar";
 
 export default function JobPosting() {
+  const { t } = useTranslation();
   const { formatDate } = useMomentFn();
   const [jobDetail, setJobDetail] = useState<Job>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -68,11 +71,11 @@ export default function JobPosting() {
   }, [isModalOpen, userDetail]);
   const onAppliedJob = async () => {
     if (selectedCV.trim() === "") {
-      toast.error("Vui lòng chọn cv!");
+      toast.error(t("please_select_cv"));
       return;
     }
     if (coverLetter.trim() === "") {
-      toast.error("Vui lòng nhập thư ứng tuyển!");
+      toast.error(t("please_enter_cover_letter"));
       return;
     }
 
@@ -90,7 +93,7 @@ export default function JobPosting() {
         userDetail?.access_token
       );
       if (res.data) {
-        toast.success("Ứng tuyển thành công");
+        toast.success(t("apply_successfully"));
         handleGetDetail();
         setIsModalOpen(false);
       }
@@ -143,11 +146,13 @@ export default function JobPosting() {
         {/* Header */}
         <div className="bg-white rounded-lg p-6 flex flex-col md:flex-row items-center justify-between mb-8">
           <div className="flex items-center gap-4 mb-4 md:mb-0">
-            <Avatar
+            {/* <Avatar
               src={jobDetail?.user_id?.avatar_company}
               size={65}
               shape="square"
-            />
+              className="custom-avatar"
+            /> */}
+            <CustomAvatar src={jobDetail?.user_id?.avatar_company} />
             <div>
               <h1 className="text-xl md:text-2xl font-bold">
                 {jobDetail?.title}
@@ -155,7 +160,7 @@ export default function JobPosting() {
               <p className="text-gray-600 text-sm md:text-base">
                 {jobDetail?.user_id?.company_name} •{" "}
                 {jobDetail?.district_id?.name}, {jobDetail?.city_id?.name} •{" "}
-                {jobDetail?.job_contract_type?.name}
+                {t(jobDetail?.job_contract_type?.key)}
               </p>
             </div>
           </div>
@@ -175,21 +180,21 @@ export default function JobPosting() {
                 disabled
                 className="py-2 px-4 md:py-5 md:px-6 rounded-full ![cursor:pointer] hover:[cursor:pointer] disabled:[cursor:pointer]"
               >
-                Đã hết hạn
+                {t("expired")}
               </Button>
             ) : jobDetail?.candidate_ids.includes(userDetail?._id) ? (
               <Button
                 disabled
                 className="bg-violet-600 hover:bg-violet-700 ![cursor:pointer] hover:[cursor:pointer] disabled:[cursor:pointer] py-2 px-4 md:py-5 md:px-6"
               >
-                Đã ứng tuyển
+                {t("applied")}
               </Button>
             ) : (
               <Button
                 className="bg-violet-600 hover:bg-violet-700 cursor-pointer py-2 px-4 md:py-5 md:px-6"
                 onClick={() => setIsModalOpen(true)}
               >
-                Ứng tuyển ngay
+                {t("apply_now")}
               </Button>
             )}
           </div>
@@ -201,7 +206,7 @@ export default function JobPosting() {
           <div className="lg:col-span-2 space-y-8">
             {/* Description */}
             <Card className="p-6 bg-gray-100">
-              <h2 className="text-xl font-bold mb-4">Mô tả</h2>
+              <h2 className="text-xl font-bold mb-4">{t("description")}</h2>
               <p
                 className="text-gray-700"
                 dangerouslySetInnerHTML={{ __html: jobDetail?.description }}
@@ -211,7 +216,7 @@ export default function JobPosting() {
             {jobDetail?.professional_skills?.length > 0 && (
               <Card className="p-6 bg-white border border-gray-300">
                 <h2 className="text-xl font-bold mb-4 text-black">
-                  Kỹ năng chuyên môn
+                  {t("professional_skills")}
                 </h2>
                 <ul className="space-y-3">
                   {jobDetail?.professional_skills?.map((requirement, index) => (
@@ -233,7 +238,9 @@ export default function JobPosting() {
             {/* Responsibilities */}
             {jobDetail?.job_responsibilities?.length > 0 && (
               <Card className="p-6 bg-gray-100">
-                <h2 className="text-xl font-bold mb-4">Trách nhiệm</h2>
+                <h2 className="text-xl font-bold mb-4">
+                  {t("responsibilities")}
+                </h2>
                 <ul className="space-y-3">
                   {jobDetail?.job_responsibilities?.map((item, i) => (
                     <li key={i} className="flex items-center gap-2">
@@ -248,7 +255,9 @@ export default function JobPosting() {
 
             {jobDetail?.general_requirements?.length > 0 && (
               <Card className="p-6 bg-gray-100">
-                <h2 className="text-xl font-bold mb-4">Tốt hơn nếu có</h2>
+                <h2 className="text-xl font-bold mb-4">
+                  {t("better_if_have")}
+                </h2>
                 <ul className="space-y-3">
                   {jobDetail?.general_requirements?.map((item, i) => (
                     <li key={i} className="flex items-center gap-2 ">
@@ -264,7 +273,7 @@ export default function JobPosting() {
             {jobDetail?.benefit?.length > 0 && (
               <Card className="p-6 bg-gray-100">
                 <h2 className="text-2xl font-bold mb-6 text-black">
-                  Quyền lợi
+                  {t("benefits")}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {jobDetail?.benefit?.map((item, idx) => {
@@ -285,51 +294,58 @@ export default function JobPosting() {
           {/* Right Column */}
           <div className="space-y-8">
             <Card className="p-6 bg-gray-100">
-              <h2 className="text-xl font-bold mb-4">Về vị trí này</h2>
+              <h2 className="text-xl font-bold mb-4">
+                {t("about_this_position")}
+              </h2>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-700">Số lượng tuyển</span>
+                    <span className="text-gray-700">
+                      {t("number_of_hiring")}
+                    </span>
                     <span className="text-gray-700">
                       {jobDetail?.count_apply}
                     </span>
                   </div>
                 </div>
                 <InfoRow
-                  label="Hạn nộp hồ sơ"
+                  label={t("application_deadline")}
                   value={formatDate(jobDetail?.expire_date)}
                 />
                 <InfoRow
-                  label="Ngày đăng"
+                  label={t("posted_date")}
                   value={formatDate(jobDetail?.createdAt)}
                 />
                 <InfoRow
-                  label="Loại công việc"
-                  value={jobDetail?.job_contract_type?.name}
+                  label={t("job_type")}
+                  value={t(jobDetail?.job_contract_type?.key)}
                 />
                 {jobDetail?.salary_range?.min &&
                 jobDetail?.salary_range?.max &&
                 jobDetail?.is_negotiable ? (
                   <InfoRow
-                    label="Mức lương"
+                    label={t("salary")}
                     value={`${jobDetail?.salary_range?.min} - ${jobDetail?.salary_range?.max}`}
                   />
                 ) : (
-                  <InfoRow label="Mức lương" value={"Thỏa thuận"} />
+                  <InfoRow label={t("salary")} value={t("negotiable")} />
                 )}
-                <InfoRow label="Cấp bậc" value={jobDetail?.level?.name} />
-                <InfoRow label="Hình thức" value={jobDetail?.job_type?.name} />
+                <InfoRow label={t("level")} value={jobDetail?.level?.name} />
                 <InfoRow
-                  label="Kinh nghiệm tối thiểu"
-                  value={jobDetail?.min_experience + " năm"}
+                  label={t("job_type")}
+                  value={t(jobDetail?.job_type?.key)}
                 />
-                <InfoRow label="Bằng cấp" value={jobDetail?.degree?.name} />
+                <InfoRow
+                  label={t("minimum_experience")}
+                  value={jobDetail?.min_experience + " " + t("year")}
+                />
+                <InfoRow label={t("degree")} value={jobDetail?.degree?.name} />
               </div>
             </Card>
 
             {jobDetail?.skills?.length > 0 && (
               <Card className="p-6 bg-gray-100">
-                <h2 className="text-xl font-bold mb-4">Kỹ năng</h2>
+                <h2 className="text-xl font-bold mb-4">{t("skills")}</h2>
                 <div className="flex gap-2 flex-wrap">
                   {jobDetail?.skills?.map((skill, idx) => {
                     return (
@@ -344,7 +360,9 @@ export default function JobPosting() {
 
             {jobDetail?.interview_process?.length > 0 && (
               <Card className="p-6 bg-gray-100">
-                <h2 className="text-xl font-bold mb-4">Quá trình phỏng vấn</h2>
+                <h2 className="text-xl font-bold mb-4">
+                  {t("interview_process")}
+                </h2>
                 <div className="flex flex-wrap gap-2 flex-col">
                   {jobDetail?.interview_process?.map((item, i) => (
                     <Tag
@@ -362,7 +380,7 @@ export default function JobPosting() {
         </div>
       </div>
       <Modal
-        title={`Ứng tuyển: ${jobDetail?.title}`}
+        title={`${t("apply")}: ${jobDetail?.title}`}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={false}
@@ -372,13 +390,13 @@ export default function JobPosting() {
             {/* CV Selection */}
             <div>
               <Form.Item
-                label={"Chọn cv"}
+                label={t("choose_cv")}
                 name="cv"
-                rules={[{ required: true, message: "Vui lòng chọn một CV!" }]}
+                rules={[{ required: true, message: t("please_select_cv") }]}
               >
                 <Select
                   className="w-full"
-                  placeholder="Select..."
+                  placeholder={t("select")}
                   onChange={handleCvChange}
                   value={selectedCV}
                 >
@@ -394,17 +412,17 @@ export default function JobPosting() {
             {/* Cover Letter */}
             <div>
               <Form.Item
-                label={"Thư giới thiệu"}
+                label={t("cover_letter")}
                 name="coverLetter"
                 rules={[
-                  { required: true, message: "Vui lòng nhập thư giới thiệu!" },
+                  { required: true, message: t("please_enter_cover_letter") },
                 ]}
               >
                 <TextArea
                   value={coverLetter}
                   onChange={(e) => setCoverLetter(e.target.value)}
                   rows={4}
-                  placeholder="Write down your biography here. Let the employers know who you are..."
+                  placeholder={t("write_down_your_biography")}
                   className="w-full"
                 />
               </Form.Item>
@@ -412,7 +430,7 @@ export default function JobPosting() {
           </div>
 
           <Button type="primary" onClick={onAppliedJob}>
-            Ứng tuyển ngay
+            {t("apply_now")}
           </Button>
         </Form>
       </Modal>

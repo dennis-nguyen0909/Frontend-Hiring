@@ -15,7 +15,7 @@ import JobCard from "./JobCard";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
 import { Meta } from "../../types";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
-
+import { useTranslation } from "react-i18next";
 export default function EmployerDetail() {
   const { id } = useParams();
   const userDetail = useSelector((state) => state.user);
@@ -24,7 +24,7 @@ export default function EmployerDetail() {
   const [jobs, setJobs] = useState<Array<any>>([]);
   const [meta, setMeta] = useState<Meta>();
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   useEffect(() => {
     if (!userDetail?.access_token) {
       navigate("/");
@@ -100,12 +100,10 @@ export default function EmployerDetail() {
             className="object-cover w-full h-full brightness-50"
           />
           <div className="absolute top-0 left-0 w-full h-full bg-black opacity-30"></div>{" "}
-          {/* Mờ tối phần overlay */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
             <h2 className="text-3xl font-bold">
               {employerDetail?.company_name}
             </h2>
-            {/* <p className="text-lg mt-2">Khẩu hiệu hoặc Mô tả</p> */}
           </div>
         </div>
 
@@ -142,7 +140,7 @@ export default function EmployerDetail() {
                 size="large"
                 className="!bg-black text-white w-full md:w-auto"
               >
-                Xem vị trí mở
+                {t("location_open")}
               </Button>
             </div>
           </Card>
@@ -150,15 +148,13 @@ export default function EmployerDetail() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Left Column */}
             <div className="md:col-span-2 space-y-8">
-              {/* Mô tả */}
-              <Card title="Mô tả" className="shadow-sm">
-                <p className="text-gray-600">
+              <Card title={t("description")} className="shadow-sm">
+                <p className="text-gray-600 whitespace-pre-line break-words">
                   {parse(employerDetail?.description || "")}
                 </p>
               </Card>
 
-              {/* Lợi ích công ty */}
-              <Card title="Lợi ích công ty" className="shadow-sm">
+              <Card title={t("company_benefits")} className="shadow-sm">
                 <ul className="list-disc pl-5 space-y-2 text-gray-600">
                   <li>In hac habitasse platea dictumst.</li>
                   <li>
@@ -174,8 +170,7 @@ export default function EmployerDetail() {
                 </ul>
               </Card>
 
-              {/* Tầm nhìn công ty */}
-              <Card title="Tầm nhìn công ty" className="shadow-sm">
+              <Card title={t("company_vision")} className="shadow-sm">
                 <p className="text-gray-600">
                   {parse(employerDetail?.organization?.company_vision || "")}
                 </p>
@@ -183,7 +178,7 @@ export default function EmployerDetail() {
 
               {/* Share Profile */}
               <div className="flex items-center gap-4">
-                <span className="text-gray-600">Chia sẻ hồ sơ:</span>
+                <span className="text-gray-600">{t("share_profile")}:</span>
                 <div className="flex gap-4 ">
                   {facebookLink && (
                     <Link
@@ -227,15 +222,14 @@ export default function EmployerDetail() {
 
             {/* Right Column */}
             <div className="space-y-8">
-              {/* Thông tin liên hệ */}
-              <Card title="Thông tin liên hệ" className="shadow-sm">
+              <Card title={t("contact_information")} className="shadow-sm">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                       <span className="text-blue-600">🌐</span>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">WEBSITE</p>
+                      <p className="text-xs text-gray-500">{t("website")}</p>
                       <Link
                         href="https://www.estheroward.com"
                         className="text-blue-600 hover:underline"
@@ -249,7 +243,7 @@ export default function EmployerDetail() {
                       <span className="text-blue-600">📞</span>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">PHONE</p>
+                      <p className="text-xs text-gray-500">{t("phone")}</p>
                       <p>{employerDetail?.phone}</p>
                     </div>
                   </div>
@@ -258,7 +252,9 @@ export default function EmployerDetail() {
                       <span className="text-blue-600">✉️</span>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">EMAIL ADDRESS</p>
+                      <p className="text-xs text-gray-500">
+                        {t("email_address")}
+                      </p>
                       <p>{employerDetail?.email}</p>
                     </div>
                   </div>
@@ -273,7 +269,9 @@ export default function EmployerDetail() {
                       <span className="text-blue-600">📅</span>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">ĐƯỢC THÀNH LẬP</p>
+                      <p className="text-xs text-gray-500">
+                        {t("year_of_establishment")}
+                      </p>
                       <p className="font-medium">
                         {employerDetail?.organization?.year_of_establishment}
                       </p>
@@ -284,7 +282,9 @@ export default function EmployerDetail() {
                       <span className="text-blue-600">🏢</span>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">LOẠI TỔ CHỨC</p>
+                      <p className="text-xs text-gray-500">
+                        {t("organization_type")}
+                      </p>
                       <p className="font-medium">
                         {employerDetail?.organization?.organization_type}
                       </p>
@@ -295,7 +295,7 @@ export default function EmployerDetail() {
                       <span className="text-blue-600">👥</span>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">QUY MÔ</p>
+                      <p className="text-xs text-gray-500">{t("team_size")}</p>
                       <p className="font-medium">
                         {employerDetail?.organization?.team_size}
                       </p>
@@ -306,7 +306,9 @@ export default function EmployerDetail() {
                       <span className="text-blue-600">💻</span>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">LOẠI NGÀNH</p>
+                      <p className="text-xs text-gray-500">
+                        {t("industry_type")}
+                      </p>
                       <p className="font-medium">
                         {employerDetail?.organization?.industry_type}
                       </p>
@@ -316,7 +318,7 @@ export default function EmployerDetail() {
               </Card>
 
               {/* Social Media */}
-              <Card title="Theo dõi chúng tôi trên :" className="shadow-sm">
+              <Card title={t("follow_us_on")} className="shadow-sm">
                 <div className="flex gap-4">
                   {facebookLink && (
                     <Link
@@ -362,7 +364,7 @@ export default function EmployerDetail() {
           {/* Open Positions */}
           <div className="mt-12 pb-10">
             <h2 className="text-2xl font-semibold mb-6">
-              Vị trí mở({meta?.total || 0})
+              {t("location_open")} ({meta?.total || 0})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {jobs.map((job, idx) => {
@@ -372,15 +374,20 @@ export default function EmployerDetail() {
                       id={job?._id}
                       avatar={job?.user_id?.avatar_company}
                       title={job?.title}
-                      type={job?.job_contract_type?.name}
+                      type={t(job?.job_contract_type?.key)}
                       salary={
                         job?.is_negotiable
-                          ? "Negotiable"
-                          : `Salary : ${job?.salary_range?.min}${job?.type_money?.symbol} - ${job?.salary_range?.min}${job?.type_money?.symbol}`
+                          ? t("negotiable")
+                          : `${t("salary")} : ${job?.salary_range?.min}${
+                              job?.type_money?.symbol
+                            } - ${job?.salary_range?.min}${
+                              job?.type_money?.symbol
+                            }`
                       }
                       company={job?.user_id?.company_name}
-                      location={`${job?.user_id?.district_id?.name},${job?.user_id?.city_id?.name}`}
+                      location={`${job?.district_id?.name}, ${job?.city_id?.name}`}
                     />
+                    {console.log("jobs", job.job_contract_type.key)}
                   </>
                 );
               })}
@@ -397,7 +404,7 @@ export default function EmployerDetail() {
               />
             ) : (
               <Empty
-                description="Không có vị trí mở"
+                description={t("no_data")}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
             )}

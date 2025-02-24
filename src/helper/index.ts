@@ -1,5 +1,4 @@
 import { jwtDecode } from "jwt-decode";
-import { isJsonString } from "../untils";
 import { 
   bagIcon, 
   buldingIcon, 
@@ -76,8 +75,8 @@ export const menuHeader = [
   },
   {
     name: "Công ty",
-    id:'employers',
-    path: "/employers",
+    id:'companies',
+    path: "/companies",
     color:"#5E6670",
     colorHover:"#205faf",
     candidate:true,
@@ -102,46 +101,6 @@ export const menuHeader = [
     employer:true
   },
 ];
-
-// export const menuHeader = [
-//   {
-//     name: "Việc làm",
-//     path: "/",
-//     color:"#5E6670",
-//     colorHover:"#205faf"
-    
-//   },
-//   {
-//     name: "Hồ Sơ & CV",
-//     path: "/find-job",
-//     color:"#5E6670",
-//     colorHover:"#205faf"
-//   },
-//   {
-//     name: "Công Cụ",
-//     path: "/employers",
-//     color:"#5E6670",
-//     colorHover:"#205faf"
-//   },
-//   {
-//     name: "Cẩm Nang Nghề Nghiệp",
-//     path: "/candidates",
-//     color:"#5E6670",
-//     colorHover:"#205faf"
-//   },
-//   {
-//     name: "TOP CV",
-//     path: "/pricing-plans",
-//     color:"#5E6670",
-//     colorHover:"#205faf"
-//   },
-//   {
-//     name: "Customer Supports",
-//     path: "/customer-supports",
-//     color:"#5E6670",
-//     colorHover:"#205faf"
-//   },
-// ];
 
 export const suggestion = [
   { name: "Designer", color: '#474C54' },

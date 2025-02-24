@@ -16,9 +16,8 @@ import { Meta } from "../../types";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
 import { useLocation, useNavigate } from "react-router-dom";
-import { USER_API } from "../../services/modules/userServices";
 import { useDispatch } from "react-redux";
-import { updateUser } from "../../redux/slices/userSlices";
+import { useTranslation } from "react-i18next";
 const { Sider } = Layout;
 const popularSearches = [
   "Front-end",
@@ -51,6 +50,7 @@ export default function JobBoard() {
   const [searchCity, setSearchCity] = useState<string>("");
   const dispatch = useDispatch();
   const location = useLocation();
+  const { t } = useTranslation();
   const { keyword } = location.state || {}; // Nhận dữ liệu từ state
   const handleGetJob = async (
     current = 1,
@@ -195,15 +195,14 @@ export default function JobBoard() {
       <div className="bg-white px-0 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-[18px] font-bold text-center mb-2">
-            Tìm công việc{" "}
+            {t("find_job")}{" "}
             <span className="relative">
-              mơ ước của bạn
+              {t("dream")}
               <span className="absolute bottom-0 left-0 w-full h-2 bg-blue-200 -z-10"></span>
             </span>
           </h1>
           <p className="text-center text-gray-600 mb-8 text-[10px]">
-            Tiếp cận 40,000+ tin tuyển dụng việc làm mỗi ngày từ hàng nghìn
-            doanh nghiệp uy tín tại Việt Nam
+            {t("find_job_description")}
           </p>
 
           {/* Search Bar */}
@@ -223,14 +222,16 @@ export default function JobBoard() {
                   type="primary"
                   className="!bg-primaryColor h-6 text-[10px] px-3 mr-2 text-center"
                 >
-                  Tìm kiếm
+                  {t("find_job")}
                 </Button>
               </div>
             </div>
           </div>
         </div>
         <div className="flex flex-wrap justify-center items-center gap-2 mt-5">
-          <span className="text-[12px] text-gray-500">Popular searches:</span>
+          <span className="text-[12px] text-gray-500">
+            {t("popular_searches")}:
+          </span>
           {popularSearches.map((term) => (
             <button
               onClick={() => onSearchPopular(term)}
@@ -258,7 +259,7 @@ export default function JobBoard() {
                 )}
                 {!collapsed && (
                   <Button onClick={onFilter} className="ml-2">
-                    Lọc
+                    {t("filter")}
                   </Button>
                 )}
               </div>
@@ -268,13 +269,13 @@ export default function JobBoard() {
                 <div>
                   <div className="pb-3">
                     <h3 className="font-semibold mb-4 text-[12px]">
-                      Lọc theo thành phố
+                      {t("filter_by_city")}
                     </h3>
                     <Select
                       defaultValue={cities[0]?._id}
                       style={{ width: "100%" }}
                       onChange={handleChange}
-                      placeholder="Chọn thành phố"
+                      placeholder={t("choose_city")}
                     >
                       {cities.map((city) => (
                         <Select.Option key={city._id}>
@@ -301,9 +302,6 @@ export default function JobBoard() {
                             <span className="ml-2 text-[12px]">
                               {item.label}
                             </span>
-                            {/* <span className="ml-auto text-[12px] text-gray-500">
-                              ({item.count})
-                            </span> */}
                           </label>
                         ))}
                       </div>
@@ -317,9 +315,11 @@ export default function JobBoard() {
           {/* Job Listings */}
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-[20px] font-semibold">Tất cả công việc</h2>
+              <h2 className="text-[20px] font-semibold">{t("all_jobs")}</h2>
               <div className="flex items-center gap-2">
-                <span className="text-[12px] text-gray-500">Sắp xếp theo:</span>
+                <span className="text-[12px] text-gray-500">
+                  {t("sort_by")}:
+                </span>
                 <select
                   defaultValue="desc" // Giá trị mặc định là 'Cũ nhất'
                   className="text-[12px] border-gray-300 rounded-md"
@@ -345,8 +345,8 @@ export default function JobBoard() {
                     handleGetJob(1, 9, {}, paramsSort); // 1: trang đầu, 15: số lượng item trên mỗi trang
                   }}
                 >
-                  <option value={"desc"}>Mới nhất</option>
-                  <option value={"asc"}>Cũ nhất</option>
+                  <option value={"desc"}>{t("newest")}</option>
+                  <option value={"asc"}>{t("oldest")}</option>
                 </select>
 
                 <div className="flex gap-1 ml-4">
@@ -423,17 +423,17 @@ export default function JobBoard() {
                                   : "text-[12px]"
                               }`}
                             >
-                              Lương :{" "}
+                              {t("salary")} :{" "}
                               {job?.is_negotiable
-                                ? "Thỏa thuận"
+                                ? t("negotiable")
                                 : `${job?.salary_range?.min}${job?.type_money?.symbol} - ${job?.salary_range?.max}${job?.type_money?.symbol}`}
                             </div>
                             <div className="flex flex-wrap gap-2 mt-2">
                               <span className="px-2 py-1 text-[10px] rounded-full bg-blue-50 text-blue-600">
-                                {job?.job_type?.name}
+                                {t(job?.job_type?.key)}
                               </span>
                               <span className="px-2 py-1 text-[10px] rounded-full bg-blue-50 text-blue-600">
-                                {job?.job_contract_type?.name}
+                                {t(job?.job_contract_type?.key)}
                               </span>
                               {job?.skills?.map((tag) => (
                                 <span
@@ -454,7 +454,7 @@ export default function JobBoard() {
                                 : "text-[12px] py-1 px-3"
                             }`} // Giảm padding và kích thước nút khi ở chế độ grid
                           >
-                            Ứng tuyển
+                            {t("apply")}
                           </Button>
                         </div>
                       </div>
@@ -473,7 +473,7 @@ export default function JobBoard() {
               ) : (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description={`Không có dữ liệu`}
+                  description={t("no_data")}
                 />
               )}
             </LoadingComponentSkeleton>

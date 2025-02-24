@@ -9,6 +9,7 @@ import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import { useNavigate } from "react-router-dom";
 import { isExpired } from "../../../../untils";
 import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
+import { useTranslation } from "react-i18next";
 interface JobApplication {
   _id: ObjectId;
   user_id: string;
@@ -17,6 +18,7 @@ interface JobApplication {
   updatedAt: Date;
 }
 const FavoriteJob = () => {
+  const { t } = useTranslation();
   const userDetail = useSelector((state) => state.user);
   const [jobFavorites, setJobFavorites] = useState<JobApplication[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -43,7 +45,7 @@ const FavoriteJob = () => {
 
   const columns = [
     {
-      title: "Tên công việc",
+      title: t("job_title"),
       dataIndex: "title",
       key: "title",
       render: (text, record) => (
@@ -62,10 +64,12 @@ const FavoriteJob = () => {
                   record?.job_id?.city_id?.name}
               </span>
               {record?.job_id?.is_negotiable ? (
-                <span className="mr-2">Lương: Thỏa thuận</span>
+                <span className="mr-2">
+                  {t("salary")}: {t("negotiable")}
+                </span>
               ) : (
                 <span className="mr-2">
-                  Lương: {record?.job_id?.salary_range?.min}
+                  {t("salary")}: {record?.job_id?.salary_range?.min}
                   {record?.job_id?.type_money?.symbol} -{" "}
                   {record?.job_id?.salary_range?.max}
                   {record?.job_id?.type_money?.symbol}
@@ -86,7 +90,7 @@ const FavoriteJob = () => {
       className: "min-w-[400px] text-[12px]",
     },
     {
-      title: "Hành động",
+      title: t("action"),
       key: "bookmark",
       render: (_, record) => (
         <div className="flex justify-start items-center gap-4">
@@ -120,8 +124,8 @@ const FavoriteJob = () => {
             }
           >
             {isExpired(record?.job_id?.expire_date)
-              ? "Job Đã hết hạn"
-              : "Ứng tuyển ngay →"}
+              ? t("job_expired")
+              : t("apply_now")}
           </Button>
         </div>
       ),
@@ -160,7 +164,7 @@ const FavoriteJob = () => {
   return (
     <div className="">
       <h1 className="text-[20px] font-semibold mb-6">
-        Công việc yêu thích ({jobFavorites.length || 0})
+        {t("favorite_job")} ({jobFavorites.length || 0})
       </h1>
 
       <LoadingComponent isLoading={loading}>

@@ -22,6 +22,8 @@ import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 import useMomentFn from "../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
+import moment from "moment";
 interface Project {
   _id: string;
   user_id: string;
@@ -39,6 +41,7 @@ interface Project {
 }
 
 const ProjectComponent = () => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [link, setLink] = useState<string>("");
   const [imgUrl, setImgUrl] = useState<string>("");
@@ -49,7 +52,7 @@ const ProjectComponent = () => {
   const [selectedId, setSelectedId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { formatDate } = useMomentFn();
+  const { dateFormat, formatDate } = useMomentFn();
   const { handleUpdateProfile } = useCalculateUserProfile(
     userDetail?._id,
     userDetail?.access_token
@@ -73,6 +76,7 @@ const ProjectComponent = () => {
     }
   };
   const handleSubmit = async (values: any) => {
+    console.log("valuesss", values);
     const params = {
       user_id: userDetail?._id,
       project_name: values.project_name,
@@ -92,8 +96,8 @@ const ProjectComponent = () => {
       const res = await PROJECT_API.create(params, userDetail.access_token);
       if (res.data) {
         notification.success({
-          message: "Thành công",
-          description: "Thêm dự án thành công",
+          message: t("notification"),
+          description: t("create_success"),
         });
         await handleGetProjectsByUserId({});
         closeModal();
@@ -101,8 +105,8 @@ const ProjectComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
-        description: "An error occurred while creating the project.",
+        message: t("notification"),
+        description: t("create_failed"),
       });
     } finally {
       setLoading(false);
@@ -128,8 +132,8 @@ const ProjectComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Error",
-        description: "An error occurred while uploading the file.",
+        message: t("notification"),
+        description: t("upload_failed"),
       });
     }
     setLoading(false);
@@ -150,8 +154,8 @@ const ProjectComponent = () => {
       );
       if (res.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
         await handleGetProjectsByUserId({});
         closeModal();
@@ -159,8 +163,8 @@ const ProjectComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
-        description: "An error occurred while updating the project.",
+        message: t("notification"),
+        description: t("update_failed"),
       });
     } finally {
       setLoading(false);
@@ -180,8 +184,8 @@ const ProjectComponent = () => {
           mission: res.data.mission || "",
           technology: res.data.technology || "",
           project_time: [
-            res.data.start_date ? formatDate(res.data.start_date) : null,
-            res.data.end_date ? formatDate(res.data.end_date) : null,
+            res.data.start_date ? moment(res.data.start_date) : null,
+            res.data.end_date ? moment(res.data.end_date) : null,
           ],
           project_link: res.data.project_link || "",
           description: res.data.description || "",
@@ -191,8 +195,8 @@ const ProjectComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
-        description: "An error occurred while getting the project.",
+        message: t("notification"),
+        description: t("get_project_failed"),
       });
     } finally {
       setIsLoading(false);
@@ -209,8 +213,8 @@ const ProjectComponent = () => {
       const res = await PROJECT_API.deleteByUser(id, userDetail.access_token);
       if (+res.statusCode === 200) {
         notification.success({
-          message: "Thông báo",
-          description: "Xóa dự án",
+          message: t("notification"),
+          description: t("delete_success"),
         });
         await handleGetProjectsByUserId({});
         closeModal();
@@ -218,8 +222,8 @@ const ProjectComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
-        description: "An error occurred while deleting the project.",
+        message: t("notification"),
+        description: t("delete_failed"),
       });
     } finally {
       setLoading(false);
@@ -229,94 +233,99 @@ const ProjectComponent = () => {
     return (
       <LoadingComponentSkeleton isLoading={isLoading}>
         <LoadingComponent isLoading={loading}>
-          <Form form={form} layout="vertical" className="space-y-4">
+          <Form
+            form={form}
+            onFinish={handleSubmit}
+            layout="vertical"
+            className="space-y-4"
+          >
             <Form.Item
-              label={<div className="text-[12px]">Tên dự án</div>}
+              label={<div className="text-[12px]">{t("project_name")}</div>}
               name="project_name"
-              rules={[{ required: true, message: "Vui lòng nhập tên dự án" }]}
-            >
-              <Input placeholder="Tên dự án" className="w-full text-[12px]" />
-            </Form.Item>
-
-            <Form.Item
-              label={<div className="text-[12px]">Khách hàng</div>}
-              name="customer_name"
               rules={[
-                { required: true, message: "Vui lòng nhập tên khách hàng" },
+                { required: true, message: t("please_enter_project_name") },
               ]}
             >
-              <Input placeholder="Tên khách hàng" className="text-[12px]" />
-            </Form.Item>
-
-            <Form.Item
-              label={<div className="text-[12px]">Số thành viên</div>}
-              name="team_number"
-              rules={[
-                { required: true, message: "Vui lòng nhập số thành viên" },
-              ]}
-            >
-              <InputNumber
-                placeholder="Số thành viên tham gia dự án"
+              <Input
+                placeholder={t("project_name")}
                 className="w-full text-[12px]"
               />
             </Form.Item>
 
             <Form.Item
-              label={<div className="text-[12px]">Vị trí</div>}
+              label={<div className="text-[12px]">{t("customer_name")}</div>}
+              name="customer_name"
+              rules={[
+                { required: true, message: t("please_enter_customer_name") },
+              ]}
+            >
+              <Input placeholder={t("customer_name")} className="text-[12px]" />
+            </Form.Item>
+
+            <Form.Item
+              label={<div className="text-[12px]">{t("team_number")}</div>}
+              name="team_number"
+              rules={[
+                { required: true, message: t("please_enter_team_number") },
+              ]}
+            >
+              <InputNumber
+                placeholder={t("team_number")}
+                className="w-full text-[12px]"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label={<div className="text-[12px]">{t("location")}</div>}
               name="location"
-              rules={[{ required: true, message: "Vui lòng nhập vị trí" }]}
+              rules={[{ required: true, message: t("please_enter_location") }]}
             >
-              <Input
-                placeholder="Vị trí của bạn trong dự án"
-                className="text-[12px]"
-              />
+              <Input placeholder={t("location")} className="text-[12px]" />
             </Form.Item>
 
             <Form.Item
-              label={<div className="text-[12px]">Nhiệm vụ</div>}
+              label={<div className="text-[12px]">{t("mission")}</div>}
               name="mission"
-              rules={[{ required: true, message: "Vui lòng nhập nhiệm vụ" }]}
+              rules={[{ required: true, message: t("please_enter_mission") }]}
             >
-              <Input
-                placeholder="Nhiệm vụ của bạn trong dự án"
-                className="text-[12px]"
-              />
+              <Input placeholder={t("mission")} className="text-[12px]" />
             </Form.Item>
 
             <Form.Item
-              label={<div className="text-[12px]">Công nghệ sử dụng</div>}
+              label={<div className="text-[12px]">{t("technology")}</div>}
               name="technology"
             >
               <Input
-                placeholder="Công nghệ được sử dụng trong dự án"
+                placeholder={t("technology_used")}
                 className="text-[12px]"
               />
             </Form.Item>
 
             <Form.Item
-              label={<div className="text-[12px]">Thời gian</div>}
+              label={<div className="text-[12px]">{t("time")}</div>}
               name="project_time"
-              rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
+              rules={[{ required: true, message: t("please_select_time") }]}
             >
               <DatePicker.RangePicker
                 className="w-full"
-                placeholder={["Bắt đầu", "Kết thúc"]}
+                placeholder={[t("start"), t("end")]}
+                format={dateFormat}
               />
             </Form.Item>
 
             <Form.Item
-              label={<div className="text-[12px]">Mô tả chi tiết</div>}
+              label={<div className="text-[12px]">{t("description")}</div>}
               name="description"
             >
               <TextArea
                 rows={4}
-                placeholder="Mô tả chi tiết dự án"
+                placeholder={t("description")}
                 className="text-[12px]"
               />
             </Form.Item>
 
             <Form.Item
-              label={<div className="text-[12px]">Hình ảnh dự án (nếu có)</div>}
+              label={<div className="text-[12px]">{t("project_image")}</div>}
               name="project_image"
             >
               <UploadForm
@@ -329,11 +338,11 @@ const ProjectComponent = () => {
             <Form.Item className="w-full">
               {type === "create" && (
                 <Button
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                   htmlType="submit"
                   className="!bg-primaryColor !text-white !w-full !border-none text-[12px]"
                 >
-                  Thêm
+                  {t("add")}
                 </Button>
               )}
               {type === "edit" && (
@@ -343,14 +352,14 @@ const ProjectComponent = () => {
                     className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white w-full !cursor-pointer text-[12px]"
                     onClick={onUpdate}
                   >
-                    Cập nhật
+                    {t("update")}
                   </Button>
                   <Button
                     htmlType="submit"
                     className="px-4 !bg-black !text-white !border-none !hover:text-white w-full !cursor-pointer text-[12px]"
                     onClick={() => onDelete(selectedId)}
                   >
-                    Xóa
+                    {t("delete")}
                   </Button>
                 </div>
               )}
@@ -375,13 +384,13 @@ const ProjectComponent = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <FolderOpenDot className="h-6 w-6 text-[#d3464f] text-[12px]" />
-              <h2 className="text-[12px] font-semibold">Dự án</h2>
+              <h2 className="text-[12px] font-semibold">{t("project")}</h2>
             </div>
             <Button
               className="!text-[12px]"
               onClick={() => showModal("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           {projects.map((project: Project) => (
@@ -403,13 +412,16 @@ const ProjectComponent = () => {
                       {project.project_name}
                     </h3>
                     <p className="text-[12px]">
-                      Khách hàng: {project.customer_name}
+                      {t("customer_name")}: {project.customer_name}
                     </p>
                     <p className="text-[12px]">
-                      Thời gian: {formatDate(project.start_date)} -{" "}
-                      {formatDate(project.end_date)}
+                      {t("time")}:{" "}
+                      {moment(project.start_date).format(dateFormat)} -{" "}
+                      {moment(project.end_date).format(dateFormat)}
                     </p>
-                    <p className="text-[12px]">Nhiệm vụ: {project.mission}</p>
+                    <p className="text-[12px]">
+                      {t("mission")}: {project.mission}
+                    </p>
                   </div>
                 </div>
                 <div className="flex space-x-2">
@@ -418,10 +430,10 @@ const ProjectComponent = () => {
                     onClick={() => showModal("edit", project?._id)}
                   />
                   <Popconfirm
-                    title="Bạn có chắc muốn xóa dự án này?"
+                    title={t("are_you_sure_you_want_to_delete_this_project")}
                     onConfirm={() => onDelete(project?._id)}
-                    okText="Xóa"
-                    cancelText="Hủy"
+                    okText={t("delete")}
+                    cancelText={t("cancel")}
                   >
                     <Button icon={<DeleteOutlined />} />
                   </Popconfirm>
@@ -436,18 +448,19 @@ const ProjectComponent = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <FolderOpenDot className="h-6 w-6 text-[#d3464f] text-[12px]" />
-              <h2 className="text-[12px] font-semibold">Dự án</h2>
+              <h2 className="text-[12px] font-semibold">{t("project")}</h2>
             </div>
             <Button
               className="!text-[12px]"
               onClick={() => showModal("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           <div className="text-[12px]">
-            Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
-            phần này theo CV.
+            {t(
+              "if_you_have_a_CV_on_DevHire_click_update_to_automatically_fill_this_part_according_to_the_CV"
+            )}
           </div>
         </Card>
       )}
@@ -457,7 +470,7 @@ const ProjectComponent = () => {
         visible={visible}
         onCancel={closeModal}
         onOk={closeModal}
-        title={type === "create" ? "Dự án" : "Cập nhật"}
+        title={type === "create" ? t("project") : t("update")}
         renderBody={renderBody}
       />
     </div>
@@ -465,14 +478,3 @@ const ProjectComponent = () => {
 };
 
 export default ProjectComponent;
-
-{
-  /* <Card className="!border-none flex items-center">
-            <div className="border-gray-50 border-e-2">
-              <p className="text-muted-foreground text-[12px]">
-                Bạn có thể mô tả rõ hơn trong CV bằng cách chèn thêm hình ảnh
-                hoặc liên kết mô tả dự án.
-              </p>
-            </div>
-          </Card> */
-}

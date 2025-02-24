@@ -19,6 +19,8 @@ import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import useMomentFn from "../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
+import moment from "moment";
 const { TextArea } = Input;
 
 interface typePostEducation {
@@ -32,7 +34,7 @@ interface typePostEducation {
 }
 
 const EducationComponent = () => {
-  const { formatDate } = useMomentFn();
+  const { formatDate, dateFormat } = useMomentFn();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +52,7 @@ const EducationComponent = () => {
     userDetail?._id,
     userDetail?.access_token
   );
+  const { t } = useTranslation();
   const handleGetEducation = async (id: string, access_token: string) => {
     try {
       setIsLoading(true);
@@ -57,7 +60,7 @@ const EducationComponent = () => {
       setEducation(res.data);
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     } finally {
@@ -87,7 +90,7 @@ const EducationComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     } finally {
@@ -150,7 +153,7 @@ const EducationComponent = () => {
       return res;
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
@@ -170,8 +173,8 @@ const EducationComponent = () => {
         );
         if (res.data) {
           notification.success({
-            message: "Thông báo",
-            description: "Xóa thành công!",
+            message: t("notification"),
+            description: t("delete_success"),
           });
           await handleGetEducationByUserId();
 
@@ -183,7 +186,7 @@ const EducationComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     } finally {
@@ -207,15 +210,15 @@ const EducationComponent = () => {
           setSelectedEducationId("");
           setEducation(null);
           notification.success({
-            message: "Thông báo",
-            description: "Cập nhật thành công",
+            message: t("notification"),
+            description: t("update_success"),
           });
           await handleUpdateProfile();
         }
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     } finally {
@@ -234,8 +237,8 @@ const EducationComponent = () => {
       const res = await handlePostEducation(params, user.access_token);
       if (res.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Tạo thành công!",
+          message: t("notification"),
+          description: t("create_success"),
         });
         await handleGetEducationByUserId();
         closeModal();
@@ -245,7 +248,7 @@ const EducationComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     } finally {
@@ -272,9 +275,9 @@ const EducationComponent = () => {
         school: education?.school,
         major: education?.major,
         start_date: education?.start_date
-          ? formatDate(education?.start_date)
+          ? moment(education?.start_date)
           : null,
-        end_date: education?.end_date ? formatDate(education?.end_date) : null,
+        end_date: education?.end_date ? moment(education?.end_date) : null,
         currently_studying:
           education?.end_date === null ||
           !education?.end_date ||
@@ -294,32 +297,27 @@ const EducationComponent = () => {
           <Form form={form} layout="vertical" onFinish={onFinish}>
             <Form.Item
               name="school"
-              label={<div className="text-[12px]">Trường</div>}
-              rules={[{ required: true, message: "Vui lòng nhập tên trường" }]}
+              label={<div className="text-[12px]">{t("school")}</div>}
+              rules={[{ required: true, message: t("please_enter_school") }]}
             >
               <Input
                 prefix={<BookOutlined />}
-                placeholder="Trường học"
+                placeholder={t("school")}
                 className="text-[12px]"
               />
             </Form.Item>
 
             <Form.Item
               name="major"
-              label={<div className="text-[12px]">Chuyên ngành</div>}
-              rules={[
-                { required: true, message: "Vui lòng nhập chuyên ngành" },
-              ]}
+              label={<div className="text-[12px]">{t("major")}</div>}
+              rules={[{ required: true, message: t("please_enter_major") }]}
             >
-              <Input
-                placeholder="Công nghệ phần mềm, Kinh tế, Tự động hóa, .... "
-                className="text-[12px]"
-              />
+              <Input placeholder={t("major")} className="text-[12px]" />
             </Form.Item>
 
             <Form.Item name="currently_studying" valuePropName="checked">
               <Checkbox className="text-[12px]" onChange={handleCheckboxChange}>
-                Tôi đang học ở đây
+                {t("i_am_studying_here")}
               </Checkbox>
             </Form.Item>
 
@@ -329,14 +327,15 @@ const EducationComponent = () => {
             >
               <Form.Item
                 name="start_date"
-                label={<div className="text-[12px]">Bắt đầu</div>}
+                label={<div className="text-[12px]">{t("start_date")}</div>}
                 style={{ width: "200px" }}
                 rules={[
-                  { required: true, message: "Vui lòng chọn ngày bắt đầu" },
+                  { required: true, message: t("please_select_start_date") },
                 ]}
               >
                 <DatePicker
-                  picker="month"
+                  format={dateFormat}
+                  picker="date"
                   style={{ width: "100%", fontSize: "12px" }}
                 />
               </Form.Item>
@@ -344,14 +343,18 @@ const EducationComponent = () => {
               {!isCurrentlyStudying && (
                 <Form.Item
                   name="end_date"
-                  label={<div className="text-[12px]">Kết thúc</div>}
+                  label={<div className="text-[12px]">{t("end_date")}</div>}
                   style={{ width: "200px" }}
                   rules={[
-                    { required: true, message: "Vui lòng chọn ngày kết thúc" },
+                    {
+                      required: true,
+                      message: t("please_select_end_date"),
+                    },
                   ]}
                 >
                   <DatePicker
-                    picker="month"
+                    format={dateFormat}
+                    picker="date"
                     style={{ width: "100%", fontSize: "12px" }}
                   />
                 </Form.Item>
@@ -360,12 +363,12 @@ const EducationComponent = () => {
 
             <Form.Item
               name="description"
-              label={<div className="text-[12px]">Mô tả chi tiết</div>}
+              label={<div className="text-[12px]">{t("description")}</div>}
             >
               <TextArea
                 className="text-[12px]"
                 rows={4}
-                placeholder="Mô tả chi tiết quá trình học của bạn để nhà tuyển dụng có thể hiểu bạn hơn"
+                placeholder={t("description_education")}
               />
             </Form.Item>
 
@@ -377,8 +380,9 @@ const EducationComponent = () => {
                     loading={loading}
                     htmlType="submit"
                     className="!bg-primaryColor w-full !text-[12px]"
+                    size="middle"
                   >
-                    Thêm
+                    {t("add")}
                   </Button>
                 </div>
               ) : (
@@ -391,7 +395,7 @@ const EducationComponent = () => {
                       width: "100%",
                     }}
                   >
-                    Cập nhật
+                    {t("update")}
                   </Button>
                   <Button
                     type="primary"
@@ -405,7 +409,7 @@ const EducationComponent = () => {
                     }}
                     className="!text-[12px]"
                   >
-                    Xóa
+                    {t("delete")}
                   </Button>
                 </div>
               )}
@@ -430,13 +434,14 @@ const EducationComponent = () => {
             <div className="flex items-center gap-2">
               <GraduationCap className="h-6 w-6 text-[#d3464f]" size={12} />
 
-              <h2 className="font-semibold text-[12px]">Học vấn</h2>
+              <h2 className="font-semibold text-[12px]">{t("education")}</h2>
             </div>
             <Button
               className="text-[12px]"
+              size="middle"
               onClick={() => handleOpenModalEducation("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           {/* <div className="flex items-center justify-start"> */}
@@ -459,19 +464,20 @@ const EducationComponent = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <GraduationCap className="h-6 w-6 text-[#d3464f]" size={12} />
-              <h2 className="font-semibold text-[12px]">Học vấn</h2>
+              <h2 className="font-semibold text-[12px]">{t("education")}</h2>
             </div>
             <Button
-              size="small"
+              size="middle"
               className="!text-[12px]"
               onClick={() => handleOpenModalEducation("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           <p className="text-[12px] text-gray-500">
-            Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
-            phần này theo CV.
+            {t(
+              "if_you_have_a_CV_on_DevHire_click_update_to_automatically_fill_this_part_according_to_the_CV"
+            )}
           </p>
         </Card>
       )}
@@ -484,10 +490,10 @@ const EducationComponent = () => {
         renderBody={renderBody}
         title={
           actionType === "create"
-            ? "Học vấn"
+            ? t("education")
             : actionType === "edit"
-            ? "Cập nhật"
-            : "Xóa học vấn"
+            ? t("update")
+            : t("delete")
         }
       />
     </div>

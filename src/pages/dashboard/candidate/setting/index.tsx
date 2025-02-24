@@ -1,12 +1,10 @@
 import {
-  CloseOutlined,
   GlobalOutlined,
   LockOutlined,
-  PlusOutlined,
   ProfileOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Input, message, Select, Tabs } from "antd";
+import { Tabs } from "antd";
 import TabPane from "antd/es/tabs/TabPane";
 import { useState } from "react";
 import "react-quill/dist/quill.snow.css";
@@ -14,17 +12,17 @@ import Personal from "../Personal/Personal";
 import ProfileComponentSetting from "../../../detail/Profile/ProfileComponentSetting";
 import AccountSetting from "../AccountSetting/AccountSetting";
 import "./style.css";
-import { SOCIAL_LINK_API } from "../../../../services/modules/SocialLinkService";
-import { useSelector } from "react-redux";
 import SocialLinkCandidate from "../SocialLink/SocialLink";
+import { useTranslation } from "react-i18next";
 const SettingCandidate = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("personal");
   const handleTabChange = (key) => {
     setActiveTab(key);
   };
   return (
     <div className="setting-candidate">
-      <h1 className="text-[20px] font-semibold mb-6">Cài đặt</h1>
+      <h1 className="text-[20px] font-semibold mb-6">{t("settings")}</h1>
 
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <TabPane
@@ -35,7 +33,7 @@ const SettingCandidate = () => {
               }`}
             >
               <UserOutlined className="mr-2" />
-              Cá nhân
+              {t("personal")}
             </span>
           }
           key="personal"
@@ -50,7 +48,7 @@ const SettingCandidate = () => {
               }`}
             >
               <ProfileOutlined className="mr-2" />
-              Hồ sơ
+              {t("profile")}
             </span>
           }
           key="profile"
@@ -65,7 +63,7 @@ const SettingCandidate = () => {
               }`}
             >
               <GlobalOutlined className="mr-2" />
-              Liên kết xã hội
+              {t("social_link")}
             </span>
           }
           key="social"
@@ -80,7 +78,7 @@ const SettingCandidate = () => {
               }`}
             >
               <LockOutlined className="mr-2" />
-              Cài đặt tài khoản
+              {t("account_setting")}
             </span>
           }
           key="account"

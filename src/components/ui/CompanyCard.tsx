@@ -2,8 +2,10 @@ import { Button, Image } from "antd";
 import avtDefault from "../../assets/images/company/default.png";
 import locationIcon from "../../assets/icons/location.png";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const CompanyCard = ({ item }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const handleNavigate = () => {
     navigate(`/employer-detail/${item?._id}`);
@@ -25,7 +27,7 @@ const CompanyCard = ({ item }) => {
               {item?.company_name}
             </p>
             <p className="font-light text-xs bg-[#fbf0e8] text-[#de5057] px-2 py-1 rounded-full">
-              Featured
+              {t("featured")}
             </p>
           </div>
           {item?.city_id?.name && (
@@ -49,7 +51,7 @@ const CompanyCard = ({ item }) => {
           size="middle"
           className="!bg-black text-white !w-auto font-semibold rounded-full border-none py-2 hover:!text-primaryColor"
         >
-          Vị trí mở
+          {t("location_open")}
         </Button>
       </div>
     </div>

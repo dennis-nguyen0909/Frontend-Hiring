@@ -7,10 +7,12 @@ import { ROLE_API } from "../../services/modules/RoleServices";
 import { useNavigate } from "react-router-dom";
 import ButtonComponent from "../Button/ButtonComponent";
 import { Empty } from "antd";
+import { useTranslation } from "react-i18next";
 const TopCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [roleEmployer, setRoleEmployer] = useState();
   const [meta, setMeta] = useState<Meta>({});
+  const { t } = useTranslation();
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
   const handleGetEmployerRole = async () => {
@@ -73,7 +75,7 @@ const TopCompanies = () => {
       <div className="h-full px-5 md:px-primary">
         <div>
           <h1 className="text-textBlack text-[20px] font-medium">
-            Top công ty
+            {t("top_companies")}
           </h1>
         </div>
         <div className="mt-5 mb-5">
@@ -89,8 +91,8 @@ const TopCompanies = () => {
         </div>
         {companies.length > 0 && (
           <div className="flex items-center justify-center mb-5">
-            <ButtonComponent onClick={() => navigate("/employers")}>
-              <div className="text-[12px]">Xem thêm</div>
+            <ButtonComponent onClick={() => navigate("/companies")}>
+              <div className="text-[12px]">{t("view_more")}</div>
             </ButtonComponent>
           </div>
         )}

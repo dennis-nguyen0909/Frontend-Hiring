@@ -1,13 +1,11 @@
-import React, { useState } from "react";
-import { Button, notification, Table } from "antd";
+import { useState } from "react";
+import { notification } from "antd";
 import {
   BellOutlined,
   BookOutlined,
   FileTextOutlined,
   SettingOutlined,
   LogoutOutlined,
-  MenuOutlined,
-  CloseOutlined,
 } from "@ant-design/icons";
 import OverViewCandidate from "./overview";
 import Applied from "./applied";
@@ -19,8 +17,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { resetUser } from "../../../redux/slices/userSlices";
 import { AlignJustify, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const DashboardCandidate = () => {
+  const { t } = useTranslation();
   const [currentTab, setCurrentTab] = useState("overview");
   const [sidebarVisible, setSidebarVisible] = useState(false); // Trạng thái để quản lý sidebar
   const user = useSelector((state) => state.user);
@@ -41,16 +41,16 @@ const DashboardCandidate = () => {
         dispatch(resetUser());
         navigate("/");
         notification.success({
-          message: "Thông báo",
-          description: "Đăng xuất thành công",
+          message: t("notification"),
+          description: t("logout_success"),
         });
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
-      console.error("Đăng xuất thất bại:", error);
+      console.error(t("logout_failed"), error);
     }
   };
 
@@ -75,7 +75,9 @@ const DashboardCandidate = () => {
             className="flex justify-between items-center"
             style={{ borderBottom: "1px solid #ccc" }}
           >
-            <div className="p-4 text-xl font-bold text-center">ỨNG VIÊN</div>
+            <div className="p-4 text-xl font-bold text-center">
+              {t("candidate")}
+            </div>
             <div className="md:hidden flex justify-end p-4">
               <X onClick={() => setSidebarVisible(false)} />
             </div>
@@ -91,7 +93,7 @@ const DashboardCandidate = () => {
               onClick={() => handleTabClick("overview")}
             >
               <FileTextOutlined className="mr-3" />
-              Tổng quan
+              {t("overview")}
             </a>
             <a
               href="#"
@@ -103,7 +105,7 @@ const DashboardCandidate = () => {
               onClick={() => handleTabClick("appliedJobs")}
             >
               <FileTextOutlined className="mr-3" />
-              Việc làm đã ứng tuyển
+              {t("applied_jobs")}
             </a>
             <a
               href="#"
@@ -115,7 +117,7 @@ const DashboardCandidate = () => {
               onClick={() => handleTabClick("favoriteJobs")}
             >
               <BookOutlined className="mr-3" />
-              Việc làm đã lưu
+              {t("favorite_jobs")}
             </a>
             <a
               href="#"
@@ -127,7 +129,7 @@ const DashboardCandidate = () => {
               onClick={() => handleTabClick("jobAlert")}
             >
               <BellOutlined className="mr-3" />
-              Thông báo việc làm
+              {t("job_alert")}
               <span className="ml-auto bg-blue-500 text-white text-xs px-2 rounded-full">
                 09
               </span>
@@ -142,7 +144,7 @@ const DashboardCandidate = () => {
               onClick={() => handleTabClick("settings")}
             >
               <SettingOutlined className="mr-3" />
-              Cài đặt
+              {t("settings")}
             </a>
           </nav>
           <div
@@ -150,7 +152,7 @@ const DashboardCandidate = () => {
             onClick={handleLogout}
           >
             <LogoutOutlined className="mr-2" />
-            Đăng xuất
+            {t("logout")}
           </div>
         </div>
 

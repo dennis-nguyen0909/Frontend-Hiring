@@ -29,11 +29,13 @@ import { getRandomColor } from "../../utils/color.utils";
 import { useJobType } from "../../hooks/useJobType";
 import { useContractType } from "../../hooks/useContractType";
 import useMomentFn from "../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 
 const { Title } = Typography;
 const { Option } = Select;
 
 const EmployerJob: React.FC = () => {
+  const { t } = useTranslation();
   const { formatDate } = useMomentFn();
   const userDetail = useSelector((state: RootState) => state.user);
   const params = useParams();
@@ -136,7 +138,7 @@ const EmployerJob: React.FC = () => {
         </Card>
       </div>
       <div className="text-2xl font-semibold max-w-7xl mx-auto px-4">
-        Vị trí mở:
+        {t("location_open")}
       </div>
       <div className="max-w-7xl mx-auto px-4 mt-5">
         <Button
@@ -145,7 +147,7 @@ const EmployerJob: React.FC = () => {
           onClick={() => setShowFilters(!showFilters)}
           className="mb-4 !bg-black"
         >
-          Bộ lọc
+          {t("filter")}
         </Button>
         <div
           className={`flex flex-col sm:flex-row flex-wrap gap-4 mb-4 transition-all duration-500 ${
@@ -155,7 +157,7 @@ const EmployerJob: React.FC = () => {
           }`}
         >
           <Input
-            placeholder="Tìm kiếm công việc..."
+            placeholder={t("search_job")}
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             style={{ width: 300, marginBottom: 20 }}
@@ -165,11 +167,11 @@ const EmployerJob: React.FC = () => {
             style={{ width: 200, marginBottom: 20 }}
             onChange={(value) => setSortOrder(value)}
           >
-            <Option value="newest">Mới nhất</Option>
-            <Option value="oldest">Cũ nhất</Option>
+            <Option value="newest">{t("newest")}</Option>
+            <Option value="oldest">{t("oldest")}</Option>
           </Select>
           <Select
-            placeholder="Loại công việc"
+            placeholder={t("job_type")}
             style={{ width: 200, marginBottom: 20 }}
             onChange={(value) => setSelectedJobType(value)}
             allowClear
@@ -181,7 +183,7 @@ const EmployerJob: React.FC = () => {
             ))}
           </Select>
           <Select
-            placeholder="Loại hợp đồng"
+            placeholder={t("job_contract_type")}
             style={{ width: 200, marginBottom: 20 }}
             onChange={(value) => setSelectedJobContractType(value)}
             allowClear
@@ -210,10 +212,10 @@ const EmployerJob: React.FC = () => {
                   </Title>
                   <div>
                     <Tag color="black" className="mt-2 sm:mt-0">
-                      {job?.job_type?.name}
+                      {t(job?.job_type?.key)}
                     </Tag>
                     <Tag color="black" className="mt-2 sm:mt-0">
-                      {job?.job_contract_type?.name}
+                      {t(job?.job_contract_type?.key)}
                     </Tag>
                   </div>
                 </div>
@@ -224,7 +226,7 @@ const EmployerJob: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <CalendarOutlined />
-                    Đăng ngày {formatDate(job?.createdAt)}
+                    {t("posted_date")} {formatDate(job?.createdAt)}
                   </div>
                 </Space>
                 <div className="mt-2">
@@ -241,7 +243,7 @@ const EmployerJob: React.FC = () => {
           />
         ) : (
           <Empty
-            description="Không có dữ liệu"
+            description={t("no_data")}
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         )}

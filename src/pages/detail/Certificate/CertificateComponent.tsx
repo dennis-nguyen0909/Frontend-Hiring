@@ -21,6 +21,8 @@ import { MediaApi } from "../../../services/modules/mediaServices";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 import useMomentFn from "../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
+import moment from "moment";
 
 interface Certificate {
   _id: string;
@@ -37,8 +39,9 @@ interface Certificate {
 }
 
 const CertificateComponent = () => {
+  const { t } = useTranslation();
   const userDetail = useSelector((state) => state.user);
-  const { formatDate } = useMomentFn();
+  const { formatDate, dateFormat } = useMomentFn();
   const [file, setFile] = useState("");
   const [form] = Form.useForm();
   const [link, setLink] = useState("");
@@ -109,8 +112,8 @@ const CertificateComponent = () => {
         form.setFieldsValue({
           certificate_name: certificate_name,
           organization_name: organization_name,
-          start_date: start_date ? formatDate(start_date) : null,
-          end_date: end_date ? formatDate(end_date) : null,
+          start_date: start_date ? moment(start_date) : null,
+          end_date: end_date ? moment(end_date) : null,
           is_not_expired,
         });
         setIsNotExpired(is_not_expired);
@@ -118,7 +121,7 @@ const CertificateComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.response.data.message,
       });
     } finally {
@@ -144,8 +147,8 @@ const CertificateComponent = () => {
     const response = await CERTIFICATE_API.create(params, userDetail?._id);
     if (response.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Thêm thành công",
+        message: t("notification"),
+        description: t("create_success"),
       });
       await handleGetSkillByUserId({});
       closeModal();
@@ -153,8 +156,8 @@ const CertificateComponent = () => {
       setIsLoading(false);
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Lỗi từ server",
+        message: t("notification"),
+        description: t("error_from_server"),
       });
       setIsLoading(false);
     }
@@ -168,8 +171,8 @@ const CertificateComponent = () => {
       );
       if (+res.statusCode === 200) {
         notification.success({
-          message: "Thông báo",
-          description: "Xóa thành công",
+          message: t("notification"),
+          description: t("delete_success"),
         });
         await handleGetSkillByUserId({});
         closeModal();
@@ -178,7 +181,7 @@ const CertificateComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.response.data.message,
       });
     } finally {
@@ -204,8 +207,8 @@ const CertificateComponent = () => {
       );
       if (res.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
         await handleGetSkillByUserId({});
         closeModal();
@@ -214,7 +217,7 @@ const CertificateComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.response.data.message,
       });
     } finally {
@@ -230,7 +233,7 @@ const CertificateComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.response.data.message,
       });
     }
@@ -243,24 +246,35 @@ const CertificateComponent = () => {
         <LoadingComponent isLoading={isLoading}>
           <Form onFinish={onFinish} form={form} layout="vertical">
             <Form.Item
-              label={<div className="text-[12px]">Tên chứng chỉ</div>}
+              label={<div className="text-[12px]">{t("certificate_name")}</div>}
               name="certificate_name"
               required
               rules={[
-                { required: true, message: "Vui lòng nhập tên chứng chỉ!" },
+                { required: true, message: t("please_enter_certificate_name") },
               ]}
             >
-              <Input placeholder="Tên chứng chỉ" className="text-[12px]" />
+              <Input
+                placeholder={t("certificate_name")}
+                className="text-[12px]"
+              />
             </Form.Item>
             <Form.Item
-              label={<div className="text-[12px]">Tên tổ chức</div>}
+              label={
+                <div className="text-[12px]">{t("organization_name")}</div>
+              }
               name="organization_name"
               required
               rules={[
-                { required: true, message: "Vui lòng nhập tên tổ chức!" },
+                {
+                  required: true,
+                  message: t("please_enter_organization_name"),
+                },
               ]}
             >
-              <Input placeholder="Tên tổ chức" className="text-[12px]" />
+              <Input
+                placeholder={t("organization_name")}
+                className="text-[12px]"
+              />
             </Form.Item>
 
             <Form.Item name="is_not_expired" valuePropName="checked">
@@ -269,7 +283,7 @@ const CertificateComponent = () => {
                 onChange={(e) => setIsNotExpired(e.target.checked)}
                 className="text-[12px]"
               >
-                Chứng chỉ vô hạn
+                {t("unlimited_certificate")}
               </Checkbox>
             </Form.Item>
 
@@ -277,7 +291,7 @@ const CertificateComponent = () => {
               <div className="mr-4">
                 <Typography.Text className="text-[12px]">
                   <span className="text-red-500 mr-1">*</span>
-                  Bắt đầu
+                  {t("start_date")}
                 </Typography.Text>
                 <div className="flex justify-between items-center">
                   <Form.Item
@@ -286,13 +300,16 @@ const CertificateComponent = () => {
                     name="start_date"
                     required
                     rules={[
-                      { required: true, message: "Vui lòng chọn ngày bắt đầu" },
+                      {
+                        required: true,
+                        message: t("please_select_start_date"),
+                      },
                     ]}
                   >
                     <DatePicker
                       picker="date"
-                      placeholder="Chọn ngày bắt đầu"
-                      format="DD/MM/YYYY"
+                      placeholder={t("please_select_start_date")}
+                      format={dateFormat}
                       className="text-[12px] w-full"
                     />
                   </Form.Item>
@@ -301,7 +318,7 @@ const CertificateComponent = () => {
               <div className="ml-10">
                 <Typography.Text className="text-[12px]">
                   <span className="text-red-500 mr-1">*</span>
-                  Kết thúc
+                  {t("end_date")}
                 </Typography.Text>
                 <Form.Item
                   label=""
@@ -313,7 +330,7 @@ const CertificateComponent = () => {
                         value.isAfter(form.getFieldValue("start_date"))
                           ? Promise.resolve()
                           : Promise.reject(
-                              new Error("Ngày kết thúc phải sau ngày bắt đầu")
+                              new Error(t("end_date_must_be_after_start_date"))
                             ),
                     },
                   ]}
@@ -321,8 +338,8 @@ const CertificateComponent = () => {
                   <DatePicker
                     disabled={isNotExpired}
                     picker="date"
-                    placeholder="Chọn ngày, tháng, năm"
-                    format="DD/MM/YYYY"
+                    placeholder={t("please_select_end_date")}
+                    format={dateFormat}
                     className="text-[12px] w-full"
                   />
                 </Form.Item>
@@ -339,7 +356,7 @@ const CertificateComponent = () => {
                   htmlType="submit"
                   className="w-full !bg-primaryColorH !text-white"
                 >
-                  Thêm
+                  {t("add")}
                 </Button>
               ) : (
                 <div className="flex items-center justify-between gap-4 mt-4">
@@ -351,7 +368,7 @@ const CertificateComponent = () => {
                       width: "100%",
                     }}
                   >
-                    Xóa
+                    {t("delete")}
                   </Button>
                   <Button
                     type="primary"
@@ -362,7 +379,7 @@ const CertificateComponent = () => {
                       backgroundColor: "black",
                     }}
                   >
-                    Cập nhật
+                    {t("update")}
                   </Button>
                 </div>
               )}
@@ -380,13 +397,13 @@ const CertificateComponent = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-6 w-6 text-[#d3464f]" size={12} />
-              <h2 className="font-semibold text-[12px]">Chứng chỉ</h2>
+              <h2 className="font-semibold text-[12px]">{t("certificate")}</h2>
             </div>
             <Button
               className="text-[12px]"
               onClick={() => handleOpenSkill("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           <div>
@@ -395,7 +412,7 @@ const CertificateComponent = () => {
                 key={index}
                 title={item.certificate_name}
                 extra={
-                  <Tooltip title="Thông tin chi tiết">
+                  <Tooltip title={t("detail_certificate")}>
                     <CheckCircle
                       onClick={() => handleOpenSkill("edit", item?._id)}
                       className="text-green-500 cursor-pointer"
@@ -408,21 +425,23 @@ const CertificateComponent = () => {
                   <div>
                     <div className="flex items-center">
                       <strong className="text-[12px]">
-                        Tổ chức cấp chứng chỉ:{" "}
+                        {t("organization_name")}:{" "}
                       </strong>
                       <span className="ml-2 text-[12px]">
                         {item.organization_name}
                       </span>
                     </div>
                     <div className="flex items-center">
-                      <strong className="text-[12px]">Ngày bắt đầu: </strong>
+                      <strong className="text-[12px]">
+                        {t("start_date")}:{" "}
+                      </strong>
                       <span className="ml-2 text-[12px]">
-                        {new Date(item.start_date).toLocaleDateString()}
+                        {moment(item.start_date).format(dateFormat)}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <strong className="text-[12px]">
-                        Chứng chỉ còn hiệu lực:{" "}
+                        {t("certificate_is_effective")}:{" "}
                       </strong>
                       <span
                         className={`ml-2 text-[12px] ${
@@ -431,7 +450,9 @@ const CertificateComponent = () => {
                             : "text-red-500"
                         }`}
                       >
-                        {item.is_not_expired ? "Còn hiệu lực" : "Hết hiệu lực"}
+                        {item.is_not_expired
+                          ? t("certificate_is_effective")
+                          : t("certificate_is_not_effective")}
                       </span>
                       {item.is_not_expired ? (
                         <CheckCircle
@@ -444,7 +465,7 @@ const CertificateComponent = () => {
                     </div>
                     {item.link_certificate && (
                       <div className="flex items-center">
-                        <strong className="text-[12px]">Liên kết</strong>
+                        <strong className="text-[12px]">{t("link")}:</strong>
                         <a
                           target="_blank"
                           href={item.link_certificate}
@@ -479,18 +500,19 @@ const CertificateComponent = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <BookOpen className="h-6 w-6 text-[#d3464f]  !text-[12px]" />
-              <h2 className="font-semibold !text-[12px]">Chứng chỉ</h2>
+              <h2 className="font-semibold !text-[12px]">{t("certificate")}</h2>
             </div>
             <Button
               className="!text-[12px]"
               onClick={() => handleOpenSkill("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           <p className="text-sm text-gray-500 !text-[12px]">
-            Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
-            phần này theo CV.
+            {t(
+              "if_you_have_a_CV_on_DevHire_click_update_to_automatically_fill_this_part_according_to_the_CV"
+            )}
           </p>
         </Card>
       )}
@@ -502,10 +524,10 @@ const CertificateComponent = () => {
         renderBody={renderBody}
         title={
           actionType === "create"
-            ? "Chứng chỉ"
+            ? t("certificate")
             : actionType === "edit"
-            ? "Cập nhật"
-            : "Xóa Chứng chỉ"
+            ? t("update")
+            : t("delete")
         }
       />
     </div>

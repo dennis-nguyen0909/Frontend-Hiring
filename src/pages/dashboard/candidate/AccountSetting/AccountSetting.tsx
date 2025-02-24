@@ -21,6 +21,7 @@ import { updateUser } from "../../../../redux/slices/userSlices";
 import { useNavigate } from "react-router-dom";
 import * as userServices from "../../../../services/modules/userServices";
 import DateFormatSelect from "../../../../components/DateFormatSelect/DateFormatSelect";
+import { t } from "i18next";
 const ContactForm = () => {
   const userDetail = useSelector((state) => state.user);
   const [city, setCity] = useState(userDetail?.city_id?._id || "");
@@ -182,38 +183,33 @@ const ContactForm = () => {
             userDetail?.district_id?.name +
             " , " +
             userDetail?.ward_id?.name,
-
-          // location:
         }}
       >
-        {/* Thông tin liên hệ */}
         <div className="space-y-8">
           <div>
             <h2 className="text-[20px] font-semibold mb-4">
-              Thông tin liên hệ
+              {t("contact_information")}
             </h2>
             <div className="space-y-4">
               <Form.Item
-                label={<div className="text-[12px]">Email</div>}
+                label={<div className="text-[12px]">{t("email")}</div>}
                 name="email"
-                rules={[{ required: true, message: "Vui lòng nhập email" }]}
+                rules={[{ required: true, message: t("please_enter_email") }]}
               >
                 <Input
                   disabled
                   prefix={<MailOutlined />}
-                  placeholder="Địa chỉ email"
+                  placeholder={t("email")}
                   className="text-[12px]"
                 />
               </Form.Item>
               <Form.Item
-                label={<div className="text-[12px]">Số điện thoại</div>}
+                label={<div className="text-[12px]">{t("phone")}</div>}
                 name="phone"
-                rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại" },
-                ]}
+                rules={[{ required: true, message: t("please_enter_phone") }]}
               >
                 <Input
-                  placeholder="Số điện thoại"
+                  placeholder={t("phone")}
                   prefix={<PhoneOutlined />}
                   className="text-[12px] md:w-[49%]"
                 />
@@ -221,17 +217,17 @@ const ContactForm = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Form.Item
-                  label={<div className="text-[12px]">Thành phố / tỉnh</div>}
+                  label={<div className="text-[12px]">{t("city")}</div>}
                   name="city"
                   rules={[
                     {
                       required: true,
-                      message: "Vui lòng nhập thành phố / tỉnh",
+                      message: t("please_enter_city"),
                     },
                   ]}
                 >
                   <Select
-                    placeholder="Chọn thành phố / tỉnh"
+                    placeholder={t("choose_city")}
                     value={city}
                     onChange={handleCityChange}
                     loading={citiesLoading}
@@ -247,14 +243,14 @@ const ContactForm = () => {
 
                 {/* District Field */}
                 <Form.Item
-                  label={<div className="text-[12px]">Quận / huyện</div>}
+                  label={<div className="text-[12px]">{t("district")}</div>}
                   name="district"
                   rules={[
-                    { required: true, message: "Vui lòng nhập quận / huyện" },
+                    { required: true, message: t("please_enter_district") },
                   ]}
                 >
                   <Select
-                    placeholder="Chọn quận / huyện"
+                    placeholder={t("choose_district")}
                     value={district}
                     onChange={handleDistrictChange}
                     loading={districtLoading}
@@ -271,14 +267,12 @@ const ContactForm = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Ward Field */}
                 <Form.Item
-                  label={<div className="text-[12px]">Xã / phường</div>}
+                  label={<div className="text-[12px]">{t("ward")}</div>}
                   name="ward"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập xã / phường" },
-                  ]}
+                  rules={[{ required: true, message: t("please_enter_ward") }]}
                 >
                   <Select
-                    placeholder="Chọn phường / xã"
+                    placeholder={t("choose_ward")}
                     value={ward}
                     onChange={handleWardChange}
                     loading={wardsLoading}
@@ -293,11 +287,16 @@ const ContactForm = () => {
 
                 {/* Address Field */}
                 <Form.Item
-                  label={<div className="text-[12px]">Địa chỉ</div>}
+                  label={<div className="text-[12px]">{t("address")}</div>}
                   name="address"
-                  rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+                  rules={[
+                    { required: true, message: t("please_enter_address") },
+                  ]}
                 >
-                  <Input placeholder="Nhập địa chỉ" className="text-[12px]" />
+                  <Input
+                    placeholder={t("enter_your_address")}
+                    className="text-[12px]"
+                  />
                 </Form.Item>
               </div>
             </div>
@@ -312,12 +311,14 @@ const ContactForm = () => {
               htmlType="submit"
               className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white !text-[12px]"
             >
-              Lưu
+              {t("save_changes")}
             </Button>
           </Form.Item>
           {/* Notifications */}
           <div>
-            <h2 className="text-[20px] font-semibold mb-4">Thông báo</h2>
+            <h2 className="text-[20px] font-semibold mb-4">
+              {t("notifications")}
+            </h2>
             <div className="space-y-2">
               <Form.Item
                 name="notifyShortlisted"
@@ -325,8 +326,7 @@ const ContactForm = () => {
                 noStyle
               >
                 <Checkbox className="!text-[12px]">
-                  Thông báo cho tôi khi nhà tuyển dụng đưa tôi vào danh sách rút
-                  gọn
+                  {t("notify_shortlisted")}
                 </Checkbox>
               </Form.Item>
               <Form.Item
@@ -335,12 +335,12 @@ const ContactForm = () => {
                 noStyle
               >
                 <Checkbox className="!text-[12px]">
-                  Thông báo cho tôi khi công việc tôi ứng tuyển hết hạn
+                  {t("notify_job_expired")}
                 </Checkbox>
               </Form.Item>
               <Form.Item name="notifyJobAlert" valuePropName="checked" noStyle>
                 <Checkbox className="!text-[12px]">
-                  Thông báo cho tôi khi tôi có tối đa 5 thông báo việc làm
+                  {t("notify_job_alert")}
                 </Checkbox>
               </Form.Item>
               <Form.Item
@@ -361,7 +361,7 @@ const ContactForm = () => {
                     )
                   }
                 >
-                  Thông báo cho tôi khi nhà tuyển dụng lưu hồ sơ của tôi
+                  {t("notify_profile_saved")}
                 </Checkbox>
               </Form.Item>
               <Form.Item name="notifyRejected" valuePropName="checked" noStyle>
@@ -378,17 +378,16 @@ const ContactForm = () => {
                     )
                   }
                 >
-                  Thông báo cho tôi khi nhà tuyển dụng từ chối tôi
+                  {t("notify_rejected")}
                 </Checkbox>
               </Form.Item>
             </div>
           </div>
 
-          {/* Quyền riêng tư hồ sơ */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h2 className="text-[20px] font-semibold mb-4">
-                Quyền riêng tư hồ sơ
+                {t("profile_privacy")}
               </h2>
               <Form.Item name="profilePrivacy" valuePropName="checked" noStyle>
                 <Space>
@@ -401,13 +400,15 @@ const ContactForm = () => {
                     className="custom-switch"
                   />
                   <span className="text-[12px]">
-                    Hồ sơ của bạn bây giờ đã được công khai
+                    {t("profile_privacy_description")}
                   </span>
                 </Space>
               </Form.Item>
             </div>
             <div>
-              <h2 className="text-[20px] font-semibold mb-4">Resume Privacy</h2>
+              <h2 className="text-[20px] font-semibold mb-4">
+                {t("resume_privacy")}
+              </h2>
               <Form.Item name="resumePrivacy" valuePropName="checked" noStyle>
                 <Space>
                   <Switch
@@ -419,13 +420,15 @@ const ContactForm = () => {
                     className="custom-switch"
                   />
                   <span className="text-[12px]">
-                    Sơ yếu lý lịch của bạn hiện đang ở chế độ riêng tư
+                    {t("resume_privacy_description")}
                   </span>
                 </Space>
               </Form.Item>
             </div>
             <div>
-              <h2 className="text-[20px] font-semibold mb-4">Gợi ý việc làm</h2>
+              <h2 className="text-[20px] font-semibold mb-4">
+                {t("job_suggestion")}
+              </h2>
               <Form.Item name="resumePrivacy" valuePropName="checked" noStyle>
                 <Space>
                   <Switch
@@ -438,14 +441,16 @@ const ContactForm = () => {
                   />
                   <div className="!text-[12px]">
                     {!userDetail?.is_suggestion_job
-                      ? "Bật gợi ý việc làm hệ thống sẽ tìm các công việc phù hợp với bạn"
-                      : "Đang bật gợi ý việc làm"}
+                      ? t("turn_off_job_suggestion")
+                      : t("turn_on_job_suggestion")}
                   </div>
                 </Space>
               </Form.Item>
             </div>
             <div>
-              <h2 className="text-[20px] font-semibold mb-4">Đang tìm việc</h2>
+              <h2 className="text-[20px] font-semibold mb-4">
+                {t("job_search_status")}
+              </h2>
               <Form.Item name="resumePrivacy" valuePropName="checked" noStyle>
                 <Space>
                   <Switch
@@ -459,8 +464,8 @@ const ContactForm = () => {
                   <div className="text-[12px]">
                     {" "}
                     {!userDetail?.is_search_jobs_status
-                      ? "Bật đang tìm việc để nhà tuyển dụng có thể xem hồ sơ của bạn"
-                      : "Đang bật tìm việc"}
+                      ? t("turn_off_job_search_status")
+                      : t("turn_on_job_search_status")}
                   </div>
                 </Space>
               </Form.Item>
@@ -470,69 +475,71 @@ const ContactForm = () => {
       </Form>
       {/* Thay đổi mật khẩu */}
       <div className="mt-5">
-        <h2 className="text-[20px] font-semibold mb-4">Thay đổi mật khẩu</h2>
+        <h2 className="text-[20px] font-semibold mb-4">
+          {t("change_password")}
+        </h2>
         <Form
           form={formPassword}
           onFinish={handleSavePassword}
           className="grid grid-cols-1 md:grid-cols-3 gap-4"
         >
           <Form.Item
-            label={<div className="text-[12px]">Mật khẩu hiện tại</div>}
+            label={<div className="text-[12px]">{t("current_password")}</div>}
             name="current_password"
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập mật khẩu hiện tại",
+                message: t("please_enter_current_password"),
               },
             ]}
           >
             <Input.Password
-              placeholder="Mật khẩu hiện tại"
+              placeholder={t("current_password")}
               className="text-[12px]"
             />
           </Form.Item>
 
           <Form.Item
-            label={<div className="text-[12px]">Mật khẩu mới</div>}
+            label={<div className="text-[12px]">{t("new_password")}</div>}
             name="new_password"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu mới" }]}
+            rules={[
+              { required: true, message: t("please_enter_new_password") },
+            ]}
           >
             <Input.Password
-              placeholder="Mật khẩu mới"
+              placeholder={t("new_password")}
               className="text-[12px]"
             />
           </Form.Item>
 
           <Form.Item
-            label={<div className="text-[12px]">Xác nhận mật khẩu</div>}
+            label={<div className="text-[12px]">{t("confirm_password")}</div>}
             name="confirm_password"
             dependencies={["new_password"]} // Thêm dependency để xác nhận mật khẩu
             rules={[
               {
                 required: true,
-                message: "Vui lòng xác nhận lại mật khẩu mới",
+                message: t("please_confirm_password"),
               },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("new_password") === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(
-                    new Error("Hai mật khẩu không giống nhau!")
-                  );
+                  return Promise.reject(new Error(t("password_not_match")));
                 },
               }),
             ]}
           >
             <Input.Password
-              placeholder="Xác nhận mật khẩu"
+              placeholder={t("confirm_password")}
               className="text-[12px]"
             />
           </Form.Item>
 
           <Form.Item>
             <Button className="!text-[12px]" htmlType="submit">
-              Lưu mật khẩu
+              {t("save_password")}
             </Button>
           </Form.Item>
         </Form>
@@ -540,17 +547,13 @@ const ContactForm = () => {
       {/* Xóa Account */}
       <div>
         <h2 className="text-[20px] font-semibold mb-4">
-          Xóa tài khoản của bạn
+          {t("delete_account")}
         </h2>
         <p className="text-gray-600 mb-4 text-[12px]">
-          Nếu bạn xóa tài khoản HireDev của mình, bạn sẽ không thể nhận được
-          thông tin về các công việc phù hợp, theo dõi nhà tuyển dụng, thông báo
-          việc làm, công việc lọt vào danh sách rút gọn và các hoạt động khác.
-          Tài khoản của bạn sẽ bị vô hiệu hóa khỏi tất cả các dịch vụ của
-          HireDev.com
+          {t("delete_account_des")}
         </p>
         <Button className="!text-[12px]" danger htmlType="button">
-          Close Account
+          {t("close_account")}
         </Button>
       </div>
     </>

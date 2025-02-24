@@ -3,8 +3,10 @@ import { Button, Input, notification, Select } from "antd";
 import { useState } from "react";
 import { SOCIAL_LINK_API } from "../../../services/modules/SocialLinkService";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
-const SocialLinks = ({handleTabChange}) => {
+const SocialLinks = ({ handleTabChange }) => {
+  const { t } = useTranslation();
   const [socialLinks, setSocialLinks] = useState([
     // initialize with empty social links if needed
   ]);
@@ -22,12 +24,12 @@ const SocialLinks = ({handleTabChange}) => {
   const onUpdate = async () => {
     if (socialLinks.length <= 0) {
       notification.error({
-        message: "Thông báo",
-        description: "Vui lòng chọn link",
+        message: t("notification"),
+        description: t("please_select_link"),
       });
       return;
     }
-  
+
     try {
       const requests = socialLinks.map((social) => {
         const params = {
@@ -37,33 +39,32 @@ const SocialLinks = ({handleTabChange}) => {
         };
         return SOCIAL_LINK_API.create(params, userDetail?.access_token);
       });
-  
+
       // Sử dụng Promise.all để chờ tất cả các API hoàn thành
       const results = await Promise.all(requests);
-  
+
       // Kiểm tra kết quả của tất cả các lần gọi API
       if (results.every((res) => res.data)) {
         notification.success({
-          message: "Thông báo",
-          description: "Thành công",
+          message: t("notification"),
+          description: t("success"),
         });
         handleTabChange("contact");
       }
     } catch (error) {
       notification.error({
-        message: "Lỗi",
-        description: "Có lỗi xảy ra, vui lòng thử lại",
+        message: t("error"),
+        description: t("error_message"),
       });
     }
   };
-  
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
       {socialLinks.map((link, index) => (
         <div key={link.id} className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Liên kết {index + 1}
+            {t("link")} {index + 1}
           </label>
           <div className="flex gap-4">
             <Select
@@ -109,13 +110,17 @@ const SocialLinks = ({handleTabChange}) => {
         className="bg-gray-50 hover:bg-gray-100 mb-8"
         onClick={handleAddLink}
       >
-        <PlusCircleOutlined /> 
-Thêm liên kết xã hội mới
+        <PlusCircleOutlined />
+        {t("add_social_link")}
       </Button>
 
       <div className="flex justify-between">
-      <Button htmlType="submit" onClick={onUpdate}  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
-      Lưu & tiếp tục
+        <Button
+          htmlType="submit"
+          onClick={onUpdate}
+          className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white"
+        >
+          {t("save_and_continue")}
         </Button>
       </div>
     </div>

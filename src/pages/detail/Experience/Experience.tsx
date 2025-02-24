@@ -21,6 +21,7 @@ import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 import useMomentFn from "../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 const { TextArea } = Input;
 
 interface WorkExperienceProps {
@@ -35,11 +36,12 @@ interface WorkExperienceProps {
 }
 
 const ExperienceComponent = () => {
+  const { t } = useTranslation();
   const { formatDate } = useMomentFn();
   const [currentlyWorking, setCurrentlyWorking] = useState(false);
   const months = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,
-    label: `Tháng ${i + 1}`,
+    label: t(`month_${i + 1}`),
   }));
 
   const years = Array.from({ length: 30 }, (_, i) => ({
@@ -86,7 +88,7 @@ const ExperienceComponent = () => {
       return res;
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     } finally {
@@ -103,7 +105,7 @@ const ExperienceComponent = () => {
       return res;
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     } finally {
@@ -141,15 +143,15 @@ const ExperienceComponent = () => {
     if (res.data) {
       await handleGetWorkExperiencesByUser();
       notification.success({
-        message: "Thông báo",
-        description: "Thêm kinh nghiệm thành công!",
+        message: t("notification"),
+        description: t("create_success"),
       });
       await handleUpdateProfile();
       closeModal();
       setIsLoading(false);
     } else {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: res.message,
       });
       closeModal();
@@ -170,7 +172,7 @@ const ExperienceComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
@@ -187,7 +189,7 @@ const ExperienceComponent = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     } finally {
@@ -235,15 +237,15 @@ const ExperienceComponent = () => {
     if (res.data) {
       await handleGetWorkExperiencesByUser();
       notification.success({
-        message: "Thông báo",
-        description: "Xóa thành công",
+        message: t("notification"),
+        description: t("delete_success"),
       });
       closeModal();
       await handleUpdateProfile();
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Xóa thất bại ",
+        message: t("notification"),
+        description: t("delete_failed"),
       });
       closeModal();
     }
@@ -266,16 +268,16 @@ const ExperienceComponent = () => {
     if (res.data) {
       await handleGetWorkExperiencesByUser();
       notification.success({
-        message: "Thông báo",
-        description: "Cập nhật thành công",
+        message: t("notification"),
+        description: t("update_success"),
       });
       closeModal();
       await handleUpdateProfile();
       setIsLoading(false);
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Cập nhật thất bại",
+        message: t("notification"),
+        description: t("update_failed"),
       });
       closeModal();
       setIsLoading(false);
@@ -297,7 +299,10 @@ const ExperienceComponent = () => {
         }
         setIsLoading(false);
       } catch (error) {
-        console.error("Error handling file change:", error);
+        notification.error({
+          message: t("notification"),
+          description: error.message,
+        });
         setIsLoading(false);
       }
     }
@@ -309,24 +314,23 @@ const ExperienceComponent = () => {
         <LoadingComponent isLoading={isLoading}>
           <Form onFinish={onFinish} form={form} layout="vertical">
             <Form.Item
-              label={<div className="text-[12px]">Công ty</div>}
+              label={<div className="text-[12px]">{t("company")}</div>}
               name="company"
               required
-              rules={[{ required: true, message: "Vui lòng nhập tên công ty" }]}
+              rules={[
+                { required: true, message: t("please_enter_company_name") },
+              ]}
             >
-              <Input placeholder="Công ty" className="text-[12px]" />
+              <Input placeholder={t("company")} className="text-[12px]" />
             </Form.Item>
 
             <Form.Item
-              label="Chức vụ"
+              label={<div className="text-[12px]">{t("position")}</div>}
               name="position"
               required
-              rules={[{ required: true, message: "Vui lòng nhập chức vụ" }]}
+              rules={[{ required: true, message: t("please_enter_position") }]}
             >
-              <Input
-                placeholder="Nhân viên văn phòng"
-                className="text-[12px]"
-              />
+              <Input placeholder={t("office_staff")} className="text-[12px]" />
             </Form.Item>
 
             <Form.Item name="currently_working" valuePropName="checked">
@@ -335,7 +339,7 @@ const ExperienceComponent = () => {
                 checked={currentlyWorking}
                 onChange={(e) => setCurrentlyWorking(e.target.checked)}
               >
-                Tôi đang làm việc ở đây
+                {t("i_am_working_here")}
               </Checkbox>
             </Form.Item>
 
@@ -343,7 +347,7 @@ const ExperienceComponent = () => {
               <div>
                 <Typography.Text className="text-[12px]">
                   <span className="text-red-500 pr-1">*</span>
-                  Bắt đầu
+                  {t("start_date")}
                 </Typography.Text>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <Form.Item
@@ -351,12 +355,12 @@ const ExperienceComponent = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Vui lòng chọn tháng bắt đầu",
+                        message: t("please_select_start_date"),
                       },
                     ]}
                   >
                     <Select
-                      placeholder="Chọn tháng"
+                      placeholder={t("select_month")}
                       options={months}
                       className="text-[12px]"
                     />
@@ -364,11 +368,14 @@ const ExperienceComponent = () => {
                   <Form.Item
                     name="startYear"
                     rules={[
-                      { required: true, message: "Vui lòng chọn năm bắt đầu" },
+                      {
+                        required: true,
+                        message: t("please_select_start_date"),
+                      },
                     ]}
                   >
                     <Select
-                      placeholder="Chọn năm"
+                      placeholder={t("select_year")}
                       options={years}
                       className="text-[12px]"
                     />
@@ -386,12 +393,12 @@ const ExperienceComponent = () => {
                     rules={[
                       {
                         required: !currentlyWorking,
-                        message: "Vui lòng chọn tháng kết thúc",
+                        message: t("please_select_end_date"),
                       },
                     ]}
                   >
                     <Select
-                      placeholder="Chọn tháng"
+                      placeholder={t("select_month")}
                       options={months}
                       disabled={
                         workExperience?.currently_working || currentlyWorking
@@ -403,12 +410,12 @@ const ExperienceComponent = () => {
                     rules={[
                       {
                         required: !currentlyWorking,
-                        message: "Vui lòng chọn năm kết thúc",
+                        message: t("please_select_end_date"),
                       },
                     ]}
                   >
                     <Select
-                      placeholder="Chọn năm"
+                      placeholder={t("select_year")}
                       options={years}
                       disabled={
                         workExperience?.currently_working || currentlyWorking
@@ -420,18 +427,18 @@ const ExperienceComponent = () => {
             </div>
 
             <Form.Item
-              label={<div className="text-[12px]">Mô tả chi tiết</div>}
+              label={<div className="text-[12px]">{t("description")}</div>}
               name="description"
             >
               <TextArea
-                placeholder="Mô tả chi tiết công việc, những gì đạt được trong quá trình làm việc"
+                placeholder={t("description_experience")}
                 rows={4}
                 className="text-[12px]"
               />
             </Form.Item>
 
             <Typography.Text italic className="block mb-4 text-[12px]">
-              Thêm liên kết hoặc tải lên hình ảnh về kinh nghiệm của bạn
+              {t("add_link_or_upload_image_about_your_experience")}
             </Typography.Text>
 
             <div className="flex gap-4 mb-6">
@@ -440,10 +447,10 @@ const ExperienceComponent = () => {
                 onClick={handleOnClickImage}
                 icon={<PictureOutlined />}
               >
-                Tải ảnh
+                {t("upload_image")}
               </Button>
               <Button className="!text-[12px]" icon={<LinkOutlined />}>
-                Tải liên kết
+                {t("upload_link")}
               </Button>
             </div>
 
@@ -453,9 +460,9 @@ const ExperienceComponent = () => {
                   type="primary"
                   htmlType="submit"
                   className="w-full !bg-primaryColor"
-                  size="small"
+                  size="middle"
                 >
-                  Thêm
+                  {t("add")}
                 </Button>
               ) : (
                 <div className="flex items-center justify-between gap-4">
@@ -465,7 +472,7 @@ const ExperienceComponent = () => {
                     className="!bg-primaryColorH text-white w-full"
                     size="small"
                   >
-                    Cập nhật
+                    {t("update")}
                   </Button>
                   <Button
                     size="small"
@@ -479,7 +486,7 @@ const ExperienceComponent = () => {
                       border: "none",
                     }}
                   >
-                    Xóa
+                    {t("delete")}
                   </Button>
                 </div>
               )}
@@ -546,14 +553,14 @@ const ExperienceComponent = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-[#d3464f]" size={12} />
-              <h2 className="font-semibold text-[12px]">Kinh nghiệm</h2>
+              <h2 className="font-semibold text-[12px]">{t("experience")}</h2>
             </div>
             <Button
-              size="small"
+              size="middle"
               className="text-[12px]"
               onClick={() => handleOpenExperience("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           {/* <div className="flex items-center justify-start"> */}
@@ -578,19 +585,20 @@ const ExperienceComponent = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-[#d3464f]" size={12} />
-              <h2 className="font-semibold text-[12px]">Kinh nghiệm</h2>
+              <h2 className="font-semibold text-[12px]">{t("experience")}</h2>
             </div>
             <Button
-              size="small"
+              size="middle"
               className="text-[12px]"
               onClick={() => handleOpenExperience("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           <p className="text-gray-500 !text-[12px]">
-            Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
-            phần này theo CV.
+            {t(
+              "if_you_have_a_CV_on_DevHire_click_update_to_automatically_fill_this_part_according_to_the_CV"
+            )}
           </p>
         </Card>
       )}
@@ -601,10 +609,10 @@ const ExperienceComponent = () => {
         renderBody={renderBody}
         title={
           actionType === "create"
-            ? "Kinh nghiệm"
+            ? t("experience")
             : actionType === "edit"
-            ? "Cập nhật"
-            : "Xóa Kinh nghiệm"
+            ? t("update")
+            : t("delete")
         }
       />
     </div>

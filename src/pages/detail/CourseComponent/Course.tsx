@@ -1,6 +1,7 @@
 import { Card, Avatar, Typography, Button } from "antd";
 import { BookOutlined, EditOutlined, LinkOutlined } from "@ant-design/icons";
 import useMomentFn from "../../../hooks/useMomentFn";
+import { t } from "i18next";
 
 const { Title, Text } = Typography;
 
@@ -67,8 +68,8 @@ export default function Course({
                   {description}
                 </Text>
                 <Text className="block text-gray-500 !text-[12px]">
-                  {`Từ: ${formatDate(start_date)} đến: ${
-                    end_date ? formatDate(end_date) : "Hiện tại"
+                  {`${t("from")}: ${formatDate(start_date)} ${t("to")}: ${
+                    end_date ? formatDate(end_date) : t("present")
                   }`}
                 </Text>
               </div>

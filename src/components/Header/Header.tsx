@@ -31,6 +31,8 @@ import { resetUser } from "../../redux/slices/userSlices";
 import { useDispatch } from "react-redux";
 import ButtonComponent from "../Button/ButtonComponent";
 import useMomentFn from "../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
+import LanguageSwitch from "../LanguagesSwitch/LanguagesSwitch";
 const Header: React.FC = () => {
   const [hovered, setHovered] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); // New state to manage the menu visibility
@@ -44,6 +46,11 @@ const Header: React.FC = () => {
   const dispatch = useDispatch();
   const { formatDate } = useMomentFn();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (language: "en" | "vi") => {
+    i18n.changeLanguage(language);
+  };
   const getNotificationsForCandidate = async () => {
     try {
       const res = await NOTIFICATION_API.getNotificationsForCandidate(
@@ -390,7 +397,7 @@ const Header: React.FC = () => {
                     }
                   `}
                   >
-                    <span className="relative z-10">{item.name}</span>
+                    <span className="relative z-10">{t(item.id)}</span>
                   </div>
                 </li>
               );
@@ -468,7 +475,7 @@ const Header: React.FC = () => {
                     }
                   `}
                 >
-                  <span className="relative z-10">{item.name}</span>
+                  <span className="relative z-10">{t(item.id)}</span>
                 </div>
               </li>
             );
@@ -495,7 +502,8 @@ const Header: React.FC = () => {
           )}
         </ul>
 
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-6 ">
+          <LanguageSwitch />
           {userDetail.access_token ? (
             <>
               <Popover

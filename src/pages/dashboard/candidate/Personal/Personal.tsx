@@ -12,6 +12,7 @@ import { MediaApi } from "../../../../services/modules/mediaServices";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import "./style.css";
 import useMomentFn from "../../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 interface CV {
   _id: string;
   user_id: string;
@@ -35,6 +36,7 @@ const Personal = () => {
   const { cities, loading: citiesLoading } = useCities();
   const { districts, loading: districtLoading } = useDistricts(city);
   const { wards, loading: wardsLoading } = useWards(district);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setCity(userDetail?.city_id?._id || "");
@@ -83,7 +85,7 @@ const Personal = () => {
           refresh_token: userDetail?.refresh_token,
         })
       );
-      message.success("Cập nhật thành công");
+      message.success(t("update_success"));
     }
     setLoading(false);
   };
@@ -103,7 +105,9 @@ const Personal = () => {
 
   return (
     <LoadingComponent isLoading={loading}>
-      <h2 className="text-[20px] font-semibold mb-4">Thông tin cơ bản</h2>
+      <h2 className="text-[20px] font-semibold mb-4">
+        {t("basic_information")}
+      </h2>
       <Form
         layout="vertical"
         onFinish={handleSaveChanges}
@@ -132,7 +136,7 @@ const Personal = () => {
                   className="transition-opacity duration-300"
                 />
                 <span className="absolute top-[50px] inset-0 flex justify-center items-center text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Update
+                  {t("update")}
                 </span>
                 <input
                   type="file"
@@ -154,14 +158,14 @@ const Personal = () => {
                       // Kiểm tra loại file
                       const isImage = file.type.startsWith("image/");
                       if (!isImage) {
-                        message.error("Chỉ hỗ trợ tải lên ảnh!");
+                        message.error(t("only_support_upload_image"));
                         return;
                       }
 
                       // Kiểm tra kích thước file (5MB)
                       const isSmallEnough = file.size / 1024 / 1024 < 5;
                       if (!isSmallEnough) {
-                        message.error("Kích thước ảnh phải nhỏ hơn 5MB!");
+                        message.error(t("image_size_must_be_less_than_5mb"));
                         return;
                       }
 
@@ -178,7 +182,7 @@ const Personal = () => {
                       }
                     } catch (error) {
                       onError && onError(error); // Gọi hàm onError khi có lỗi
-                      message.error("Tải lên thất bại!"); // Hiển thị thông báo lỗi
+                      message.error(t("upload_failed")); // Hiển thị thông báo lỗi
                     } finally {
                       setLoading(false);
                     }
@@ -187,10 +191,10 @@ const Personal = () => {
                   <div className="text-center">
                     <UploadOutlined className="text-2xl mb-1" />
                     <div className="text-[12px] text-gray-500">
-                      Duyệt ảnh hoặc thả vào đây
+                      {t("upload_image")}
                     </div>
                     <div className="text-[12px] text-gray-400">
-                      Một bức ảnh lớn hơn 400px là tốt nhất. Tối đa 5 MB.
+                      {t("one_image_larger_than_400px_is_best")}
                     </div>
                   </div>
                 </Upload>
@@ -208,31 +212,35 @@ const Personal = () => {
 
           <Form.Item
             className="md:w-[400px]"
-            label={<span className="text-[12px]">Họ và tên</span>}
+            label={<span className="text-[12px]">{t("full_name")}</span>}
             name="full_name"
-            rules={[{ required: true, message: "Please enter your full name" }]}
+            rules={[
+              { required: true, message: t("please_enter_your_full_name") },
+            ]}
           >
             <Input placeholder="Enter your full name" className="text-[12px]" />
           </Form.Item>
 
           <Form.Item
             className="md:w-[400px]"
-            label={<span className="text-[12px]">Giới tính</span>}
+            label={<span className="text-[12px]">{t("gender")}</span>}
             name="gender"
-            rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+            rules={[{ required: true, message: t("please_select_gender") }]}
           >
-            <Select placeholder="Chọn giới tính" className="text-[12px]">
-              <Select.Option value={0}>Nam</Select.Option>
-              <Select.Option value={1}>Nữ</Select.Option>
-              <Select.Option value={2}>Không xác định</Select.Option>
+            <Select placeholder={t("select_gender")} className="text-[12px]">
+              <Select.Option value={0}>{t("male")}</Select.Option>
+              <Select.Option value={1}>{t("female")}</Select.Option>
+              <Select.Option value={2}>{t("not_specified")}</Select.Option>
             </Select>
           </Form.Item>
 
           <Form.Item
             className="md:w-[400px]"
-            label={<span className="text-[12px]">Ngày sinh</span>}
+            label={<span className="text-[12px]">{t("birthday")}</span>}
             name="birthday"
-            rules={[{ required: true, message: "Please enter your birthday" }]}
+            rules={[
+              { required: true, message: t("please_enter_your_birthday") },
+            ]}
           >
             <Input type="date" className="text-[12px]" />
           </Form.Item>
@@ -241,7 +249,7 @@ const Personal = () => {
             label={<span className="text-[12px]">Giới thiệu</span>}
             name="introduce"
             rules={[
-              { required: true, message: "Please input your introduction!" },
+              { required: true, message: t("please_input_your_introduction") },
             ]}
           >
             <Input.TextArea
@@ -254,9 +262,9 @@ const Personal = () => {
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-[12px]">Port Folio</span>}
+            label={<span className="text-[12px]">{t("port_folio")}</span>}
             name="port_folio"
-            rules={[{ type: "url", message: "Please enter a valid URL" }]}
+            rules={[{ type: "url", message: t("please_enter_a_valid_url") }]}
           >
             <Input
               placeholder="Enter your portfolio URL"
@@ -266,7 +274,7 @@ const Personal = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Form.Item
-              label={<span className="text-[12px]">City</span>}
+              label={<span className="text-[12px]">{t("city")}</span>}
               name="city"
             >
               <Select
@@ -285,7 +293,7 @@ const Personal = () => {
             </Form.Item>
 
             <Form.Item
-              label={<span className="text-[12px]">District</span>}
+              label={<span className="text-[12px]">{t("district")}</span>}
               name="district"
             >
               <Select
@@ -325,11 +333,16 @@ const Personal = () => {
 
           <Form.Item
             className="md:w-[400px]"
-            label={<span className="text-[12px]">Địa chỉ</span>}
+            label={<span className="text-[12px]">{t("address")}</span>}
             name="address"
-            rules={[{ required: true, message: "Please enter your address!" }]}
+            rules={[
+              { required: true, message: t("please_enter_your_address") },
+            ]}
           >
-            <Input placeholder="Enter your address" className="text-[12px]" />
+            <Input
+              placeholder={t("enter_your_address")}
+              className="text-[12px]"
+            />
           </Form.Item>
 
           <div className="flex justify-end">
@@ -340,7 +353,7 @@ const Personal = () => {
               className="py-2 px-8 !text-[12px]"
               style={{ backgroundColor: "#d64453", borderColor: "#d64453" }}
             >
-              Save Changes
+              {t("save_changes")}
             </Button>
           </div>
         </div>

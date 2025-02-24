@@ -1,4 +1,5 @@
 import { Button, Image } from "antd";
+import { useTranslation } from "react-i18next";
 interface CTACardProps {
   title: string;
   description: string;

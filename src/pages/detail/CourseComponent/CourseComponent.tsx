@@ -12,6 +12,8 @@ import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 import useMomentFn from "../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
+import moment from "moment";
 
 interface Course {
   _id: string;
@@ -26,6 +28,7 @@ interface Course {
 }
 
 export default function CourseView() {
+  const { t } = useTranslation();
   const { formatDate } = useMomentFn();
   const userDetail = useSelector((state) => state.user);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -82,12 +85,10 @@ export default function CourseView() {
       if (res.data) {
         form.setFieldsValue({
           ...res.data,
-          start_date: formatDate(res.data.start_date)
-            ? formatDate(res.data.start_date)
+          start_date: moment(res.data.start_date)
+            ? moment(res.data.start_date)
             : "",
-          end_date: formatDate(res.data.end_date)
-            ? formatDate(res.data.end_date)
-            : "",
+          end_date: moment(res.data.end_date) ? moment(res.data.end_date) : "",
         });
         setLink(res.data.course_link);
       }
@@ -116,8 +117,8 @@ export default function CourseView() {
       setLoading(true);
       const { start_date, end_date } = values;
 
-      const formattedStartDate = formatDate(start_date);
-      const formattedEndDate = formatDate(end_date);
+      const formattedStartDate = moment(start_date);
+      const formattedEndDate = moment(end_date);
 
       const params = {
         user_id: userDetail?._id,
@@ -133,8 +134,8 @@ export default function CourseView() {
       const res = await COURSE_API.create(params, userDetail.accessToken);
       if (res.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Thêm Khóa học thành công",
+          message: t("notification"),
+          description: t("create_success"),
         });
         await handleGetCoursesByUserId({});
         closeModal();
@@ -153,8 +154,8 @@ export default function CourseView() {
       setImgUrl(res.data.url);
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Tải thất bại",
+        message: t("notification"),
+        description: t("upload_failed"),
       });
     }
     setLoading(false);
@@ -176,8 +177,8 @@ export default function CourseView() {
       );
       if (res.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
         await handleGetCoursesByUserId({});
         closeModal();
@@ -185,7 +186,7 @@ export default function CourseView() {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.response.data.message,
       });
     } finally {
@@ -202,8 +203,8 @@ export default function CourseView() {
       );
       if (+res.statusCode === 200) {
         notification.success({
-          message: "Thông báo",
-          description: "Xóa thành công",
+          message: t("notification"),
+          description: t("delete_success"),
         });
         await handleGetCoursesByUserId({});
         closeModal();
@@ -211,7 +212,7 @@ export default function CourseView() {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.response.data.message,
       });
     } finally {
@@ -226,54 +227,64 @@ export default function CourseView() {
           <Form form={form} layout="vertical" onFinish={onSubmit}>
             <LoadingComponent isLoading={loading}>
               <Form.Item
-                label={<span className="text-[12px]">Tên khóa học</span>}
+                label={<span className="text-[12px]">{t("course_name")}</span>}
                 name="course_name"
                 rules={[
-                  { required: true, message: "Vui lòng nhập tên khóa học" },
+                  { required: true, message: t("please_enter_course_name") },
                 ]}
               >
                 <Input
-                  placeholder="Tên khóa học"
+                  placeholder={t("course_name")}
                   className="w-full text-[12px]"
                 />
               </Form.Item>
 
               <Form.Item
-                label={<span className="text-[12px]">Tổ chức</span>}
+                label={
+                  <span className="text-[12px]">
+                    {t("organization_name_course")}
+                  </span>
+                }
                 name="organization_name"
                 rules={[
-                  { required: true, message: "Vui lòng nhập tên tổ chức" },
+                  {
+                    required: true,
+                    message: t("please_enter_organization_name_course"),
+                  },
                 ]}
               >
-                <Input placeholder="Tổ chức" className="w-full text-[12px]" />
+                <Input
+                  placeholder={t("organization_name_course")}
+                  className="w-full text-[12px]"
+                />
               </Form.Item>
 
               <Form.Item
-                label={<span className="text-[12px]">Ngày bắt đầu</span>}
+                label={<span className="text-[12px]">{t("start_date")}</span>}
                 name="start_date"
                 rules={[
-                  { required: true, message: "Vui lòng nhập ngày bắt đầu" },
+                  { required: true, message: t("please_enter_start_date") },
                 ]}
               >
                 <Input type="date" className="text-[12px]" />
               </Form.Item>
 
               <Form.Item
-                label={<span className="text-[12px]">Ngày kết thúc</span>}
+                label={<span className="text-[12px]">{t("end_date")}</span>}
                 name="end_date"
                 rules={[
-                  { required: true, message: "Vui lòng nhập ngày kết thúc" },
+                  { required: true, message: t("please_enter_end_date") },
                 ]}
               >
                 <Input type="date" className="text-[12px]" />
               </Form.Item>
 
               <Form.Item
-                label={<span className="text-[12px]">Mô tả</span>}
+                label={<span className="text-[12px]">{t("description")}</span>}
                 name="description"
               >
                 <TextArea
-                  placeholder="Mô tả ngắn gọn ..."
+                  placeholder={t("description")}
                   className="text-[12px]"
                   rows={3}
                 />
@@ -292,7 +303,7 @@ export default function CourseView() {
                   htmlType="submit"
                   className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white w-full !cursor-pointer"
                 >
-                  Thêm
+                  {t("add")}
                 </Button>
               )}
               {type === "edit" && (
@@ -302,14 +313,14 @@ export default function CourseView() {
                     onClick={onUpdate}
                     className="w-full !bg-primaryColor text-[12px]"
                   >
-                    Cập nhật
+                    {t("update")}
                   </Button>
                   <Button
                     type="primary"
                     onClick={onDelete}
                     className="w-full !bg-black text-[12px]"
                   >
-                    Xóa
+                    {t("delete")}
                   </Button>
                 </div>
               )}
@@ -327,13 +338,13 @@ export default function CourseView() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <Book className="h-6 w-6 text-[#d3464f] text-[12px]" />
-              <h2 className="font-semibold  text-[12px]">Khóa học</h2>
+              <h2 className="font-semibold  text-[12px]">{t("course")}</h2>
             </div>
             <Button
               className="!text-[12px]"
               onClick={() => handleOpenModel("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           {courses?.map((course) => (
@@ -355,18 +366,19 @@ export default function CourseView() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <Book className="h-6 w-6 text-[#d3464f] text-[12px]" />
-              <h2 className="font-semibold  text-[12px]">Khóa học</h2>
+              <h2 className="font-semibold  text-[12px]">{t("course")}</h2>
             </div>
             <Button
               className="!text-[12px]"
               onClick={() => handleOpenModel("create")}
             >
-              Thêm mục
+              {t("add")}
             </Button>
           </div>
           <div className="text-[12px]">
-            Nếu bạn đã có CV trên DevHire, bấm Cập nhật để hệ thống tự động điền
-            phần này theo CV.
+            {t(
+              "if_you_have_a_CV_on_DevHire_click_update_to_automatically_fill_this_part_according_to_the_CV"
+            )}
           </div>
         </Card>
       )}
@@ -374,7 +386,7 @@ export default function CourseView() {
       <GeneralModal
         renderBody={renderBody}
         visible={visible}
-        title={type === "create" ? "Khóa học" : "Cập nhật"}
+        title={type === "create" ? t("course") : t("update")}
         onCancel={closeModal}
       />
     </>

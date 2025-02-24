@@ -129,7 +129,7 @@ export const routes: IRoute[] = [
         isShowFooter:true
     },
     {
-        path:'/employers',
+        path:'/companies',
         page: EmployeesPage,
         isShowHeader:true,
         isShowFooter:true

@@ -8,6 +8,7 @@ import moment from "moment";
 import useMomentFn from "../../hooks/useMomentFn";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 import SearchInput from "../../components/SearchInput/SearchInput";
+import { useTranslation } from "react-i18next";
 
 export default function SystemActivities() {
   const user = useSelector((state) => state.user);
@@ -15,6 +16,7 @@ export default function SystemActivities() {
   const [search, setSearch] = useState<string>("");
   const [meta, setMeta] = useState<Meta>();
   const { formatDate } = useMomentFn();
+  const { t } = useTranslation();
   const [dateRange, setDateRange] = useState({
     start: "16/02/25",
     end: "23/02/25",
@@ -48,7 +50,7 @@ export default function SystemActivities() {
     return (
       <div>
         <b>• Các thay đổi:</b>
-        {Object.entries(activities?.changes)?.map(([key, value], idx) => (
+        {Object?.entries(activities?.changes)?.map(([key, value], idx) => (
           <p key={idx} className="flex items-center gap-2 ml-5 w-full">
             <b className="whitespace-nowrap">• {key}:</b>
             <span className="text-gray-500 line-through whitespace-nowrap overflow-hidden text-ellipsis">
@@ -177,13 +179,14 @@ export default function SystemActivities() {
                     <p>
                       • <b>Địa chỉ IP:</b> {activity?.ipAddress}
                     </p>
-                    {changesDisplay(activity)}
+                    {activity?.changes && changesDisplay(activity)}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         ))}
+        <div>{t("welcome")}</div>
         <CustomPagination
           currentPage={meta?.current}
           perPage={meta?.per_page}

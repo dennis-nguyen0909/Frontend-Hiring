@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { ROLE_API } from "../../services/modules/RoleServices";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
 import { getRandomColor } from "../../utils/color.utils";
-
+import { useTranslation } from "react-i18next";
 export default function EmployeesPage() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchCity, setSearchCity] = useState<string>("");
@@ -19,7 +19,7 @@ export default function EmployeesPage() {
   const [meta, setMeta] = useState<Meta>({});
   const [roleEmployer, setRoleEmployer] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const handleGetEmployerRole = async () => {
     try {
@@ -82,7 +82,7 @@ export default function EmployeesPage() {
             <div className="flex-1">
               <Input
                 size="large"
-                placeholder="Tìm kiếm : Tên công ty ..."
+                placeholder={t("search_company")}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 prefix={<Search className="text-gray-400" size={20} />}
@@ -94,7 +94,7 @@ export default function EmployeesPage() {
                 size="large"
                 value={searchCity}
                 onChange={(e) => setSearchCity(e.target.value)}
-                placeholder="Thành phố ..."
+                placeholder={t("city")}
                 prefix={<MapPin className="text-gray-400" size={20} />}
                 className="w-full text-[12px]"
               />
@@ -103,7 +103,7 @@ export default function EmployeesPage() {
               onClick={onSearch}
               className="text-[12px] rounded-lg bg-primaryColor px-8 py-2 text-white transition-colors hover:bg-gray-700"
             >
-              Tìm kiếm
+              {t("search")}
             </button>
           </div>
         </div>
@@ -145,14 +145,14 @@ export default function EmployeesPage() {
                       className="rounded-full px-2 py-1 text-xs text-white text-[12px]"
                       style={{ backgroundColor: getRandomColor() }}
                     >
-                      Featured
+                      {t("featured")}
                     </span>
                   </div>
                   <button
                     onClick={() => handleNavigate(company?._id)}
                     className="!text-[12px] w-full rounded-lg bg-black py-2 text-center text-sm font-medium text-white transition-colors hover:bg-gray-700"
                   >
-                    Vị trí mở ({company?.jobs_ids?.length || 0})
+                    {t("location_open")} ({company?.jobs_ids?.length || 0})
                   </button>
                 </div>
               ))}
@@ -160,7 +160,7 @@ export default function EmployeesPage() {
         </LoadingComponentSkeleton>
         {companies?.length === 0 && (
           <Empty
-            description="Không có dữ liệu"
+            description={t("no_data")}
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         )}

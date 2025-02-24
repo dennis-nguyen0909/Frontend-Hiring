@@ -1,15 +1,28 @@
-import { Checkbox, Form, InputNumber, notification, Button, Row, Col } from "antd";
+import {
+  Checkbox,
+  Form,
+  InputNumber,
+  notification,
+  Button,
+  Row,
+  Col,
+} from "antd";
 import * as userServices from "../../../../services/modules/userServices";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
-
+import { useTranslation } from "react-i18next";
 const ExperienceNumberCandidate = () => {
-  const [form] = Form.useForm(); // Đảm bảo khai báo form đúng cách
+  const [form] = Form.useForm();
   const userDetail = useSelector((state) => state.user);
-  const { handleUpdateProfile } = useCalculateUserProfile(userDetail?._id, userDetail?.access_token);
-
-  const [noExperience, setNoExperience] = useState(userDetail?.no_experience || false); // Trạng thái "Không có kinh nghiệm"
+  const { handleUpdateProfile } = useCalculateUserProfile(
+    userDetail?._id,
+    userDetail?.access_token
+  );
+  const { t } = useTranslation();
+  const [noExperience, setNoExperience] = useState(
+    userDetail?.no_experience || false
+  );
 
   const onFinish = async (values: any) => {
     const params = {
@@ -19,14 +32,14 @@ const ExperienceNumberCandidate = () => {
     const res = await userServices.updateUser(params);
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Cập nhật thông tin năm kinh nghiệm",
+        message: t("notification"),
+        description: t("update_experience_number"),
       });
       await handleUpdateProfile();
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Cập nhật thất bại",
+        message: t("notification"),
+        description: t("update_experience_number_failed"),
       });
     }
   };
@@ -49,31 +62,47 @@ const ExperienceNumberCandidate = () => {
   };
 
   return (
-    <div style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-      <h1 className="text-[12px]" style={{ textAlign: 'center', marginBottom: '20px' }}>Số năm kinh nghiệm</h1>
+    <div
+      style={{
+        padding: "20px",
+        backgroundColor: "#f9f9f9",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      }}
+    >
+      <h1
+        className="text-[12px]"
+        style={{ textAlign: "center", marginBottom: "20px" }}
+      >
+        {t("experience_number")}
+      </h1>
 
       <Form
         form={form}
         onFinish={onFinish}
         layout="vertical"
-        style={{ maxWidth: '600px', margin: '0 auto' }} // Căn giữa form
+        style={{ maxWidth: "600px", margin: "0 auto" }} // Căn giữa form
       >
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
-              label={<div className="text-[12px]">Số tháng kinh nghiệm</div>}
+              label={
+                <div className="text-[12px]">
+                  {t("total_experience_months")}
+                </div>
+              }
               name="total_experience_months"
               rules={[
                 {
                   required: !noExperience, // Yêu cầu nếu không có kinh nghiệm
-                  message: "Vui lòng nhập số tháng kinh nghiệm",
+                  message: t("please_enter_experience_number"),
                 },
               ]}
             >
               <InputNumber
                 min={0}
                 max={1000}
-                placeholder="Nhập số tháng"
+                placeholder={t("enter_experience_number")}
                 style={{ width: "100%" }}
                 className="text-[12px]"
                 disabled={noExperience} // Disable nếu không có kinh nghiệm
@@ -83,19 +112,23 @@ const ExperienceNumberCandidate = () => {
 
           <Col span={12}>
             <Form.Item
-              label={<div className="text-[12px]">Số năm kinh nghiệm</div>}
+              label={
+                <div className="text-[12px]">{t("total_experience_years")}</div>
+              }
               name="total_experience_years"
               rules={[
                 {
-                  required: !noExperience && form.getFieldValue("total_experience_months") === undefined,
-                  message: "Vui lòng nhập số năm kinh nghiệm",
+                  required:
+                    !noExperience &&
+                    form.getFieldValue("total_experience_months") === undefined,
+                  message: t("please_enter_experience_number"),
                 },
               ]}
             >
               <InputNumber
                 min={0}
                 max={100}
-                placeholder="Nhập số năm"
+                placeholder={t("enter_experience_number")}
                 style={{ width: "100%" }}
                 className="text-[12px]"
                 disabled={noExperience} // Disable nếu không có kinh nghiệm
@@ -103,17 +136,17 @@ const ExperienceNumberCandidate = () => {
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item
-          name="no_experience"
-          valuePropName="checked"
-        >
+        <Form.Item name="no_experience" valuePropName="checked">
           <Checkbox className="text-[12px]" onChange={handleCheckboxChange}>
-            Không có kinh nghiệm
+            {t("no_experience")}
           </Checkbox>
         </Form.Item>
-        <Form.Item style={{ textAlign: 'center' }}>
-          <Button htmlType="submit" className="px-4 !bg-primaryColor !text-[12px] !text-white">
-            Cập nhật
+        <Form.Item style={{ textAlign: "center" }}>
+          <Button
+            htmlType="submit"
+            className="px-4 !bg-primaryColor !text-[12px] !text-white"
+          >
+            {t("update_experience_number")}
           </Button>
         </Form.Item>
       </Form>

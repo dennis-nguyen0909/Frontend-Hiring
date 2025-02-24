@@ -7,8 +7,10 @@ import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import { Meta } from "../../../../types";
 import useMomentFn from "../../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 
 const OverViewCandidate = ({ userDetail }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: caculateProfile } = useCalculateUserProfile(
     userDetail?._id,
@@ -18,7 +20,7 @@ const OverViewCandidate = ({ userDetail }) => {
 
   const recentlyAppliedColumns = [
     {
-      title: "Việc làm",
+      title: t("job"),
       dataIndex: "job",
       key: "job",
       render: (text, record) => (
@@ -36,7 +38,7 @@ const OverViewCandidate = ({ userDetail }) => {
                 <div className="flex items-center gap-1">
                   <span className="mr-2 text-[12px]">{record.location}</span>
                   <BadgeDollarSign size={12} />
-                  <span className="text-[12px]">Thỏa thuận</span>
+                  <span className="text-[12px]">{t("negotiable")}</span>
                 </div>
               ) : (
                 <span>{record.salary}</span>
@@ -48,7 +50,7 @@ const OverViewCandidate = ({ userDetail }) => {
       className: "min-w-[200px] text-[12px]", // Giữ chiều rộng tối thiểu cho cột "Việc làm"
     },
     {
-      title: "Ngày nộp",
+      title: t("date_applied"),
       dataIndex: "dateApplied",
       key: "dateApplied",
       className: "min-w-[150px] text-[12px]", // Giữ chiều rộng tối thiểu cho cột "Ngày nộp"
@@ -57,7 +59,7 @@ const OverViewCandidate = ({ userDetail }) => {
       ),
     },
     {
-      title: "Trạng thái",
+      title: t("status"),
       dataIndex: "status",
       key: "status",
       render: (text) => (
@@ -87,7 +89,7 @@ const OverViewCandidate = ({ userDetail }) => {
       className: "min-w-[120px] text-[12px]", // Giữ chiều rộng tối thiểu cho cột "Trạng thái"
     },
     {
-      title: "Hành động",
+      title: t("action"),
       key: "action",
       render: () => (
         <Button
@@ -95,7 +97,7 @@ const OverViewCandidate = ({ userDetail }) => {
           type="primary"
           className="bg-blue-500 hover:bg-blue-600 text-[12px]"
         >
-          Xem chi tiết
+          {t("view_detail")}
         </Button>
       ),
       className: "min-w-[150px] text-[12px]", // Giữ chiều rộng tối thiểu cho cột "Hành động"
@@ -185,27 +187,27 @@ const OverViewCandidate = ({ userDetail }) => {
   return (
     <div>
       <h1 className="text-2xl font-semibold mb-1">
-        Xin chào, {userDetail?.full_name}
+        {t("hello")}, {userDetail?.full_name}
       </h1>
       <p className="text-gray-500 mb-6 text-[12px]">
-        Đây là hoạt động hàng ngày và thông báo công việc của bạn
+        {t("this_is_the_daily_activity_and_job_notification_of_you")}
       </p>
 
       {/* Stats */}
       <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div className="bg-blue-50 p-4 rounded-lg">
           <div className="text-[18px] font-bold">{countApplied || 0}</div>
-          <div className="text-blue-600 text-[12px]">Việc làm ứng tuyển</div>
+          <div className="text-blue-600 text-[12px]">{t("job_applied")}</div>
         </div>
         <div className="bg-yellow-50 p-4 rounded-lg">
           <div className="text-[18px] font-bold">
             {userDetail?.favorite_jobs.length || 0}
           </div>
-          <div className="text-yellow-600 text-[12px]">Việc làm yêu thích</div>
+          <div className="text-yellow-600 text-[12px]">{t("favorite_job")}</div>
         </div>
         <div className="bg-green-50 p-4 rounded-lg">
           <div className="text-[18px] font-bold">0</div>
-          <div className="text-green-600 text-[12px]">Thông báo việc làm</div>
+          <div className="text-green-600 text-[12px]">{t("job_alert")}</div>
         </div>
       </div>
 
@@ -215,11 +217,10 @@ const OverViewCandidate = ({ userDetail }) => {
           <Avatar size={50} src={userDetail?.avatar} />
           <div className="flex-1 ml-3">
             <h3 className="font-semibold text-white text-[12px] text-center lg:text-left">
-              Việc chỉnh sửa hồ sơ của bạn chưa hoàn tất.
+              {t("your_profile_is_not_complete")}
             </h3>
             <p className="text-white text-[12px] text-center lg:text-left">
-              Hoàn tất chỉnh sửa hồ sơ của bạn và xây dựng Sơ yếu lý lịch tùy
-              chỉnh của bạn
+              {t("complete_your_profile_and_build_your_resume")}
             </p>
           </div>
           <Button
@@ -227,7 +228,7 @@ const OverViewCandidate = ({ userDetail }) => {
             type="primary"
             className="mt-4 sm:mt-0 !bg-white !text-[#e05051] !border-red-500 !hover:bg-red-50 !text-[12px]"
           >
-            Cập nhật ngay
+            {t("update_now")}
           </Button>
         </div>
       )}
@@ -235,9 +236,11 @@ const OverViewCandidate = ({ userDetail }) => {
       {/* Recently Applied Việc làm */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-[12px] font-semibold">Đã ứng tuyển gần đây</h2>
+          <h2 className="text-[12px] font-semibold">
+            {t("recently_applied_job")}
+          </h2>
           <a href="#" className="text-blue-500 text-[12px] hover:underline">
-            Xem tất cả →
+            {t("view_all")} →
           </a>
         </div>
         <div className="overflow-x-auto">
@@ -247,7 +250,7 @@ const OverViewCandidate = ({ userDetail }) => {
             columns={recentlyAppliedColumns}
             dataSource={jobsApplied}
             pagination={false}
-            scroll={{ x: "max-content" }} // Cấu hình cuộn ngang
+            scroll={{ x: "max-content" }}
           />
         </div>
         {jobsApplied.length > 0 && (

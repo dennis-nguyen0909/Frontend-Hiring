@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
@@ -10,7 +9,8 @@ import viMessages from "./translations/vi.json";
 import "typeface-inter";
 import { PersistGate } from "redux-persist/integration/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
+import "../src/config/i18n.config.ts";
 const messages = {
   en: enMessages,
   vi: viMessages,
@@ -26,15 +26,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <IntlProvider messages={messages[language]} locale={language}>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <App />
-            <ToastContainer />
-          </PersistGate>
-        </Provider>
-      </IntlProvider>
-    </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <IntlProvider messages={messages[language]} locale={language}>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+          <ToastContainer />
+        </PersistGate>
+      </Provider>
+    </IntlProvider>
+  </QueryClientProvider>
   // </StrictMode>
 );

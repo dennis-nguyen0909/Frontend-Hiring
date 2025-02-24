@@ -11,6 +11,7 @@ import { JobCard } from "../home/SuggestionJob/JobCard";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
 import ButtonComponent from "../../components/Button/ButtonComponent";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const FeatureJobV2 = () => {
   const [jobs, setJobs] = useState([]);
@@ -25,6 +26,7 @@ const FeatureJobV2 = () => {
   const [selectedSalary, setSelectedSalary] = useState("all");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   // Fetch cities data
   const handleGetCities = async () => {
     try {
@@ -164,10 +166,10 @@ const FeatureJobV2 = () => {
         // style={{ margin: "50px 0" }}
       >
         <h1 className="text-textBlack text-[20px] font-medium">
-          Việc làm tốt nhất
+          {t("feature_job")}
         </h1>
         <ButtonComponent onClick={onViewAll}>
-          <div className="text-[12px]">Xem tất cả</div>
+          <div className="text-[12px]">{t("view_all")}</div>
         </ButtonComponent>
       </div>
 
@@ -185,7 +187,7 @@ const FeatureJobV2 = () => {
               options={[
                 {
                   value: "dia_diem",
-                  label: <span className="!text-[12px]">Địa điểm</span>,
+                  label: <span className="!text-[12px]">{t("location")}</span>,
                 },
                 // { value: "muc_luong", label: <span className="!text-[12px]">Mức lương</span> },
                 // { value: "kinh_nghiem", label: <span className="!text-[12px]">Kinh Nghiệm</span> },
