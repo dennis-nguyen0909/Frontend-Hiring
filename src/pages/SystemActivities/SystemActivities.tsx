@@ -149,7 +149,7 @@ export default function SystemActivities() {
             </div>
 
             <div className="bg-white rounded-lg p-2 max-w-sm">
-              <div className="flex items-start justify-start mb-1  flex-col-reverse">
+              <div className="flex items-start justify-start flex-col-reverse">
                 <span className="font-medium text-[12px]">
                   {activity.userId?.full_name} đã thực hiện {activity.action}
                 </span>
@@ -160,7 +160,7 @@ export default function SystemActivities() {
               </div>
               <div className="flex items-start gap-2">
                 <div className="flex-1">
-                  <div className="mt-1 space-y-1 text-[10px] text-gray-600">
+                  <div className="mt-1 text-[10px] text-gray-600">
                     <p>
                       • <b>Thiết bị:</b> {activity?.deviceInfo?.device?.model}
                     </p>

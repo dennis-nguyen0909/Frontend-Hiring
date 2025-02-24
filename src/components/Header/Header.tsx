@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { menuHeader } from "../../helper";
 import "react-phone-input-2/lib/style.css";
 import {
@@ -43,6 +43,7 @@ const Header: React.FC = () => {
     useState<boolean>(false);
   const dispatch = useDispatch();
   const { formatDate } = useMomentFn();
+  const location = useLocation();
   const getNotificationsForCandidate = async () => {
     try {
       const res = await NOTIFICATION_API.getNotificationsForCandidate(
@@ -73,8 +74,8 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     if (userDetail?.access_token) {
-      getNotificationsForCandidate();
-      getNotificationsForEmployer();
+      // getNotificationsForCandidate();
+      // getNotificationsForEmployer();
     }
   }, []);
 
@@ -203,9 +204,18 @@ const Header: React.FC = () => {
     </div>
   );
 
+  useEffect(() => {
+    console.log(location.pathname);
+    if (location.pathname.startsWith("/dashboard")) {
+      setActiveMenu("/dashboard/:id");
+    } else {
+      setActiveMenu(location.pathname);
+    }
+  }, [location.pathname]);
+
   const handleClick = (item: any) => {
-    if (item.name === "Dashboard") {
-      navigate(`/dashboard/${userDetail?._id || userDetail?._id}`);
+    if (item?.name === "Dashboard") {
+      navigate(`/dashboard/${userDetail?._id}`);
     } else {
       navigate(`${item.path}`);
     }
@@ -213,9 +223,7 @@ const Header: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    // Gọi API đăng xuất ở đây
     try {
-      // Giả sử có một hàm API để đăng xuất
       const res = await authServices.logout(userDetail?.access_token);
       if (res.data === true) {
         localStorage.removeItem("access_token");
@@ -310,13 +318,16 @@ const Header: React.FC = () => {
   return (
     <header>
       <div
-        className="justify-between items-center md:px-4 lg:px-primary w-full sticky md:flex pt-[10px] pb-[10px]"
+        className="justify-between items-center md:px-4 w-full sticky md:flex"
         style={{ backgroundColor: "black" }}
       >
         <div className="flex justify-between mx-5">
-          <div className="flex justify-center items-center gap-2 cursor-pointer">
-            <Avatar shape="circle" src={logo} size={60} />
-            <p className="text-white font-bold md:hidden text-[28px] lg:block">
+          <div
+            className="flex justify-center items-center gap-2 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            <Avatar shape="circle" src={logo} size={50} />
+            <p className="text-white font-bold md:hidden text-[20px] lg:block">
               HireDev
             </p>
           </div>
@@ -428,7 +439,7 @@ const Header: React.FC = () => {
           </div>
         )}
 
-        <ul className=" gap-[20px] md:gap-5 items-center flex-wrap py-2 hidden md:flex">
+        <ul className=" gap-[20px] md:gap-5 items-center flex-wrap py-1 hidden md:flex">
           {menuHeader.map((item, idx) => {
             if (item.id === "dashboard" && !userDetail.access_token) {
               return null;

@@ -41,7 +41,7 @@ const FloatingButton = () => {
         ]}
         renderItem={(item) => (
           <List.Item
-            className="!cursor-pointer"
+            className="!cursor-pointer hover:!bg-gray-100 !rounded-md"
             onClick={() => item.route && handleNavigate(item.route)}
           >
             {" "}

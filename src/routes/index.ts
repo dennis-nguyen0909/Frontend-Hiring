@@ -1,5 +1,4 @@
 import { ComponentType, lazy } from 'react';
-import HomePage from '../pages/home/HomePage';
 import LoginPage from '../pages/auth/LoginPage';
 import NotFound from '../components/NotFound/NotFound';
 import Register from '../pages/auth/RegisterPage';
@@ -10,24 +9,20 @@ import ResetPage from '../pages/auth/ResetPage';
 import UserDetail from '../pages/detail/UserDetail';
 import Profile from '../pages/detail/Profile/Profile';
 import ManagePage from '../pages/employer/manage/ManagePage';
-
 import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
-import ProfileCV from '../pages/detail/ProfileCV/ProfileCV';
-// import JobSearchPage from '../pages/job/JobPage';
-import JobDetail from '../pages/JobDetail/JobDetail';
 import MyJobDetail from '../pages/dashboard/employer/MyJob/JodDetail'
 import MyApplicationDetail from '../pages/dashboard/employer/MyJob/JobApplication'
 import EmployerDetail from '../pages/EmployerDetail/EmployerDetail';
-import AboutPage from '../pages/about';
-import EmployeesPage from '../pages/PageEmployers';
 import LandingPageExtended from '../components/LandingPageFeatures/LandingPageFeatures';
 import EmployerJob from '../pages/EmployerJob/EmployerJob';
 import JobPosting from '../pages/JobDetail/JobPosting';
 import SystemActivities from '../pages/SystemActivities/SystemActivities';
-
-const JobSearchPage = lazy(()=>import('../pages/job/JobPage'));
 const JobBoard = lazy(()=>import('../pages/job/JobBoard'));
 const DashBoard = lazy(()=>import ('../pages/dashboard'));
+const HomePage = lazy(()=>import ('../pages/home/HomePage'));
+const ProfileCV = lazy(()=>import ('../pages/detail/ProfileCV/ProfileCV'));
+const EmployeesPage = lazy(()=>import ('../pages/PageEmployers'));
+const AboutPage = lazy(()=>import ('../pages/about'));
 interface IRoute {
     path: string;
     page: ComponentType ;
