@@ -13,6 +13,7 @@ import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import "./style.css";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
+import moment from "moment";
 interface CV {
   _id: string;
   user_id: string;
@@ -121,7 +122,8 @@ const Personal = () => {
           ward: userDetail?.ward_id?.name,
           address: userDetail?.address,
           birthday: userDetail?.birthday
-            ? formatDate(userDetail?.birthday)
+            ?moment(userDetail?.birthday).format("YYYY-MM-DD")
+
             : "",
         }}
       >

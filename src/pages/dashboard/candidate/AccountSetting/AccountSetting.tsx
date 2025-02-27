@@ -22,12 +22,16 @@ import { useNavigate } from "react-router-dom";
 import * as userServices from "../../../../services/modules/userServices";
 import DateFormatSelect from "../../../../components/DateFormatSelect/DateFormatSelect";
 import { t } from "i18next";
+import { toast } from "react-toastify";
 const ContactForm = () => {
   const userDetail = useSelector((state) => state.user);
-  const [city, setCity] = useState(userDetail?.city_id?._id || "");
   const dispatch = useDispatch();
+  const [city, setCity] = useState(userDetail?.city_id?._id || "");
   const [district, setDistrict] = useState(userDetail?.district_id?._id || "");
   const [ward, setWard] = useState(userDetail?.ward_id?._id || "");
+  const [nameCity, setNameCity] = useState<string>("");
+  const [nameDistrict, setNameDistrict] = useState<string>("");
+  const [nameWard, setNameWard] = useState<string>("");
   const { cities, loading: citiesLoading } = useCities();
   const { districts, loading: districtLoading } = useDistricts(city);
   const { wards, loading: wardsLoading } = useWards(district);
@@ -40,15 +44,21 @@ const ContactForm = () => {
     setSelectedFormat(value);
   };
 
-  const handleCityChange = (value) => {
+  const handleCityChange = (value: string) => {
+    const selectedCity = cities.find((city) => city._id === value);
     setCity(value);
+    setNameCity(selectedCity?.name);
   };
-  const handleDistrictChange = (value) => {
+  const handleDistrictChange = (value: string) => {
+    const selectedDistrict = districts.find((dist) => dist._id === value);
     setDistrict(value);
+    setNameDistrict(selectedDistrict?.name);
   };
 
-  const handleWardChange = (value) => {
+  const handleWardChange = (value: string) => {
+    const selectedWard = wards.find((ward) => ward._id === value);
     setWard(value);
+    setNameWard(selectedWard?.name);
   };
   const handleSaveChanges = async (values: any) => {
     const params = {
@@ -59,6 +69,9 @@ const ContactForm = () => {
       ward_id: ward,
       address: values.address,
       dateFormat: selectedFormat,
+      name_city: nameCity,
+      name_district: nameDistrict,
+      name_ward: nameWard,
     };
     try {
       const res = await USER_API.updateUser(params, userDetail?.access_token);
@@ -84,6 +97,10 @@ const ContactForm = () => {
         ...values,
       };
       const res = await USER_API.resetPassword(params, userDetail?._id);
+      if (res?.statusCode === 201) {
+        toast.success(t("update_success"));
+        formPassword.resetFields();
+      }
     } catch (error) {
       console.error(error);
     }

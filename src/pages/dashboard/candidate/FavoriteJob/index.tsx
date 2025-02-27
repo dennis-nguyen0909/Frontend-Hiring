@@ -29,10 +29,11 @@ const FavoriteJob = () => {
     navigate(`/job-information/${id}`);
   };
 
-  const handleFavorite = async (jobId: string) => {
+  const handleFavorite = async (jobId: string, jobTitle: string) => {
     const params = {
       user_id: userDetail?._id,
       job_id: jobId,
+      jobTitle,
     };
     const res = await API_FAVORITE_JOB.createFavoriteJobs(
       params,

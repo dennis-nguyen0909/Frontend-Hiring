@@ -121,6 +121,10 @@ export interface IBackendRes<T> {
     activityDetail: string;
     createdAt: string;
     updatedAt: string;
+    changesLink: {
+      link: string;
+      name: string;
+    };
     __v: number;
   }
   

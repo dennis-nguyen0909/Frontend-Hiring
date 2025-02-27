@@ -150,7 +150,10 @@ export default function ListCV() {
   };
   const onDelete = async (id: string) => {
     try {
-      const res = await CV_API.deleteByUser(id, userDetail?.access_token);
+      const res = await CV_API.deleteManyCVByUser(
+        [id],
+        userDetail?.access_token
+      );
       if (+res.statusCode === 200) {
         notification.success({
           message: "Thông báo",

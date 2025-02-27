@@ -179,6 +179,7 @@ export default function JobDetail() {
       const params = {
         user_id: userDetail?._id,
         job_id: jobDetail?._id,
+        jobTitle: jobDetail?.title,
       };
       const res = await API_FAVORITE_JOB.createFavoriteJobs(
         params,
