@@ -1,4 +1,3 @@
-import React from "react";
 import { Avatar, Popover, List } from "antd";
 import { CircleHelp } from "lucide-react";
 import {

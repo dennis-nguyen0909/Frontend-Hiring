@@ -317,7 +317,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
       >
         {renderBody()}
       </Modal>
-      <FloatingButton />
+      {userDetail?._id && <FloatingButton />}
     </div>
   );
 };

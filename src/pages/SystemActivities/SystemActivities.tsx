@@ -1,13 +1,5 @@
 import { Input, Select } from "antd";
-import {
-  ArrowRight,
-  Info,
-  Pencil,
-  Plus,
-  Search,
-  Star,
-  Trash2,
-} from "lucide-react";
+import { ArrowRight, Pencil, Plus, Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { API_LOG_ACTIVITY } from "../../services/modules/LogServices";
 import { useSelector } from "react-redux";
@@ -45,10 +37,11 @@ export default function SystemActivities() {
   };
 
   useEffect(() => {
-    handleGetSystemActivities();
-  }, []);
+    if (user?._id) {
+      handleGetSystemActivities();
+    }
+  }, [user?._id]);
 
-  console.log("activities", activities);
   const formatValue = (value: any, key: string) => {
     if (value === "") {
       return t("null");
@@ -97,7 +90,7 @@ export default function SystemActivities() {
   const changesDisplay = (activities: Activities) => {
     return (
       <div>
-        <b>• Các thay đổi:</b>
+        <b>• {t("changes")}:</b>
         {Object?.entries(activities?.changes)?.map(([key, value], idx) => (
           <p key={idx} className="flex items-center gap-2 ml-5 w-full">
             <b className="whitespace-nowrap">• {t(key)}:</b>
@@ -117,26 +110,27 @@ export default function SystemActivities() {
   const handleSearch = (value: string) => {
     setSearch(value);
   };
-  console.log("duydeptrai", search);
   const handleActivity = (value: any) => {
-    console.log("value", value);
     const userName = t("your") || value?.userId?.full_name;
     const activityDetail = value?.activityDetail;
     const entityName = value?.entityName;
     const link = value?.changesLink?.link;
-    console.log("link", link);
     if (value?.action === "CREATE") {
       return `${userName} ${t("has")} ${t("activity_create")} ${t(
         activityDetail
       )} ${entityName}`;
     } else if (value?.action === "UPDATE") {
+      // Ví dụ về việc sử dụng `i18n` để tạo câu trả về với tham số động
       return `${userName} ${t("has")} ${t("activity_update")} ${t(
-        activityDetail
+        activityDetail,
+        {
+          entityName: entityName, // Chèn entityName vào chuỗi dịch
+        }
       )}`;
     } else if (value?.action === "DELETE") {
-      return `${userName} ${t("has")} ${t("activity_delete")} ${t(
-        activityDetail
-      )}`;
+      return `${userName} ${t("has")} ${t(activityDetail, {
+        entityName: entityName, // Chèn entityName vào chuỗi dịch
+      })}`;
     } else if (value?.action === "APPLY") {
       return `${userName} ${t("has")} ${t("activity_apply")} ${t(entityName)}`;
     } else if (value?.action === "FAVORITE") {
@@ -165,6 +159,22 @@ export default function SystemActivities() {
         >
           {t("view_changes_link")}
         </a>
+      </div>
+    );
+  };
+
+  const changeColumnsDisplay = (activity: Activities) => {
+    return (
+      <div>
+        <b>• {t("change_columns")}:</b>
+        {Object?.entries(activity?.changeColumns)?.map(([key, value], idx) => (
+          <p key={idx} className="flex items-center gap-2 ml-5 w-full">
+            <b className="whitespace-nowrap">• {t(key)}:</b>
+            <span className="text-gray-500 whitespace-nowrap overflow-hidden text-ellipsis">
+              {formatValue(value?.value, key)}
+            </span>
+          </p>
+        ))}
       </div>
     );
   };
@@ -300,6 +310,7 @@ export default function SystemActivities() {
                     </p>
                     {activity?.changes && changesDisplay(activity)}
                     {activity?.changesLink && changesLinkDisplay(activity)}
+                    {activity?.changeColumns && changeColumnsDisplay(activity)}
                   </div>
                 </div>
               </div>

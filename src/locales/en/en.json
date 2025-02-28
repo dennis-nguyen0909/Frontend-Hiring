@@ -407,6 +407,14 @@
     "activity_delete_cv":"delete cv",
     "user_create_job":"job",
     "user_update_job":"update job",
-    "user_delete_job":"delete job"
+    "user_delete_job":"delete job",
+    "company_name":"Company name",
+    "changes":"Changes",
+    "user_create_education":"education",
+    "user_update_education":"update education {{entityName}}",
+    "user_delete_education":"delete education {{entityName}}",
+    "change_columns":"Information",
+    "currently_studying":"Currently studying"
+    
   }
   

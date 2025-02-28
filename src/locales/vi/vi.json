@@ -414,7 +414,14 @@
     "activity_delete_cv":"xóa cv",
     "user_create_job":"việc làm",
     "user_update_job":"cập nhật việc làm",
-    "user_delete_job":"xóa việc làm"
+    "user_delete_job":"xóa việc làm",
+    "company_name":"Tên công ty",
+    "changes":"Các thay đổi",
+    "user_create_education":"học vấn",
+    "user_update_education":"cập nhật học vấn {{entityName}}",
+    "user_delete_education":"xóa học vấn {{entityName}}",
+    "change_columns":"Thông tin",
+    "currently_studying":"Đang học"
   }
 
   
