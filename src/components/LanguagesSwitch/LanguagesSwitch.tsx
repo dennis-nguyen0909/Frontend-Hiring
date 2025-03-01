@@ -11,7 +11,7 @@ import ukFlag from "../../assets/icons/united_kingdom_icon.png";
 const languages = [
   {
     code: "vi",
-    name: "Tiếng Việt",
+    name: "Vietnamese",
     flag: vietnamFlag,
   },
   {

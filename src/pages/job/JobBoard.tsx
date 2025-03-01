@@ -189,6 +189,7 @@ export default function JobBoard() {
     setSearchTerm(value);
     await handleGetJob(1, 9, query);
   };
+  console.log("job", listJobs);
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -426,7 +427,7 @@ export default function JobBoard() {
                               {t("salary")} :{" "}
                               {job?.is_negotiable
                                 ? t("negotiable")
-                                : `${job?.salary_range?.min}${job?.type_money?.symbol} - ${job?.salary_range?.max}${job?.type_money?.symbol}`}
+                                : `${job?.salary_range_min}${job?.type_money?.symbol} - ${job?.salary_range_max}${job?.type_money?.symbol}`}
                             </div>
                             <div className="flex flex-wrap gap-2 mt-2">
                               <span className="px-2 py-1 text-[10px] rounded-full bg-blue-50 text-blue-600">

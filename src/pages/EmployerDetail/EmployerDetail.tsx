@@ -378,9 +378,9 @@ export default function EmployerDetail() {
                       salary={
                         job?.is_negotiable
                           ? t("negotiable")
-                          : `${t("salary")} : ${job?.salary_range?.min}${
+                          : `${t("salary")} : ${job?.salary_range_min}${
                               job?.type_money?.symbol
-                            } - ${job?.salary_range?.min}${
+                            } - ${job?.salary_range_max}${
                               job?.type_money?.symbol
                             }`
                       }

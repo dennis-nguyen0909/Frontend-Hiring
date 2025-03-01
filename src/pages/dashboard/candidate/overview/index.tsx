@@ -140,9 +140,9 @@ const OverViewCandidate = ({ userDetail }) => {
           key: item?._id,
           job: item?.job_id?.title,
           location: `${item?.job_id?.city_id?.name}`,
-          salary: item?.job_id?.salary_range
-            ? `$${item?.job_id?.salary_range?.min || 0} - $${
-                item?.job_id?.salary_range?.max || 0
+          salary: item?.job_id?.salary_range_min
+            ? `$${item?.job_id?.salary_range_min || 0} - $${
+                item?.job_id?.salary_range_max || 0
               }`
             : "Negotiable",
           dateApplied: new Date(item?.applied_date)?.toLocaleString(),

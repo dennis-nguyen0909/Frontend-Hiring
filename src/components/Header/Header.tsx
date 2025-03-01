@@ -412,7 +412,7 @@ const Header: React.FC = () => {
                     Đăng nhập
                   </div> */}
                   <ButtonComponent onClick={() => navigate("/login")}>
-                    Đăng nhập
+                    {t("login")}
                   </ButtonComponent>
                 </li>
                 <li
@@ -420,7 +420,7 @@ const Header: React.FC = () => {
                   onClick={() => navigate("/register")}
                 >
                   <div className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer">
-                    Đăng ký
+                    {t("register")}
                   </div>
                 </li>
               </>
@@ -428,7 +428,7 @@ const Header: React.FC = () => {
             {userDetail?.access_token && (
               <li className="block md:hidden" onClick={handleLogout}>
                 <div className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer">
-                  Đăng xuất
+                  {t("logout")}
                 </div>
               </li>
             )}
@@ -533,10 +533,10 @@ const Header: React.FC = () => {
           ) : (
             <div className="flex gap-2">
               <ButtonComponent onClick={() => navigate("/login")}>
-                Đăng nhập
+                {t("login")}
               </ButtonComponent>
               <ButtonComponent onClick={() => navigate("/register")}>
-                Đăng ký
+                {t("register")}
               </ButtonComponent>
             </div>
           )}

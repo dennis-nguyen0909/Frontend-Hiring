@@ -11,6 +11,7 @@ import {
   Space,
   message,
   Typography,
+  DatePicker,
 } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
 import {
@@ -38,11 +39,12 @@ import { JOB_CONTRACT_TYPE_API } from "../../../../services/modules/JobContractT
 import { JOB_TYPE_API } from "../../../../services/modules/JobTypeServices";
 import { CURRENCY_API } from "../../../../services/modules/CurrenciesServices";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
+import useMomentFn from "../../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 const { Title, Text } = Typography;
 export default function PostJob() {
+  const { formatDate } = useMomentFn();
   const [form] = Form.useForm();
-  const [experienceInput, setExperienceInput] = useState("");
-  const [experienceList, setExperienceList] = useState([]);
   const [content, setContent] = useState("");
   const [benefitInput, setBenefitInput] = useState("");
   const [benefitList, setBenefitList] = useState([]);
@@ -51,7 +53,7 @@ export default function PostJob() {
   const [ward, setWard] = useState("");
   const userDetail = useSelector((state) => state.user);
   const [typeModal, setTypeModal] = useState<string>("");
-  const [expireDate, setExpireDate] = useState("");
+  const [expireDate, setExpireDate] = useState();
   const [listSkills, setListSkills] = useState<ListSkillsFormData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { data: listLevels, refreshData: refreshLevel } = useLevels(1, 30);
@@ -63,6 +65,7 @@ export default function PostJob() {
     1,
     30
   );
+  const { t } = useTranslation();
   const [meta, setMeta] = useState<Meta>({
     count: 0,
     current_page: 1,
@@ -77,6 +80,11 @@ export default function PostJob() {
   const [isNegotiable, setIsNegotiable] = useState(false);
 
   const handleNegotiableChange = (e) => {
+    form.setFieldsValue({
+      is_negotiable: e.target.checked,
+      min_salary: null,
+      max_salary: null,
+    });
     setIsNegotiable(e.target.checked);
   };
   const handleCityChange = (value) => {
@@ -126,42 +134,36 @@ export default function PostJob() {
 
   const [newTitle, setNewTitle] = useState("");
   const [newRequirement, setNewRequirement] = useState("");
-  const [currentSection, setCurrentSection] = useState(""); // Để theo dõi phần tựa đề hiện tại
+  const [currentSection, setCurrentSection] = useState("");
 
-  // Thêm yêu cầu vào đúng tựa đề
   const addRequirement = () => {
     setCurrentSection("");
     if (!newTitle || !newRequirement) {
-      message.error("Vui lòng nhập đủ tựa đề và yêu cầu");
+      message.error(t("error.required"));
       return;
     }
 
     const newRequirements = [...requirements];
 
-    // Kiểm tra xem nhóm với tựa đề newTitle đã tồn tại hay chưa
     const targetSection = newRequirements.find(
       (section) => section.title === newTitle.trim()
     );
 
     if (targetSection) {
-      // Nếu tìm thấy nhóm tương ứng với tựa đề, thêm yêu cầu vào nhóm đó
       targetSection.items.push(newRequirement);
       setRequirements(newRequirements);
     } else {
-      // Nếu không tìm thấy nhóm với tựa đề, tạo nhóm mới
       newRequirements.push({ title: newTitle.trim(), items: [newRequirement] });
       setRequirements(newRequirements);
     }
 
-    // Reset lại input yêu cầu sau khi thêm
     setNewRequirement("");
-    setCurrentSection(newTitle.trim()); // Cập nhật phần tựa đề hiện tại
+    setCurrentSection(newTitle.trim());
   };
 
-  // Hiển thị lại ô nhập tựa đề khi người dùng muốn chuyển tới tựa đề mới
   const handleAddNewSection = () => {
-    setNewTitle(""); // Reset giá trị ô nhập tựa đề
-    setNewRequirement(""); // Reset giá trị ô nhập yêu cầu
+    setNewTitle("");
+    setNewRequirement("");
   };
   useEffect(() => {
     handleGetSkillByUser({ user_id: userDetail?._id });
@@ -169,8 +171,8 @@ export default function PostJob() {
   const handleFinishFailed = ({ errorFields }: any) => {
     errorFields.forEach((field: any) => {
       notification.error({
-        message: "Thông báo",
-        description: field.errors[0], // Display the first validation error for each field
+        message: t("notification"),
+        description: field.errors[0],
       });
     });
   };
@@ -183,13 +185,12 @@ export default function PostJob() {
   >([]);
 
   const handleSkillChange = (value: any) => {
-    // Map lại từ giá trị `_id` sang đối tượng đầy đủ skill từ danh sách `listSkills`
     const updatedSkills = value
       .map((skillId: string) => {
         const skill = listSkills.find((s) => s._id === skillId);
         return skill ? { _id: skill._id, name: skill.name } : null;
       })
-      .filter(Boolean); // Loại bỏ giá trị null
+      .filter(Boolean);
 
     setSelectedSkills(updatedSkills as { _id: string; name: string }[]);
   };
@@ -201,16 +202,16 @@ export default function PostJob() {
     );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Thêm thành công",
+        message: t("notification"),
+        description: t("create_success"),
       });
       await handleGetSkillByUser({});
       await handleSkillChange(res?.data?._id);
       handleCloseModal();
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Thêm thất bại",
+        message: t("notification"),
+        description: t("create_failed"),
       });
     }
   };
@@ -233,41 +234,28 @@ export default function PostJob() {
       setLoading(true);
       if (!requirements.length) {
         notification.error({
-          message: "Thông báo",
-          description: "Vui lòng nhập kỹ năng và chuyên môn",
+          message: t("notification"),
+          description: t("please_enter_skills_and_specialties"),
         });
         return;
       }
 
       if (!values.general_requirements || !values.general_requirements.length) {
-        message.error("Vui lòng nhập yêu cầu chung");
+        message.error(t("please_enter_general_requirements"));
 
-        // notification.error({
-        //   message: "Thông báo",
-        //   description: "Vui lòng nhập yêu cầu chung",
-        // });
         return;
       }
       if (!values.job_responsibilities.length) {
-        message.error("Vui lòng nhập trách nhiệm công việc");
-        // notification.error({
-        //   message: "Thông báo",
-        //   description: "Vui lòng nhập trách nhiệm công việc",
-        // });
+        message.error(t("please_enter_job_responsibilities"));
         return;
       }
       if (!values.interview_process.length) {
-        message.error("Vui lòng nhập quy trình phỏng vấn");
-
-        // notification.error({
-        //   message: "Thông báo",
-        //   description: "Vui lòng nhập quy trình phỏng vấn",
-        // });
+        message.error(t("please_enter_interview_process"));
         return;
       }
-      const salaryRange = { min: values.min_salary, max: values.max_salary };
+
       const ageRange = { min: values.min_age, max: values.max_age };
-      let params = {
+      const params = {
         user_id: userDetail?._id,
         title: values.title,
         description: content,
@@ -275,15 +263,14 @@ export default function PostJob() {
         city_id: city,
         district_id: district,
         ward_id: ward,
-        salary_range: salaryRange,
         age_range: ageRange,
         salary_type: values.salary_type,
+        salary_range_min: values.min_salary,
+        salary_range_max: values.max_salary,
         job_contract_type: values.job_contract_type,
         benefit: benefitList,
-        // time_work: values.time_work,
-        require_experience: experienceList,
         level: values.level,
-        type_money: values.type_money, //
+        type_money: values.type_money,
         degree: values.degree,
         expire_date: expireDate,
         skills: values.skills?.map((skill: string) => skill?.key),
@@ -297,7 +284,7 @@ export default function PostJob() {
         job_responsibilities: values.job_responsibilities,
         interview_process: values.interview_process,
         job_type: values.job_type,
-        min_experience: values.min_experience,
+        min_experience: +values.min_experience,
         skill_name: values.skills?.map(
           (skill: string) => skill?.label?.props?.children
         ),
@@ -312,17 +299,17 @@ export default function PostJob() {
       }
       const res = await JobApi.postJob(params, userDetail.access_token);
       if (res?.data && +res.statusCode === 201) {
-        message.success("Tạo thành công");
+        message.success(t("create_success"));
       } else {
         notification.error({
-          message: "Error",
+          message: t("notification"),
           description: res.message,
         });
       }
     } catch (error) {
       console.error("errrr", error);
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error,
       });
     } finally {
@@ -338,16 +325,16 @@ export default function PostJob() {
     );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Thêm thành công",
+        message: t("notification"),
+        description: t("create_success"),
       });
       refreshData();
       handleCloseModal();
       formEducation.resetFields();
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Thêm thất bại",
+        message: t("notification"),
+        description: t("create_failed"),
       });
     }
   };
@@ -359,16 +346,16 @@ export default function PostJob() {
     );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Thêm thành công",
+        message: t("notification"),
+        description: t("create_success"),
       });
       refreshLevel();
       handleCloseModal();
       formLevel.resetFields();
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Thêm thất bại",
+        message: t("notification"),
+        description: t("create_failed"),
       });
     }
   };
@@ -380,16 +367,16 @@ export default function PostJob() {
     );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Thêm thành công",
+        message: t("notification"),
+        description: t("create_success"),
       });
       refreshContractType();
       handleCloseModal();
       formContractType.resetFields();
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Thêm thất bại",
+        message: t("notification"),
+        description: t("create_failed"),
       });
     }
   };
@@ -401,16 +388,16 @@ export default function PostJob() {
     );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Thêm thành công",
+        message: t("notification"),
+        description: t("create_success"),
       });
       refreshJobType();
       handleCloseModal();
       formJobType.resetFields();
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Thêm thất bại",
+        message: t("notification"),
+        description: t("create_failed"),
       });
     }
   };
@@ -421,16 +408,16 @@ export default function PostJob() {
     );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Thêm thành công",
+        message: t("notification"),
+        description: t("create_success"),
       });
       refreshMoneyType();
       handleCloseModal();
       formMoneyType.resetFields();
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Thêm thất bại",
+        message: t("notification"),
+        description: t("create_failed"),
       });
     }
   };
@@ -442,7 +429,7 @@ export default function PostJob() {
             <Space direction="vertical" style={{ width: "100%" }}>
               <Input
                 className="text-[12px]"
-                placeholder="Nhập tên kỹ năng"
+                placeholder={t("enter_skill_name")}
                 value={newSkill}
                 onChange={(e) => setNewSkill(e.target.value)}
               />
@@ -453,7 +440,7 @@ export default function PostJob() {
                 key="cancel"
                 onClick={handleCloseModal}
               >
-                Hủy
+                {t("cancel")}
               </Button>
               ,
               <Button
@@ -462,7 +449,7 @@ export default function PostJob() {
                 type="primary"
                 onClick={handleAddNewSkill}
               >
-                Thêm kỹ năng
+                {t("add_skill")}
               </Button>
             </div>
           </>
@@ -479,12 +466,12 @@ export default function PostJob() {
             >
               <Form.Item
                 name="name"
-                label="Tên giáo dục"
+                label={t("education_name")}
                 rules={[
-                  { required: true, message: "Vui lòng nhập tên cấp độ!" },
+                  { required: true, message: t("please_enter_education_name") },
                 ]}
               >
-                <Input placeholder="Nhập tên ..." />
+                <Input placeholder={t("enter_education_name")} />
               </Form.Item>
 
               <Form.Item name="key" label="Key">
@@ -493,7 +480,7 @@ export default function PostJob() {
 
               <Form.Item name="description" label="Mô tả">
                 <Input.TextArea
-                  placeholder="Nhập mô tả.."
+                  placeholder={t("enter_description")}
                   autoSize={{ minRows: 3, maxRows: 6 }}
                 />
               </Form.Item>
@@ -504,7 +491,7 @@ export default function PostJob() {
                   htmlType="submit"
                   className="w-full !bg-primaryColor"
                 >
-                  Lưu
+                  {t("save")}
                 </Button>
               </Form.Item>
             </Form>
@@ -523,21 +510,21 @@ export default function PostJob() {
             >
               <Form.Item
                 name="name"
-                label="Tên cấp độ"
+                label={t("level_name")}
                 rules={[
-                  { required: true, message: "Vui lòng nhập tên cấp độ!" },
+                  { required: true, message: t("please_enter_level_name") },
                 ]}
               >
-                <Input placeholder="Nhập tên ..." />
+                <Input placeholder={t("enter_level_name")} />
               </Form.Item>
 
               <Form.Item name="key" label="Key">
                 <Input disabled />
               </Form.Item>
 
-              <Form.Item name="description" label="Mô tả">
+              <Form.Item name="description" label={t("description")}>
                 <Input.TextArea
-                  placeholder="Nhập mô tả.."
+                  placeholder={t("enter_description")}
                   autoSize={{ minRows: 3, maxRows: 6 }}
                 />
               </Form.Item>
@@ -548,7 +535,7 @@ export default function PostJob() {
                   htmlType="submit"
                   className="w-full !bg-primaryColor"
                 >
-                  Lưu
+                  {t("save")}
                 </Button>
               </Form.Item>
             </Form>
@@ -567,12 +554,15 @@ export default function PostJob() {
             >
               <Form.Item
                 name="name"
-                label="Tên loại hợp đồng"
+                label={t("job_contract_type_name")}
                 rules={[
-                  { required: true, message: "Vui lòng nhập tên cấp độ!" },
+                  {
+                    required: true,
+                    message: t("please_enter_job_contract_type_name"),
+                  },
                 ]}
               >
-                <Input placeholder="Nhập tên ..." />
+                <Input placeholder={t("enter_job_contract_type_name")} />
               </Form.Item>
 
               <Form.Item name="key" label="Key">
@@ -581,7 +571,7 @@ export default function PostJob() {
 
               <Form.Item name="description" label="Mô tả">
                 <Input.TextArea
-                  placeholder="Nhập mô tả.."
+                  placeholder={t("enter_description")}
                   autoSize={{ minRows: 3, maxRows: 6 }}
                 />
               </Form.Item>
@@ -592,7 +582,7 @@ export default function PostJob() {
                   htmlType="submit"
                   className="w-full !bg-primaryColor"
                 >
-                  Lưu
+                  {t("save")}
                 </Button>
               </Form.Item>
             </Form>
@@ -611,24 +601,24 @@ export default function PostJob() {
             >
               <Form.Item
                 name="name"
-                label="Tên loại hình làm việc"
+                label={t("job_type_name")}
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập loại hình làm việc!",
+                    message: t("please_enter_job_type_name"),
                   },
                 ]}
               >
-                <Input placeholder="Nhập tên ..." />
+                <Input placeholder={t("enter_job_type_name")} />
               </Form.Item>
 
               <Form.Item name="key" label="Key">
                 <Input disabled />
               </Form.Item>
 
-              <Form.Item name="description" label="Mô tả">
+              <Form.Item name="description" label={t("description")}>
                 <Input.TextArea
-                  placeholder="Nhập mô tả.."
+                  placeholder={t("enter_description")}
                   autoSize={{ minRows: 3, maxRows: 6 }}
                 />
               </Form.Item>
@@ -639,7 +629,7 @@ export default function PostJob() {
                   htmlType="submit"
                   className="w-full !bg-primaryColor"
                 >
-                  Lưu
+                  {t("save")}
                 </Button>
               </Form.Item>
             </Form>
@@ -658,12 +648,15 @@ export default function PostJob() {
             >
               <Form.Item
                 name="name"
-                label="Tên loại tiền tệ"
+                label={t("money_type_name")}
                 rules={[
-                  { required: true, message: "Vui lòng nhập tên loại tiền tệ" },
+                  {
+                    required: true,
+                    message: t("please_enter_money_type_name"),
+                  },
                 ]}
               >
-                <Input placeholder="Ví dụ: Việt nam đồng" />
+                <Input placeholder={t("enter_money_type_name")} />
               </Form.Item>
 
               <Form.Item name="key" label="Key">
@@ -672,18 +665,18 @@ export default function PostJob() {
 
               <Form.Item
                 name="symbol"
-                label="Ký hiệu"
-                rules={[{ required: true, message: "Vui lòng nhập ký hiệu!" }]}
+                label={t("symbol")}
+                rules={[{ required: true, message: t("please_enter_symbol") }]}
               >
-                <Input placeholder="Ví dụ: $, đ..." />
+                <Input placeholder={t("enter_symbol")} />
               </Form.Item>
 
               <Form.Item
                 name="code"
-                label="Code"
-                rules={[{ required: true, message: "Vui lòng nhập code!" }]}
+                label={t("code")}
+                rules={[{ required: true, message: t("please_enter_code") }]}
               >
-                <Input placeholder="Ví dụ: USD, VND..." />
+                <Input placeholder={t("enter_code")} />
               </Form.Item>
               <Form.Item>
                 <Button
@@ -691,7 +684,7 @@ export default function PostJob() {
                   htmlType="submit"
                   className="w-full !bg-primaryColor"
                 >
-                  Lưu
+                  {t("save")}
                 </Button>
               </Form.Item>
             </Form>
@@ -742,25 +735,20 @@ export default function PostJob() {
       >
         {/* Job Title */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[20px] font-semibold mb-4">Đăng công việc</h2>
+          <h2 className="text-[20px] font-semibold mb-4">{t("post_job")}</h2>
 
           <Form.Item
-            label={<div className="text-[12px]">Tiêu đề</div>}
+            label={<div className="text-[12px]">{t("job_title")}</div>}
             name="title"
-            rules={[
-              { required: true, message: "Tiêu đề công việc là bắt buộc" },
-            ]}
+            rules={[{ required: true, message: t("please_enter_job_title") }]}
           >
-            <Input
-              placeholder="Thêm tiêu đề công việc ..."
-              className="text-[12px]"
-            />
+            <Input placeholder={t("enter_job_title")} className="text-[12px]" />
           </Form.Item>
         </div>
 
         {/* Salary */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[20px] font-semibold mb-4">Lương</h2>
+          <h2 className="text-[20px] font-semibold mb-4">{t("salary")}</h2>
 
           <div className="flex justify-between flex-col">
             {/* Negotiable Salary Checkbox */}
@@ -769,19 +757,21 @@ export default function PostJob() {
                 onChange={handleNegotiableChange}
                 className="text-[12px]"
               >
-                Lương thỏa thuận
+                {t("negotiable_salary")}
               </Checkbox>
             </Form.Item>
 
             {/* Salary Type */}
             <Form.Item
-              label={<div className="text-[12px]">Loại tiền</div>}
+              label={<div className="text-[12px]">{t("money_type")}</div>}
               name="type_money"
               className="lg:w-[300px] w-full text-[12px]"
-              rules={[{ required: true, message: "Vui lòng chọn loại tiền!" }]}
+              rules={[
+                { required: true, message: t("please_enter_money_type") },
+              ]}
             >
               <Select
-                placeholder="Chọn loại tiền"
+                placeholder={t("choose_money_type")}
                 onChange={handleCurrencyChange}
                 className="!text-[12px]"
               >
@@ -795,47 +785,46 @@ export default function PostJob() {
               </Select>
             </Form.Item>
             <Form.Item
-              label={<div className="!text-[12px]">Loại trả lương</div>}
+              label={<div className="!text-[12px]">{t("salary_type")}</div>}
               name="salary_type"
               className="lg:w-[300px] w-full !text-[12px]"
               rules={[
                 {
-                  required: !isNegotiable,
-                  message: "Vui lòng chọn loại trả lương",
+                  required: true,
+                  message: t("please_enter_salary_type"),
                 },
               ]}
             >
               <Select
-                placeholder="Chọn loại trả lương"
+                placeholder={t("choose_salary_type")}
                 className="!text-[12px]"
-                disabled={isNegotiable}
               >
-                <Select.Option clas value="yearly">
-                  <span className="text-[12px]">Theo tháng</span>
+                <Select.Option value="yearly">
+                  <span className="text-[12px]">{t("monthly")}</span>
                 </Select.Option>
                 <Select.Option value="monthly">
-                  <span className="text-[12px]">Theo năm</span>
+                  <span className="text-[12px]">{t("yearly")}</span>
                 </Select.Option>
                 <Select.Option value="hourly">
-                  <span className="text-[12px]">Theo giờ</span>
+                  <span className="text-[12px]">{t("hourly")}</span>
                 </Select.Option>
               </Select>
             </Form.Item>
             {/* Min Salary */}
             <Form.Item
-              label={<div className="text-[12px]">Mức lương tối thiểu</div>}
+              label={<div className="text-[12px]">{t("min_salary")}</div>}
               name="min_salary"
               rules={[
                 {
                   required: !isNegotiable,
-                  message: "Vui lòng nhập lương tối thiểu!",
+                  message: t("please_enter_min_salary"),
                 },
               ]}
             >
               <InputNumber
                 prefix={<DollarOutlined size={12} />}
                 className="lg:w-[300px] w-full !text-[12px]"
-                placeholder="Lương tối thiểu..."
+                placeholder={t("enter_min_salary")}
                 addonAfter={currencySymbol}
                 disabled={isNegotiable}
               />
@@ -843,12 +832,12 @@ export default function PostJob() {
 
             {/* Max Salary */}
             <Form.Item
-              label={<div className="text-[12px]">Mức lương tối đa</div>}
+              label={<div className="text-[12px]">{t("max_salary")}</div>}
               name="max_salary"
               rules={[
                 {
                   required: !isNegotiable,
-                  message: "Vui lòng nhập lương tối đa!",
+                  message: t("please_enter_max_salary"),
                 },
               ]}
               className="!text-[12px]"
@@ -856,7 +845,7 @@ export default function PostJob() {
               <InputNumber
                 prefix={<DollarOutlined />}
                 className="lg:w-[300px] w-full !text-[12px]"
-                placeholder="Lương tối đa..."
+                placeholder={t("enter_max_salary")}
                 addonAfter={currencySymbol}
                 disabled={isNegotiable}
               />
@@ -865,8 +854,8 @@ export default function PostJob() {
         </div>
         <section className="p-6 bg-white rounded-lg shadow-md mb-4">
           <Title level={5} className="text-xl font-semibold">
-            <span className="text-red-500 text-[20px]">*</span> Kỹ năng & Chuyên
-            môn
+            <span className="text-red-500 text-[20px]">*</span>{" "}
+            {t("skills_and_specialties")}
           </Title>
 
           <div className="space-y-6">
@@ -889,13 +878,13 @@ export default function PostJob() {
             <div className="mt-6">
               <Space direction="vertical" size="large" className="w-full">
                 <Input
-                  placeholder="Nhập tựa đề (ví dụ: 2 năm kinh nghiệm)"
+                  placeholder={t("enter_main_title")}
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="shadow-sm rounded-md border-gray-300 text-[12px]"
                 />
                 <Input
-                  placeholder="Nhập yêu cầu"
+                  placeholder={t("enter_requirement")}
                   value={newRequirement}
                   onChange={(e) => setNewRequirement(e.target.value)}
                   className="shadow-sm rounded-md border-gray-300 text-[12px]"
@@ -905,7 +894,7 @@ export default function PostJob() {
                   onClick={addRequirement}
                   className="w-full py-2 mt-4 !text-[12px]"
                 >
-                  Thêm yêu cầu
+                  {t("add_requirement")}
                 </Button>
               </Space>
             </div>
@@ -914,7 +903,7 @@ export default function PostJob() {
             {currentSection && (
               <div className="mt-4 text-gray-600">
                 <Text className="!text-[12px]" strong>
-                  Đang chỉnh sửa phần: {currentSection}
+                  {t("editing_section")}: {currentSection}
                 </Text>
               </div>
             )}
@@ -926,7 +915,7 @@ export default function PostJob() {
                 onClick={handleAddNewSection}
                 className="mt-4 w-full py-2 !text-[12px]"
               >
-                Thêm tựa đề mới
+                {t("add_section")}
               </Button>
             )}
           </div>
@@ -934,67 +923,69 @@ export default function PostJob() {
 
         {/* Advanced Information */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[20px] font-semibold mb-4">Thông tin nâng cao</h2>
+          <h2 className="text-[20px] font-semibold mb-4">
+            {t("advanced_information")}
+          </h2>
           <Form.Item
             name="min_age"
-            label={<div className="text-[12px]">Tuổi tối thiểu</div>}
+            label={<div className="text-[12px]">{t("min_age")}</div>}
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập tuổi tối thiểu!",
+                message: t("please_enter_min_age"),
               },
               {
                 type: "number",
                 min: 18,
                 max: 65,
-                message: "Tuổi phải từ 18 đến 65!",
+                message: t("please_enter_min_age"),
               },
             ]}
           >
             <InputNumber
               min={18}
               max={65}
-              placeholder="Tuổi tối thiểu"
+              placeholder={t("enter_min_age")}
               className="text-[12px] w-auto"
             />
           </Form.Item>
 
           <Form.Item
             name="max_age"
-            label={<div className="text-[12px]">Tuổi tối đa</div>}
+            label={<div className="text-[12px]">{t("max_age")}</div>}
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập tuổi tối đa!",
+                message: t("please_enter_max_age"),
               },
               {
                 type: "number",
                 min: 18,
                 max: 65,
-                message: "Tuổi phải từ 18 đến 65",
+                message: t("min_age_must_be_between_18_and_65"),
               },
             ]}
           >
             <InputNumber
               min={18}
               max={65}
-              placeholder="Tuổi tối đa"
+              placeholder={t("enter_max_age")}
               className="text-[12px] w-auto"
             />
           </Form.Item>
           <div className="">
             <Form.Item
-              label={<div className="text-[12px]">Kỹ năng yêu cầu</div>}
+              label={<div className="text-[12px]">{t("skills_required")}</div>}
               name="skills"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn kỹ năng yêu cầu!",
+                  message: t("please_enter_skills_required"),
                 },
               ]}
             >
               <Select
-                placeholder="Chọn kỹ năng"
+                placeholder={t("choose_skills_required")}
                 mode="multiple"
                 style={{ width: "100%", fontSize: "12px" }}
                 value={selectedSkills.map((skill) => ({
@@ -1018,19 +1009,19 @@ export default function PostJob() {
                     onClick={() => handleOpenModal("add-skill")}
                     style={{ width: "100%", fontSize: "12px" }}
                   >
-                    Thêm kỹ năng mới
+                    {t("add_skill")}
                   </Button>
                 </Select.Option>
               </Select>
             </Form.Item>
 
             <Form.Item
-              label={<div className="text-[12px]">Giáo dục</div>}
+              label={<div className="text-[12px]">{t("degree")}</div>}
               name="degree"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn trình độ giáo dục!",
+                  message: t("please_enter_degree"),
                 },
               ]}
             >
@@ -1044,12 +1035,12 @@ export default function PostJob() {
             </Form.Item>
 
             <Form.Item
-              label={<div className="text-[12px]">Cấp độ yêu cầu</div>}
+              label={<div className="text-[12px]">{t("level")}</div>}
               name="level"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng chọn cấp độ yêu cầu!",
+                  message: t("please_enter_level"),
                 },
               ]}
             >
@@ -1070,9 +1061,9 @@ export default function PostJob() {
                 <>
                   <label className="text-[12px]">
                     <span className="text-red-500 mr-1">*</span>
-                    Yêu cầu chung
+                    {t("general_requirements")}
                   </label>
-                  {fields.map((field, index) => (
+                  {fields.map((field) => (
                     <Space
                       key={field.key}
                       style={{ display: "flex", marginBottom: 8 }}
@@ -1085,12 +1076,12 @@ export default function PostJob() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng nhập yêu cầu chung!",
+                            message: t("please_enter_general_requirements"),
                           },
                         ]}
                       >
                         <Input
-                          placeholder="Yêu cầu chung"
+                          placeholder={t("enter_general_requirements")}
                           className="text-[12px]"
                         />
                       </Form.Item>
@@ -1105,7 +1096,7 @@ export default function PostJob() {
                       block
                       icon={<PlusOutlined />}
                     >
-                      Thêm yêu cầu
+                      {t("add_general_requirements")}
                     </Button>
                   </Form.Item>
                 </>
@@ -1116,9 +1107,9 @@ export default function PostJob() {
                 <>
                   <label className="text-[12px]">
                     <span className="text-red-500 mr-1">*</span>
-                    Trách nhiệm công việc
+                    {t("job_responsibilities")}
                   </label>
-                  {fields.map((field, index) => (
+                  {fields.map((field) => (
                     <Space
                       key={field.key}
                       style={{ display: "flex", marginBottom: 8 }}
@@ -1131,12 +1122,12 @@ export default function PostJob() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng nhập trách nhiệm công việc!",
+                            message: t("please_enter_job_responsibilities"),
                           },
                         ]}
                       >
                         <Input
-                          placeholder="Trách nhiệm công việc"
+                          placeholder={t("enter_job_responsibilities")}
                           className="text-[12px]"
                         />
                       </Form.Item>
@@ -1151,7 +1142,7 @@ export default function PostJob() {
                       block
                       icon={<PlusOutlined />}
                     >
-                      Thêm trách nhiệm công việc
+                      {t("add_job_responsibilities")}
                     </Button>
                   </Form.Item>
                 </>
@@ -1164,9 +1155,9 @@ export default function PostJob() {
                 <>
                   <label className="text-[12px]">
                     <span className="text-red-500 mr-1">*</span>
-                    Quy trình phỏng vấn:
+                    {t("interview_process")}
                   </label>
-                  {fields.map((field, index) => (
+                  {fields.map((field) => (
                     <Space
                       key={field.key}
                       style={{ display: "flex", marginBottom: 8 }}
@@ -1179,12 +1170,12 @@ export default function PostJob() {
                         rules={[
                           {
                             required: true,
-                            message: "Vui lòng nhập quy trình phỏng vấn!",
+                            message: t("please_enter_interview_process"),
                           },
                         ]}
                       >
                         <Input
-                          placeholder="Quy trình phỏng vấn"
+                          placeholder={t("enter_interview_process")}
                           className="text-[12px]"
                         />
                       </Form.Item>
@@ -1199,20 +1190,28 @@ export default function PostJob() {
                       block
                       icon={<PlusOutlined />}
                     >
-                      Thêm quy trình phỏng vấn
+                      {t("add_interview_process")}
                     </Button>
                   </Form.Item>
                 </>
               )}
             </Form.List>
             <Form.Item
-              label={<div className="text-[12px]">Loại hợp đồng</div>}
+              label={
+                <div className="text-[12px]">{t("job_contract_type")}</div>
+              }
               name="job_contract_type"
               rules={[
-                { required: true, message: "Vui lòng chọn loại hợp đồng!" },
+                {
+                  required: true,
+                  message: t("please_enter_job_contract_type"),
+                },
               ]}
             >
-              <Select placeholder="Chọn loại hợp đồng" className="!text-[12px]">
+              <Select
+                placeholder={t("choose_job_contract_type")}
+                className="!text-[12px]"
+              >
                 {listContractTypes.map((type, idx) => {
                   return (
                     <Select.Option key={idx} value={type._id}>
@@ -1226,31 +1225,34 @@ export default function PostJob() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Form.Item
-              label={<div className="text-[12px]">Số lượng tuyển</div>}
+              label={<div className="text-[12px]">{t("count_apply")}</div>}
               name="count_apply"
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập số lượng tuyển!",
+                  message: t("please_enter_count_apply"),
                 },
               ]}
             >
               <InputNumber
                 className="w-full text-[12px]"
-                placeholder="Số lượng cho vị trí tuyển.."
+                placeholder={t("enter_count_apply")}
               />
             </Form.Item>
 
             <Form.Item
-              label={<div className="text-[12px]">Ngày hết hạn</div>}
+              label={<div className="text-[12px]">{t("expire_date")}</div>}
               name="expire_date"
               rules={[
-                { required: true, message: "Vui lòng chọn ngày hết hạn!" },
+                { required: true, message: t("please_enter_expire_date") },
               ]}
             >
-              <Input
+              <DatePicker
                 type="date"
-                onChange={(e) => setExpireDate(e.target.value)}
+                value={expireDate}
+                onChange={(date) => {
+                  setExpireDate(date);
+                }}
                 className="text-[12px]"
               />
             </Form.Item>
@@ -1259,20 +1261,23 @@ export default function PostJob() {
 
         {/* Location */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[20px] font-semibold mb-4">Vị trí làm việc</h2>
+          <h2 className="text-[20px] font-semibold mb-4">{t("location")}</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* City Field */}
             <Form.Item
-              label={<div className="text-[12px]">Thành phố / tỉnh</div>}
+              label={<div className="text-[12px]">{t("city")}</div>}
               name="city"
               rules={[
-                { required: true, message: "Vui lòng chọn thành phố / tỉnh!" },
+                {
+                  required: true,
+                  message: t("please_enter_city"),
+                },
               ]}
             >
               <Select
                 className="text-[12px]"
-                placeholder="Chọn thành phố / tỉnh"
+                placeholder={t("choose_city")}
                 value={city}
                 onChange={handleCityChange}
                 loading={citiesLoading}
@@ -1288,15 +1293,18 @@ export default function PostJob() {
 
             {/* District Field */}
             <Form.Item
-              label={<div className="text-[12px]">Quận / huyện</div>}
+              label={<div className="text-[12px]">{t("district")}</div>}
               name="district"
               rules={[
-                { required: true, message: "Vui lòng chọn quận / huyện!" },
+                {
+                  required: true,
+                  message: t("please_enter_district"),
+                },
               ]}
             >
               <Select
                 className="text-[12px]"
-                placeholder="Chọn quận / huyện"
+                placeholder={t("choose_district")}
                 value={district}
                 onChange={handleDistrictChange}
                 loading={districtLoading}
@@ -1313,14 +1321,12 @@ export default function PostJob() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Ward Field */}
             <Form.Item
-              label={<div className="text-[12px]">Xã / phường</div>}
+              label={<div className="text-[12px]">{t("ward")}</div>}
               name="ward"
-              rules={[
-                { required: true, message: "Vui lòng chọn xã / phường!" },
-              ]}
+              rules={[{ required: true, message: t("please_enter_ward") }]}
             >
               <Select
-                placeholder="Chọn xã..."
+                placeholder={t("choose_ward")}
                 value={ward}
                 onChange={handleWardChange}
                 loading={wardsLoading}
@@ -1335,36 +1341,32 @@ export default function PostJob() {
 
             {/* Address Field */}
             <Form.Item
-              label={<div className="text-[12px]">Địa chỉ</div>}
+              label={<div className="text-[12px]">{t("address")}</div>}
               name="address"
             >
               <Input
-                placeholder="Vui lòng nhập địa chỉ"
+                placeholder={t("please_enter_address")}
                 className="text-[12px]"
               />
             </Form.Item>
           </div>
-
-          {/* <Form.Item name="isRemote" valuePropName="checked">
-            <Checkbox className="text-[12px]">Fully Remote Position / Worldwide</Checkbox>
-          </Form.Item> */}
         </div>
 
         {/* Job Benefits */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-[20px] font-semibold mb-4">
-            Phúc lợi cho ứng viên
+            {t("job_benefits")}
           </h2>
 
           <Form.Item
-            label={<div className="text-[12px]">Phúc lợi</div>}
+            label={<div className="text-[12px]">{t("job_benefits")}</div>}
             rules={[
-              { required: true, message: "Vui lòng chọn ít nhất 1 lợi ích!" },
+              { required: true, message: t("please_enter_job_benefits") },
             ]}
           >
             <Input
               className="text-[12px]"
-              placeholder="Vui lòng nhập phúc lợi cho ứng viên"
+              placeholder={t("job_benefits_placeholder")}
               value={benefitInput}
               onChange={(e) => setBenefitInput(e.target.value)}
               onPressEnter={handleAddBenefit}
@@ -1374,7 +1376,7 @@ export default function PostJob() {
               onClick={handleAddBenefit}
               className="mt-2 !text-[12px]"
             >
-              Thêm
+              {t("add_job_benefits")}
             </Button>
             <div className="mt-4">
               {benefitList.map((benefit, index) => (
@@ -1391,36 +1393,29 @@ export default function PostJob() {
           </Form.Item>
           <Form.Item
             name="min_experience"
-            label={
-              <div className="text-[12px]">Kinh nghiệm tối thiểu ( Năm )</div>
-            }
+            label={<div className="text-[12px]">{t("min_experience")}</div>}
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập kinh nghiệm tối thiểu!",
+                message: t("please_enter_min_experience"),
               },
             ]}
           >
-            <InputNumber
-              min={1}
-              placeholder="1"
-              defaultValue={1}
-              className="text-[12px]"
-            />
+            <InputNumber defaultValue={1} className="text-[12px]" />
           </Form.Item>
 
           {/* Thêm trường Loại hình công việc */}
           <Form.Item
             name="job_type"
-            label={<div className="text-[12px]">Loại hình làm việc</div>}
+            label={<div className="text-[12px]">{t("job_type")}</div>}
             rules={[
               {
                 required: true,
-                message: "Vui lòng chọn loại hình làm việc!",
+                message: t("please_enter_job_type"),
               },
             ]}
           >
-            <Select placeholder="Chọn loại hình" className="!text-[12px]">
+            <Select placeholder={t("choose_job_type")} className="!text-[12px]">
               {listJobTypes.map((jobType) => {
                 return (
                   <Select.Option key={jobType.key} value={jobType._id}>
@@ -1434,7 +1429,9 @@ export default function PostJob() {
 
         {/* Job Mô tả */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-          <h2 className="text-[20px] font-semibold mb-4">Mô tả công việc</h2>
+          <h2 className="text-[20px] font-semibold mb-4">
+            {t("job_description")}
+          </h2>
           <Form.Item name="description">
             <Editor
               // apiKey={process.env.REACT_APP_TINYMCE_API_KEY} // Bạn có thể lấy API key miễn phí từ TinyMCE
@@ -1461,7 +1458,7 @@ export default function PostJob() {
         {/* Application Method */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
           <h2 className="text-[20px] font-semibold mb-4">
-            Ứng tuyển công việc trên
+            {t("application_method")}
           </h2>
 
           <Form.Item
@@ -1469,19 +1466,19 @@ export default function PostJob() {
             rules={[
               {
                 required: true,
-                message: "Vui lòng chọn loại nộp đơn xin việc!",
+                message: t("please_enter_application_method"),
               },
             ]}
           >
             <Radio.Group>
               <Radio className="text-[12px]" value="linkedin">
-                LinkedIn
+                {t("linkedin")}
               </Radio>
               <Radio className="text-[12px]" value="company">
-                Company website
+                {t("company_website")}
               </Radio>
               <Radio className="text-[12px]" value="email">
-                Email
+                {t("email")}
               </Radio>
             </Radio.Group>
           </Form.Item>
@@ -1491,12 +1488,12 @@ export default function PostJob() {
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập liên kết đơn ứng tuyển!",
+                message: t("please_enter_application_link"),
               },
             ]}
           >
             <Input
-              placeholder="Vui lòng nhập URL hoặc Email"
+              placeholder={t("please_enter_application_link")}
               className="text-[12px]"
             />
           </Form.Item>
@@ -1511,13 +1508,13 @@ export default function PostJob() {
               htmlType="submit"
               className="w-full !text-[12px]"
             >
-              Lưu
+              {t("save")}
             </Button>
           </Form.Item>
         </LoadingComponent>
       </Form>
       <GeneralModal
-        title="Thêm"
+        title={t("add")}
         visible={isModalVisible}
         onCancel={handleCloseModal}
         renderBody={() => renderBody(typeModal)}

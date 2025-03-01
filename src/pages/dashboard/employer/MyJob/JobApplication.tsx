@@ -25,6 +25,7 @@ import { USER_API } from "../../../../services/modules/userServices";
 import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
 import { useNavigate, useParams } from "react-router-dom";
 import useMomentFn from "../../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 
 const { Title, Text } = Typography;
 interface IPropJobApplication {
@@ -35,13 +36,14 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   handleChangeHome,
   selectedJob,
 }) => {
+  const { t } = useTranslation();
   const sortMenu = (
     <Menu>
       <Menu.Item key="newest">
-        <Radio value="newest">Newest</Radio>
+        <Radio value="newest">{t("newest")}</Radio>
       </Menu.Item>
       <Menu.Item key="oldest">
-        <Radio value="oldest">Oldest</Radio>
+        <Radio value="oldest">{t("oldest")}</Radio>
       </Menu.Item>
     </Menu>
   );
@@ -72,23 +74,23 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     return (
       <Form onFinish={handleEditSubmit}>
         <Form.Item
-          label="User Name"
+          label={t("user_name")}
           name="user_id"
-          rules={[{ required: true, message: "Please input the user name!" }]}
+          rules={[{ required: true, message: t("please_input_the_user_name") }]}
         >
           <Input />
         </Form.Item>
 
         <Form.Item
-          label="Job Title"
+          label={t("job_title")}
           name="job_id"
-          rules={[{ required: true, message: "Please input the job title!" }]}
+          rules={[{ required: true, message: t("please_input_the_job_title") }]}
         >
           <Input />
         </Form.Item>
 
         <Button type="primary" htmlType="submit">
-          Lưu thay đổi
+          {t("save_changes")}
         </Button>
       </Form>
     );
@@ -108,7 +110,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     if (+res.statusCode === 201) {
       setVisibleEmail(false);
       setSelectedApplie({});
-      message.success("Gửi email thành công!");
+      message.success(t("send_email_success"));
     }
     setIsLoading(false);
   };
@@ -133,30 +135,37 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           }}
           layout="vertical"
         >
-          <Form.Item label="Tên công ty" name="recruiterCompany">
-            <Input placeholder="Enter company name" disabled />
+          <Form.Item label={t("company_name")} name="recruiterCompany">
+            <Input placeholder={t("enter_company_name")} disabled />
           </Form.Item>
-          <Form.Item label="Recruiter Email" name="recruiterEmail">
-            <Input type="email" placeholder="Enter recruiter email" disabled />
-          </Form.Item>
-
-          <Form.Item label="Ứng Viên Name" name="candidateName">
-            <Input placeholder="Enter candidate name" disabled />
-          </Form.Item>
-
-          <Form.Item label="Ứng Viên Email" name="candidateEmail">
-            <Input placeholder="Enter candidate name" disabled />
+          <Form.Item label={t("recruiter_email")} name="recruiterEmail">
+            <Input
+              type="email"
+              placeholder={t("enter_recruiter_email")}
+              disabled
+            />
           </Form.Item>
 
-          <Form.Item label="Job Title" name="jobTitle">
-            <Input placeholder="Enter job title" disabled />
+          <Form.Item label={t("candidate_name")} name="candidateName">
+            <Input placeholder={t("enter_candidate_name")} disabled />
+          </Form.Item>
+
+          <Form.Item label={t("candidate_email")} name="candidateEmail">
+            <Input placeholder={t("enter_candidate_email")} disabled />
+          </Form.Item>
+
+          <Form.Item label={t("job_title")} name="jobTitle">
+            <Input placeholder={t("enter_job_title")} disabled />
           </Form.Item>
 
           <Form.Item
-            label="Interview Date"
+            label={t("interview_date")}
             name="interviewDate"
             rules={[
-              { required: true, message: "Please select the interview date!" },
+              {
+                required: true,
+                message: t("please_select_the_interview_date"),
+              },
             ]}
           >
             <DatePicker style={{ width: "100%" }} />
@@ -166,7 +175,10 @@ const JobApplication: React.FC<IPropJobApplication> = ({
             label="Interview Time"
             name="interviewTime"
             rules={[
-              { required: true, message: "Please select the interview time!" },
+              {
+                required: true,
+                message: t("please_select_the_interview_time"),
+              },
             ]}
           >
             <TimePicker style={{ width: "100%" }} format="HH:mm" />
@@ -178,15 +190,15 @@ const JobApplication: React.FC<IPropJobApplication> = ({
             rules={[
               {
                 required: true,
-                message: "Please input the interview location!",
+                message: t("please_input_the_interview_location"),
               },
             ]}
           >
-            <Input placeholder="Enter interview location" />
+            <Input placeholder={t("enter_interview_location")} />
           </Form.Item>
 
           <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
-            Generate Email
+            {t("generate_email")}
           </Button>
         </Form>
       </LoadingComponentSkeleton>
@@ -228,13 +240,13 @@ const JobApplication: React.FC<IPropJobApplication> = ({
 
       <div className="mb-6 flex items-center justify-between">
         <Title level={2} className="m-0 !text-[20px]">
-          Đơn ứng tuyển
+          {t("job_application")}
         </Title>
         <Space>
-          <Button className="!text-[12px]">Filter</Button>
+          <Button className="!text-[12px]">{t("filter")}</Button>
           <Dropdown overlay={sortMenu} trigger={["click"]}>
             <Button className="!text-[12px]">
-              Sort <DownloadOutlined />
+              {t("sort")} <DownloadOutlined />
             </Button>
           </Dropdown>
         </Space>
@@ -247,7 +259,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
               level={4}
               className="m-0 bg-yellow-500 text-white px-[15px]  rounded-full !text-[14px]"
             >
-              Đang chờ
+              {t("pending")}
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
@@ -269,7 +281,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           ) : (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="Không có dữ liệu"
+              description={t("no_data")}
             />
           )}
         </div>
@@ -280,7 +292,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
               level={4}
               className="m-0 bg-red-500 text-white px-[15px]  rounded-full !text-[14px]"
             >
-              Từ chối
+              {t("rejected")}
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
@@ -302,7 +314,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           ) : (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="Không có dữ liệu"
+              description={t("no_data")}
             />
           )}
         </div>
@@ -312,7 +324,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
               level={4}
               className="m-0 bg-green-500 text-white px-[15px]  rounded-full !text-[14px]"
             >
-              Chấp nhận
+              {t("accepted")}
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
@@ -335,20 +347,20 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           ) : (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="Không có dữ liệu"
+              description={t("no_data")}
             />
           )}
         </div>
       </div>
       <GeneralModal
-        title="Cập nhật"
+        title={t("update")}
         onOk={handleEditSubmit}
         renderBody={renderEdit}
         visible={visibleEdit}
         onCancel={() => setVisibleEdit(false)}
       />
       <GeneralModal
-        title="Gửi email"
+        title={t("send_email")}
         onOk={() => setVisibleEmail(false)}
         renderBody={renderBodyEmail}
         visible={visibleEmail}

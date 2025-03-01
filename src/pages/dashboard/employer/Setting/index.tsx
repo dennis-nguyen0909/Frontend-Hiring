@@ -1,69 +1,68 @@
-import { useState } from 'react'
-import { Tabs } from 'antd'
-import { UserOutlined, GlobalOutlined, WifiOutlined, SettingOutlined } from '@ant-design/icons'
-import CompanyInfo from './Company'
-import Founding from './Founding'
-import SocialEmployer from './Social'
-import AccountSettingEmployer from './Account'
+import { useState } from "react";
+import { Tabs } from "antd";
+import {
+  UserOutlined,
+  GlobalOutlined,
+  WifiOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+import CompanyInfo from "./Company";
+import Founding from "./Founding";
+import SocialEmployer from "./Social";
+import AccountSettingEmployer from "./Account";
+import { useTranslation } from "react-i18next";
 
 export default function SettingEmployer() {
-  const [activeTab, setActiveTab] = useState('1')
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState("1");
 
   const tabItems = [
     {
-      key: '1',
+      key: "1",
       label: (
         <span className="!text-black flex items-center gap-2">
           <UserOutlined />
-          Thông tin công ty
+          {t("company_info")}
         </span>
       ),
-      content: (
-       <CompanyInfo />
-      ),
+      content: <CompanyInfo />,
     },
     {
-      key: '2',
+      key: "2",
       label: (
         <span className="!text-black flex items-center gap-2">
           <GlobalOutlined />
-          Thông tin thành lập
+          {t("founding_info")}
         </span>
       ),
-      content: (
-        <Founding />
-      )
+      content: <Founding />,
     },
     {
-      key: '3',
+      key: "3",
       label: (
         <span className="!text-black flex items-center gap-2">
           <WifiOutlined />
-          Hồ sơ truyền thông xã hội
+          {t("social_info")}
         </span>
       ),
-      content: (
-        <SocialEmployer />
-      )
+      content: <SocialEmployer />,
     },
     {
-      key: '4',
+      key: "4",
       label: (
         <span className="!text-black flex items-center gap-2">
           <SettingOutlined />
-          Cài đặt tài khoản
+          {t("account_setting")}
         </span>
       ),
-      content: (
-        <AccountSettingEmployer />
-      )
+      content: <AccountSettingEmployer />,
     },
-  ]
+  ];
 
   return (
     <div className="setting-employer lg:p-6 p-2 bg-gray-50 min-h-screen">
       <div className=" mx-auto">
-        <h1 className="text-2xl font-semibold mb-6">Cài đặt</h1>
+        <h1 className="text-2xl font-semibold mb-6">{t("setting")}</h1>
         <div className="bg-white rounded-lg shadow-sm">
           <Tabs
             activeKey={activeTab}
@@ -80,5 +79,5 @@ export default function SettingEmployer() {
         </div>
       </div>
     </div>
-  )
+  );
 }

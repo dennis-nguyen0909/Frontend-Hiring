@@ -49,7 +49,8 @@ interface JobDetail {
   level: string;
   posted_date: string;
   require_experience: string[];
-  salary_range: Record<string, unknown>; // You can replace `Record<string, unknown>` with a more specific type if needed
+  salary_range_min: number;
+  salary_range_max: number;
   salary_type: string;
   skills: string[];
   title: string;
@@ -344,8 +345,8 @@ export default function JobDetail() {
                         <li>Mức lương: Thỏa thuận</li>
                       ) : (
                         <li>
-                          Mức lương: {jobDetail?.salary_range.min} ~{" "}
-                          {jobDetail?.salary_range.max}
+                          Mức lương: {jobDetail?.salary_range_min} ~{" "}
+                          {jobDetail?.salary_range_max}
                         </li>
                       )}
                       {jobDetail?.age_range ? (

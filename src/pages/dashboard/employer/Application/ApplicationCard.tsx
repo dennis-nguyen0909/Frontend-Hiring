@@ -19,6 +19,7 @@ import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useSelector } from "react-redux";
 import useMomentFn from "../../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 
 const { Text } = Typography;
 interface IPropsApplicationCard {
@@ -34,23 +35,24 @@ const ApplicationCard = ({
   className,
   handleOpenModalEmail,
 }: IPropsApplicationCard) => {
+  const { t } = useTranslation();
   const { formatDate } = useMomentFn();
   const { user_id, applied_date, job_id, save_candidates } = applied;
   const userDetail = useSelector((state) => state.user);
   const items: MenuProps["items"] = [
     {
       key: "rejected",
-      label: <span className="!text-[12px]">Từ chối</span>,
+      label: <span className="!text-[12px]">{t("reject")}</span>,
       onClick: () => handleMenuClick("rejected", applied._id),
     },
     {
       key: "accepted",
-      label: <span className="!text-[12px]">Chấp nhận</span>,
+      label: <span className="!text-[12px]">{t("accept")}</span>,
       onClick: () => handleMenuClick("accepted", applied._id),
     },
     {
       key: "pending",
-      label: <span className="!text-[12px]">Đang chờ</span>,
+      label: <span className="!text-[12px]">{t("pending")}</span>,
       onClick: () => handleMenuClick("pending", applied._id),
     },
   ];
@@ -58,7 +60,7 @@ const ApplicationCard = ({
   const itemsDelete: MenuProps["items"] = [
     {
       key: "delete",
-      label: <span className="!text-[12px]">Xóa</span>,
+      label: <span className="!text-[12px]">{t("delete")}</span>,
       onClick: () => handleMenuClick("delete", applied._id),
     },
   ];
@@ -85,7 +87,7 @@ const ApplicationCard = ({
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
@@ -104,7 +106,7 @@ const ApplicationCard = ({
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
@@ -117,8 +119,8 @@ const ApplicationCard = ({
     const link = document.createElement("a");
     if (cvLink === "" || !cvLink) {
       notification.error({
-        message: "Thông báo",
-        description: "Ứng viên chưa cập nhật CV",
+        message: t("notification"),
+        description: t("candidate_not_update_cv"),
       });
     }
     link.href = cvLink || primary_cv_id.cv_link;
@@ -162,22 +164,29 @@ const ApplicationCard = ({
       <div className="mt-4 space-y-2 text-sm">
         {user_id?.total_experience_months && user_id?.total_experience_years ? (
           <p className="text-[12px]">
-            Kinh nghiệm:{" "}
+            {t("experience")}:{" "}
             {user_id?.total_experience_months +
-              " tháng " +
+              " " +
+              t("month") +
+              " " +
               user_id?.total_experience_years +
-              " năm"}
+              " " +
+              t("year")}
           </p>
         ) : (
-          <p className="text-[12px]">Kinh nghiệm: Chưa có kinh nghiệm</p>
+          <p className="text-[12px]">
+            {t("experience")}: {t("no_experience")}
+          </p>
         )}
         {user_id?.education_ids?.map((edu, index) => (
           <p className="text-[12px]" key={index}>
-            Education: {edu.school}
+            {t("education")}: {edu.school}
           </p>
         ))}
         <div className="flex justify-between items-center">
-          <p className="text-[12px]">Ngày nộp: {formatDate(applied_date)}</p>
+          <p className="text-[12px]">
+            {t("application_date")}: {formatDate(applied_date)}
+          </p>
           <div
             className="cursor-pointer text-xl text-red-500"
             onClick={() => handleSaveCandidate(user_id?._id)}
@@ -191,14 +200,14 @@ const ApplicationCard = ({
         icon={<DownloadOutlined />}
         className="w-full mt-4 !border-black !text-black !hover:text-primaryColor !text-[12px]"
       >
-        Download CV
+        {t("download_cv")}
       </Button>
       {applied.status === "accepted" && (
         <Button
           className="!text-[12px]"
           onClick={() => handleOpenModalEmail(applied)}
         >
-          Gửi email
+          {t("send_email")}
         </Button>
       )}
     </Card>

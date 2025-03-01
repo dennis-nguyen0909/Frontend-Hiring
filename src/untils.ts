@@ -1,5 +1,4 @@
 import moment from "moment";
-
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const isJsonString = (data: any) => {
   try {
@@ -27,21 +26,20 @@ export const defaultMeta = {
   total_pages: 0,
 };
 
-export const calculateTimeRemaining = (expireDate:string) => {
+export const calculateTimeRemaining = (expireDate:string,t) => {
   const now = moment(); // Lấy thời gian hiện tại
   const expirationDate = moment(expireDate); // Ngày hết hạn sử dụng moment
-
   const diffDuration = moment.duration(expirationDate.diff(now)); // Tính toán thời gian chênh lệch
 
   if (diffDuration.asMilliseconds() <= 0) {
-    return "Hết hạn"; // Nếu đã quá hạn
+    return t("expired"); // Nếu đã quá hạn
   }
 
   const days = Math.floor(diffDuration.asDays()); // Số ngày
   const hours = Math.floor(diffDuration.asHours() % 24); // Số giờ
   const minutes = Math.floor(diffDuration.asMinutes() % 60); // Số phút
 
-  return `${days} ngày ${hours} giờ ${minutes} phút`;
+  return `${days} ${t("days")} ${hours} ${t("hours")} ${minutes} ${t("minutes")}`;
 };
 
 export const capitalizeFirstLetter = (text) => {

@@ -5,18 +5,13 @@ import {
   Image,
   Input,
   notification,
-  Select,
   Form,
   Card,
   Avatar,
 } from "antd";
 import logo from "../../assets/images/logo.png";
 import icon from "../../assets/logo/LogoH.png";
-import {
-  ArrowRightOutlined,
-  EyeFilled,
-  EyeInvisibleOutlined,
-} from "@ant-design/icons";
+import { EyeFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import * as authServices from "../../services/modules/authServices";
 import LoadingComponent from "../../components/Loading/LoadingComponent";
@@ -25,8 +20,10 @@ import facebook from "../../assets/icons/fb.png";
 import google from "../../assets/icons/gg.png";
 import { useSelector } from "react-redux";
 import { Building, User } from "lucide-react";
-import { capitalizeFirstLetter } from "../../untils";
+import { useTranslation } from "react-i18next";
+import LanguageSwitch from "../../components/LanguagesSwitch/LanguagesSwitch";
 const LoginPage = () => {
+  const { t } = useTranslation();
   const [fullName, setFullName] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -76,8 +73,8 @@ const LoginPage = () => {
       });
       if (res.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Đăng ký thành công",
+          message: t("notification_success"),
+          description: t("register_success"),
         });
         navigate("/verify", {
           state: {
@@ -88,13 +85,13 @@ const LoginPage = () => {
       }
       if (+res.error_code === 400) {
         notification.error({
-          message: "Thông báo",
+          message: t("notification_error"),
           description: res?.message,
         });
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification_error"),
         description: error.message,
       });
     } finally {
@@ -123,7 +120,7 @@ const LoginPage = () => {
 
         <Card className="bg-gray-50 border-0 mt-10">
           <h2 className="text-center text-gray-500 text-[20px] mb-4">
-            TẠO TÀI KHOẢN NHƯ MỘT
+            {t("create_account_as_a")}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div
@@ -144,7 +141,9 @@ const LoginPage = () => {
               onClick={() => handleTypeSelect("user")}
             >
               <User className="w-6 h-6 text-gray-600" />
-              <span className=" text-gray-600 text-[12px]">Ứng viên</span>
+              <span className=" text-gray-600 text-[12px]">
+                {t("candidate")}
+              </span>
             </div>
             <div
               className={`p-2 bg-[#0A2647] rounded-lg cursor-pointer flex items-center gap-3 ${
@@ -165,7 +164,7 @@ const LoginPage = () => {
               onClick={() => handleTypeSelect("employer")}
             >
               <Building className="w-6 h-6 text-white" />
-              <span className=" text-white text-[12px]">Nhà tuyển dụng</span>
+              <span className=" text-white text-[12px]">{t("employer")}</span>
             </div>
           </div>
         </Card>
@@ -175,13 +174,15 @@ const LoginPage = () => {
           <div className="flex flex-col sm:flex-row gap-0 md:gap-5 justify-between">
             <Form.Item
               name="fullName"
-              rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
+              rules={[
+                { required: true, message: t("please_input_your_full_name") },
+              ]}
               className="w-full"
             >
               <Input
                 className="!text-[12px]"
                 size="large"
-                placeholder="Họ Tên"
+                placeholder={t("full_name")}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
               />
@@ -189,12 +190,14 @@ const LoginPage = () => {
             <Form.Item
               className="!text-[12px] w-full"
               name="username"
-              rules={[{ required: true, message: "Vui lòng nhập username!" }]}
+              rules={[
+                { required: true, message: t("please_input_your_username") },
+              ]}
             >
               <Input
                 size="large"
                 className="!text-[12px]"
-                placeholder="Username"
+                placeholder={t("username")}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -203,26 +206,28 @@ const LoginPage = () => {
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: "Vui lòng nhập email!" },
-              { type: "email", message: "Email không hợp lệ!" },
+              { required: true, message: t("please_input_your_email") },
+              { type: "email", message: t("please_input_your_email_valid") },
             ]}
           >
             <Input
               className="!text-[12px]"
               size="large"
-              placeholder="Địa chỉ email"
+              placeholder={t("email_address")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+            rules={[
+              { required: true, message: t("please_input_your_password") },
+            ]}
           >
             <Input.Password
               className="!text-[12px]"
               size="large"
-              placeholder="Password"
+              placeholder={t("password")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               iconRender={(visible) =>
@@ -235,7 +240,10 @@ const LoginPage = () => {
             dependencies={["password"]}
             hasFeedback
             rules={[
-              { required: true, message: "Vui lòng nhập xác nhận mật khẩu!" },
+              {
+                required: true,
+                message: t("please_input_your_confirm_password"),
+              },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {
@@ -249,7 +257,7 @@ const LoginPage = () => {
             <Input.Password
               className="!text-[12px]"
               size="large"
-              placeholder="Xác nhận mật khẩu"
+              placeholder={t("confirm_password")}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               iconRender={(visible) =>
@@ -259,19 +267,19 @@ const LoginPage = () => {
           </Form.Item>
           <Form.Item name="terms" valuePropName="checked">
             <Checkbox className="text-[12px]">
-              Tôi đã đọc và đồng ý với bạn{" "}
-              <span className="text-blue-500">Điều khoản dịch vụ</span>
+              {t("i_have_read_and_agree_to_the")}{" "}
+              <span className="text-blue-500">{t("terms_of_service")}</span>
             </Checkbox>
             <div className="mt-2">
               <span className="text-gray-500 text-[12px]">
-                Đã có tài khoản?
+                {t("already_have_an_account")}
               </span>
               <span
                 onClick={handleNextRegister}
                 className="text-blue-500 cursor-pointer text-[12px]"
               >
                 {" "}
-                Đăng nhập
+                {t("login")}
               </span>
             </div>
           </Form.Item>
@@ -285,7 +293,7 @@ const LoginPage = () => {
               size="large"
               style={{ backgroundColor: "#0f65cc" }}
             >
-              Đăng ký
+              {t("register")}
               {/* <ArrowRightOutlined style={{ fontSize: "18px", fontWeight: "bold" }} /> */}
             </Button>
           </div>
@@ -293,7 +301,7 @@ const LoginPage = () => {
 
         <div className="flex items-center justify-center mt-3 text-gray-500">
           <hr className="w-full h-0.5 bg-gray-500" />
-          <p className="mx-2 text-[12px]">hoặc</p>
+          <p className="mx-2 text-[12px]">{t("or")}</p>
           <hr className="w-full h-0.5 bg-gray-500" />
         </div>
 
@@ -301,13 +309,13 @@ const LoginPage = () => {
           <a href={`${import.meta.env.VITE_API_LOGIN_FACEBOOK}`}>
             <Button className="flex items-center w-full lg:w-auto" size="large">
               <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
-              Đăng nhập với Facebook
+              {t("login_with_facebook")}
             </Button>
           </a>
           <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
             <Button className="flex items-center w-full lg:w-auto" size="large">
               <img src={google} alt="Google" className="w-5 h-5 mr-2" />
-              Đăng nhập với Google
+              {t("login_with_google")}
             </Button>
           </a>
         </div>
@@ -332,7 +340,10 @@ const LoginPage = () => {
     );
   };
   return (
-    <div className="flex justify-between items-center overflow-hidden">
+    <div className="flex justify-between items-start overflow-hidden">
+      <div className="mt-5 ml-5">
+        <LanguageSwitch />
+      </div>
       <div className="flex flex-col gap-[100px] h-screen lg:w-3/6 w-full lg:pl-[150px]">
         <div className="flex align-center justify-center overflow-auto md:overflow-hidden">
           {renderFormCreate()}
@@ -341,8 +352,8 @@ const LoginPage = () => {
       <div className=" flex-col gap-[100px] h-screen w-2/4 relative lg:flex hidden">
         <img src={logo} alt="" className="fixed h-full" />
         <p className="absolute font-normal text-3xl text-white bottom-[250px] left-[100px]">
-          Over 1,75,324 candidates
-          <br /> waiting for good employers.
+          {t("over_1_75_324_candidates", { count: "1000+" })}
+          <br /> {t("waiting_for_good_employers")}
         </p>
         <div className="absolute flex gap-[80px] bottom-[100px] left-[100px] justify-between">
           {itemsIcon.map((item) => {

@@ -1,172 +1,196 @@
-import { useEffect, useState } from 'react'
-import { Table, Button, notification, Popconfirm, Tooltip, Form, Input, Pagination } from 'antd'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { EmployerSkillApi } from '../../../services/modules/EmployerSkillServices'
-import { useSelector } from 'react-redux'
-import GeneralModal from '../../../components/ui/GeneralModal/GeneralModal'
-import DrawerGeneral from '../../../components/ui/GeneralDrawer/GeneralDrawer'
-import { Meta, SkillEmployerFormData } from '../../../types'
-import './styles.css'
-import CustomPagination from '../../../components/ui/CustomPanigation/CustomPanigation'
-
+import { useEffect, useState } from "react";
+import {
+  Table,
+  Button,
+  notification,
+  Popconfirm,
+  Tooltip,
+  Form,
+  Input,
+  Pagination,
+} from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EmployerSkillApi } from "../../../services/modules/EmployerSkillServices";
+import { useSelector } from "react-redux";
+import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
+import DrawerGeneral from "../../../components/ui/GeneralDrawer/GeneralDrawer";
+import { Meta, SkillEmployerFormData } from "../../../types";
+import "./styles.css";
+import CustomPagination from "../../../components/ui/CustomPanigation/CustomPanigation";
+import { useTranslation } from "react-i18next";
 
 export default function SkillEmployer() {
-  const [form] = Form.useForm<SkillEmployerFormData>()
-  const [visible, setVisible] = useState<boolean>(false)
-  const [visibleDrawer, setVisibleDrawer] = useState<boolean>(false)
-  const [listSkills, setListSkills] = useState<SkillEmployerFormData[]>([])
-  const [selectedSkill, setSelectedSkill] = useState<SkillEmployerFormData | null>(null)
+  const { t } = useTranslation();
+  const [form] = Form.useForm<SkillEmployerFormData>();
+  const [visible, setVisible] = useState<boolean>(false);
+  const [visibleDrawer, setVisibleDrawer] = useState<boolean>(false);
+  const [listSkills, setListSkills] = useState<SkillEmployerFormData[]>([]);
+  const [selectedSkill, setSelectedSkill] =
+    useState<SkillEmployerFormData | null>(null);
   const [meta, setMeta] = useState<Meta | null>({
     count: 0,
     current_page: 1,
     per_page: 10,
     total: 0,
-    total_pages: 0
-  })
-  const userDetail = useSelector(state => state.user)
+    total_pages: 0,
+  });
+  const userDetail = useSelector((state) => state.user);
 
   const handleGetAllEmployerSkills = async (params?: any) => {
     try {
-      const res = await EmployerSkillApi.getSkillByUserId(userDetail.access_token, params)
+      const res = await EmployerSkillApi.getSkillByUserId(
+        userDetail.access_token,
+        params
+      );
       if (res.data) {
-        setListSkills(res.data.items)
-        setMeta(res.data.meta)
+        setListSkills(res.data.items);
+        setMeta(res.data.meta);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
-    handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
-  }, [])
+    handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
+  }, []);
 
   const onFinish = async (values: SkillEmployerFormData) => {
-    const { name, description } = values
-    const res = await EmployerSkillApi.postSkill({ name, description, user_id: userDetail?._id }, userDetail.access_token)
+    const { name, description } = values;
+    const res = await EmployerSkillApi.postSkill(
+      { name, description, user_id: userDetail?._id },
+      userDetail.access_token
+    );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Thêm thành công",
-      })
-      handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
-      setVisible(false)
+        message: t("notification"),
+        description: t("create_success"),
+      });
+      handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
+      setVisible(false);
       form.resetFields();
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Thêm thất bại",
-      })
+        message: t("notification"),
+        description: t("create_failed"),
+      });
     }
-  }
+  };
 
   const handleOpenDrawer = (record: any) => {
-    setSelectedSkill(record)
-    setVisibleDrawer(true)
-    form.setFieldsValue(record)
-  }
+    setSelectedSkill(record);
+    setVisibleDrawer(true);
+    form.setFieldsValue(record);
+  };
 
   const handleUpdate = async (values: any) => {
-    const res = await EmployerSkillApi.updateSkill(selectedSkill?._id, values, userDetail.access_token)
+    const res = await EmployerSkillApi.updateSkill(
+      selectedSkill?._id,
+      values,
+      userDetail.access_token
+    );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Cập nhật thành công!",
-      })
-      handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
-      setVisibleDrawer(false)
+        message: t("notification"),
+        description: t("update_success"),
+      });
+      handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
+      setVisibleDrawer(false);
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Cap Nhat That Bai!",
-      })
+        message: t("notification"),
+        description: t("update_failed"),
+      });
     }
-  }
+  };
 
   const handleDelete = async (record: any) => {
-    const res = await EmployerSkillApi.deleteManySkill([record._id], userDetail.access_token)
+    const res = await EmployerSkillApi.deleteManySkill(
+      [record._id],
+      userDetail.access_token
+    );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Xóa thành công",
-      })
-      handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
+        message: t("notification"),
+        description: t("delete_success"),
+      });
+      handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Xoa That Bai!",
-      })
+        message: t("notification"),
+        description: t("delete_failed"),
+      });
     }
-  }
+  };
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: t("name"),
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Mô tả',
-      dataIndex: 'description',
-      key: 'description',
+      title: t("description"),
+      dataIndex: "description",
+      key: "description",
     },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: t("actions"),
+      key: "actions",
       render: (text: any, record: SkillEmployerFormData) => (
         <div>
-          <Tooltip title="Edit">
+          <Tooltip title={t("edit")}>
             <Button
               icon={<EditOutlined />}
               onClick={() => handleOpenDrawer(record)}
               style={{ marginRight: 8 }}
             />
           </Tooltip>
-  
+
           <Popconfirm
-            title="Are you sure you want to delete?"
+            title={t("delete_confirm_skill")}
             onConfirm={() => handleDelete(record)}
-            okText="Yes"
-            cancelText="No"
+            okText={t("delete_confirm_skill_button")}
+            cancelText={t("no")}
           >
-            <Tooltip title="Xóa">
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-              />
+            <Tooltip title={t("delete")}>
+              <Button icon={<DeleteOutlined />} danger />
             </Tooltip>
           </Popconfirm>
         </div>
       ),
     },
-  ]
+  ];
 
   const onChange = async (pagination: any, filters: any, sorter: any) => {
     const currentPage = pagination.current;
     const pageSize = pagination.pageSize;
-  
+
     await handleGetAllEmployerSkills({
       current: currentPage,
       pageSize: pageSize,
       ...filters,
-      ...sorter, 
+      ...sorter,
     });
-  }
+  };
 
   return (
     <>
-      <Button className='!bg-primaryColor mb-4' onClick={() => setVisible(true)}>
+      <Button
+        className="!bg-primaryColor mb-4"
+        onClick={() => setVisible(true)}
+      >
         Add
       </Button>
       <Table
-    columns={columns}
-    dataSource={listSkills}
-    onChange={onChange}
-    pagination={false}
-    rowKey="id" 
-  />
+        columns={columns}
+        dataSource={listSkills}
+        onChange={onChange}
+        pagination={false}
+        rowKey="id"
+      />
 
-  {/* Pagination Component */}
+      {/* Pagination Component */}
       <CustomPagination
         currentPage={meta?.current_page}
         total={meta?.total}
@@ -175,63 +199,89 @@ export default function SkillEmployer() {
           handleGetAllEmployerSkills({ current, pageSize });
         }}
       />
-  
+
       <GeneralModal
         title="Add Skill"
         visible={visible}
         onCancel={() => setVisible(false)}
         onOk={() => setVisible(false)}
         renderBody={() => (
-          <Form form={form} name="skillEmployerForm" onFinish={onFinish} layout="vertical">
+          <Form
+            form={form}
+            name="skillEmployerForm"
+            onFinish={onFinish}
+            layout="vertical"
+          >
             <Form.Item
               name="name"
-              label="Name"
-              rules={[{ required: true, message: 'Please input the Name!' }]}
+              label={t("name")}
+              rules={[{ required: true, message: t("please_input_the_name") }]}
             >
-              <Input placeholder="Enter Name" />
+              <Input placeholder={t("name")} />
             </Form.Item>
-  
-            <Form.Item name="description" label="Mô tả">
-              <Input.TextArea placeholder="Enter Mô tả (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
+
+            <Form.Item name="description" label={t("description")}>
+              <Input.TextArea
+                placeholder={t("description")}
+                autoSize={{ minRows: 3, maxRows: 6 }}
+              />
             </Form.Item>
-  
+
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="w-full !bg-primaryColor">
-                Submit
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full !bg-primaryColor"
+              >
+                {t("create")}
               </Button>
             </Form.Item>
           </Form>
         )}
       />
-  
+
       <DrawerGeneral
         visible={visibleDrawer}
         onCancel={() => setVisibleDrawer(false)}
         onOk={() => setVisibleDrawer(false)}
         renderBody={() => (
-          <Form form={form} name="skillEmployerForm" onFinish={handleUpdate} layout="vertical">
+          <Form
+            form={form}
+            name="skillEmployerForm"
+            onFinish={handleUpdate}
+            layout="vertical"
+          >
             <Form.Item
               name="name"
-              label="Name"
-              rules={[{ required: true, message: 'Please input the Name!' }]}
+              label={t("name")}
+              rules={[
+                { required: true, message: t("please_input_the_name_skill") },
+              ]}
             >
-              <Input placeholder="Enter Name" />
+              <Input placeholder={t("name")} />
             </Form.Item>
-  
-            <Form.Item name="description" label="Mô tả">
-              <Input.TextArea placeholder="Enter Mô tả (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
+
+            <Form.Item name="description" label={t("description")}>
+              <Input.TextArea
+                placeholder={t("description")}
+                autoSize={{ minRows: 3, maxRows: 6 }}
+              />
             </Form.Item>
-  
+
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="w-full !bg-primaryColor">
-                Submit
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full !bg-primaryColor"
+              >
+                {t("update")}
               </Button>
             </Form.Item>
           </Form>
         )}
         renderFooter={() => null}
-        renderTitle={() => 'Update Skill'}
+        renderTitle={() => t("update_skill")}
       />
     </>
-  )
+  );
 }

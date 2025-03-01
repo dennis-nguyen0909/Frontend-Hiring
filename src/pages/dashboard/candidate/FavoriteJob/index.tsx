@@ -70,9 +70,9 @@ const FavoriteJob = () => {
                 </span>
               ) : (
                 <span className="mr-2">
-                  {t("salary")}: {record?.job_id?.salary_range?.min}
+                  {t("salary")}: {record?.job_id?.salary_range_min}
                   {record?.job_id?.type_money?.symbol} -{" "}
-                  {record?.job_id?.salary_range?.max}
+                  {record?.job_id?.salary_range_max}
                   {record?.job_id?.type_money?.symbol}
                 </span>
               )}

@@ -14,8 +14,11 @@ import { InfoOutlined } from "@ant-design/icons";
 export default function SystemActivities() {
   const user = useSelector((state) => state.user);
   const [activities, setActivities] = useState<Activities[]>([]);
+  const [action, setAction] = useState<string>("");
+  const [userRole, setRole] = useState<string>("");
   const [search, setSearch] = useState<string>("");
   const [meta, setMeta] = useState<Meta>();
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const { formatDate } = useMomentFn();
   const { t } = useTranslation();
   const [dateRange, setDateRange] = useState({
@@ -23,9 +26,14 @@ export default function SystemActivities() {
     end: "23/02/25",
   });
 
-  const handleGetSystemActivities = async (current = 1, pageSize = 10) => {
+  const handleGetSystemActivities = async (
+    current = 1,
+    pageSize = 10,
+    queryParams?: any
+  ) => {
     const query = {
       userId: user?._id,
+      ...queryParams,
     };
     const res = await API_LOG_ACTIVITY.getActivity(current, pageSize, {
       query,
@@ -107,9 +115,25 @@ export default function SystemActivities() {
     );
   };
 
+  // Debounce search input
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      handleGetSystemActivities(1, 10, { keyword: debouncedSearch });
+    }
+  }, [debouncedSearch]);
+
   const handleSearch = (value: string) => {
     setSearch(value);
   };
+
   const handleActivity = (value: any) => {
     const userName = t("your") || value?.userId?.full_name;
     const activityDetail = value?.activityDetail;
@@ -178,36 +202,60 @@ export default function SystemActivities() {
       </div>
     );
   };
+
+  const handleSelectAction = async (value: string) => {
+    setAction(value.toLocaleUpperCase());
+    await handleGetSystemActivities(1, 10, {
+      action: value.toLocaleUpperCase(),
+    });
+  };
+  const handleSelectRole = async (value: string) => {
+    setRole(value.toLocaleUpperCase());
+    await handleGetSystemActivities(1, 10, {
+      userRole: value.toLocaleUpperCase(),
+    });
+  };
   return (
     <div className="p-4 max-w-full  mx-6">
       {/* Search and Filter Bar */}
       <div className="flex gap-4 mb-6">
-        <SearchInput
+        {/* <SearchInput
+          placeholder={t("search")}
           color="black"
           borderColor="black"
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
           onClick={() => handleSearch(search)}
-        />
+        /> */}
         <Select
           defaultValue="all"
           style={{ width: 200 }}
-          placeholder="--Chọn hành động--"
+          placeholder={t("select_action")}
+          onChange={(value) => handleSelectAction(value)}
         >
-          <Select.Option value="all">Tất cả hành động</Select.Option>
-          <Select.Option value="update">Cập nhật</Select.Option>
-          <Select.Option value="create">Tạo mới</Select.Option>
+          <Select.Option value="all">{t("all_actions")}</Select.Option>
+          <Select.Option value="update">{t("update")}</Select.Option>
+          <Select.Option value="create">{t("create")}</Select.Option>
+          <Select.Option value="delete">{t("delete")}</Select.Option>
+          <Select.Option value="apply">{t("apply")}</Select.Option>
+          <Select.Option value="favorite">{t("favorite")}</Select.Option>
+          <Select.Option value="unfavorite">{t("unfavorite")}</Select.Option>
+          <Select.Option value="upload_cv">{t("upload_cv")}</Select.Option>
+          <Select.Option value="delete_cv">{t("delete_cv")}</Select.Option>
         </Select>
 
         {/* Select chức vụ */}
         <Select
           defaultValue="all"
           style={{ width: 200 }}
-          placeholder="--Chọn chức vụ--"
+          placeholder={t("select_role")}
+          onChange={(value) => handleSelectRole(value)}
         >
-          <Select.Option value="all">Tất cả chức vụ</Select.Option>
-          <Select.Option value="staff">Nhân viên</Select.Option>
-          <Select.Option value="manager">Quản lý</Select.Option>
+          <Select.Option value="all">{t("all_roles")}</Select.Option>
+          <Select.Option value="user">{t("user")}</Select.Option>
+          <Select.Option value="employer">{t("employer")}</Select.Option>
+          <Select.Option value="admin">{t("admin")}</Select.Option>
+          <Select.Option value="candiate">{t("candiate")}</Select.Option>
         </Select>
 
         <div className="flex items-center gap-2 bg-white border rounded-md px-3">
@@ -322,7 +370,10 @@ export default function SystemActivities() {
           perPage={meta?.per_page}
           total={meta?.total}
           onPageChange={(current, pageSize) => {
-            handleGetSystemActivities(current, pageSize);
+            handleGetSystemActivities(current, pageSize, {
+              action: action,
+              userRole: userRole,
+            });
           }}
         />
       </div>

@@ -14,6 +14,8 @@ import CustomPagination from "../../../../components/ui/CustomPanigation/CustomP
 import CandidateDetailView from "../CandidateDetail/CandidateDetail";
 import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
 import { USER_API } from "../../../../services/modules/userServices";
+import { useTranslation } from "react-i18next";
+import useMomentFn from "../../../../hooks/useMomentFn";
 
 interface SaveCandidates {
   _id: string;
@@ -25,6 +27,8 @@ interface SaveCandidates {
 }
 
 export default function SavedCandidate() {
+  const { t } = useTranslation();
+  const { formatDate } = useMomentFn();
   const userDetail = useSelector((state) => state.user);
   const [saveCandidates, setSaveCandidates] = useState<SaveCandidates[]>([]);
   const [currentTab, setCurrentTab] = useState("save_candidate");
@@ -64,8 +68,8 @@ export default function SavedCandidate() {
           setSelectedCandidate(candidate?._id);
         } else {
           notification.error({
-            message: "Thông báo",
-            description: "Ứng viên chưa công khai thông tin",
+            message: t("notification"),
+            description: t("candidate_not_public_info"),
           });
         }
       }
@@ -75,11 +79,11 @@ export default function SavedCandidate() {
   };
 
   const handleSendEmail = (candidateId: string) => {
-    message.success("Email dialog opened");
+    message.success(t("send_email_success"));
   };
 
   const handleDownloadCV = (candidateId: string) => {
-    message.success("Downloading CV...");
+    message.success(t("download_cv_success"));
   };
 
   const handleGetSaveCandidates = async ({ current = 1, pageSize = 10 }) => {
@@ -119,7 +123,7 @@ export default function SavedCandidate() {
             className="!text-[12px]"
             icon={<BookOutlined className={isActive ? "text-blue-500" : ""} />}
             onClick={() => handleBookmark(candidate._id)}
-            aria-label={isActive ? "Remove bookmark" : "Add bookmark"}
+            aria-label={isActive ? t("remove_bookmark") : t("add_bookmark")}
           />,
           <Button
             key="view"
@@ -127,7 +131,7 @@ export default function SavedCandidate() {
             className="bg-blue-500 !text-[12px]"
             onClick={() => handleViewProfile(candidate)}
           >
-            Xem thông tin
+            {t("view_profile")}
           </Button>,
           <Dropdown
             key="more"
@@ -136,13 +140,13 @@ export default function SavedCandidate() {
                 {
                   key: "1",
                   icon: <MailOutlined />,
-                  label: "Send Email",
+                  label: t("send_email"),
                   onClick: () => handleSendEmail(candidate._id),
                 },
                 {
                   key: "2",
                   icon: <DownloadOutlined />,
-                  label: "Download CV",
+                  label: t("download_cv"),
                   onClick: () => handleDownloadCV(candidate._id),
                 },
               ],
@@ -153,7 +157,7 @@ export default function SavedCandidate() {
             <Button
               icon={<MoreOutlined />}
               type="text"
-              aria-label="More options"
+              aria-label={t("more_options")}
             />
           </Dropdown>,
         ]}
@@ -182,9 +186,13 @@ export default function SavedCandidate() {
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-6 border-b">
               <div className="flex  lg:justify-between lg:items-center items-start flex-col lg:flex-row ">
-                <h1 className="text-[20px] font-semibold">Ứng viên đã lưu</h1>
+                <h1 className="text-[20px] font-semibold">
+                  {t("saved_candidate")}
+                </h1>
                 <p className="text-[12px] text-gray-500">
-                  All of the saveCandidates are visible until 24 March, 2021
+                  {t("all_of_the_saveCandidates_are_visible_until", {
+                    date: formatDate(new Date()),
+                  })}
                 </p>
               </div>
             </div>

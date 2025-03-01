@@ -5,7 +5,6 @@ import {
   Form,
   Image,
   Input,
-  message,
   notification,
   Upload,
   UploadFile,
@@ -17,10 +16,11 @@ import { useDispatch } from "react-redux";
 import { updateUser } from "../../../../../redux/slices/userSlices";
 import { MediaApi } from "../../../../../services/modules/mediaServices";
 import LoadingComponent from "../../../../../components/Loading/LoadingComponent";
+import { useTranslation } from "react-i18next";
 const CompanyInfo = () => {
+  const { t } = useTranslation();
   const uploadRef = useRef(null);
   const [logoFile, setLogoFile] = useState<UploadFile | null>(null);
-  const [bannerFile, setBannerFile] = useState<UploadFile | null>(null);
   const [form] = Form.useForm();
   const userDetail = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -47,8 +47,8 @@ const CompanyInfo = () => {
           const responseUpdate = await userServices.updateUser(params);
           if (responseUpdate.data) {
             notification.success({
-              message: "Thông báo",
-              description: "Cập nhật thành công",
+              message: t("notification"),
+              description: t("update_success"),
             });
             dispatch(
               updateUser({
@@ -61,7 +61,6 @@ const CompanyInfo = () => {
 
         setIsLoading(false);
       } catch (error) {
-        console.error("Error handling file change:", error);
         setIsLoading(false);
       }
     }
@@ -85,8 +84,8 @@ const CompanyInfo = () => {
     const res = await userServices.updateUser(params);
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Cập nhật thành công",
+        message: t("notification"),
+        description: t("update_success"),
       });
       dispatch(
         updateUser({ ...res.data, access_token: userDetail.access_token })
@@ -124,8 +123,8 @@ const CompanyInfo = () => {
         );
         if (+res.statusCode === 200) {
           notification.success({
-            message: "Thông báo",
-            description: "Xóa thành công",
+            message: t("notification"),
+            description: t("delete_success"),
           });
         }
         await handleGetDetailUser();
@@ -139,8 +138,8 @@ const CompanyInfo = () => {
         );
         if (+res.statusCode === 200) {
           notification.success({
-            message: "Thông báo",
-            description: "Xóa thành công",
+            message: t("notification"),
+            description: t("delete_success"),
           });
         }
         await handleGetDetailUser();
@@ -156,10 +155,12 @@ const CompanyInfo = () => {
     <LoadingComponent isLoading={isLoading}>
       <Form form={form} layout="vertical" onFinish={handleSave}>
         <div className="mb-8">
-          <h2 className="text-[20px] font-semibold mb-4">Logo & Ảnh nền</h2>
+          <h2 className="text-[20px] font-semibold mb-4">
+            {t("logo_and_banner")}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p className="mb-2 text-[12px]">Upload Logo</p>
+              <p className="mb-2 text-[12px]">{t("upload_logo")}</p>
               {userDetail?.avatar_company ? (
                 <Image
                   className="px-2 py-2"
@@ -188,7 +189,7 @@ const CompanyInfo = () => {
                     ) : (
                       <div className="flex flex-col items-center">
                         <UploadOutlined className="text-2xl" />
-                        <div className="mt-2 text-[12px]">Upload</div>
+                        <div className="mt-2 text-[12px]">{t("upload")}</div>
                       </div>
                     )}
                   </Upload>
@@ -204,11 +205,8 @@ const CompanyInfo = () => {
                       icon={<DeleteOutlined />}
                       onClick={() => handleDeleteAvatar("avatar_company")}
                     >
-                      Remove
+                      {t("remove")}
                     </Button>
-                    {/* <Button onClick={handleReplaceLogo} size="small" type="link">
-        Replace
-      </Button> */}
                     <Input
                       type="file"
                       ref={uploadRef}
@@ -224,13 +222,12 @@ const CompanyInfo = () => {
             </div>
 
             <div>
-              <p className="">Ảnh nền</p>
+              <p className="mb-2 text-[12px]">{t("banner")}</p>
               {userDetail?.banner_company ? (
                 <div className="relative w-full h-64">
                   {" "}
-                  {/* Banner container */}
                   <Image
-                    className="w-full h-full object-cover" // Điều chỉnh hình ảnh để bao phủ toàn bộ container
+                    className="w-full h-full object-cover"
                     src={userDetail?.banner_company}
                     alt="Banner"
                     preview={false}
@@ -256,7 +253,7 @@ const CompanyInfo = () => {
                     ) : (
                       <div className="flex flex-col items-center">
                         <UploadOutlined className="text-2xl" />
-                        <div className="mt-2">Upload</div>
+                        <div className="mt-2 text-[12px]">{t("upload")}</div>
                       </div>
                     )}
                   </Upload>
@@ -271,7 +268,7 @@ const CompanyInfo = () => {
                       icon={<DeleteOutlined />}
                       onClick={() => handleDeleteAvatar("banner_company")}
                     >
-                      Remove
+                      {t("remove")}
                     </Button>
                   </div>
                 </div>
@@ -281,13 +278,15 @@ const CompanyInfo = () => {
 
           <div className="mb-4">
             <Form.Item
-              label={<div className="text-[12px]">Tên công ty</div>}
+              label={<div className="text-[12px]">{t("company_name")}</div>}
               name="company_name"
               initialValue={userDetail?.company_name}
-              rules={[{ required: true, message: "Please enter company name" }]}
+              rules={[
+                { required: true, message: t("please_enter_company_name") },
+              ]}
             >
               <Input
-                placeholder="Enter company name"
+                placeholder={t("enter_company_name")}
                 className="max-w-md text-[12px]"
               />
             </Form.Item>
@@ -295,10 +294,10 @@ const CompanyInfo = () => {
 
           <div>
             <Form.Item
-              label={<div className="text-[12px]">Về chúng tôi</div>}
+              label={<div className="text-[12px]">{t("about_us")}</div>}
               name="description"
               initialValue={userDetail?.description}
-              rules={[{ required: true, message: "Please write about us" }]}
+              rules={[{ required: true, message: t("please_write_about_us") }]}
             >
               <Editor
                 // apiKey={process.env.REACT_APP_TINYMCE_API_KEY}
@@ -329,7 +328,7 @@ const CompanyInfo = () => {
               htmlType="submit"
               className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white !text-[12px]"
             >
-              Lưu thông tin
+              {t("save")}
             </Button>
           </Form.Item>
         </div>

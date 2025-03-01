@@ -10,13 +10,16 @@ import { formatCurrency } from "../../untils";
 
 const JobCard = ({ job }) => {
   const [isHover, setIsHover] = useState<boolean>(false);
-  
+
   return (
     <div
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       className="flex flex-col sm:flex-row cursor-pointer justify-between items-start sm:items-center gap-5 rounded-lg"
-      style={{ padding: "20px", border: isHover ? '1px solid #0A65CC' : '1px solid #ccc' }}
+      style={{
+        padding: "20px",
+        border: isHover ? "1px solid #0A65CC" : "1px solid #ccc",
+      }}
     >
       <div className="flex sm:items-center w-full">
         <Image
@@ -28,13 +31,21 @@ const JobCard = ({ job }) => {
         <div className="flex flex-col ml-4 gap-2 w-full">
           <div className="flex items-center gap-3 justify-between md:justify-start">
             <p className="text-base font-semibold">{job?.title}</p>
-            <div className="bg-[#E8F1FF] text-primaryBlue px-2 py-1 rounded-full text-xs hidden md:block">Contact Base</div>
-                <div className={`bg-white ${isHover ? 'bg-[#E8F1FF]' : ''} w-10 h-10 cursor-pointer rounded-md block md:hidden `}>
-            <Image src={bookmark} preview={false} />
+            <div className="bg-[#E8F1FF] text-primaryBlue px-2 py-1 rounded-full text-xs hidden md:block">
+              Contact Base
+            </div>
+            <div
+              className={`bg-white ${
+                isHover ? "bg-[#E8F1FF]" : ""
+              } w-10 h-10 cursor-pointer rounded-md block md:hidden `}
+            >
+              <Image src={bookmark} preview={false} />
             </div>
           </div>
           <div className="flex flex-wrap gap-2 w-max flex-col md:flex-row">
-          <div className="bg-[#E8F1FF] text-primaryBlue px-2 py-1 rounded-full text-xs text-center block md:hidden ">Contact Base</div>
+            <div className="bg-[#E8F1FF] text-primaryBlue px-2 py-1 rounded-full text-xs text-center block md:hidden ">
+              Contact Base
+            </div>
             {job?.location && (
               <p className="flex items-center gap-1 text-sm">
                 <Image
@@ -47,44 +58,40 @@ const JobCard = ({ job }) => {
               </p>
             )}
             <p className="flex items-center gap-1 text-sm">
-              <Image
-                width={20}
-                height={20}
-                src={dollarIcon}
-                preview={false}
-              />
-            {formatCurrency(job?.salary_range?.min)}{job?.type_money?.symbol} - {formatCurrency(job?.salary_range?.max)}{job?.type_money?.symbol}
+              <Image width={20} height={20} src={dollarIcon} preview={false} />
+              {formatCurrency(job?.salary_range_min)}
+              {job?.type_money?.symbol} -{" "}
+              {formatCurrency(job?.salary_range_max)}
+              {job?.type_money?.symbol}
             </p>
             <p className="flex items-center gap-1 text-sm">
-              <Image
-                width={20}
-                height={20}
-                src={bagIcon}
-                preview={false}
-              />
+              <Image width={20} height={20} src={bagIcon} preview={false} />
               {job?.benefit[0]}
             </p>
-
           </div>
         </div>
       </div>
       <div className=" w-full  flex items-center md:justify-end gap-3 mt-4 sm:mt-0 justify-between">
-        <div className={`bg-white ${isHover ? 'bg-[#E8F1FF]' : ''} w-10 h-10 cursor-pointer rounded-md hidden md:block `}>
+        <div
+          className={`bg-white ${
+            isHover ? "bg-[#E8F1FF]" : ""
+          } w-10 h-10 cursor-pointer rounded-md hidden md:block `}
+        >
           <Image src={bookmark} preview={false} />
         </div>
         <Button
           size="large"
           className={`!border-none !font-medium !bg-[#EDEFF5] !cursor-pointer rounded-md ${
-              isHover
+            isHover
               ? "!bg-[#0A65CC] !text-white"
               : "!text-[#0A65CC] !bg-[#EDEFF5]"
-          } flex-1 md:flex-none` }
+          } flex-1 md:flex-none`}
         >
           Ứng tuyển ngay <ArrowRightOutlined className="font-bold" />
         </Button>
       </div>
     </div>
   );
-}
+};
 
 export default JobCard;

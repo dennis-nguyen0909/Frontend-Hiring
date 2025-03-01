@@ -62,9 +62,9 @@ export function JobCard({ job, onSave }: JobCardProps) {
                 </span>
               ) : (
                 <span className="text-[8px] text-gray-600">
-                  {t("salary")}: {formatCurrency(job?.salary_range?.min)}
+                  {t("salary")}: {formatCurrency(job?.salary_range_min)}
                   {job?.type_money?.symbol} -{" "}
-                  {formatCurrency(job?.salary_range?.max)}
+                  {formatCurrency(job?.salary_range_max)}
                   {job?.type_money?.symbol}
                 </span>
               )}

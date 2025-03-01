@@ -24,11 +24,13 @@ import {
 import JobApplication from "./JobApplication";
 import JobDetail from "./JodDetail";
 import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
+import { useTranslation } from "react-i18next";
 
 export default function MyJobEmployer() {
+  const { t } = useTranslation();
   const columns = [
     {
-      title: "Công việc",
+      title: t("job_title"),
       dataIndex: "title",
       key: "title",
       render: (text: string, record: Job) => (
@@ -50,7 +52,7 @@ export default function MyJobEmployer() {
       }),
     },
     {
-      title: "Vị trí",
+      title: t("location"),
       key: "location",
       render: (record: Job) => (
         <div className="truncate">
@@ -71,7 +73,7 @@ export default function MyJobEmployer() {
       }),
     },
     {
-      title: "Trạng thái",
+      title: t("status"),
       dataIndex: "expire_date",
       key: "expire_date",
       render: (expire_date: Date) => {
@@ -82,9 +84,9 @@ export default function MyJobEmployer() {
               status={!isExpired ? "success" : "error"}
               text={
                 !isExpired ? (
-                  <span className="text-[12px]">Hoạt động</span>
+                  <span className="text-[12px]">{t("active")}</span>
                 ) : (
-                  <span className="text-[12px]">Đã hết hạn</span>
+                  <span className="text-[12px]">{t("expired")}</span>
                 )
               }
               className="whitespace-nowrap"
@@ -104,14 +106,15 @@ export default function MyJobEmployer() {
       }),
     },
     {
-      title: "Số lượng ứng tuyển",
+      title: t("number_of_applications"),
       dataIndex: "candidate_ids",
       key: "candidate_ids",
       render: (candidateIds: [string]) => (
         <div className="flex items-center gap-2 truncate">
           <TeamOutlined />
           <span>
-            {candidateIds?.length && candidateIds.length} Người ứng tuyển
+            {candidateIds?.length && candidateIds.length}{" "}
+            {t("number_of_applications")}
           </span>
         </div>
       ),
@@ -126,29 +129,8 @@ export default function MyJobEmployer() {
         },
       }),
     },
-    // {
-    //   title: "Toggle trạng thái",
-    //   key: "toggle_active",
-    //   render: (record: Job) => (
-    //     <Switch
-    //       className="custom-switch truncate"
-    //       checked={record.is_active}
-    //       onChange={(checked) => handleToggleActiveJob(record, checked)}
-    //     />
-    //   ),
-    //   className: "text-[12px]",
-
-    //   // Prevent title from wrapping
-    //   onHeaderCell: () => ({
-    //     style: {
-    //       whiteSpace: "nowrap",
-    //       textOverflow: "ellipsis",
-    //       overflow: "hidden",
-    //     },
-    //   }),
-    // },
     {
-      title: "Hành động",
+      title: t("actions"),
       key: "actions",
       render: (record: Job) => (
         <div className="flex gap-2">
@@ -159,14 +141,14 @@ export default function MyJobEmployer() {
             type="primary"
             className="bg-blue-500 !text-[12px]"
           >
-            Xem đơn ứng tuyển
+            {t("view_application")}
           </Button>
           <Dropdown
             menu={{
               items: [
-                { key: PROMOTE_JOB, label: "Quảng bá việc làm" },
-                { key: VIEW_DETAIL, label: "Xem chi tiết" },
-                { key: DELETE, label: "Xóa" },
+                { key: PROMOTE_JOB, label: t("promote_job") },
+                { key: VIEW_DETAIL, label: t("view_detail") },
+                { key: DELETE, label: t("delete") },
                 // { key: MARK_AS_EXPIRED, label: 'Đánh dấu là đã hết hạn' },
               ],
               onClick: (e) => handleOnChangeMenu(e, record),
@@ -212,8 +194,8 @@ export default function MyJobEmployer() {
       );
       if (res.data) {
         notification.success({
-          message: "Success",
-          description: "Job updated successfully",
+          message: t("notification"),
+          description: t("update_success"),
         });
         handleGetMyJob({});
       }
@@ -227,8 +209,8 @@ export default function MyJobEmployer() {
       );
       if (res.data) {
         notification.success({
-          message: "Success",
-          description: "Deleted successfully!",
+          message: t("notification"),
+          description: t("delete_success"),
         });
         handleGetMyJob({});
       }
@@ -281,36 +263,6 @@ export default function MyJobEmployer() {
     handleGetMyJob({ current: 1, pageSize: 10 });
   }, []);
 
-  const handleToggleActiveJob = async (job: Job, checked: boolean) => {
-    const params = {
-      is_active: checked,
-    };
-    try {
-      const res = await JobApi.updateJob(
-        job._id,
-        params,
-        userDetail.access_token
-      );
-      if (res.data) {
-        // Update the local state directly
-        setListMyJobs((prevJobs) =>
-          prevJobs.map((item) =>
-            item._id === job._id ? { ...item, is_active: checked } : item
-          )
-        );
-        notification.success({
-          message: "Success",
-          description: "Job updated successfully",
-        });
-      }
-    } catch (error) {
-      notification.error({
-        message: "Error",
-        description: "There was an issue updating the job.",
-      });
-    }
-  };
-
   return (
     <div className=" bg-gray-50 min-h-screen p-2 lg:p-2">
       {!selectedJob && currentMenu === MY_JOB_HOME && (
@@ -318,7 +270,7 @@ export default function MyJobEmployer() {
           <div>
             <div className="flex flex-wrap justify-between items-center gap-4">
               <h1 className="text-[20px] font-semibold">
-                Công việc của tôi{" "}
+                {t("my_jobs")}{" "}
                 <span className="text-gray-400">({meta && meta.total})</span>
               </h1>
               <div className="flex flex-col gap-4 sm:flex-row">
@@ -331,20 +283,24 @@ export default function MyJobEmployer() {
                         value: "status",
                         label: (
                           <span style={{ fontSize: "12px" }}>
-                            Trạng thái công việc
+                            {t("job_status")}
                           </span>
                         ),
                       },
                       {
                         value: "active",
                         label: (
-                          <span style={{ fontSize: "12px" }}>Hoạt động</span>
+                          <span style={{ fontSize: "12px" }}>
+                            {t("active")}
+                          </span>
                         ),
                       },
                       {
                         value: "expired",
                         label: (
-                          <span style={{ fontSize: "12px" }}>Đã hết hạn</span>
+                          <span style={{ fontSize: "12px" }}>
+                            {t("expired")}
+                          </span>
                         ),
                       },
                     ]}
@@ -358,26 +314,32 @@ export default function MyJobEmployer() {
                         value: "all",
                         label: (
                           <span style={{ fontSize: "12px" }}>
-                            Tất cả việc làm
+                            {t("all_jobs")}
                           </span>
                         ),
                       },
                       {
                         value: "fulltime",
                         label: (
-                          <span style={{ fontSize: "12px" }}>Full Time</span>
+                          <span style={{ fontSize: "12px" }}>
+                            {t("full_time")}
+                          </span>
                         ),
                       },
                       {
                         value: "parttime",
                         label: (
-                          <span style={{ fontSize: "12px" }}>Part Time</span>
+                          <span style={{ fontSize: "12px" }}>
+                            {t("part_time")}
+                          </span>
                         ),
                       },
                       {
                         value: "contract",
                         label: (
-                          <span style={{ fontSize: "12px" }}>Contract</span>
+                          <span style={{ fontSize: "12px" }}>
+                            {t("contract")}
+                          </span>
                         ),
                       },
                     ]}

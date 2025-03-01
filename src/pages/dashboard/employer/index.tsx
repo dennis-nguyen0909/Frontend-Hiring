@@ -18,6 +18,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/slices/userSlices";
 import { TAB_SKILL } from "../../../utils/role.utils";
 import SkillEmployer from "../../employer/Skill/Skill";
+import { useTranslation } from "react-i18next";
 
 const { Sider, Content } = Layout;
 
@@ -27,24 +28,24 @@ export default function DashBoardEmployer() {
   const [currentTab, setCurrentTab] = useState("1"); // Initialize state for the current tab
   const userDetail = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
-
+  const { t } = useTranslation();
   const menuItems = [
     {
       key: "1",
       icon: <UserOutlined />,
-      label: "Tổng quan",
+      label: t("total_overview"),
       className: "bg-blue-50",
     },
-    { key: "3", icon: <FileTextOutlined />, label: "Đăng việc làm" },
-    { key: "4", icon: <FileTextOutlined />, label: "Việc làm của tôi" },
-    { key: "5", icon: <SaveOutlined />, label: "Lưu ứng viên" },
-    { key: "6", icon: <DollarOutlined />, label: "Gói & Thanh toán" },
-    { key: "8", icon: <SettingOutlined />, label: "Cài đặt" },
+    { key: "3", icon: <FileTextOutlined />, label: t("post_job") },
+    { key: "4", icon: <FileTextOutlined />, label: t("my_job") },
+    { key: "5", icon: <SaveOutlined />, label: t("saved_candidate") },
+    { key: "6", icon: <DollarOutlined />, label: t("package_payment") },
+    { key: "8", icon: <SettingOutlined />, label: t("setting") },
     {
       key: "sub4",
-      label: "Quản lý bài viết",
+      label: t("manage_post"),
       icon: <SettingOutlined />,
-      children: [{ key: TAB_SKILL, label: "Quản lý kỹ năng" }],
+      children: [{ key: TAB_SKILL, label: t("manage_skill") }],
     },
   ];
 
@@ -110,7 +111,7 @@ export default function DashBoardEmployer() {
         }`}
       >
         <div className="p-4 text-xl font-bold text-center border-b">
-          {!collapsed && "Nhà Tuyển Dụng"}
+          {!collapsed && t("employer")}
         </div>
         <Menu
           mode="inline"
@@ -123,7 +124,7 @@ export default function DashBoardEmployer() {
         <div className="absolute bottom-0 w-full p-4 border-t">
           <Menu mode="inline" className="border-r-0">
             <Menu.Item key="logout" icon={<LogoutOutlined />}>
-              Log-out
+              {t("logout")}
             </Menu.Item>
           </Menu>
         </div>
@@ -137,7 +138,7 @@ export default function DashBoardEmployer() {
             onClick={() => setCollapsed(!collapsed)}
             type="primary"
           >
-            {collapsed ? "Mở Menu" : "Đóng Menu"}
+            {collapsed ? t("open_menu") : t("close_menu")}
           </Button>
         )}
         <Content className="lg:p-6 bg-gray-50 flex-1">

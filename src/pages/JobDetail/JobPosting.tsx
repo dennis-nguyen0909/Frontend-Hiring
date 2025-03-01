@@ -321,12 +321,12 @@ export default function JobPosting() {
                   label={t("job_type")}
                   value={t(jobDetail?.job_contract_type?.key)}
                 />
-                {jobDetail?.salary_range?.min &&
-                jobDetail?.salary_range?.max &&
+                {jobDetail?.salary_range_min &&
+                jobDetail?.salary_range_max &&
                 jobDetail?.is_negotiable ? (
                   <InfoRow
                     label={t("salary")}
-                    value={`${jobDetail?.salary_range?.min} - ${jobDetail?.salary_range?.max}`}
+                    value={`${jobDetail?.salary_range_min} - ${jobDetail?.salary_range_max}`}
                   />
                 ) : (
                   <InfoRow label={t("salary")} value={t("negotiable")} />

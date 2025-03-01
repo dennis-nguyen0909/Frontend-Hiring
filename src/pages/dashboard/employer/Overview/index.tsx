@@ -14,14 +14,15 @@ import { JobApi } from "../../../../services/modules/jobServices";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import "./styles.css";
 import { useNavigate } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 const { Text, Title } = Typography;
 
 const OverviewEmployer = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const columns = [
     {
-      title: "Công việc",
+      title: t("job"),
       dataIndex: "title",
       key: "title",
       render: (text: string, record: any) => (
@@ -29,7 +30,7 @@ const OverviewEmployer = () => {
           <div className="font-medium">{text}</div>
           <div className="text-gray-500 !text-[12px]">
             {record?.job_contract_type?.name} •{" "}
-            {calculateTimeRemaining(record?.expire_date)}
+            {calculateTimeRemaining(record?.expire_date, t)}
           </div>
         </div>
       ),
@@ -37,7 +38,7 @@ const OverviewEmployer = () => {
       className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
-      title: "Trạng thái",
+      title: t("status"),
       dataIndex: "expire_date",
       key: "expire_date",
       render: (expire_date: Date) => {
@@ -49,9 +50,9 @@ const OverviewEmployer = () => {
               status={!isExpired ? "success" : "error"} // Dùng !isExpired để xác định trạng thái
               text={
                 !isExpired ? (
-                  <span className="text-[12px]">Hoạt động</span>
+                  <span className="text-[12px]">{t("active")}</span>
                 ) : (
-                  <span className="text-[12px]">Đã hết hạn</span>
+                  <span className="text-[12px]">{t("expired")}</span>
                 )
               }
               className="whitespace-nowrap !text-[12px]"
@@ -63,20 +64,22 @@ const OverviewEmployer = () => {
       className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
-      title: "Số lượng ứng tuyển",
+      title: t("number_of_applications"),
       dataIndex: "count_apply",
       key: "count_apply",
       render: (count: number) => (
         <div className="flex items-center gap-2">
           <TeamOutlined />
-          <span className="!text-[12px]">{count || 0} Người ứng tuyển</span>
+          <span className="!text-[12px]">
+            {count || 0} {t("number_of_applications")}
+          </span>
         </div>
       ),
       width: "20%",
       className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]", // Thêm class CSS để ngăn nội dung xuống dòng
     },
     {
-      title: "Hành động",
+      title: t("action"),
       key: "actions",
       render: (item) => (
         <div className="flex gap-2">
@@ -85,18 +88,18 @@ const OverviewEmployer = () => {
             type="primary"
             className="bg-blue-500 !text-[12px]"
           >
-            Xem đơn ứng tuyển
+            {t("view_application")}
           </Button>
           <Dropdown
             menu={{
               items: [
-                { key: "1", label: "Quảng bá việc làm" },
+                { key: "1", label: t("promote_job") },
                 {
                   key: "2",
-                  label: "Xem chi tiết",
+                  label: t("view_detail"),
                   onClick: () => navigate(`/my-job-detail/${item?._id}`),
                 },
-                { key: "3", label: "Đánh dấu là đã hết hạn" },
+                { key: "3", label: t("mark_as_expired") },
               ],
             }}
             trigger={["click"]}
@@ -225,10 +228,10 @@ const OverviewEmployer = () => {
     <div className="mx-2">
       <div className="mb-8 flex flex-col gap-1">
         <Text className="font-semibold text-3xl">
-          Hello, {userDetail?.full_name}
+          {t("hello")}, {userDetail?.full_name}
         </Text>
         <Text className="font-semibold !text-[12px]">
-          Company : {userDetail?.company_name}
+          {t("company")} : {userDetail?.company_name}
         </Text>
       </div>
 
@@ -237,7 +240,7 @@ const OverviewEmployer = () => {
           <div className="text-3xl font-bold !text-[20px]">{countOpenJob}</div>
           <div className="flex items-center gap-2">
             <FileTextOutlined />
-            <span className="!text-[12px]">Việc làm mở</span>
+            <span className="!text-[12px]">{t("job_open")}</span>
           </div>
         </div>
         <div className="bg-orange-50 p-6 rounded-lg">
@@ -246,16 +249,16 @@ const OverviewEmployer = () => {
           </div>
           <div className="flex items-center gap-2">
             <SaveOutlined />
-            <span className="!text-[12px]">Lưu ứng viên</span>
+            <span className="!text-[12px]">{t("saved_candidate")}</span>
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
-          <p className="mb-0 text-[12px]">Công việc đăng gần đây</p>
+          <p className="mb-0 text-[12px]">{t("recent_jobs")}</p>
           <Button className="!text-[12px]" type="link">
-            Xem tất cả
+            {t("view_all")}
           </Button>
         </div>
         <div className="overflow-y-auto max-h-96">

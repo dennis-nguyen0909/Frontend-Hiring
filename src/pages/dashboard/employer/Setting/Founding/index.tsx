@@ -10,17 +10,19 @@ import { useOrganizationTypes } from "../../../../../hooks/useOrganizationTypes"
 import { useIndustryTypes } from "../../../../../hooks/useIndustryTypes";
 import { useTeamSizes } from "../../../../../hooks/useTeamSizes";
 import LoadingComponentSkeleton from "../../../../../components/Loading/LoadingComponentSkeleton";
+import { useTranslation } from "react-i18next";
 
 export default function Founding() {
   const [form] = Form.useForm();
+  const { t } = useTranslation();
   const [companyVision, setCompanyVision] = useState("");
   const dispatch = useDispatch();
   const userDetail = useSelector((state) => state.user);
-  const [loading,setLoading]=useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
   const [organization, setOrganization] = useState();
   const handleGetOrganization = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const params = {
         query: {
           owner: userDetail?._id,
@@ -35,8 +37,8 @@ export default function Founding() {
       }
     } catch (error) {
       console.error(error);
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function Founding() {
   }, []);
 
   const handleSave = () => {
-    setLoading(true)
+    setLoading(true);
     form.validateFields().then(async (values) => {
       const { year_of_establishment } = values;
       const params = {
@@ -59,8 +61,8 @@ export default function Founding() {
       );
       if (res.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
         handleGetOrganization();
         dispatch(
@@ -71,12 +73,12 @@ export default function Founding() {
         );
       } else {
         notification.error({
-          message: "Thông báo",
+          message: t("notification"),
           description: res.response.data.message,
         });
       }
     });
-    setLoading(false)
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -99,109 +101,132 @@ export default function Founding() {
   return (
     <div className="p-6 min-h-screen">
       <Form form={form} layout="vertical">
-       <LoadingComponentSkeleton isLoading={loading}>
-       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <Form.Item
-            label={<div className="text-[12px]">Loại tổ chức</div>}
-            name="organization_type"
-            rules={[
-              { required: true, message: "Vui lòng chọn loại tổ chức!" },
-            ]}
-          >
-            <Select placeholder="Chọn"  className="text-[12px]" >
-              {organizationTypes.map((type) => (
-                <Select.Option key={type._id} value={type.name}>
-<span className="text-[12px]">{type.name}</span>
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+        <LoadingComponentSkeleton isLoading={loading}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <Form.Item
+              label={
+                <div className="text-[12px]">{t("organization_type")}</div>
+              }
+              name="organization_type"
+              rules={[
+                {
+                  required: true,
+                  message: t("please_select_organization_type"),
+                },
+              ]}
+            >
+              <Select placeholder="Chọn" className="text-[12px]">
+                {organizationTypes.map((type) => (
+                  <Select.Option key={type._id} value={type.name}>
+                    <span className="text-[12px]">{type.name}</span>
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
 
-          <Form.Item
-            label={<div className="text-[12px]">Loại ngành</div>}
-            name="industry_type"
-            rules={[{ required: true, message: "Vui lòng chọn loại ngành!" }]}
-          >
-            <Select placeholder="Chọn...">
-              {industry_type.map((type) => (
-                <Select.Option key={type._id} value={type.name}>
-                  <span className="text-[12px]">{type.name}</span>
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+            <Form.Item
+              label={<div className="text-[12px]">{t("industry_type")}</div>}
+              name="industry_type"
+              rules={[
+                { required: true, message: t("please_select_industry_type") },
+              ]}
+            >
+              <Select placeholder="Chọn...">
+                {industry_type.map((type) => (
+                  <Select.Option key={type._id} value={type.name}>
+                    <span className="text-[12px]">{type.name}</span>
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
 
-          <Form.Item
-            label={<div className="text-[12px]">Quy mô thành viên</div>}
+            <Form.Item
+              label={<div className="text-[12px]">{t("team_size")}</div>}
+              name="team_size"
+              rules={[
+                {
+                  required: true,
+                  message: t("please_select_team_size"),
+                },
+              ]}
+            >
+              <Select placeholder="Chọn...">
+                {teamSizes.map((size) => (
+                  <Select.Option key={size._id} value={size.name}>
+                    <span className="text-[12px]"> {size.name}</span>
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
 
-            name="team_size"
-            rules={[{ required: true, message: "Vui lòng chọn số lượng thành viên!" }]}
-          >
-            <Select placeholder="Chọn...">
-              {teamSizes.map((size) => (
-                <Select.Option key={size._id} value={size.name}>
-                  <span className="text-[12px]">                  {size.name}</span>
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <Form.Item
+              label={
+                <div className="text-[12px]">{t("year_of_establishment")}</div>
+              }
+              name="year_of_establishment"
+              rules={[
+                {
+                  required: true,
+                  message: t("please_select_year_of_establishment"),
+                },
+              ]}
+            >
+              <Input placeholder="dd/mm/yyyy" className="text-[12px]" />
+            </Form.Item>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <Form.Item
-            label={<div className="text-[12px]">Năm thành lập</div>}
+            <Form.Item
+              label={<div className="text-[12px]">{t("company_website")}</div>}
+              name="company_website"
+              rules={[
+                {
+                  required: true,
+                  message: t("please_enter_company_website"),
+                },
+                { type: "url", message: t("please_enter_valid_url") },
+              ]}
+            >
+              <Input
+                prefix={<LinkOutlined className="text-gray-400" />}
+                placeholder={t("website_url")}
+                className="text-[12px]"
+              />
+            </Form.Item>
+          </div>
 
-            name="year_of_establishment"
-            rules={[
-              { required: true, message: "Vui lòng chọn ngày thành lập!" },
-            ]}
-          >
-            <Input placeholder="dd/mm/yyyy"  className="text-[12px]"  />
-          </Form.Item>
-
-          <Form.Item
-            label={<div className="text-[12px]">Trang web công ty</div>}
-
-            name="company_website"
-            rules={[
-              { required: true, message: "Vui lòng nhập url website của công ty bạn!" },
-              { type: "url", message: "Vui lòng nhập url hợp lệ!" },
-            ]}
-          >
-            <Input
-              prefix={<LinkOutlined className="text-gray-400" />}
-              placeholder="Website url..."
-              className="text-[12px]"
+          <div className="mb-6">
+            <label className="block mb-2 text-[12px]">
+              {t("company_vision")}
+            </label>
+            <Editor
+              apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
+              value={companyVision}
+              onEditorChange={(content) => setCompanyVision(content)}
+              init={{
+                height: 200,
+                menubar: false,
+                plugins: [
+                  "advlist autolink lists link image charmap print preview anchor",
+                  "searchreplace visualblocks code fullscreen",
+                  "insertdatetime media table paste code help wordcount",
+                ],
+                toolbar:
+                  "bold italic underline strikethrough | link | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat",
+                content_style:
+                  "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+              }}
             />
-          </Form.Item>
-        </div>
+          </div>
 
-        <div className="mb-6">
-          <label className="block mb-2 text-[12px]">Tầm nhìn công ty</label>
-          <Editor
-            apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
-            value={companyVision}
-            onEditorChange={(content) => setCompanyVision(content)}
-            init={{
-              height: 200,
-              menubar: false,
-              plugins: [
-                "advlist autolink lists link image charmap print preview anchor",
-                "searchreplace visualblocks code fullscreen",
-                "insertdatetime media table paste code help wordcount",
-              ],
-              toolbar:
-                "bold italic underline strikethrough | link | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat",
-              content_style:
-                "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-            }}
-          />
-        </div>
-
-        <Button htmlType="submit" onClick={handleSave}  className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white mt-5 !text-[12px]">
-          Lưu thông tin
-        </Button>
-       </LoadingComponentSkeleton>
+          <Button
+            htmlType="submit"
+            onClick={handleSave}
+            className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white mt-5 !text-[12px]"
+          >
+            {t("save")}
+          </Button>
+        </LoadingComponentSkeleton>
       </Form>
     </div>
   );
