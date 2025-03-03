@@ -719,7 +719,10 @@
     "delete_cv":"Delete CV",
     "favorite":"Favorite",
     "user":"User",
-    "admin":"Admin"
+    "admin":"Admin",
+    "freelance":"Freelance",
+    "internship":"Internship"
+
 
 
 

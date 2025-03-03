@@ -7,9 +7,9 @@ import { Activities, Meta } from "../../types";
 import moment from "moment";
 import useMomentFn from "../../hooks/useMomentFn";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
-import SearchInput from "../../components/SearchInput/SearchInput";
 import { useTranslation } from "react-i18next";
 import { InfoOutlined } from "@ant-design/icons";
+import DatePickerCustom from "../../components/DatePicker/DatePickerCustom";
 
 export default function SystemActivities() {
   const user = useSelector((state) => state.user);
@@ -22,8 +22,8 @@ export default function SystemActivities() {
   const { formatDate } = useMomentFn();
   const { t } = useTranslation();
   const [dateRange, setDateRange] = useState({
-    start: "16/02/25",
-    end: "23/02/25",
+    start_date: "",
+    end_date: "",
   });
 
   const handleGetSystemActivities = async (
@@ -171,6 +171,8 @@ export default function SystemActivities() {
       return `${userName} ${t("has")} ${t("activity_delete_cv")} ${entityName}`;
     }
   };
+
+  console.log("dateRange", dateRange);
   const changesLinkDisplay = (activity: Activities) => {
     return (
       <div className="flex items-center gap-2">
@@ -253,32 +255,28 @@ export default function SystemActivities() {
         >
           <Select.Option value="all">{t("all_roles")}</Select.Option>
           <Select.Option value="user">{t("user")}</Select.Option>
-          <Select.Option value="employer">{t("employer")}</Select.Option>
-          <Select.Option value="admin">{t("admin")}</Select.Option>
-          <Select.Option value="candiate">{t("candiate")}</Select.Option>
+          {user?.role?.role_name === "employer" && (
+            <Select.Option value="employer">{t("employer")}</Select.Option>
+          )}
+          {user?.role?.role_name === "admin" && (
+            <>
+              <Select.Option value="admin">{t("admin")}</Select.Option>
+            </>
+          )}
         </Select>
-
-        <div className="flex items-center gap-2 bg-white border rounded-md px-3">
-          <Input
-            type="text"
-            placeholder="DD/MM/YY"
-            value={dateRange.start}
-            onChange={(e) =>
-              setDateRange({ ...dateRange, start: e.target.value })
-            }
-            className="w-24 border-0 p-0"
-          />
-          <span>~</span>
-          <Input
-            type="text"
-            placeholder="DD/MM/YY"
-            value={dateRange.end}
-            onChange={(e) =>
-              setDateRange({ ...dateRange, end: e.target.value })
-            }
-            className="w-24 border-0 p-0"
-          />
-        </div>
+        <DatePickerCustom
+          onChange={(dates, dateStrings) => {
+            handleGetSystemActivities(1, 10, {
+              // start_date: moment(dateStrings[0]).toISOString(),
+              // end_date: moment(dateStrings[1]).toISOString(),
+              // start_date: new Date(dateStrings[0]),
+              // end_date: new Date(dateStrings[1]),
+              start_date: dateStrings[0],
+              end_date: dateStrings[1],
+            });
+          }}
+          isShowSubmit={false}
+        />
       </div>
 
       {/* Activity Timeline */}

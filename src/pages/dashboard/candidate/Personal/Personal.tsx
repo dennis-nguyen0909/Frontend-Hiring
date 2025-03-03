@@ -122,8 +122,7 @@ const Personal = () => {
           ward: userDetail?.ward_id?.name,
           address: userDetail?.address,
           birthday: userDetail?.birthday
-            ?moment(userDetail?.birthday).format("YYYY-MM-DD")
-
+            ? moment(userDetail?.birthday).format("YYYY-MM-DD")
             : "",
         }}
       >
@@ -248,7 +247,7 @@ const Personal = () => {
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-[12px]">Giới thiệu</span>}
+            label={<span className="text-[12px]">{t("introduce")}</span>}
             name="introduce"
             rules={[
               { required: true, message: t("please_input_your_introduction") },
@@ -274,7 +273,7 @@ const Personal = () => {
             />
           </Form.Item>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Form.Item
               label={<span className="text-[12px]">{t("city")}</span>}
               name="city"
@@ -345,7 +344,7 @@ const Personal = () => {
               placeholder={t("enter_your_address")}
               className="text-[12px]"
             />
-          </Form.Item>
+          </Form.Item> */}
 
           <div className="flex justify-end">
             <Button

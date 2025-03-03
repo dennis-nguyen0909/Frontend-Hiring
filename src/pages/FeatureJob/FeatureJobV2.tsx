@@ -105,9 +105,11 @@ const FeatureJobV2 = () => {
   }, []);
 
   useEffect(() => {
-    handleGetAllJobs({
-      query: { city_id: selectedCity, district_id: selectedDistrict },
-    });
+    if (selectedCity) {
+      handleGetAllJobs({
+        query: { city_id: selectedCity, district_id: selectedDistrict },
+      });
+    }
   }, [selectedCity, selectedDistrict, selectedFilter]);
 
   const onViewAll = () => {
