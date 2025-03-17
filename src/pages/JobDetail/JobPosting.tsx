@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { Avatar, Button, Card, Form, Modal, Select, Tag } from "antd";
+import { Avatar, Button, Card, Form, Modal, Select, Spin, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { Job } from "../../types";
 import { JobApi } from "../../services/modules/jobServices";
@@ -17,6 +17,7 @@ import { API_FAVORITE_JOB } from "../../services/modules/FavoriteJobServices";
 import useMomentFn from "../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import CustomAvatar from "../../components/CustomAvatar/CustomAvatar";
+import { formatCurrency, formatCurrencyWithSymbol } from "../../untils";
 
 export default function JobPosting() {
   const { t } = useTranslation();
@@ -31,13 +32,19 @@ export default function JobPosting() {
   const [coverLetter, setCoverLetter] = useState<string>("");
   const { id } = useParams();
   const userDetail = useSelector((state: RootState) => state.user);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleGetDetail = async () => {
     try {
+      setIsLoading(true);
       const res = await JobApi.getJobById(id + "", userDetail?.access_token);
       if (res.data) {
         setJobDetail(res.data);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   useEffect(() => {
     getFavoriteJobDetailByUserId();
@@ -143,243 +150,275 @@ export default function JobPosting() {
   };
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="bg-white rounded-lg p-6 flex flex-col md:flex-row items-center justify-between mb-8">
-          <div className="flex items-center gap-4 mb-4 md:mb-0">
-            {/* <Avatar
-              src={jobDetail?.user_id?.avatar_company}
-              size={65}
-              shape="square"
-              className="custom-avatar"
-            /> */}
-            <CustomAvatar src={jobDetail?.user_id?.avatar_company} />
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold">
-                {jobDetail?.title}
-              </h1>
-              <p className="text-gray-600 text-sm md:text-base">
-                {jobDetail?.user_id?.company_name} •{" "}
-                {jobDetail?.district_id?.name}, {jobDetail?.city_id?.name} •{" "}
-                {t(jobDetail?.job_contract_type?.key)}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="hover:scale-110 transform transition-transform duration-200 cursor-pointer">
-              {like?._id ? (
-                <HeartFilled
-                  onClick={onLike}
-                  style={{ color: "red", fontSize: "24px" }}
-                />
-              ) : (
-                <HeartOutlined onClick={onLike} style={{ fontSize: "24px" }} />
-              )}
-            </div>
-            {new Date(jobDetail?.expire_date) < new Date() ? (
-              <Button
-                disabled
-                className="py-2 px-4 md:py-5 md:px-6 rounded-full ![cursor:pointer] hover:[cursor:pointer] disabled:[cursor:pointer]"
-              >
-                {t("expired")}
-              </Button>
-            ) : jobDetail?.candidate_ids.includes(userDetail?._id) ? (
-              <Button
-                disabled
-                className="bg-violet-600 hover:bg-violet-700 ![cursor:pointer] hover:[cursor:pointer] disabled:[cursor:pointer] py-2 px-4 md:py-5 md:px-6"
-              >
-                {t("applied")}
-              </Button>
-            ) : (
-              <Button
-                className="bg-violet-600 hover:bg-violet-700 cursor-pointer py-2 px-4 md:py-5 md:px-6"
-                onClick={() => setIsModalOpen(true)}
-              >
-                {t("apply_now")}
-              </Button>
-            )}
-          </div>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <Spin />
         </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Description */}
-            <Card className="p-6 bg-gray-100">
-              <h2 className="text-xl font-bold mb-4">{t("description")}</h2>
-              <p
-                className="text-gray-700"
-                dangerouslySetInnerHTML={{ __html: jobDetail?.description }}
-              ></p>
-            </Card>
-
-            {jobDetail?.professional_skills?.length > 0 && (
-              <Card className="p-6 bg-white border border-gray-300">
-                <h2 className="text-xl font-bold mb-4 text-black">
-                  {t("professional_skills")}
-                </h2>
-                <ul className="space-y-3">
-                  {jobDetail?.professional_skills?.map((requirement, index) => (
-                    <div key={index}>
-                      <b className="text-black">{requirement.title}</b>
-                      <ul className="list-disc pl-5 space-y-2">
-                        {requirement.items.map((item, itemIndex) => (
-                          <li key={itemIndex} className="text-gray-800">
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </ul>
-              </Card>
-            )}
-
-            {/* Responsibilities */}
-            {jobDetail?.job_responsibilities?.length > 0 && (
-              <Card className="p-6 bg-gray-100">
-                <h2 className="text-xl font-bold mb-4">
-                  {t("responsibilities")}
-                </h2>
-                <ul className="space-y-3">
-                  {jobDetail?.job_responsibilities?.map((item, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-black mt-1 flex-shrink-0" />
-
-                      <span>{item?.responsibility}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            )}
-
-            {jobDetail?.general_requirements?.length > 0 && (
-              <Card className="p-6 bg-gray-100">
-                <h2 className="text-xl font-bold mb-4">
-                  {t("better_if_have")}
-                </h2>
-                <ul className="space-y-3">
-                  {jobDetail?.general_requirements?.map((item, i) => (
-                    <li key={i} className="flex items-center gap-2 ">
-                      <Check className="h-5 w-5 text-black mt-1 flex-shrink-0" />
-                      <span>{item?.requirement}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            )}
-
-            {/* Perks & Benefits */}
-            {jobDetail?.benefit?.length > 0 && (
-              <Card className="p-6 bg-gray-100">
-                <h2 className="text-2xl font-bold mb-6 text-black">
-                  {t("benefits")}
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {jobDetail?.benefit?.map((item, idx) => {
-                    return (
-                      <div
-                        key={idx}
-                        className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
-                      >
-                        <div className="text-gray-700">{item}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Card>
-            )}
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-8">
-            <Card className="p-6 bg-gray-100">
-              <h2 className="text-xl font-bold mb-4">
-                {t("about_this_position")}
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-700">
-                      {t("number_of_hiring")}
-                    </span>
-                    <span className="text-gray-700">
-                      {jobDetail?.count_apply}
-                    </span>
-                  </div>
-                </div>
-                <InfoRow
-                  label={t("application_deadline")}
-                  value={formatDate(jobDetail?.expire_date)}
-                />
-                <InfoRow
-                  label={t("posted_date")}
-                  value={formatDate(jobDetail?.createdAt)}
-                />
-                <InfoRow
-                  label={t("job_type")}
-                  value={t(jobDetail?.job_contract_type?.key)}
-                />
-                {jobDetail?.salary_range_min &&
-                jobDetail?.salary_range_max &&
-                jobDetail?.is_negotiable ? (
-                  <InfoRow
-                    label={t("salary")}
-                    value={`${jobDetail?.salary_range_min} - ${jobDetail?.salary_range_max}`}
+      ) : (
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="bg-white rounded-lg p-6 flex flex-col md:flex-row items-center justify-between mb-8">
+            <div className="flex items-center gap-4 mb-4 md:mb-0">
+              <CustomAvatar src={jobDetail?.user_id?.avatar_company} />
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">
+                  {jobDetail?.title}
+                </h1>
+                <p className="text-gray-600 text-sm md:text-base">
+                  {jobDetail?.user_id?.company_name} •{" "}
+                  {jobDetail?.district_id?.name}, {jobDetail?.city_id?.name} •{" "}
+                  {t(jobDetail?.job_contract_type?.key)}
+                </p>
+                <p className="text-gray-600 text-sm md:text-base">
+                  {t("salary")}:{" "}
+                  {jobDetail?.is_negotiable
+                    ? t("negotiable")
+                    : jobDetail?.salary_range_min !== undefined &&
+                      jobDetail?.type_money?.symbol
+                    ? formatCurrencyWithSymbol(
+                        jobDetail.salary_range_min,
+                        jobDetail.type_money.code
+                      )
+                    : t("negotiable")}
+                  {!jobDetail?.is_negotiable &&
+                    jobDetail?.salary_range_min !== undefined &&
+                    jobDetail?.salary_range_max !== undefined &&
+                    " - "}
+                  {!jobDetail?.is_negotiable &&
+                  jobDetail?.salary_range_max !== undefined &&
+                  jobDetail?.type_money?.symbol
+                    ? formatCurrencyWithSymbol(
+                        jobDetail.salary_range_max,
+                        jobDetail.type_money.code
+                      )
+                    : ""}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="hover:scale-110 transform transition-transform duration-200 cursor-pointer">
+                {like?._id ? (
+                  <HeartFilled
+                    onClick={onLike}
+                    style={{ color: "red", fontSize: "24px" }}
                   />
                 ) : (
-                  <InfoRow label={t("salary")} value={t("negotiable")} />
+                  <HeartOutlined
+                    onClick={onLike}
+                    style={{ fontSize: "24px" }}
+                  />
                 )}
-                <InfoRow label={t("level")} value={jobDetail?.level?.name} />
-                <InfoRow
-                  label={t("job_type")}
-                  value={t(jobDetail?.job_type?.key)}
-                />
-                <InfoRow
-                  label={t("minimum_experience")}
-                  value={jobDetail?.min_experience + " " + t("year")}
-                />
-                <InfoRow label={t("degree")} value={jobDetail?.degree?.name} />
               </div>
-            </Card>
+              {new Date(jobDetail?.expire_date) < new Date() ? (
+                <Button
+                  disabled
+                  className="py-2 px-4 md:py-5 md:px-6 rounded-full ![cursor:pointer] hover:[cursor:pointer] disabled:[cursor:pointer]"
+                >
+                  {t("expired")}
+                </Button>
+              ) : jobDetail?.candidate_ids.includes(userDetail?._id) ? (
+                <Button
+                  disabled
+                  className="bg-violet-600 hover:bg-violet-700 ![cursor:pointer] hover:[cursor:pointer] disabled:[cursor:pointer] py-2 px-4 md:py-5 md:px-6"
+                >
+                  {t("applied")}
+                </Button>
+              ) : (
+                <Button
+                  className="bg-violet-600 hover:bg-violet-700 cursor-pointer py-2 px-4 md:py-5 md:px-6"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  {t("apply_now")}
+                </Button>
+              )}
+            </div>
+          </div>
 
-            {jobDetail?.skills?.length > 0 && (
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Description */}
               <Card className="p-6 bg-gray-100">
-                <h2 className="text-xl font-bold mb-4">{t("skills")}</h2>
-                <div className="flex gap-2 flex-wrap">
-                  {jobDetail?.skills?.map((skill, idx) => {
-                    return (
-                      <Tag color={getRandomColor()} key={idx}>
-                        {skill?.name}
-                      </Tag>
-                    );
-                  })}
-                </div>
+                <h2 className="text-xl font-bold mb-4">{t("description")}</h2>
+                <p
+                  className="text-gray-700"
+                  dangerouslySetInnerHTML={{ __html: jobDetail?.description }}
+                ></p>
               </Card>
-            )}
 
-            {jobDetail?.interview_process?.length > 0 && (
+              {jobDetail?.professional_skills?.length > 0 && (
+                <Card className="p-6 bg-white border border-gray-300">
+                  <h2 className="text-xl font-bold mb-4 text-black">
+                    {t("professional_skills")}
+                  </h2>
+                  <ul className="space-y-3">
+                    {jobDetail?.professional_skills?.map(
+                      (requirement, index) => (
+                        <div key={index}>
+                          <b className="text-black">{requirement.title}</b>
+                          <ul className="list-disc pl-5 space-y-2">
+                            {requirement.items.map((item, itemIndex) => (
+                              <li key={itemIndex} className="text-gray-800">
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    )}
+                  </ul>
+                </Card>
+              )}
+
+              {/* Responsibilities */}
+              {jobDetail?.job_responsibilities?.length > 0 && (
+                <Card className="p-6 bg-gray-100">
+                  <h2 className="text-xl font-bold mb-4">
+                    {t("responsibilities")}
+                  </h2>
+                  <ul className="space-y-3">
+                    {jobDetail?.job_responsibilities?.map((item, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-black mt-1 flex-shrink-0" />
+
+                        <span>{item?.responsibility}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+
+              {jobDetail?.general_requirements?.length > 0 && (
+                <Card className="p-6 bg-gray-100">
+                  <h2 className="text-xl font-bold mb-4">
+                    {t("better_if_have")}
+                  </h2>
+                  <ul className="space-y-3">
+                    {jobDetail?.general_requirements?.map((item, i) => (
+                      <li key={i} className="flex items-center gap-2 ">
+                        <Check className="h-5 w-5 text-black mt-1 flex-shrink-0" />
+                        <span>{item?.requirement}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+
+              {/* Perks & Benefits */}
+              {jobDetail?.benefit?.length > 0 && (
+                <Card className="p-6 bg-gray-100">
+                  <h2 className="text-2xl font-bold mb-6 text-black">
+                    {t("benefits")}
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {jobDetail?.benefit?.map((item, idx) => {
+                      return (
+                        <div
+                          key={idx}
+                          className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
+                        >
+                          <div className="text-gray-700">{item}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              )}
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-8">
               <Card className="p-6 bg-gray-100">
                 <h2 className="text-xl font-bold mb-4">
-                  {t("interview_process")}
+                  {t("about_this_position")}
                 </h2>
-                <div className="flex flex-wrap gap-2 flex-col">
-                  {jobDetail?.interview_process?.map((item, i) => (
-                    <Tag
-                      key={i}
-                      color="black"
-                      className="bg-gray-200 text-black w-fit"
-                    >
-                      {item?.process}
-                    </Tag>
-                  ))}
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-700">
+                        {t("number_of_hiring")}
+                      </span>
+                      <span className="text-gray-700">
+                        {jobDetail?.count_apply}
+                      </span>
+                    </div>
+                  </div>
+                  <InfoRow
+                    label={t("application_deadline")}
+                    value={formatDate(jobDetail?.expire_date)}
+                  />
+                  <InfoRow
+                    label={t("posted_date")}
+                    value={formatDate(jobDetail?.createdAt)}
+                  />
+                  <InfoRow
+                    label={t("job_type")}
+                    value={t(jobDetail?.job_contract_type?.key)}
+                  />
+                  {jobDetail?.salary_range_min &&
+                  jobDetail?.salary_range_max &&
+                  jobDetail?.is_negotiable ? (
+                    <InfoRow
+                      label={t("salary")}
+                      value={`${jobDetail?.salary_range_min} - ${jobDetail?.salary_range_max}`}
+                    />
+                  ) : (
+                    <InfoRow label={t("salary")} value={t("negotiable")} />
+                  )}
+                  <InfoRow label={t("level")} value={jobDetail?.level?.name} />
+                  <InfoRow
+                    label={t("job_type")}
+                    value={t(jobDetail?.job_type?.key)}
+                  />
+                  <InfoRow
+                    label={t("minimum_experience")}
+                    value={jobDetail?.min_experience + " " + t("year")}
+                  />
+                  <InfoRow
+                    label={t("degree")}
+                    value={jobDetail?.degree?.name}
+                  />
                 </div>
               </Card>
-            )}
+
+              {jobDetail?.skills?.length > 0 && (
+                <Card className="p-6 bg-gray-100">
+                  <h2 className="text-xl font-bold mb-4">{t("skills")}</h2>
+                  <div className="flex gap-2 flex-wrap">
+                    {jobDetail?.skills?.map((skill, idx) => {
+                      return (
+                        <Tag color={getRandomColor()} key={idx}>
+                          {skill?.name}
+                        </Tag>
+                      );
+                    })}
+                  </div>
+                </Card>
+              )}
+
+              {jobDetail?.interview_process?.length > 0 && (
+                <Card className="p-6 bg-gray-100">
+                  <h2 className="text-xl font-bold mb-4">
+                    {t("interview_process")}
+                  </h2>
+                  <div className="flex flex-wrap gap-2 flex-col">
+                    {jobDetail?.interview_process?.map((item, i) => (
+                      <Tag
+                        key={i}
+                        color="black"
+                        className="bg-gray-200 text-black w-fit"
+                      >
+                        {item?.process}
+                      </Tag>
+                    ))}
+                  </div>
+                </Card>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <Modal
         title={`${t("apply")}: ${jobDetail?.title}`}
         open={isModalOpen}
