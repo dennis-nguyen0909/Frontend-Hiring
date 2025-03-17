@@ -81,10 +81,13 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     if (userDetail?.access_token) {
-      // getNotificationsForCandidate();
-      // getNotificationsForEmployer();
+      if (userDetail?.role?.role_name === ROLE_NAME_USER) {
+        getNotificationsForCandidate();
+      } else if (userDetail?.role?.role_name === ROLE_NAME_EMPLOYEE) {
+        getNotificationsForEmployer();
+      }
     }
-  }, []);
+  }, [userDetail?.access_token, userDetail?.role?.role_name]);
 
   useEffect(() => {
     const newSocket = io(import.meta.env.VITE_API_SOCKET, {

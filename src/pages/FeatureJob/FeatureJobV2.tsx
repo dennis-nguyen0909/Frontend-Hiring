@@ -12,6 +12,7 @@ import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentS
 import ButtonComponent from "../../components/Button/ButtonComponent";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Meta } from "../../types";
 
 const FeatureJobV2 = () => {
   const [jobs, setJobs] = useState([]);

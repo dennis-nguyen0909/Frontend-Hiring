@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import ButtonComponent from "../Button/ButtonComponent";
 import { Empty } from "antd";
 import { useTranslation } from "react-i18next";
+
 const TopCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [roleEmployer, setRoleEmployer] = useState();
@@ -15,6 +16,7 @@ const TopCompanies = () => {
   const { t } = useTranslation();
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
+
   const handleGetEmployerRole = async () => {
     try {
       const res = await ROLE_API.getEmployerRole(userDetail?.access_token);
@@ -25,6 +27,7 @@ const TopCompanies = () => {
       console.error(error);
     }
   };
+
   const handleGetAllCompanys = async (
     query?: any,
     current = 1,
@@ -53,6 +56,9 @@ const TopCompanies = () => {
 
   useEffect(() => {
     handleGetEmployerRole();
+  }, []);
+
+  useEffect(() => {
     if (roleEmployer) {
       const query = {
         role: roleEmployer,
@@ -70,6 +76,7 @@ const TopCompanies = () => {
       </div>
     );
   };
+
   return (
     <>
       <div className="h-full px-5 md:px-primary">
