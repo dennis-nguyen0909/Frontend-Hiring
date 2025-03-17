@@ -18,6 +18,7 @@ import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentS
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { formatCurrencyWithSymbol } from "../../untils";
 const { Sider } = Layout;
 const popularSearches = [
   "Front-end",
@@ -427,7 +428,13 @@ export default function JobBoard() {
                               {t("salary")} :{" "}
                               {job?.is_negotiable
                                 ? t("negotiable")
-                                : `${job?.salary_range_min}${job?.type_money?.symbol} - ${job?.salary_range_max}${job?.type_money?.symbol}`}
+                                : `${formatCurrencyWithSymbol(
+                                    job?.salary_range_min,
+                                    job?.type_money?.code
+                                  )} - ${formatCurrencyWithSymbol(
+                                    job?.salary_range_max,
+                                    job?.type_money?.code
+                                  )}`}
                             </div>
                             <div className="flex flex-wrap gap-2 mt-2">
                               <span className="px-2 py-1 text-[10px] rounded-full bg-blue-50 text-blue-600">

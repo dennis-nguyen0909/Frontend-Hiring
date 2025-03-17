@@ -61,3 +61,7 @@ export function isExpired(date:string) {
   // So sánh ngày hết hạn với ngày hiện tại
   return expireDate < currentDate;
 }
+
+export const formatCurrencyWithSymbol = (amount: number, symbol: string): string => {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: symbol }).format(amount);
+};

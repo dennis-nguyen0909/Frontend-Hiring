@@ -36,9 +36,7 @@ export default function MyJobEmployer() {
       render: (text: string, record: Job) => (
         <div className="truncate">
           <div className="font-medium">{text}</div>
-          <div className="text-gray-500 text-sm">
-            {/* {record?.job_contract_type?.name} • {new Date(record.expire_date).toLocaleDateString()} */}
-          </div>
+          <div className="text-gray-500 text-sm"></div>
         </div>
       ),
       className: "text-[12px]",
@@ -119,8 +117,6 @@ export default function MyJobEmployer() {
         </div>
       ),
       className: "text-[12px]",
-
-      // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
           whiteSpace: "nowrap",
@@ -149,7 +145,6 @@ export default function MyJobEmployer() {
                 { key: PROMOTE_JOB, label: t("promote_job") },
                 { key: VIEW_DETAIL, label: t("view_detail") },
                 { key: DELETE, label: t("delete") },
-                // { key: MARK_AS_EXPIRED, label: 'Đánh dấu là đã hết hạn' },
               ],
               onClick: (e) => handleOnChangeMenu(e, record),
             }}
@@ -160,8 +155,6 @@ export default function MyJobEmployer() {
         </div>
       ),
       className: "text-[12px]",
-
-      // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
           whiteSpace: "nowrap",
