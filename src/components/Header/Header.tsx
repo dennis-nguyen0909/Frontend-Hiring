@@ -335,7 +335,7 @@ const Header: React.FC = () => {
           >
             <Avatar shape="circle" src={logo} size={50} />
             <p className="text-white font-bold md:hidden text-[20px] lg:block">
-              HireDev Duy deptrai123123
+              HireDev
             </p>
           </div>
 
