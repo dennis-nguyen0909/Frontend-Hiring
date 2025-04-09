@@ -741,6 +741,8 @@
     "please_enter_your_password":"Vui lòng nhập mật khẩu",
     "please_enter_your_confirm_password":"Vui lòng nhập mật khẩu xác nhận",
     "password_must_contain_at_least_8_characters_one_uppercase_letter_one_lowercase_letter_one_number_and_one_special_character":"Mật khẩu phải chứa ít nhất 8 ký tự, một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.",
-    "passwords_do_not_match":"Mật khẩu không khớp"
-  
+    "passwords_do_not_match":"Mật khẩu không khớp",
+    "job_suggestion_city":"Việc làm gần bạn",
+    "no_job_near_you":"Không có việc làm gần bạn",
+    "no_job_suggestion":"Không có việc làm phù hợp"
 }

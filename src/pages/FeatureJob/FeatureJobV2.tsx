@@ -163,12 +163,12 @@ const FeatureJobV2 = () => {
   };
 
   return (
-    <div className="px-5 md:px-primary h-auto mb-[20px] bg-[#f3f5f7] pb-[100px] pt-[10px]">
+    <div className="px-5 md:px-primary h-auto mb-[20px] bg-white pb-[100px] pt-[10px]">
       <div
         className="flex justify-between items-center"
         // style={{ margin: "50px 0" }}
       >
-        <h1 className="text-textBlack text-[20px] font-medium">
+        <h1 className="text-[20px] font-bold text-gray-900">
           {t("feature_job")}
         </h1>
         <ButtonComponent onClick={onViewAll}>

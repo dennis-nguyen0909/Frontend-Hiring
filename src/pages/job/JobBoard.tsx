@@ -202,26 +202,25 @@ export default function JobBoard() {
               <span className="absolute bottom-0 left-0 w-full h-2 bg-blue-200 -z-10"></span>
             </span>
           </h1>
-          <p className="text-center text-gray-600 mb-8 text-[10px]">
+          <p className="text-center text-gray-600 mb-8 text-[12px]">
             {t("find_job_description")}
           </p>
-
           {/* Search Bar */}
-          <div className="max-w-2xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4 bg-white rounded-lg shadow-sm border">
-              <div className="flex-1 flex items-center ml-2">
-                <Search className="w-4 h-4 text-gray-400 mr-" />
+          <div className="max-w-4xl w-full mx-auto">
+            <div className="flex flex-col md:flex-row gap-4 bg-white rounded-full shadow-lg border border-gray-200 hover:border-primaryColor transition-all duration-300">
+              <div className="flex-1 flex items-center px-4">
+                <Search className="w-5 h-5 text-gray-400 mr-3" />
                 <input
                   type="text"
-                  placeholder="Job title or keyword"
-                  className="w-full border-none pl-1 py-1 text-[10px] focus:outline-none focus:border-none h-8"
+                  placeholder={t("job_title_or_keyword")}
+                  className="w-full border-none pl-1 py-2 text-[14px] focus:outline-none focus:border-none h-10 placeholder-gray-400"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <Button
                   onClick={handleSearch}
                   type="primary"
-                  className="!bg-primaryColor h-6 text-[10px] px-3 mr-2 text-center"
+                  className="!bg-primaryColor h-8 text-[14px] px-6 text-center !rounded-full hover:!bg-primaryColor/90 transition-all duration-300"
                 >
                   {t("find_job")}
                 </Button>

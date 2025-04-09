@@ -735,7 +735,10 @@
     "please_enter_your_password":"Please enter your password",
     "please_enter_your_confirm_password":"Please enter your confirm password",
     "password_must_contain_at_least_8_characters_one_uppercase_letter_one_lowercase_letter_one_number_and_one_special_character":"Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character.",
-    "passwords_do_not_match":"Passwords do not match"
+    "passwords_do_not_match":"Passwords do not match",
+    "job_suggestion_city":"Job suggestion city",
+    "no_job_near_you":"No job near you",
+    "no_job_suggestion":"No job suggestion"
 
 
 
