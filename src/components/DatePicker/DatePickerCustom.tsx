@@ -26,7 +26,6 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
       : [];
 
     setFormattedDates(formattedDateStrings); // Chỉ dùng format để hiển thị
-    console.log("Formatted dates for display: ", formattedDateStrings);
 
     if (onChange) {
       onChange(dates, dateStrings); // Trả về giá trị thực tế trong onChange
@@ -37,7 +36,6 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
     if (onSubmit) {
       onSubmit(formattedDates);
     }
-    console.log("Submitted date range: ", formattedDates);
   };
 
   return (

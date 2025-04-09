@@ -1,16 +1,8 @@
 import { useState } from "react";
-import {
-  Button,
-  Image,
-  Input,
-  Form,
-  notification,
-} from "antd";
+import { Button, Image, Input, Form, notification } from "antd";
 import logo from "../../assets/images/logo.png";
-import icon from "../../assets/icons/logo.png";
-import {
-  ArrowRightOutlined,
-} from "@ant-design/icons";
+import icon from "../../assets/logo/LogoH.png";
+import { ArrowRightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import * as authService from "../../services/modules/authServices";
 import LoadingComponent from "../../components/Loading/LoadingComponent";
@@ -18,8 +10,11 @@ import { itemsIcon } from "../../helper";
 import facebook from "../../assets/icons/fb.png";
 import google from "../../assets/icons/gg.png";
 import { toast } from "react-toastify";
+import LanguageSwitch from "../../components/LanguagesSwitch/LanguagesSwitch";
+import { useTranslation } from "react-i18next";
 
 const ForgotPage = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState<string>("");
   const [otp, setOtp] = useState<string>("");
   const [role, setRole] = useState<string>("USER");
@@ -36,19 +31,19 @@ const ForgotPage = () => {
     try {
       const response = await authService.forgotPassword(values?.email);
       if (+response?.statusCode === 201) {
-        setIsOtpFormVisible(true)
-      }else{
+        setIsOtpFormVisible(true);
+      } else {
         notification.error({
-            message: 'Error',
-            description: 'An error occurred while processing your request.'
+          message: "Error",
+          description: "An error occurred while processing your request.",
         });
       }
     } catch (error) {
       console.error(error);
       notification.error({
-        message: 'Error',
-        description: 'An unexpected error occurred.'
-    });
+        message: "Error",
+        description: "An unexpected error occurred.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -67,8 +62,8 @@ const ForgotPage = () => {
         initialValues={{ role }}
       >
         {/* header */}
-        <div className="flex items-center justify-start mt-10  gap-2">
-          <Image src={icon} preview={false} />
+        <div className="flex items-center lg:justify-start justify-center lg:mt-10 mt-4 gap-2">
+          <Image src={icon} width={45} height={45} preview={false} />
           <h1
             onClick={() => navigate("/")}
             className="font-medium text-2xl cursor-pointer"
@@ -78,25 +73,28 @@ const ForgotPage = () => {
         </div>
         <div className="flex gap-10 items-center header justify-between mt-[200px]">
           <div>
-            <h1 className="font-medium text-3xl">Forget Password.</h1>
+            <h1 className="font-medium text-3xl">{t("forgot_password")}</h1>
             <div className="mt-2">
-              <span className="text-gray-500 text-1xl">Go back to?</span>
+              <span className="text-gray-500 text-1xl mr-1">
+                {t("go_back_to")}
+              </span>
+
               <span
                 onClick={handleSignIn}
                 className="text-blue-500 cursor-pointer"
               >
-                {" "}
-                SignIn
+                {t("sign_in")}
               </span>
             </div>
             <div className="mt-2">
-              <span className="text-gray-500 text-1xl">Don’t have account</span>
+              <span className="text-gray-500 text-1xl mr-1">
+                {t("dont_have_account")}
+              </span>
               <span
                 onClick={handleNextRegister}
                 className="text-blue-500 cursor-pointer"
               >
-                {" "}
-                Tạo tài khoản
+                {t("create_account")}
               </span>
             </div>
           </div>
@@ -106,72 +104,75 @@ const ForgotPage = () => {
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: "Please enter your email" },
-              { type: "email", message: "The input is not valid email" },
+              { required: true, message: t("please_enter_your_email") },
+              { type: "email", message: t("the_input_is_not_valid_email") },
             ]}
           >
             <Input
               disabled={isOtpFormVisible}
               size="large"
-              placeholder="Địa chỉ email"
+              placeholder={t("email")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </Form.Item>
           {isOtpFormVisible && (
-    <Form.Item
-        name="otp"
-        rules={[
-            { required: true, message: "Please enter your OTP" },
-            {
-                pattern: /^[0-9]{6}$/,
-                message: "OTP must be exactly 6 digits",
-            },
-        ]}
-    >
-        <Input
-            size="large"
-            placeholder="Mã OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            maxLength={6}  // Giới hạn chỉ nhập tối đa 6 ký tự
-            pattern="[0-9]*"  // Chỉ cho phép nhập số
-        />
-    </Form.Item>
-)}
-
-        </div>
-        {!isOtpFormVisible && <LoadingComponent isLoading={isLoading}>
-          <div className="flex flex-col gap-5 mt-5 justify-center items-center">
-            <Button
-              htmlType="submit"
-              className="bg-primaryBlue text-white text-bold w-full"
-              size="large"
-              style={{ backgroundColor: "#0f65cc" }}
+            <Form.Item
+              name="otp"
+              rules={[
+                { required: true, message: t("please_enter_your_otp") },
+                {
+                  pattern: /^[0-9]{6}$/,
+                  message: t("otp_must_be_exactly_6_digits"),
+                },
+              ]}
             >
-              Reset Password{" "}
-              <ArrowRightOutlined
-                style={{ fontSize: "18px", fontWeight: "bold" }}
+              <Input
+                size="large"
+                placeholder={t("otp")}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                maxLength={6} // Giới hạn chỉ nhập tối đa 6 ký tự
+                pattern="[0-9]*" // Chỉ cho phép nhập số
               />
-            </Button>
-          </div>
-        </LoadingComponent>}
+            </Form.Item>
+          )}
+        </div>
+        {!isOtpFormVisible && (
+          <LoadingComponent isLoading={isLoading}>
+            <div className="flex flex-col gap-5 mt-5 justify-center items-center">
+              <Button
+                htmlType="submit"
+                className="bg-primaryBlue text-white text-bold w-full"
+                size="large"
+                style={{ backgroundColor: "#0f65cc" }}
+              >
+                {t("reset_password")}
+                <ArrowRightOutlined
+                  style={{ fontSize: "18px", fontWeight: "bold" }}
+                />
+              </Button>
+            </div>
+          </LoadingComponent>
+        )}
 
-        {isOtpFormVisible && <LoadingComponent isLoading={isLoading}>
-          <div className="flex flex-col gap-5 mt-5 justify-center items-center">
-            <Button
-              onClick={handleVerifyOtp}
-              className="bg-primaryBlue text-white text-bold w-full"
-              size="large"
-              style={{ backgroundColor: "#0f65cc" }}
-            >
-              Xác thực{" "}
-            </Button>
-          </div>
-        </LoadingComponent> }
+        {isOtpFormVisible && (
+          <LoadingComponent isLoading={isLoading}>
+            <div className="flex flex-col gap-5 mt-5 justify-center items-center">
+              <Button
+                onClick={handleVerifyOtp}
+                className="bg-primaryBlue text-white text-bold w-full"
+                size="large"
+                style={{ backgroundColor: "#0f65cc" }}
+              >
+                {t("verify_my_account")}
+              </Button>
+            </div>
+          </LoadingComponent>
+        )}
         <div className="flex items-center justify-center mt-3 text-gray-500">
           <hr className="w-full h-0.95 bg-gray-500" />
-          <p className="mx-2">hoặc</p>
+          <p className="mx-2">{t("or")}</p>
           <hr className="w-full h-0.95 bg-gray-500" />
         </div>
 
@@ -183,7 +184,7 @@ const ForgotPage = () => {
               style={{ width: "240px" }}
             >
               <img src={facebook} alt="Facebook" className="w-5 h-5 mr-2" />
-              Đăng nhập với Facebook
+              {t("login_with_facebook")}
             </Button>
           </a>
           <a href={`${import.meta.env.VITE_API_LOGIN_GMAIL}`}>
@@ -193,7 +194,7 @@ const ForgotPage = () => {
               style={{ width: "240px" }}
             >
               <img src={google} alt="Google" className="w-5 h-5 mr-2" />
-              Đăng nhập với Google
+              {t("login_with_google")}
             </Button>
           </a>
         </div>
@@ -219,29 +220,33 @@ const ForgotPage = () => {
   };
 
   const handleVerifyOtp = async () => {
-   try {
-     const response = await authService.verifyOtp(email,otp);
-     if(+response?.statusCode === 201){
-       navigate("/reset-password",{
-        state:{
-            email
-        }
-       })
-     }
-   } catch (error) {
-    toast.error(error.message)
-   }
-};
+    try {
+      const response = await authService.verifyOtp(email, otp);
+      if (+response?.statusCode === 201) {
+        navigate("/reset-password", {
+          state: {
+            email,
+          },
+        });
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
-    <div className="flex justify-between items-center overflow-hidden">
+    <div className="flex justify-between items-start overflow-hidden">
+      <div className="mt-5 ml-5">
+        <LanguageSwitch />
+      </div>
       <div className="flex flex-col gap-[100px] h-screen w-3/6 pl-[150px]">
         <div className="flex align-center justify-center">
-        {renderForgotPasswordForm()}
+          {renderForgotPasswordForm()}
         </div>
       </div>
       <div className="flex flex-col gap-[100px] h-screen w-2/4 relative">
-        <img src={logo} alt="" className="  position-absolute h-auto" />
+        <img src={logo} alt="Logo" className=" w-full fixed h-full" />
+
         <p className="absolute font-normal text-3xl text-white bottom-[250px] left-[100px]">
           Over 1,75,324 candidates
           <br /> waiting for good employers.

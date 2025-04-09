@@ -190,7 +190,6 @@ export default function JobBoard() {
     setSearchTerm(value);
     await handleGetJob(1, 9, query);
   };
-  console.log("job", listJobs);
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}

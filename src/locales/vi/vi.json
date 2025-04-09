@@ -728,7 +728,19 @@
     "admin":"Quản trị viên",
     "freelance":"Tự do",
     "internship":"Thực tập",
-    "please_enter_start_date":"please_enter_start_date"
-
+    "please_enter_start_date":"please_enter_start_date",
+    "please_enter_end_date":"please_enter_end_date",
+    "go_back_to":"Quay lại",
+    "dont_have_account":"Không có tài khoản?",
+    "sign_in":"Đăng nhập",
+    "otp":"Mã OTP",
+    "otp_must_be_exactly_6_digits":"Mã OTP phải chính xác 6 chữ số",
+    "please_enter_your_otp":"Vui lòng nhập mã OTP",
+    "the_input_is_not_valid_email":"Địa chỉ email không hợp lệ",
+    "please_enter_your_email":"Vui lòng nhập email",
+    "please_enter_your_password":"Vui lòng nhập mật khẩu",
+    "please_enter_your_confirm_password":"Vui lòng nhập mật khẩu xác nhận",
+    "password_must_contain_at_least_8_characters_one_uppercase_letter_one_lowercase_letter_one_number_and_one_special_character":"Mật khẩu phải chứa ít nhất 8 ký tự, một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.",
+    "passwords_do_not_match":"Mật khẩu không khớp"
   
 }

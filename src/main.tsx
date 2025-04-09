@@ -1,4 +1,6 @@
 import { createRoot } from "react-dom/client";
+// src/main.tsx
+import "@fontsource/inter"; // sử dụng font Inter mặc định (400)
 import App from "./App.tsx";
 import "./index.css";
 import { Provider } from "react-redux";

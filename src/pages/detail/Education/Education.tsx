@@ -21,6 +21,7 @@ import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import useMomentFn from "../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
+
 const { TextArea } = Input;
 
 interface typePostEducation {
@@ -31,6 +32,7 @@ interface typePostEducation {
   user_id: string;
   _id: string;
   description: string;
+  currently_studying?: boolean;
 }
 
 const EducationComponent = () => {
@@ -53,12 +55,13 @@ const EducationComponent = () => {
     userDetail?.access_token
   );
   const { t } = useTranslation();
+
   const handleGetEducation = async (id: string, access_token: string) => {
     try {
       setIsLoading(true);
       const res = await EducationApi.getEducationById(id, access_token);
       setEducation(res.data);
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
         description: error.message,
@@ -88,7 +91,7 @@ const EducationComponent = () => {
           })
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
         description: error.message,
@@ -97,11 +100,13 @@ const EducationComponent = () => {
       setLoading(false);
     }
   };
+
   const handleOpenModalEducation = (type: string, id?: string) => {
     setVisibleModalEducation(true);
-    setSelectedEducationId(id);
+    setSelectedEducationId(id || "");
     setActionType(type);
   };
+
   const EducationItem = ({
     school,
     major,
@@ -122,7 +127,6 @@ const EducationComponent = () => {
           <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
             <School className="text-xl text-gray-600" />
           </div>
-
           <div className="flex-grow">
             <div className="flex justify-between items-start">
               <div>
@@ -151,18 +155,21 @@ const EducationComponent = () => {
     try {
       const res = await EducationApi.postEducation(values, accessToken);
       return res;
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
         description: error.message,
       });
     }
   };
+
   const closeModal = () => {
     setVisibleModalEducation(false);
     setSelectedEducationId("");
     setEducation(null);
+    form.resetFields();
   };
+
   const handleDeleteEducation = async () => {
     try {
       setLoading(true);
@@ -177,14 +184,11 @@ const EducationComponent = () => {
             description: t("delete_success"),
           });
           await handleGetEducationByUserId();
-
           closeModal();
-          setSelectedEducationId("");
-          setEducation(null);
           await handleUpdateProfile();
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
         description: error.message,
@@ -207,8 +211,6 @@ const EducationComponent = () => {
         if (res.data) {
           await handleGetEducationByUserId();
           closeModal();
-          setSelectedEducationId("");
-          setEducation(null);
           notification.success({
             message: t("notification"),
             description: t("update_success"),
@@ -216,7 +218,7 @@ const EducationComponent = () => {
           await handleUpdateProfile();
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
         description: error.message,
@@ -235,31 +237,33 @@ const EducationComponent = () => {
 
     try {
       const res = await handlePostEducation(params, user.access_token);
-      if (res.data) {
+      if (res?.data) {
         notification.success({
           message: t("notification"),
           description: t("create_success"),
         });
         await handleGetEducationByUserId();
         closeModal();
-        setSelectedEducationId("");
-        setEducation(null);
         await handleUpdateProfile();
       }
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
         description: error.message,
       });
     } finally {
-      setLoading(false); // Kết thúc trạng thái loading
-      closeModal(); // Đóng modal sau khi hoàn tất
+      setLoading(false);
+      closeModal();
     }
   };
 
   const handleCheckboxChange = (e: any) => {
     setIsCurrentlyStudying(e.target.checked);
+    if (e.target.checked) {
+      form.setFieldsValue({ end_date: null });
+    }
   };
+
   useEffect(() => {
     if (actionType === "edit" && selectedEducationId) {
       handleGetEducation(selectedEducationId, user.access_token);
@@ -271,30 +275,39 @@ const EducationComponent = () => {
 
   useEffect(() => {
     if (education) {
+      const isCurrentlyStudying = !education.end_date;
       form.setFieldsValue({
-        school: education?.school,
-        major: education?.major,
-        start_date: education?.start_date
-          ? moment(education?.start_date)
-          : null,
-        end_date: education?.end_date ? moment(education?.end_date) : null,
-        currently_studying:
-          education?.end_date === null ||
-          !education?.end_date ||
-          education?.end_date === undefined
-            ? true
-            : false,
-        description: education?.description,
+        school: education.school,
+        major: education.major,
+        start_date: education.start_date ? moment(education.start_date) : null,
+        end_date: education.end_date ? moment(education.end_date) : null,
+        currently_studying: isCurrentlyStudying,
+        description: education.description,
       });
-      setIsCurrentlyStudying(education?.currently_studying);
+      setIsCurrentlyStudying(isCurrentlyStudying);
     }
-  }, [education, selectedEducationId]);
+  }, [education, form]);
 
   const renderBody = () => {
     return (
       <LoadingComponentSkeleton isLoading={isLoading}>
         <LoadingComponent isLoading={loading}>
-          <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            preserve={false}
+            initialValues={{
+              school: education?.school || "",
+              major: education?.major || "",
+              start_date: education?.start_date
+                ? moment(education.start_date)
+                : null,
+              end_date: education?.end_date ? moment(education.end_date) : null,
+              currently_studying: !education?.end_date,
+              description: education?.description || "",
+            }}
+          >
             <Form.Item
               name="school"
               label={<div className="text-[12px]">{t("school")}</div>}
@@ -446,8 +459,9 @@ const EducationComponent = () => {
           </div>
           {/* <div className="flex items-center justify-start"> */}
           <div>
-            {listEducations?.map((item: any, index: number) => (
+            {listEducations?.map((item: typePostEducation, index: number) => (
               <EducationItem
+                key={item._id}
                 school={item.school}
                 major={item.major}
                 start_date={item.start_date}

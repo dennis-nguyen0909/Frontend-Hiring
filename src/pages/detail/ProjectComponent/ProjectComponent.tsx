@@ -76,7 +76,6 @@ const ProjectComponent = () => {
     }
   };
   const handleSubmit = async (values: any) => {
-    console.log("valuesss", values);
     const params = {
       user_id: userDetail?._id,
       project_name: values.project_name,

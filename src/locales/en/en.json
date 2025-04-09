@@ -722,9 +722,20 @@
     "admin":"Admin",
     "freelance":"Freelance",
     "internship":"Internship",
-    "please_enter_start_date":"please_enter_start_date"
-
-
+    "please_enter_start_date":"please_enter_start_date",
+    "please_enter_end_date":"please_enter_end_date",
+    "go_back_to":"Go back to",
+    "dont_have_account":"Don't have account?",
+    "sign_in":"Sign in",
+    "otp":"OTP",
+    "otp_must_be_exactly_6_digits":"OTP must be exactly 6 digits",
+    "please_enter_your_otp":"Please enter your OTP",
+    "the_input_is_not_valid_email":"The input is not valid email",
+    "please_enter_your_email":"Please enter your email",
+    "please_enter_your_password":"Please enter your password",
+    "please_enter_your_confirm_password":"Please enter your confirm password",
+    "password_must_contain_at_least_8_characters_one_uppercase_letter_one_lowercase_letter_one_number_and_one_special_character":"Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character.",
+    "passwords_do_not_match":"Passwords do not match"
 
 
 

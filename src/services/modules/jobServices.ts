@@ -5,10 +5,10 @@ import axios from "axios";
 // Định nghĩa một đối tượng JobApi
 export const JobApi = {
   // Phương thức GET để lấy tất cả công việc
-  getAllJobs: async (params:any,accessToken: string) => {
-    const resData = await axiosInstance.get(`${'/jobs'}`, {
+  getAllJobs: async (params: any, accessToken: string) => {
+    const resData = await axiosInstance.get(`${"/jobs"}`, {
       params: {
-        ...params
+        ...params,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -18,10 +18,10 @@ export const JobApi = {
     if (resData.data) return resData.data;
     return null;
   },
-  getAllJobRecent: async (params:any,accessToken: string) => {
-    const resData = await axiosInstance.get(`${'/jobs/recent'}`, {
+  getAllJobRecent: async (params: any, accessToken: string) => {
+    const resData = await axiosInstance.get(`${"/jobs/recent"}`, {
       params: {
-        ...params
+        ...params,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -31,12 +31,11 @@ export const JobApi = {
     if (resData.data) return resData.data;
     return null;
   },
-
 
   // Phương thức POST để thêm một công việc mới
   postJob: async (data: unknown, accessToken: string) => {
     try {
-      const res = await axiosInstance.post('/jobs', data, {
+      const res = await axiosInstance.post("/jobs", data, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -50,15 +49,15 @@ export const JobApi = {
       //   message:"Thông báo",
       //   description: error?.response?.data?.message
       // })
-      message.error(error?.response?.data?.message)
+      message.error(error?.response?.data?.message);
       return null;
     }
   },
 
   // Phương thức GET để lấy công việc theo ID
-  getJobById: async (id: string, accessToken: string) => {
+  getJobById: async (id: string, accessToken: string, userId: string) => {
     try {
-      const res = await axiosInstance.get(`/jobs/${id}`, {
+      const res = await axiosInstance.get(`/jobs/${id}/${userId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -72,7 +71,7 @@ export const JobApi = {
       return null;
     }
   },
-  countActiveJobsByUser: async (userId:string,accessToken: string) => {
+  countActiveJobsByUser: async (userId: string, accessToken: string) => {
     try {
       const res = await axiosInstance.get(`/jobs/active/${userId}`, {
         headers: {
@@ -90,12 +89,16 @@ export const JobApi = {
   },
 
   // Phương thức DELETE để xóa nhiều công việc
-  deleteManyJobs: async (ids: Array<string>,userId: string,accessToken: string) => {
+  deleteManyJobs: async (
+    ids: Array<string>,
+    userId: string,
+    accessToken: string
+  ) => {
     try {
       const res = await axiosInstance({
-        method: 'delete',
-        url: '/jobs',
-        data: { ids,user_id:userId },
+        method: "delete",
+        url: "/jobs",
+        data: { ids, user_id: userId },
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -124,23 +127,23 @@ export const JobApi = {
       return null;
     } catch (error) {
       console.error("Error updating job:", error);
-      message.error(error?.response?.data?.message)
+      message.error(error?.response?.data?.message);
 
       // error?.response?.data?.message.map((item)=>{
       //   notification.error({
       //     message:'Thông báo',
       //     description:item
-  
+
       //   })
       // })
       return null;
     }
   },
-  getJobByEmployerID: async ( params:any,accessToken: string) => {
+  getJobByEmployerID: async (params: any, accessToken: string) => {
     try {
-      const resData = await axiosInstance.get('/jobs', {
+      const resData = await axiosInstance.get("/jobs", {
         params: {
-          ...params
+          ...params,
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -154,10 +157,10 @@ export const JobApi = {
       return null;
     }
   },
-  getAllJobsQuery: async (params:any,accessToken: string) => {
-    const resData = await axiosInstance.get(`${'/jobs'}`, {
+  getAllJobsQuery: async (params: any, accessToken: string) => {
+    const resData = await axiosInstance.get(`${"/jobs"}`, {
       params: {
-        ...params
+        ...params,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -167,10 +170,10 @@ export const JobApi = {
     if (resData.data) return resData.data;
     return null;
   },
-  findJobsByCompanyName: async (params:any,accessToken: string) => {
-    const resData = await axiosInstance.get(`${'/jobs/getJobSearchName'}`, {
+  findJobsByCompanyName: async (params: any, accessToken: string) => {
+    const resData = await axiosInstance.get(`${"/jobs/getJobSearchName"}`, {
       params: {
-        ...params
+        ...params,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -180,9 +183,9 @@ export const JobApi = {
     if (resData.data) return resData.data;
     return null;
   },
-  toggleLikeJob: async (params: any,accessToken:string)=>{
+  toggleLikeJob: async (params: any, accessToken: string) => {
     try {
-      const res = await axiosInstance.post('/jobs/toggle-like', params, {
+      const res = await axiosInstance.post("/jobs/toggle-like", params, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -196,17 +199,24 @@ export const JobApi = {
       return null;
     }
   },
-  getJobSuggestions: async (params: any,userId:string,accessToken:string)=>{
+  getJobSuggestions: async (
+    params: any,
+    userId: string,
+    accessToken: string
+  ) => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_PYTHON_URL}/suggests/${userId}`,{
-        params: {
-          ...params
-        },
-        headers: {  
-          Authorization: `Bearer ${accessToken}`,
-        },
-        withCredentials: false
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_PYTHON_URL}/suggests/${userId}`,
+        {
+          params: {
+            ...params,
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          withCredentials: false,
+        }
+      );
 
       if (res.data) return res.data;
       return null;
@@ -215,17 +225,24 @@ export const JobApi = {
       return null;
     }
   },
-  getJobSuggestsByCity: async (params: any,userId:string,accessToken:string)=>{
+  getJobSuggestsByCity: async (
+    params: any,
+    userId: string,
+    accessToken: string
+  ) => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_PYTHON_URL}/suggests_by_city/${userId}`,{
-        params: {
-          ...params
-        },
-        headers: {  
-          Authorization: `Bearer ${accessToken}`,
-        },
-        withCredentials: false
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_PYTHON_URL}/suggests_by_city/${userId}`,
+        {
+          params: {
+            ...params,
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          withCredentials: false,
+        }
+      );
 
       if (res.data) return res.data;
       return null;
@@ -233,5 +250,5 @@ export const JobApi = {
       console.error("Error posting job:", error);
       return null;
     }
-  }
+  },
 };
