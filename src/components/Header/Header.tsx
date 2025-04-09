@@ -231,6 +231,7 @@ const Header: React.FC = () => {
     setActiveMenu(item.path);
   };
 
+  // ok
   const handleLogout = async () => {
     try {
       const res = await authServices.logout(userDetail?.access_token);
