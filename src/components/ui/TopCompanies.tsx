@@ -16,7 +16,6 @@ const TopCompanies = () => {
   const { t } = useTranslation();
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
-
   const handleGetEmployerRole = async () => {
     try {
       const res = await ROLE_API.getEmployerRole(userDetail?.access_token);
