@@ -36,7 +36,11 @@ export default function JobPosting() {
   const handleGetDetail = async () => {
     try {
       setIsLoading(true);
-      const res = await JobApi.getJobById(id + "", userDetail?.access_token);
+      const res = await JobApi.getJobById(
+        id + "",
+        userDetail?.access_token,
+        userDetail?._id
+      );
       if (res.data) {
         setJobDetail(res.data);
       }
@@ -125,7 +129,6 @@ export default function JobPosting() {
       console.error(error);
     }
   };
-  console.log("jobDetail", jobDetail);
   const onLike = async () => {
     try {
       const params = {

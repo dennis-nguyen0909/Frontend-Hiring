@@ -1,53 +1,52 @@
 import { Suspense, useEffect, useState } from "react";
-import { routes } from "../src/routes/index";
+import { routes } from "./routes";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Fragment } from "react";
 import DefaultPage from "./pages/default/DefaultPage";
 import NotFound from "./components/NotFound/NotFound";
 import LoadingPage from "./components/Loading/LoadingPage";
+import { AuthGuard } from "./routes/guards";
+
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   useEffect(() => {
     setIsLoading(true);
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setIsLoading(false);
     }, 500);
+    return () => clearTimeout(timer);
   }, []);
+
   return (
-    <div>
-      {isLoading ? (
-        <div>
+    <Router>
+      <Suspense fallback={<LoadingPage />}>
+        {isLoading ? (
           <LoadingPage />
-        </div>
-      ) : (
-        <Router>
-             <Suspense fallback={<LoadingPage />}>
-              <Routes>
-                {routes.map((route) => {
-                  const Page = route.page;
-                  const Layout = route.isShowHeader ? DefaultPage : Fragment;
-                  return (
-                    <Route
-                      key={route.path}
-                      path={route.path}
-                      element={
-                        <Layout showFooter={route.isShowFooter !== false}>
-                          {route.isPrivate ? (
-                            <NotFound />
-                          ) : (
-                            <Page />
-                          )}
-                        </Layout>
-                      }
-                    />
-                  );
-                })}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-          </Suspense>
-        </Router>
-      )}
-    </div>
+        ) : (
+          <Routes>
+            {routes.map((route) => {
+              const Page = route.page;
+              const Layout = route.isShowHeader ? DefaultPage : Fragment;
+
+              return (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={
+                    <AuthGuard route={route}>
+                      <Layout showFooter={route.isShowFooter !== false}>
+                        <Page />
+                      </Layout>
+                    </AuthGuard>
+                  }
+                />
+              );
+            })}
+          </Routes>
+        )}
+      </Suspense>
+    </Router>
   );
 }
 

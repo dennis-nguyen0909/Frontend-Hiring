@@ -58,7 +58,6 @@ const EmployerJob: React.FC = () => {
   const debouncedKeyword = useDebounce(keyword, 500);
 
   const handleJobClick = (job: Job) => {
-    console.log("Job clicked:", job);
     navigate(`/job-information/${job._id}`);
   };
 
@@ -90,7 +89,7 @@ const EmployerJob: React.FC = () => {
         setMeta(res.data.meta);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

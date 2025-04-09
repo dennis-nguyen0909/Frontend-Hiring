@@ -40,29 +40,17 @@ const DashBoard = () => {
       navigate("/");
       return;
     }
-    handleGetDetailUser();
-  }, [userDetail, navigate]);
-
-  if (!user) {
-    return <div>No user data found</div>;
-  }
+    // handleGetDetailUser();
+  }, []);
 
   return (
     <>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-screen">
-          <Spin size="large" />
-        </div>
+      {userDetail.role?.role_name === ROLE_NAME_USER ? (
+        <DashBoardCandidate />
+      ) : userDetail.role?.role_name === ROLE_NAME_ADMIN ? (
+        <DashBoardAdmin />
       ) : (
-        <div>
-          {user.role?.role_name === ROLE_NAME_USER ? (
-            <DashBoardCandidate />
-          ) : user.role?.role_name === ROLE_NAME_ADMIN ? (
-            <DashBoardAdmin />
-          ) : (
-            <DashBoardEmployer />
-          )}
-        </div>
+        <DashBoardEmployer />
       )}
     </>
   );

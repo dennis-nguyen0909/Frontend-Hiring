@@ -103,21 +103,25 @@ const ProfileComponentSetting = () => {
           </div>
         </Card>
 
-        <ExperienceNumberCandidate />
-        {/* Education Section */}
-        <EducationComponent />
-        {/* Experience Section */}
-        <ExperienceComponent />
-        {/* Skill Section */}
-        <SkillComponent />
-        {/* Certificate */}
-        <CertificateComponent />
-        {/* Prize */}
-        <PrizeView />
-        {/* Course */}
-        <CourseView />
-        {/* Project */}
-        <ProjectComponent />
+        {userDetail?.access_token && (
+          <>
+            <ExperienceNumberCandidate />
+            {/* Education Section */}
+            <EducationComponent />
+            {/* Experience Section */}
+            <ExperienceComponent />
+            {/* Skill Section */}
+            <SkillComponent />
+            {/* Certificate */}
+            <CertificateComponent />
+            {/* Prize */}
+            <PrizeView />
+            {/* Course */}
+            <CourseView />
+            {/* Project */}
+            <ProjectComponent />
+          </>
+        )}
       </div>
     </Col>
   );

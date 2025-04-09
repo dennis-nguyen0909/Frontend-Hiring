@@ -172,7 +172,6 @@ export default function SystemActivities() {
     }
   };
 
-  console.log("dateRange", dateRange);
   const changesLinkDisplay = (activity: Activities) => {
     return (
       <div className="flex items-center gap-2">

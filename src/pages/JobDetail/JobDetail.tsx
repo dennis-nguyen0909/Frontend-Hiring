@@ -76,7 +76,11 @@ export default function JobDetail() {
   const [form] = useForm();
   const handleGetDetail = async () => {
     try {
-      const res = await JobApi.getJobById(id + "", userDetail?.access_token);
+      const res = await JobApi.getJobById(
+        id + "",
+        userDetail?.access_token,
+        userDetail?._id
+      );
       if (res.data) {
         setJobDetail(res.data);
       }

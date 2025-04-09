@@ -387,7 +387,6 @@ export default function EmployerDetail() {
                       company={job?.user_id?.company_name}
                       location={`${job?.district_id?.name}, ${job?.city_id?.name}`}
                     />
-                    {console.log("jobs", job.job_contract_type.key)}
                   </>
                 );
               })}

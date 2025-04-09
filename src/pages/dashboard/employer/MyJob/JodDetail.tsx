@@ -197,7 +197,8 @@ export default function JobDetail({
   const handleGetJobDetail = async () => {
     const res = await JobApi.getJobById(
       idJob || location?.id,
-      userDetail.access_token
+      userDetail.access_token,
+      userDetail?._id
     );
     if (res?.data) {
       let applicationMethod = "";
@@ -214,7 +215,6 @@ export default function JobDetail({
         applicationMethod = "company";
         applicationLink = res.data.apply_website;
       }
-      console.log("res.data", formatDate(res.data.expire_date));
       const formattedExpireDate = res.data.expire_date;
       form.setFieldsValue({
         ...res.data,

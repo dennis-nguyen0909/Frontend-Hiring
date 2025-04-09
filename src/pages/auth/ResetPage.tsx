@@ -5,8 +5,10 @@ import { EyeFilled, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as authServices from "../../services/modules/authServices";
+import { useTranslation } from "react-i18next";
 
 const ResetPage = () => {
+  const { t } = useTranslation();
   const { state } = useLocation();
   const navigate = useNavigate();
   const [password, setPassword] = useState<string>("");
@@ -19,9 +21,9 @@ const ResetPage = () => {
         state?.email,
         password
       );
-      if(+response.statusCode === 201){
-        await toast.success("Đặt lại mật khẩu thành công")
-        navigate("/login")
+      if (+response.statusCode === 201) {
+        await toast.success("Đặt lại mật khẩu thành công");
+        navigate("/login");
       }
     } catch (error) {
       toast.error(error.message);
@@ -46,23 +48,25 @@ const ResetPage = () => {
       <Form onFinish={handleResetPassword}>
         <div className="flex flex-col gap-5">
           <div className="text-center">
-            <h1 className="text-3xl font-normal">Reset Password</h1>
+            <h1 className="text-3xl font-normal">{t("reset_password")}</h1>
           </div>
           <div className="text-center text-gray-500">
             <p>
-            Mật khẩu phải chứa ít nhất 8 ký tự, một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.
+              {t(
+                "password_must_contain_at_least_8_characters_one_uppercase_letter_one_lowercase_letter_one_number_and_one_special_character"
+              )}
             </p>
           </div>
           <div>
             <Form.Item
               name="password"
               rules={[
-                { required: true, message: "Please enter your password" },
+                { required: true, message: t("please_enter_your_password") },
               ]}
             >
               <Input.Password
                 size="large"
-                placeholder="Password"
+                placeholder={t("password")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 iconRender={(visible) =>
@@ -75,20 +79,22 @@ const ResetPage = () => {
               dependencies={["password"]}
               hasFeedback
               rules={[
-                { required: true, message: "Please confirm your password" },
+                { required: true, message: t("please_confirm_your_password") },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
                     if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(new Error("Passwords do not match!"));
+                    return Promise.reject(
+                      new Error(t("passwords_do_not_match"))
+                    );
                   },
                 }),
               ]}
             >
               <Input.Password
                 size="large"
-                placeholder="Xác nhận mật khẩu"
+                placeholder={t("confirm_password")}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 iconRender={(visible) =>
@@ -108,16 +114,16 @@ const ResetPage = () => {
               size="large"
               disabled={isButtonDisabled}
             >
-              Đặt lại mật khẩu
+              {t("reset_password")}
             </Button>
           </div>
           <div className="flex flex-col gap-5 mt-5 justify-center items-center">
             <Button
-              onClick={()=>navigate(-1)}
+              onClick={() => navigate(-1)}
               className={` bg-gray-400 text-gray-600 text-bold w-full`}
               size="large"
             >
-              Quay lại
+              {t("go_back_to")}
             </Button>
           </div>
         </div>

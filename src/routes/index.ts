@@ -1,168 +1,135 @@
-import { ComponentType, lazy } from 'react';
-import LoginPage from '../pages/auth/LoginPage';
-import NotFound from '../components/NotFound/NotFound';
-import Register from '../pages/auth/RegisterPage';
-import AdminPage from '../pages/admin/AdminPage';
-import VerifyEmail from '../pages/auth/VerifyEmail';
-import ForgotPage from '../pages/auth/ForgotPage';
-import ResetPage from '../pages/auth/ResetPage';
-import UserDetail from '../pages/detail/UserDetail';
-import Profile from '../pages/detail/Profile/Profile';
-import ManagePage from '../pages/employer/manage/ManagePage';
-import UploadPDF from '../pages/detail/UploadPDF/UploadPDF';
-import MyJobDetail from '../pages/dashboard/employer/MyJob/JodDetail'
-import MyApplicationDetail from '../pages/dashboard/employer/MyJob/JobApplication'
-import EmployerDetail from '../pages/EmployerDetail/EmployerDetail';
-import LandingPageExtended from '../components/LandingPageFeatures/LandingPageFeatures';
-import EmployerJob from '../pages/EmployerJob/EmployerJob';
-import JobPosting from '../pages/JobDetail/JobPosting';
-import SystemActivities from '../pages/SystemActivities/SystemActivities';
-const JobBoard = lazy(()=>import('../pages/job/JobBoard'));
-const DashBoard = lazy(()=>import ('../pages/dashboard'));
-const HomePage = lazy(()=>import ('../pages/home/HomePage'));
-const ProfileCV = lazy(()=>import ('../pages/detail/ProfileCV/ProfileCV'));
-const EmployeesPage = lazy(()=>import ('../pages/PageEmployers'));
-const AboutPage = lazy(()=>import ('../pages/about'));
-interface IRoute {
-    path: string;
-    page: ComponentType ;
-    isShowHeader?: boolean;
-    isPrivate?: boolean;
-    isShowFooter?:boolean;
-}
+import { lazy } from "react";
+import { IRoute } from "./types";
+import { authRoutes } from "./groups/auth";
+import { jobsRoutes } from "./groups/jobs";
+import NotFound from "../components/NotFound/NotFound";
+import AdminPage from "../pages/admin/AdminPage";
+import UserDetail from "../pages/detail/UserDetail";
+import Profile from "../pages/detail/Profile/Profile";
+import ManagePage from "../pages/employer/manage/ManagePage";
+import UploadPDF from "../pages/detail/UploadPDF/UploadPDF";
+import EmployerDetail from "../pages/EmployerDetail/EmployerDetail";
+import LandingPageExtended from "../components/LandingPageFeatures/LandingPageFeatures";
+import SystemActivities from "../pages/SystemActivities/SystemActivities";
+
+const HomePage = lazy(() => import("../pages/home/HomePage"));
+const ProfileCV = lazy(() => import("../pages/detail/ProfileCV/ProfileCV"));
+const EmployeesPage = lazy(() => import("../pages/PageEmployers"));
+const AboutPage = lazy(() => import("../pages/about"));
+const DashBoard = lazy(() => import("../pages/dashboard"));
+
+export const publicRoutes: IRoute[] = [
+  {
+    path: "/",
+    page: HomePage,
+    isShowHeader: true,
+    title: "Home",
+  },
+  {
+    path: "/about",
+    page: AboutPage,
+    isShowHeader: true,
+    isShowFooter: true,
+    title: "About",
+  },
+  {
+    path: "/companies",
+    page: EmployeesPage,
+    isShowHeader: true,
+    isShowFooter: true,
+    title: "Companies",
+  },
+  {
+    path: "/features",
+    page: LandingPageExtended,
+    isShowHeader: false,
+    isShowFooter: true,
+    title: "Features",
+  },
+];
+
+export const privateRoutes: IRoute[] = [
+  {
+    path: "/admin",
+    page: AdminPage,
+    isShowHeader: true,
+    isPrivate: true,
+    roles: ["admin"],
+    title: "Admin",
+  },
+  {
+    path: "/setting-profile/:id",
+    page: UserDetail,
+    isShowHeader: true,
+    isPrivate: true,
+    title: "Profile Settings",
+  },
+  {
+    path: "/profile/:id",
+    page: Profile,
+    isShowHeader: true,
+    isPrivate: true,
+    title: "Profile",
+  },
+  {
+    path: "/employer/:id",
+    page: ManagePage,
+    isShowHeader: true,
+    isPrivate: true,
+    roles: ["employer"],
+    title: "Employer Management",
+  },
+  {
+    path: "/employer-detail/:id",
+    page: EmployerDetail,
+    isShowHeader: true,
+    isPrivate: true,
+    title: "Employer Details",
+  },
+  {
+    path: "/dashboard/:id",
+    page: DashBoard,
+    isShowHeader: true,
+    isShowFooter: false,
+    isPrivate: true,
+    title: "Dashboard",
+  },
+  {
+    path: "/upload-cv",
+    page: UploadPDF,
+    isShowHeader: true,
+    isShowFooter: false,
+    isPrivate: true,
+    title: "Upload CV",
+  },
+  {
+    path: "/profile-cv",
+    page: ProfileCV,
+    isShowHeader: true,
+    isShowFooter: false,
+    isPrivate: true,
+    title: "CV Profile",
+  },
+  {
+    path: "/system/activities",
+    page: SystemActivities,
+    isShowHeader: true,
+    isShowFooter: true,
+    isPrivate: true,
+    roles: ["admin"],
+    title: "System Activities",
+  },
+];
 
 export const routes: IRoute[] = [
-    {
-        path: '/',
-        page: HomePage,
-        isShowHeader: true,
-        isPrivate:false,
-    },
-    {
-        path: '/login',
-        page: LoginPage,
-        isShowHeader: false,
-    },
-    {
-        path: '/register',
-        page: Register,
-        isShowHeader: false,
-    },
-    {
-        path: '/jobs',
-        page: JobBoard,
-        isShowHeader: true,
-    },
-    {
-        path: '/admin',
-        page: AdminPage,
-        isShowHeader: true,
-    },
-    {
-        path:'/verify',
-        page:VerifyEmail,
-        isShowHeader:false
-    },
-    {
-        path:'/job-information/:id',
-        page: JobPosting,
-        isShowHeader:true
-    },
-    {
-        path:'/forgot-password',
-        page: ForgotPage,
-        isShowHeader:false
-    },
-    {
-        path:'/reset-password',
-        page: ResetPage,
-        isShowHeader:false
-    },
-    {
-        path:'/setting-profile/:id',
-        page: UserDetail,
-        isShowHeader:true
-    },
-    {
-        path:'/profile/:id',
-        page: Profile,
-        isShowHeader:true
-    },
-    {
-        path:'/employer/:id',
-        page: ManagePage,
-        isShowHeader:true
-    },
-    {
-        path:'/employer-detail/:id',
-        page: EmployerDetail,
-        isShowHeader:true
-    },
-    {
-        path:'/dashboard/:id',
-        page: DashBoard,
-        isShowHeader:true,
-        isShowFooter:false
-    },
-    {
-        path:'/upload-cv',
-        page: UploadPDF,
-        isShowHeader:true,
-        isShowFooter:false
-    },
-    {
-        path:'/profile-cv',
-        page: ProfileCV,
-        isShowHeader:true,
-        isShowFooter:false
-    },
-    {
-        path:'/employer/:id/jobs',
-        page: EmployerJob,
-        isShowHeader:true,
-        isShowFooter:false
-    },
-    {
-        path:'/about',
-        page: AboutPage,
-        isShowHeader:true,
-        isShowFooter:true
-    },
-    {
-        path:'/companies',
-        page: EmployeesPage,
-        isShowHeader:true,
-        isShowFooter:true
-    },
-    {
-        path:'/features',
-        page: LandingPageExtended,
-        isShowHeader:false,
-        isShowFooter:true
-    },
-    {
-        path:'/my-job-detail/:id',
-        page: MyJobDetail,
-        isShowHeader:true,
-        isShowFooter:true
-    },
-    {
-        path:'/my-application/:id',
-        page: MyApplicationDetail,
-        isShowHeader:true,
-        isShowFooter:true
-    },
-    {
-        path:'/system/activities',
-        page: SystemActivities,
-        isShowHeader:true,
-        isShowFooter:true
-    },
-    {
-        path: '*',
-        page: NotFound,
-        isShowHeader: false,
-    },
-
-    
+  ...publicRoutes,
+  ...authRoutes,
+  ...jobsRoutes,
+  ...privateRoutes,
+  {
+    path: "*",
+    page: NotFound,
+    isShowHeader: false,
+    title: "Not Found",
+  },
 ];

@@ -11,16 +11,33 @@ import { ROLE_API } from "../../services/modules/RoleServices";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
 import { getRandomColor } from "../../utils/color.utils";
 import { useTranslation } from "react-i18next";
+
+interface Company {
+  _id: string;
+  avatar_company: string;
+  company_name: string;
+  district_id?: { name: string };
+  city_id?: { name: string };
+  jobs_ids?: { _id: string }[];
+}
+
+interface RootState {
+  user: {
+    access_token: string;
+  };
+}
+
 export default function EmployeesPage() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchCity, setSearchCity] = useState<string>("");
-  const userDetail = useSelector((state) => state.user);
-  const [companies, setCompanies] = useState([]);
-  const [meta, setMeta] = useState<Meta>({});
+  const userDetail = useSelector((state: RootState) => state.user);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [meta, setMeta] = useState<Meta>();
   const [roleEmployer, setRoleEmployer] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const handleGetEmployerRole = async () => {
     try {
       const res = await ROLE_API.getEmployerRole(userDetail?.access_token);
@@ -31,7 +48,12 @@ export default function EmployeesPage() {
       console.error(error);
     }
   };
-  const handleSearch = async (query: any, current = 1, pageSize = 15) => {
+
+  const handleSearch = async (
+    query: Record<string, string>,
+    current = 1,
+    pageSize = 15
+  ) => {
     try {
       setIsLoading(true);
       const params = {
@@ -53,6 +75,7 @@ export default function EmployeesPage() {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     handleGetEmployerRole();
     const query = {
@@ -70,11 +93,13 @@ export default function EmployeesPage() {
       city_name: searchCity,
     });
   };
-  const handleNavigate = (id) => {
+
+  const handleNavigate = (id: string) => {
     navigate(`/employer-detail/${id}`);
   };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-white p-6">
       {/* Search Section */}
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-col gap-6 rounded-lg bg-white p-6 shadow-sm">
@@ -169,9 +194,9 @@ export default function EmployeesPage() {
         {companies.length > 0 && (
           <div className="mt-8 flex justify-center">
             <CustomPagination
-              currentPage={meta?.current_page}
-              perPage={meta?.per_page}
-              total={meta?.total}
+              currentPage={meta?.current_page || 1}
+              perPage={meta?.per_page || 15}
+              total={meta?.total || 0}
               onPageChange={(current, pageSize) =>
                 handleSearch({}, current, pageSize)
               }

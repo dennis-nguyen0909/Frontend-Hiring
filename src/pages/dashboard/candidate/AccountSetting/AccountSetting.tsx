@@ -179,7 +179,6 @@ const ContactForm = () => {
         break;
     }
   };
-  console.log("selectedFormat", selectedFormat);
   return (
     <>
       <Form

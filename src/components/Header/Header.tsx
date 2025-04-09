@@ -215,7 +215,6 @@ const Header: React.FC = () => {
   );
 
   useEffect(() => {
-    console.log(location.pathname);
     if (location.pathname.startsWith("/dashboard")) {
       setActiveMenu("/dashboard/:id");
     } else {
@@ -337,7 +336,7 @@ const Header: React.FC = () => {
             onClick={() => navigate("/")}
           >
             <Avatar shape="circle" src={logo} size={50} />
-            <p className="text-white font-bold md:hidden text-[20px] lg:block">
+            <p className="text-white font-bold text-[20px] md:text-[24px] lg:text-[28px] hidden md:block">
               HireDev
             </p>
           </div>
@@ -368,7 +367,11 @@ const Header: React.FC = () => {
         {/* Menu */}
         {menuVisible && (
           <ul
-            className={`flex gap-[20px] md:gap-5 items-center flex-col flex-wrap py-2 w-full bg-black md:hidden`}
+            className={`
+           flex flex-col flex-wrap items-center w-full py-2 
+           gap-[16px] text-sm md:text-base 
+           bg-black md:hidden
+         `}
           >
             {menuHeader.map((item, idx) => {
               if (item.id === "dashboard" && !userDetail.access_token) {
@@ -449,7 +452,7 @@ const Header: React.FC = () => {
           </div>
         )}
 
-        <ul className=" gap-[20px] md:gap-5 items-center flex-wrap py-1 hidden md:flex">
+        <ul className="text-[15px] font-medium gap-[20px] md:gap-5 items-center flex-wrap py-1 hidden md:flex">
           {menuHeader.map((item, idx) => {
             if (item.id === "dashboard" && !userDetail.access_token) {
               return null;

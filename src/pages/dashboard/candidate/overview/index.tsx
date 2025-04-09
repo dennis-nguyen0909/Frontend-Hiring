@@ -8,6 +8,7 @@ import CustomPagination from "../../../../components/ui/CustomPanigation/CustomP
 import { Meta } from "../../../../types";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
+import ViewAllLink from "../../../../components/ViewAll/ViewAll";
 
 const OverViewCandidate = ({ userDetail }) => {
   const { t } = useTranslation();
@@ -66,7 +67,7 @@ const OverViewCandidate = ({ userDetail }) => {
         <div className="flex items-center gap-2">
           <span>
             {text === "Pending" ? (
-              <Circle size={12} className="text-orange-400" />
+              <Circle size={12} className="text-yellow-500" />
             ) : text === "Rejected" ? (
               <CircleX className="text-red-500" size={12} />
             ) : (
@@ -76,7 +77,7 @@ const OverViewCandidate = ({ userDetail }) => {
           <span
             className={`${
               text === "Pending"
-                ? "text-orange-400"
+                ? "text-yellow-500"
                 : text === "Rejected"
                 ? "text-red-500"
                 : "text-green-500"
@@ -233,16 +234,14 @@ const OverViewCandidate = ({ userDetail }) => {
         </div>
       )}
 
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-[16px] font-semibold">
+          {t("recently_applied_job")}
+        </h2>
+        <ViewAllLink href="/products" />
+      </div>
       {/* Recently Applied Việc làm */}
       <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-[12px] font-semibold">
-            {t("recently_applied_job")}
-          </h2>
-          <a href="#" className="text-blue-500 text-[12px] hover:underline">
-            {t("view_all")} →
-          </a>
-        </div>
         <div className="overflow-x-auto">
           <Table
             loading={loading}
@@ -251,6 +250,18 @@ const OverViewCandidate = ({ userDetail }) => {
             dataSource={jobsApplied}
             pagination={false}
             scroll={{ x: "max-content" }}
+            components={{
+              header: {
+                cell: (props: React.ThHTMLAttributes<HTMLTableCellElement>) => (
+                  <th
+                    {...props}
+                    style={{
+                      backgroundColor: "#f0f2f4",
+                    }}
+                  />
+                ),
+              },
+            }}
           />
         </div>
         {jobsApplied.length > 0 && (

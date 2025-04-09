@@ -78,9 +78,9 @@ const TopCompanies = () => {
 
   return (
     <>
-      <div className="h-full px-5 md:px-primary">
+      <div className="h-full px-5 md:px-primary ">
         <div>
-          <h1 className="text-textBlack text-[20px] font-medium">
+          <h1 className="text-[20px] font-bold text-gray-900">
             {t("top_companies")}
           </h1>
         </div>

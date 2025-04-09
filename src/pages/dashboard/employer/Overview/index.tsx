@@ -204,7 +204,6 @@ const OverviewEmployer = () => {
       setCountSaveCandidate(0);
       return;
     }
-    console.log("metaSaveCandidate", metaSaveCandidate);
 
     let start = 0;
     const end = metaSaveCandidate.total_pages;
