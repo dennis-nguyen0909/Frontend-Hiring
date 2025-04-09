@@ -727,7 +727,8 @@
     "user":"Người dùng",
     "admin":"Quản trị viên",
     "freelance":"Tự do",
-    "internship":"Thực tập"
+    "internship":"Thực tập",
+    "please_enter_start_date":"please_enter_start_date"
 
   
 }
