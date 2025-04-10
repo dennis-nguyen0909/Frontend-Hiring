@@ -1,7 +1,15 @@
-import { Avatar, Button, Table } from "antd";
+import { Avatar, Button, Image, Table } from "antd";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useEffect, useState } from "react";
-import { BadgeDollarSign, Circle, CircleCheck, CircleX } from "lucide-react";
+import {
+  BadgeDollarSign,
+  BellRing,
+  Bookmark,
+  BriefcaseBusiness,
+  Circle,
+  CircleCheck,
+  CircleX,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
@@ -26,11 +34,13 @@ const OverViewCandidate = ({ userDetail }) => {
       key: "job",
       render: (text, record) => (
         <div className="flex items-center gap-2">
-          <Avatar
-            shape="square"
-            className="shadow-lg"
-            size={45}
+          <Image
+            width={50}
+            height={50}
+            className="shadow-lg !object-contain rounded-lg border border-gray-100 hover:scale-105 transition-transform duration-300"
             src={record.icon}
+            fallback="https://via.placeholder.com/50"
+            preview={false}
           />
           <div>
             <div className="font-semibold text-[12px]">{text}</div>
@@ -196,19 +206,28 @@ const OverViewCandidate = ({ userDetail }) => {
 
       {/* Stats */}
       <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <div className="bg-blue-50 p-4 rounded-lg">
+        <div className="bg-blue-50 p-4 rounded-lg relative border border-blue-100">
           <div className="text-[18px] font-bold">{countApplied || 0}</div>
           <div className="text-blue-600 text-[12px]">{t("job_applied")}</div>
+          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100">
+            <BriefcaseBusiness color="#4584c8" absoluteStrokeWidth />
+          </div>
         </div>
-        <div className="bg-yellow-50 p-4 rounded-lg">
+        <div className="bg-yellow-50 p-4 rounded-lg relative border border-yellow-100">
           <div className="text-[18px] font-bold">
             {userDetail?.favorite_jobs.length || 0}
           </div>
           <div className="text-yellow-600 text-[12px]">{t("favorite_job")}</div>
+          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg hover:shadow-xl transition-all duration-300">
+            <Bookmark color="#feb536" absoluteStrokeWidth />
+          </div>
         </div>
-        <div className="bg-green-50 p-4 rounded-lg">
+        <div className="bg-green-50 p-4 rounded-lg relative border border-green-100">
           <div className="text-[18px] font-bold">0</div>
           <div className="text-green-600 text-[12px]">{t("job_alert")}</div>
+          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg hover:shadow-xl transition-all duration-300">
+            <BellRing color="#43a55c" absoluteStrokeWidth />
+          </div>
         </div>
       </div>
 

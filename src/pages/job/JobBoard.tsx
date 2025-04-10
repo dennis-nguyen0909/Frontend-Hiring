@@ -12,13 +12,51 @@ import { useContractType } from "../../hooks/useContractType";
 import { useCities } from "../../hooks/useCities";
 import { JobApi } from "../../services/modules/jobServices";
 import { useSelector } from "react-redux";
-import { Meta } from "../../types";
 import CustomPagination from "../../components/ui/CustomPanigation/CustomPanigation";
 import LoadingComponentSkeleton from "../../components/Loading/LoadingComponentSkeleton";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { formatCurrencyWithSymbol } from "../../untils";
+import { useQuery } from "@tanstack/react-query";
+import { RootState } from "../../redux/store/store";
+import { useDebounce } from "../../hooks/useDebounce";
+
+interface Job {
+  _id: string;
+  title: string;
+  user_id: {
+    avatar_company: string;
+    company_name: string;
+  };
+  city_id: {
+    name: string;
+  };
+  is_negotiable: boolean;
+  salary_range_min: number;
+  salary_range_max: number;
+  type_money: {
+    code: string;
+  };
+  job_type: {
+    key: string;
+  };
+  job_contract_type: {
+    key: string;
+  };
+  skills: Array<{
+    name: string;
+  }>;
+}
+
+interface JobResponse {
+  items: Job[];
+  meta: {
+    current_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
 const { Sider } = Layout;
 const popularSearches = [
   "Front-end",
@@ -32,59 +70,68 @@ const popularSearches = [
   "Product Testing",
   "JavaScript",
 ];
+
 export default function JobBoard() {
-  const userDetail = useSelector((state) => state.user);
+  const userDetail = useSelector((state: RootState) => state.user);
   const [collapsed, setCollapsed] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState("newest");
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [listJobs, setListJobs] = useState<[]>([]);
-  const [meta, setMeta] = useState<Meta>({});
   const [selectedFilters, setSelectedFilters] = useState<{
     [key: string]: string[];
-  }>({}); // Store selected checkbox values
+  }>({});
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const { data: jobTypes } = useJobType();
   const { data: jobContractTypes } = useContractType();
   const { cities } = useCities();
   const [searchCity, setSearchCity] = useState<string>("");
-  const dispatch = useDispatch();
   const location = useLocation();
   const { t } = useTranslation();
-  const { keyword } = location.state || {}; // Nhận dữ liệu từ state
-  const handleGetJob = async (
-    current = 1,
-    pageSize = 9,
-    query?: any,
-    sort?: any
-  ) => {
-    const params = {
-      current,
+  const { keyword } = location.state || {};
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(9);
+
+  // React Query for fetching jobs
+  const { data: jobsData, isLoading } = useQuery<JobResponse>({
+    queryKey: [
+      "jobs",
+      currentPage,
       pageSize,
-      query: { ...query },
-      sort,
-    };
-    try {
-      setIsLoading(true);
+      debouncedSearchTerm,
+      searchCity,
+      selectedFilters,
+      sortBy,
+      keyword,
+    ],
+    queryFn: async () => {
+      const params = {
+        current: currentPage,
+        pageSize,
+        query: {
+          keyword: debouncedSearchTerm || keyword,
+          city_id: searchCity,
+          job_type: selectedFilters?.job_type || [],
+          job_contract_type: selectedFilters?.job_contract_type || [],
+        },
+        sort:
+          sortBy === "newest" ? { createdAt: "desc" } : { createdAt: "asc" },
+      };
+
       const response = await JobApi.getAllJobs(
         params,
         userDetail?.access_token
       );
-      if (response?.data) {
-        setListJobs(response?.data.items);
-        setMeta(response?.data?.meta);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      return response.data;
+    },
+    enabled: !!userDetail?.access_token,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        // Giả sử màn hình nhỏ hơn 768px sẽ dùng chế độ "list"
         setViewMode("list");
       } else {
         setViewMode("grid");
@@ -92,30 +139,16 @@ export default function JobBoard() {
     };
 
     window.addEventListener("resize", handleResize);
-
-    // Gọi handleResize lần đầu tiên khi component mount
     handleResize();
 
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  const handleCollapse = async () => {
-    const newCollapsed = !collapsed;
-    setCollapsed(newCollapsed);
-  };
 
-  useEffect(() => {
-    if (keyword) {
-      const params = {
-        keyword,
-      };
-      setSearchTerm(keyword);
-      handleGetJob(1, 9, params);
-    } else {
-      handleGetJob();
-    }
-  }, [keyword]);
+  const handleCollapse = () => {
+    setCollapsed(!collapsed);
+  };
 
   const filters = [
     {
@@ -143,29 +176,23 @@ export default function JobBoard() {
         : [],
     },
   ];
+
   const handleChange = (value: string) => {
     setSearchCity(value);
   };
-  const handleSearch = async () => {
-    const query = {
-      keyword: searchTerm,
-    };
-    await handleGetJob(1, 9, query);
+
+  const handleSearch = () => {
+    setCurrentPage(1);
   };
-  const onFilter = async () => {
-    const query = {
-      city_id: searchCity,
-      keyword: searchTerm,
-      job_type: selectedFilters?.job_type || [], // Add job_type filter if selected
-      job_contract_type: selectedFilters?.job_contract_type || [], // Add job_contract_type filter if selected
-    };
-    await handleGetJob(1, 9, query);
+
+  const onFilter = () => {
+    setCurrentPage(1);
   };
+
   const handleOnCheckbox = (code: string, label: string) => {
     setSelectedFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (updatedFilters[code]) {
-        // If the filter already exists, toggle the selected label
         if (updatedFilters[code].includes(label)) {
           updatedFilters[code] = updatedFilters[code].filter(
             (item) => item !== label
@@ -183,13 +210,17 @@ export default function JobBoard() {
   const onApply = (jobId: string) => {
     navigate(`/job-information/${jobId}`);
   };
-  const onSearchPopular = async (value: string) => {
-    const query = {
-      keyword: value,
-    };
+
+  const onSearchPopular = (value: string) => {
     setSearchTerm(value);
-    await handleGetJob(1, 9, query);
+    setCurrentPage(1);
   };
+
+  const handlePageChange = (current: number, size: number) => {
+    setCurrentPage(current);
+    setPageSize(size);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -250,7 +281,6 @@ export default function JobBoard() {
           {/* Filters */}
           <Sider collapsed={collapsed} className="bg-transparent" width={250}>
             <div className="w-full lg:w-64 space-y-6">
-              {/* Hiển thị biểu tượng Filter khi thu gọn */}
               <div className="flex items-center justify-between">
                 {collapsed ? (
                   <CircleChevronLeft onClick={handleCollapse} />
@@ -264,7 +294,6 @@ export default function JobBoard() {
                 )}
               </div>
 
-              {/* Hiển thị nội dung lọc */}
               {!collapsed && (
                 <div>
                   <div className="pb-3">
@@ -321,29 +350,9 @@ export default function JobBoard() {
                   {t("sort_by")}:
                 </span>
                 <select
-                  defaultValue="desc" // Giá trị mặc định là 'Cũ nhất'
+                  defaultValue="desc"
                   className="text-[12px] border-gray-300 rounded-md"
-                  onChange={(e) => {
-                    const selectedSort = e.target.value; // Lấy giá trị của option đã chọn
-                    setSortBy(selectedSort); // Cập nhật lựa chọn sort
-
-                    let sortCriteria = {}; // Mặc định là không có sắp xếp
-
-                    // Cập nhật sortCriteria dựa trên lựa chọn
-                    if (selectedSort === "desc") {
-                      sortCriteria = { createdAt: "desc" }; // Sắp xếp theo createdAt mới nhất
-                    } else if (selectedSort === "asc") {
-                      sortCriteria = { createdAt: "asc" }; // Sắp xếp theo createdAt cũ nhất
-                    }
-
-                    // Tạo params cho query
-                    const paramsSort = {
-                      sort: sortCriteria,
-                    };
-
-                    // Gọi hàm handleGetJob với các tham số mới
-                    handleGetJob(1, 9, {}, paramsSort); // 1: trang đầu, 15: số lượng item trên mỗi trang
-                  }}
+                  onChange={(e) => setSortBy(e.target.value)}
                 >
                   <option value={"desc"}>{t("newest")}</option>
                   <option value={"asc"}>{t("oldest")}</option>
@@ -352,7 +361,7 @@ export default function JobBoard() {
                 <div className="flex gap-1 ml-4">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded  ${
+                    className={`p-2 rounded ${
                       viewMode === "grid" ? "bg-gray-100" : ""
                     } ${window.innerWidth < 768 ? "hidden" : ""}`}
                   >
@@ -371,29 +380,29 @@ export default function JobBoard() {
             </div>
 
             <LoadingComponentSkeleton isLoading={isLoading}>
-              {listJobs?.length > 0 ? (
+              {jobsData?.items && jobsData.items.length > 0 ? (
                 <div>
                   <div
                     className={`grid ${
                       viewMode === "grid"
                         ? "grid-cols-3 gap-2"
                         : "grid-cols-1 gap-3"
-                    }`} // Giảm gap giữa các cột khi ở chế độ grid
+                    }`}
                   >
-                    {listJobs?.map((job) => (
+                    {jobsData.items.map((job: Job) => (
                       <div
-                        key={job?.id}
+                        key={job._id}
                         className={`bg-white p-4 rounded-lg border hover:shadow-md transition-shadow ${
                           viewMode === "grid" ? "p-3" : "p-4"
-                        }`} // Ở dạng grid, giảm padding hơn nữa
+                        }`}
                       >
                         <div className="flex items-start gap-3">
                           <img
-                            src={job?.user_id?.avatar_company}
+                            src={job.user_id?.avatar_company}
                             alt={"ảnh"}
                             className={`rounded-lg ${
                               viewMode === "grid" ? "w-10 h-10" : "w-10 h-10"
-                            }`} // Giảm kích thước avatar hơn khi ở grid
+                            }`}
                           />
                           <div className="flex-1">
                             <h3
@@ -404,8 +413,7 @@ export default function JobBoard() {
                               }`}
                             >
                               {job.title}
-                            </h3>{" "}
-                            {/* Giảm kích thước chữ tiêu đề trong chế độ grid */}
+                            </h3>
                             <div
                               className={`text-gray-500 mt-1 ${
                                 viewMode === "grid"
@@ -413,8 +421,7 @@ export default function JobBoard() {
                                   : "text-[12px]"
                               }`}
                             >
-                              {job?.user_id?.company_name} •{" "}
-                              {job?.city_id?.name}
+                              {job.user_id?.company_name} • {job.city_id?.name}
                             </div>
                             <div
                               className={`text-gray-500 mt-1 ${
@@ -424,41 +431,41 @@ export default function JobBoard() {
                               }`}
                             >
                               {t("salary")} :{" "}
-                              {job?.is_negotiable
+                              {job.is_negotiable
                                 ? t("negotiable")
                                 : `${formatCurrencyWithSymbol(
-                                    job?.salary_range_min,
-                                    job?.type_money?.code
+                                    job.salary_range_min,
+                                    job.type_money?.code
                                   )} - ${formatCurrencyWithSymbol(
-                                    job?.salary_range_max,
-                                    job?.type_money?.code
+                                    job.salary_range_max,
+                                    job.type_money?.code
                                   )}`}
                             </div>
                             <div className="flex flex-wrap gap-2 mt-2">
                               <span className="px-2 py-1 text-[10px] rounded-full bg-blue-50 text-blue-600">
-                                {t(job?.job_type?.key)}
+                                {t(job.job_type?.key)}
                               </span>
                               <span className="px-2 py-1 text-[10px] rounded-full bg-blue-50 text-blue-600">
-                                {t(job?.job_contract_type?.key)}
+                                {t(job.job_contract_type?.key)}
                               </span>
-                              {job?.skills?.map((tag) => (
+                              {job.skills?.map((tag: { name: string }) => (
                                 <span
-                                  key={tag}
+                                  key={tag.name}
                                   className="px-2 py-1 text-[10px] rounded-full bg-gray-100 text-gray-600"
                                 >
-                                  {tag?.name}
+                                  {tag.name}
                                 </span>
                               ))}
                             </div>
                           </div>
                           <Button
-                            onClick={() => onApply(job?._id)}
+                            onClick={() => onApply(job._id)}
                             type="primary"
                             className={`!bg-primaryColor !cursor-pointer ${
                               viewMode === "grid"
                                 ? "text-[10px] py-1 px-2"
                                 : "text-[12px] py-1 px-3"
-                            }`} // Giảm padding và kích thước nút khi ở chế độ grid
+                            }`}
                           >
                             {t("apply")}
                           </Button>
@@ -468,12 +475,10 @@ export default function JobBoard() {
                   </div>
                   <CustomPagination
                     sizeArrow={30}
-                    currentPage={meta?.current_page}
-                    total={meta?.total}
-                    perPage={meta?.per_page}
-                    onPageChange={(current, pageSize) => {
-                      handleGetJob(current, pageSize);
-                    }}
+                    currentPage={currentPage}
+                    total={jobsData?.meta?.total || 0}
+                    perPage={pageSize}
+                    onPageChange={handlePageChange}
                   />
                 </div>
               ) : (

@@ -17,23 +17,23 @@ export const API_APPLICATION = {
       return null;
     } catch (error) {
       notification.error({
-        message:'Thông báo',
-        description:error.response.data.message
-      })
+        message: "Thông báo",
+        description: error.response.data.message,
+      });
     }
   },
-  getAll:async(params:any,accessToken:string)=>{
-  const resData = await axiosInstance.get(`${APPLICATIONS}`, {
-        params: {
-          ...params
-        },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        withCredentials: true,
-      });
-      if (resData.data) return resData.data;
-      return null;
+  getAll: async (params: any, accessToken: string) => {
+    const resData = await axiosInstance.get(`${APPLICATIONS}`, {
+      params: {
+        ...params,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      withCredentials: true,
+    });
+    if (resData.data) return resData.data;
+    return null;
   },
   getApplicationById: async (id: string, accessToken: string) => {
     const res = await axiosInstance.get(`${APPLICATIONS}/${id}`, {
@@ -47,7 +47,7 @@ export const API_APPLICATION = {
   },
   deleteManyApplication: async (ids: Array<string>, accessToken: string) => {
     const res = await axiosInstance({
-      method: 'delete',
+      method: "delete",
       url: `${APPLICATIONS}`,
       data: { ids },
       headers: {
@@ -55,7 +55,7 @@ export const API_APPLICATION = {
       },
       withCredentials: true,
     });
-  
+
     if (res.data) return res.data;
     return null;
   },
@@ -79,10 +79,14 @@ export const API_APPLICATION = {
     if (res.data) return res.data;
     return null;
   },
-  getApplicationByEmployerJobId: async (jobId:string,params:any,accessToken: string) => {
+  getApplicationByEmployerJobId: async (
+    jobId: string,
+    params: any,
+    accessToken: string
+  ) => {
     const resData = await axiosInstance.get(`${APPLICATIONS}/job_id/${jobId}`, {
       params: {
-        ...params
+        ...params,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -92,50 +96,68 @@ export const API_APPLICATION = {
     if (resData.data) return resData.data;
     return null;
   },
-  saveCandidate: async (applicationId:string,userId:string,accessToken: string) => {
-    const resData = await axiosInstance.put(`${APPLICATIONS}/${applicationId}/toggle-save/${userId}`,{}, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      withCredentials: true,
-    });
+  saveCandidate: async (
+    applicationId: string,
+    userId: string,
+    accessToken: string
+  ) => {
+    const resData = await axiosInstance.put(
+      `${APPLICATIONS}/${applicationId}/toggle-save/${userId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
     if (resData.data) return resData.data;
     return null;
   },
-  getCountAppliedCandidate: async (userId:string,accessToken: string) => {
-    const resData = await axiosInstance.get(`${APPLICATIONS}/applied/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      withCredentials: true,
-    });
+  getCountAppliedCandidate: async (userId: string, accessToken: string) => {
+    const resData = await axiosInstance.get(
+      `${APPLICATIONS}/applied/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
     if (resData.data) return resData.data;
     return null;
   },
-  getRecentlyAppliedCandidate: async (candidateId :string,limit:string,accessToken: string) => {
-    const resData = await axiosInstance.get(`${APPLICATIONS}/recently-applied/${candidateId}?limit=${limit}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      withCredentials: true,
-    });
+  getRecentlyAppliedCandidate: async (
+    candidateId: string,
+    limit: string,
+    accessToken: string
+  ) => {
+    const resData = await axiosInstance.get(
+      `${APPLICATIONS}/recently-applied/${candidateId}?limit=${limit}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
     if (resData.data) return resData.data;
     return null;
   },
-  getAllRecentlyAppliedCandidate: async (params:any,accessToken: string) => {
-    const resData = await axiosInstance.get(`${APPLICATIONS}/recently-applied-candidate`, {
-      params: {
-        ...params
-      },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      withCredentials: true,
-    });
+  getAllRecentlyAppliedCandidate: async (params: any, accessToken: string) => {
+    const resData = await axiosInstance.get(
+      `${APPLICATIONS}/recently-applied-candidate`,
+      {
+        params: {
+          ...params,
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
     if (resData.data) return resData.data;
     return null;
   },
-  
-
-  
 };

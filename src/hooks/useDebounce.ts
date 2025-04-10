@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 // Hook để debounce value
-export function useDebounce(value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    const handler = setTimeout(() => {
+    const timer = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
 
     // Cleanup function để hủy bỏ timer nếu value thay đổi
     return () => {
-      clearTimeout(handler);
+      clearTimeout(timer);
     };
   }, [value, delay]);
 
