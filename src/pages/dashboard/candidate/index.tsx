@@ -32,6 +32,16 @@ const DashboardCandidate = () => {
     setSidebarVisible(false); // Ẩn sidebar sau khi chọn tab
   };
 
+  const handleViewAppliedJob = () => {
+    setCurrentTab("appliedJobs");
+    setSidebarVisible(false);
+  };
+
+  const handleViewFavoriteJob = () => {
+    setCurrentTab("favoriteJobs");
+    setSidebarVisible(false);
+  };
+
   const handleLogout = async () => {
     try {
       const res = await authServices.logout(user.access_token);
@@ -129,7 +139,7 @@ const DashboardCandidate = () => {
               onClick={() => handleTabClick("jobAlert")}
             >
               <BellOutlined className="mr-3" />
-              {t("job_alert")}
+              {t("job_seen")}
               <span className="ml-auto bg-blue-500 text-white text-xs px-2 rounded-full">
                 09
               </span>
@@ -158,7 +168,13 @@ const DashboardCandidate = () => {
 
         {/* Main Content */}
         <div className="flex-1 px-20 py-5 overflow-auto">
-          {currentTab === "overview" && <OverViewCandidate userDetail={user} />}
+          {currentTab === "overview" && (
+            <OverViewCandidate
+              userDetail={user}
+              onViewAppliedJob={handleViewAppliedJob}
+              handleViewFavoriteJob={handleViewFavoriteJob}
+            />
+          )}
           {currentTab === "appliedJobs" && <Applied />}
           {currentTab === "favoriteJobs" && <FavoriteJob />}
           {currentTab === "jobAlert" && <AlertJob />}

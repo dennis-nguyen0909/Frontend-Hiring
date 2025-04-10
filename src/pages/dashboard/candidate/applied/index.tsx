@@ -1,120 +1,190 @@
-import { Avatar, Button, Table } from "antd";
+import { Avatar, Button, Image, Table } from "antd";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Meta } from "../../../../types";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
-import { Circle, CircleCheck, CircleX, MapPin } from "lucide-react";
-import { capitalizeFirstLetter } from "../../../../untils";
+import { Circle, CircleCheck, CircleX, MapPin, Eye } from "lucide-react";
+import { capitalizeFirstLetter, formatCurrency } from "../../../../untils";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 interface Applied {
   _id: string;
-  user_id: any;
-  job_id: any;
-  employer_id: any;
+  user_id: string;
+  job_id: {
+    _id: string;
+    title: string;
+    city_id: {
+      name: string;
+    };
+    salary: string;
+    jobType: string;
+    jobTypeBg: string;
+    jobTypeColor: string;
+  };
+  employer_id: {
+    avatar_company: string;
+  };
   cover_letter: string;
   status: string;
-  save_candidates: any[];
+  save_candidates: string[];
   applied_date: string;
 }
 
 const Applied = () => {
-  const userDetail = useSelector((state) => state.user);
+  const userDetail = useSelector((state: any) => state.user);
   const [listApplied, setListApplied] = useState<Applied[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [meta, setMeta] = useState<Meta>({});
+  const [meta, setMeta] = useState<Meta>({
+    current_page: 1,
+    per_page: 10,
+    total: 0,
+  });
   const { formatDate } = useMomentFn();
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
   const columns = [
     {
       title: t("job"),
       dataIndex: "job",
       key: "job",
-      render: (text, record) => (
-        <div className="flex items-center">
-          <div className={`flex items-center justify-center mr-5`}>
-            <Avatar
-              size={45}
-              shape="square"
-              src={record?.employer_id?.avatar_company}
+      render: (text: string, record: Applied) => (
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center">
+            <Image
+              width={60}
+              height={60}
+              className="shadow-md !object-contain rounded-lg  border-gray-200 hover:scale-105 transition-transform duration-300"
+              src={record.employer_id?.avatar_company}
+              fallback="https://via.placeholder.com/60"
+              preview={false}
             />
           </div>
-          <div className="flex flex-col">
-            <div className="font-semibold text-[12px]">
-              {record?.job_id?.title}
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row items-center justify-start gap-4">
+              {record?.job_id === null ? (
+                <h3 className="font-semibold text-[14px] text-gray-900">
+                  {t("job_not_exist")}
+                </h3>
+              ) : (
+                <>
+                  <h3 className="font-semibold text-[14px] text-gray-900">
+                    {text}
+                  </h3>
+                  {record?.job_id?.job_type?.name && (
+                    <h3 className="px-3 py-1 rounded-full text-[10px] font-medium bg-blue-50 text-blue-600  border-blue-100 shadow-sm hover:bg-blue-100 transition-colors duration-200">
+                      {record?.job_id?.job_type?.name}
+                    </h3>
+                  )}
+                  {record?.job_id?.expire_date && (
+                    <h3
+                      className={`px-3 py-1 rounded-full text-[10px] font-medium ${
+                        new Date(record?.job_id?.expire_date) < new Date()
+                          ? "bg-red-50 text-red-600 border-red-100"
+                          : "bg-blue-50 text-blue-600 border-blue-100"
+                      } shadow-sm hover:bg-blue-100 transition-colors duration-200`}
+                    >
+                      {new Date(record?.job_id?.expire_date) < new Date()
+                        ? t("expired")
+                        : record?.job_id?.expire_date}
+                    </h3>
+                  )}
+                </>
+              )}
             </div>
-            <div className="text-gray-500 text-sm">
-              <div className="flex items-center gap-1">
-                <MapPin size={12} />
-                <span className="mr-2 text-[12px]">
-                  {record?.job_id?.city_id.name}
+            {console.log("job_id", record.job_id)}
+            <div className="flex items-center gap-4">
+              {record?.job_id?.is_negotiable ? (
+                <span className="text-[12px] text-gray-600">
+                  {t("salary")}: {t("negotiable")}
                 </span>
-              </div>
-              <span className=" text-[12px]">{record.salary}</span>
+              ) : (
+                <div>
+                  {record?.job_id?.salary_range_min !== undefined &&
+                    record?.job_id?.salary_range_max !== undefined && (
+                      <span className="text-[12px] text-gray-600">
+                        {t("salary")}:{" "}
+                        {formatCurrency(record?.job_id?.salary_range_min)}
+                        {record?.job_id?.type_money?.symbol} -{" "}
+                        {formatCurrency(record?.job_id?.salary_range_max)}
+                        {record?.job_id?.type_money?.symbol}
+                      </span>
+                    )}
+                </div>
+              )}
+              {record?.job_id?.city_id?.name && (
+                <div className="flex items-center gap-1">
+                  <MapPin size={14} color="#6b7280" />
+                  <span className="text-[12px] text-gray-600">
+                    {record?.job_id?.city_id?.name}
+                  </span>
+                </div>
+              )}
             </div>
-            <span
-              className={`text-xs px-2 py-1 rounded text-[12px] ${record.jobTypeBg} ${record.jobTypeColor}`}
-            >
-              {record.jobType}
-            </span>
           </div>
         </div>
       ),
-      className: "text-[12px]",
+      className: "min-w-[200px] text-[12px]",
     },
     {
       title: t("date_applied"),
       dataIndex: "dateApplied",
       key: "dateApplied",
-      render: (record) => (
-        <span className=" text-[12px]">{formatDate(record?.applied_date)}</span>
+      className: "min-w-[150px] text-[12px]",
+      render: (text: string, record: Applied) => (
+        <div className="text-[12px]">{formatDate(record?.applied_date)}</div>
       ),
-      className: "text-[12px]",
     },
     {
       title: t("status"),
       dataIndex: "status",
       key: "status",
-      render: (text) => (
+      render: (text: string) => (
         <div className="flex items-center gap-2">
           <span>
             {text === "pending" ? (
-              <Circle size={12} className="text-orange-400" />
+              <Circle size={14} className="text-yellow-500" />
             ) : text === "rejected" ? (
-              <CircleX className="text-red-500" size={12} />
+              <CircleX className="text-red-500" size={14} />
             ) : (
-              <CircleCheck size={12} className="text-green-500" />
+              <CircleCheck size={14} className="text-green-500" />
             )}
           </span>
           <span
             className={`${
               text === "pending"
-                ? "text-orange-400"
+                ? "text-yellow-500"
                 : text === "rejected"
                 ? "text-red-500"
                 : "text-green-500"
-            } text-[12px]`}
+            } text-[14px]`}
           >
             {capitalizeFirstLetter(text)}
           </span>
         </div>
       ),
-      className: "text-[12px]",
+      className: "min-w-[120px] text-[12px]",
     },
     {
       title: t("action"),
       key: "action",
-      render: () => (
+      render: (record: Applied) => (
         <Button
+          onClick={() => {
+            navigate(`/job-information/${record.job_id._id}`);
+          }}
+          size="small"
           type="primary"
-          className="bg-blue-500 hover:bg-blue-600 !text-[12px]"
+          className="!bg-blue-500 hover:!bg-blue-600 text-[14px] font-medium transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg rounded-md px-2 py-1 flex items-center gap-1"
         >
+          <Eye className="w-3 h-3" />
           {t("view_detail")}
         </Button>
       ),
-      className: "text-[12px]",
+      className: "min-w-[120px] text-[14px]",
     },
   ];
 

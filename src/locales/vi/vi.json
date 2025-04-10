@@ -155,7 +155,7 @@
   "logout_failed": "Đăng xuất thất bại",
   "overview": "Tổng quan",
   "applied_jobs": "Việc làm đã ứng tuyển",
-  "favorite_jobs": "Việc làm đã lưu",
+  "favorite_jobs": "Việc làm yêu thích",
   "job_alert": "Thông báo việc làm",
   "settings": "Cài đặt",
   "applied_jobs_description": "Việc làm đã ứng tuyển",
@@ -744,5 +744,7 @@
     "passwords_do_not_match":"Mật khẩu không khớp",
     "job_suggestion_city":"Việc làm gần bạn",
     "no_job_near_you":"Không có việc làm gần bạn",
-    "no_job_suggestion":"Không có việc làm phù hợp"
+    "no_job_suggestion":"Không có việc làm phù hợp",
+    "job_not_exist":"Công việc này đã bị xóa hoặc không tồn tại",
+    "job_seen":"Việc làm đã xem"
 }

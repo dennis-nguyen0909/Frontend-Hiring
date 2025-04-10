@@ -2,23 +2,87 @@ import { Avatar, Button, Image, Table } from "antd";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useEffect, useState } from "react";
 import {
-  BadgeDollarSign,
   BellRing,
   Bookmark,
   BriefcaseBusiness,
+  Check,
   Circle,
-  CircleCheck,
   CircleX,
+  Eye,
+  MapPin,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
-import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
-import { Meta } from "../../../../types";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import ViewAllLink from "../../../../components/ViewAll/ViewAll";
+import { formatCurrency } from "../../../../untils";
 
-const OverViewCandidate = ({ userDetail }) => {
+interface UserDetail {
+  _id: string;
+  access_token: string;
+  full_name: string;
+  avatar: string;
+  favorite_jobs: Array<{
+    _id: string;
+    title: string;
+    // Add other favorite job properties as needed
+  }>;
+}
+
+interface OverViewCandidateProps {
+  userDetail: UserDetail;
+  onViewAppliedJob: () => void;
+  handleViewFavoriteJob: () => void;
+}
+
+interface JobRecord {
+  _id: string;
+  job_id?: {
+    _id: string;
+    title: string;
+    city_id?: {
+      name: string;
+    };
+    salary_range_min?: number;
+    salary_range_max?: number;
+    type_money?: {
+      symbol: string;
+    };
+    job_type?: {
+      name: string;
+    };
+    expire_date?: string;
+    is_negotiable?: boolean;
+  };
+  employer_id?: {
+    avatar_company: string;
+  };
+  applied_date: string;
+  status: string;
+}
+
+interface TableRecord {
+  key: string;
+  job: string;
+  jobId?: string;
+  location?: string;
+  salary_range_min?: number;
+  salary_range_max?: number;
+  type_money?: string;
+  job_type?: string;
+  expire_date?: string;
+  dateApplied: string;
+  status: string;
+  icon?: string;
+  is_negotiable?: boolean;
+}
+
+const OverViewCandidate = ({
+  userDetail,
+  onViewAppliedJob,
+  handleViewFavoriteJob,
+}: OverViewCandidateProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: caculateProfile } = useCalculateUserProfile(
@@ -32,40 +96,78 @@ const OverViewCandidate = ({ userDetail }) => {
       title: t("job"),
       dataIndex: "job",
       key: "job",
-      render: (text, record) => (
-        <div className="flex items-center gap-2">
+      render: (text: string, record: TableRecord) => (
+        <div className="flex items-center gap-4">
           <Image
-            width={50}
-            height={50}
-            className="shadow-lg !object-contain rounded-lg border border-gray-100 hover:scale-105 transition-transform duration-300"
+            width={60}
+            height={60}
+            className="shadow-md !object-contain rounded-lg  border-gray-200 hover:scale-105 transition-transform duration-300"
             src={record.icon}
-            fallback="https://via.placeholder.com/50"
+            fallback="https://via.placeholder.com/60"
             preview={false}
           />
-          <div>
-            <div className="font-semibold text-[12px]">{text}</div>
-            <div className="text-gray-500 text-[12px]">
-              {record.is_negotiable ? (
-                <div className="flex items-center gap-1">
-                  <span className="mr-2 text-[12px]">{record.location}</span>
-                  <BadgeDollarSign size={12} />
-                  <span className="text-[12px]">{t("negotiable")}</span>
-                </div>
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row items-center justify-start gap-4">
+              <h3 className="font-semibold text-[14px] text-gray-900">
+                {text}
+              </h3>
+              {record.job_type && (
+                <h3 className="px-3 py-1 rounded-full text-[10px] font-medium bg-blue-50 text-blue-600  border-blue-100 shadow-sm hover:bg-blue-100 transition-colors duration-200">
+                  {record.job_type}
+                </h3>
+              )}
+              {record?.expire_date && (
+                <h3
+                  className={`px-3 py-1 rounded-full text-[10px] font-medium ${
+                    new Date(record.expire_date) < new Date()
+                      ? "bg-red-50 text-red-600 border-red-100"
+                      : "bg-blue-50 text-blue-600 border-blue-100"
+                  } shadow-sm hover:bg-blue-100 transition-colors duration-200`}
+                >
+                  {new Date(record.expire_date) < new Date()
+                    ? t("expired")
+                    : record.expire_date}
+                </h3>
+              )}
+            </div>
+            <div className="flex items-center gap-4">
+              {record?.is_negotiable ? (
+                <span className="text-[12px] text-gray-600">
+                  {t("salary")}: {t("negotiable")}
+                </span>
               ) : (
-                <span>{record.salary}</span>
+                <div>
+                  {record.salary_range_min !== undefined &&
+                    record.salary_range_max !== undefined && (
+                      <span className="text-[12px] text-gray-600">
+                        {t("salary")}: {formatCurrency(record.salary_range_min)}
+                        {record.type_money} -{" "}
+                        {formatCurrency(record.salary_range_max)}
+                        {record.type_money}
+                      </span>
+                    )}
+                </div>
+              )}
+              {record.location && (
+                <div className="flex items-center gap-1">
+                  <MapPin size={14} color="#6b7280" />
+                  <span className="text-[12px] text-gray-600">
+                    {record.location}
+                  </span>
+                </div>
               )}
             </div>
           </div>
         </div>
       ),
-      className: "min-w-[200px] text-[12px]", // Giữ chiều rộng tối thiểu cho cột "Việc làm"
+      className: "min-w-[200px] text-[12px]",
     },
     {
       title: t("date_applied"),
       dataIndex: "dateApplied",
       key: "dateApplied",
-      className: "min-w-[150px] text-[12px]", // Giữ chiều rộng tối thiểu cho cột "Ngày nộp"
-      render: (dateApplied) => (
+      className: "min-w-[150px] text-[12px]",
+      render: (dateApplied: string) => (
         <div className="text-[12px]">{formatDate(dateApplied)}</div>
       ),
     },
@@ -73,15 +175,15 @@ const OverViewCandidate = ({ userDetail }) => {
       title: t("status"),
       dataIndex: "status",
       key: "status",
-      render: (text) => (
+      render: (text: string) => (
         <div className="flex items-center gap-2">
           <span>
             {text === "Pending" ? (
-              <Circle size={12} className="text-yellow-500" />
+              <Circle size={14} className="text-yellow-500" />
             ) : text === "Rejected" ? (
-              <CircleX className="text-red-500" size={12} />
+              <CircleX className="text-red-500" size={14} />
             ) : (
-              <CircleCheck size={12} className="text-green-500" />
+              <Check size={16} color="#2ca547" absoluteStrokeWidth />
             )}
           </span>
           <span
@@ -91,33 +193,36 @@ const OverViewCandidate = ({ userDetail }) => {
                 : text === "Rejected"
                 ? "text-red-500"
                 : "text-green-500"
-            } text-[12px]`}
+            } text-[14px]`}
           >
             {text}
           </span>
         </div>
       ),
-      className: "min-w-[120px] text-[12px]", // Giữ chiều rộng tối thiểu cho cột "Trạng thái"
+      className: "min-w-[120px] text-[12px]",
     },
     {
       title: t("action"),
       key: "action",
-      render: () => (
+      render: (record: TableRecord) => (
         <Button
+          onClick={() => {
+            navigate(`/job-information/${record.jobId}`);
+          }}
           size="small"
           type="primary"
-          className="bg-blue-500 hover:bg-blue-600 text-[12px]"
+          className="!bg-blue-500 hover:!bg-blue-600 text-[14px] font-medium transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg rounded-md px-2 py-1 flex items-center gap-1"
         >
+          <Eye className="w-3 h-3" />
           {t("view_detail")}
         </Button>
       ),
-      className: "min-w-[150px] text-[12px]", // Giữ chiều rộng tối thiểu cho cột "Hành động"
+      className: "min-w-[120px] text-[14px]",
     },
   ];
 
   const [loading, setLoading] = useState(false);
   const [jobsApplied, setJobsApplied] = useState([]);
-  const [meta, setMeta] = useState<Meta>({});
   const [countApplied, setCountApplied] = useState(0);
   const [endValue, setEndValue] = useState(0);
 
@@ -132,38 +237,46 @@ const OverViewCandidate = ({ userDetail }) => {
     }
   };
 
-  const handleGetJobsAppliedRecent = async (current = 1, pageSize = 15) => {
+  const handleGetJobsAppliedRecent = async () => {
     try {
       setLoading(true);
-      const params = {
-        current,
-        pageSize,
-        query: {
-          user_id: userDetail?._id,
-        },
-      };
-      const res = await API_APPLICATION.getAll(
-        params,
+      const res = await API_APPLICATION.getTop5RecentApplied(
+        userDetail?._id,
         userDetail?.access_token
       );
       if (res?.data) {
-        const formattedData = res?.data?.items?.map((item) => ({
-          key: item?._id,
-          job: item?.job_id?.title,
-          location: `${item?.job_id?.city_id?.name}`,
-          salary: item?.job_id?.salary_range_min
-            ? `$${item?.job_id?.salary_range_min || 0} - $${
-                item?.job_id?.salary_range_max || 0
-              }`
-            : "Negotiable",
-          dateApplied: new Date(item?.applied_date)?.toLocaleString(),
-          status:
-            item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
-          icon: item?.employer_id?.avatar_company,
-          is_negotiable: item?.job_id?.is_negotiable,
-        }));
+        const formattedData = res?.data?.map((item: JobRecord) => {
+          if (!item?.job_id) {
+            return {
+              key: item?._id,
+              job: t("job_not_exist"),
+              location: "",
+              salary: "",
+              dateApplied: new Date(item?.applied_date)?.toLocaleString(),
+              status:
+                item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
+              icon: item?.employer_id?.avatar_company,
+              is_negotiable: false,
+            };
+          }
+          return {
+            key: item?._id,
+            job: item?.job_id?.title,
+            jobId: item?.job_id?._id,
+            location: `${item?.job_id?.city_id?.name}`,
+            salary_range_min: item?.job_id?.salary_range_min,
+            salary_range_max: item?.job_id?.salary_range_max,
+            type_money: item?.job_id?.type_money?.symbol,
+            job_type: item?.job_id?.job_type?.name,
+            expire_date: item?.job_id?.expire_date,
+            dateApplied: new Date(item?.applied_date)?.toLocaleString(),
+            status:
+              item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
+            icon: item?.employer_id?.avatar_company,
+            is_negotiable: item?.job_id?.is_negotiable,
+          };
+        });
         setJobsApplied(formattedData);
-        setMeta(res.data.meta);
       }
     } catch (error) {
       console.error(error);
@@ -206,27 +319,43 @@ const OverViewCandidate = ({ userDetail }) => {
 
       {/* Stats */}
       <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <div className="bg-blue-50 p-4 rounded-lg relative border border-blue-100">
-          <div className="text-[18px] font-bold">{countApplied || 0}</div>
-          <div className="text-blue-600 text-[12px]">{t("job_applied")}</div>
-          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100">
+        <div
+          className="bg-blue-50 p-4 rounded-lg relative border border-blue-100 hover:bg-blue-100 hover:border-blue-200 hover:scale-105 transition-all duration-300 cursor-pointer group"
+          onClick={onViewAppliedJob}
+        >
+          <div className="text-[18px] font-bold group-hover:text-blue-700">
+            {countApplied || 0}
+          </div>
+          <div className="text-blue-600 text-[12px] group-hover:text-blue-700">
+            {t("job_applied")}
+          </div>
+          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg group-hover:shadow-2xl group-hover:scale-125 transition-all duration-300 border border-blue-100 group-hover:border-blue-200">
             <BriefcaseBusiness color="#4584c8" absoluteStrokeWidth />
           </div>
         </div>
-        <div className="bg-yellow-50 p-4 rounded-lg relative border border-yellow-100">
-          <div className="text-[18px] font-bold">
+        <div
+          className="bg-yellow-50 p-4 rounded-lg relative border border-yellow-100 hover:bg-yellow-100 hover:border-yellow-200 hover:scale-105 transition-all duration-300 cursor-pointer group"
+          onClick={handleViewFavoriteJob}
+        >
+          <div className="text-[18px] font-bold group-hover:text-yellow-700">
             {userDetail?.favorite_jobs.length || 0}
           </div>
-          <div className="text-yellow-600 text-[12px]">{t("favorite_job")}</div>
-          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg hover:shadow-xl transition-all duration-300">
+          <div className="text-yellow-600 text-[12px] group-hover:text-yellow-700">
+            {t("favorite_job")}
+          </div>
+          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg group-hover:shadow-2xl group-hover:scale-125 transition-all duration-300">
             <Bookmark color="#feb536" absoluteStrokeWidth />
           </div>
         </div>
-        <div className="bg-green-50 p-4 rounded-lg relative border border-green-100">
-          <div className="text-[18px] font-bold">0</div>
-          <div className="text-green-600 text-[12px]">{t("job_alert")}</div>
-          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg hover:shadow-xl transition-all duration-300">
-            <BellRing color="#43a55c" absoluteStrokeWidth />
+        <div className="bg-green-50 p-4 rounded-lg relative border border-green-100 hover:bg-green-100 hover:border-green-200 hover:scale-105 transition-all duration-300 cursor-pointer group">
+          <div className="text-[18px] font-bold group-hover:text-green-700">
+            0
+          </div>
+          <div className="text-green-600 text-[12px] group-hover:text-green-700">
+            {t("job_seen")}
+          </div>
+          <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg group-hover:shadow-2xl group-hover:scale-125 transition-all duration-300">
+            <Eye color="#2ca547" absoluteStrokeWidth />
           </div>
         </div>
       </div>
@@ -257,7 +386,10 @@ const OverViewCandidate = ({ userDetail }) => {
         <h2 className="text-[16px] font-semibold">
           {t("recently_applied_job")}
         </h2>
-        <ViewAllLink href="/products" />
+        <div onClick={onViewAppliedJob}>
+          <ViewAllLink />
+          {/* Xem tất cả */}
+        </div>
       </div>
       {/* Recently Applied Việc làm */}
       <div className="bg-white rounded-lg shadow">
@@ -283,17 +415,6 @@ const OverViewCandidate = ({ userDetail }) => {
             }}
           />
         </div>
-        {jobsApplied.length > 0 && (
-          <CustomPagination
-            className="py-2 text-[12px]"
-            currentPage={meta?.current_page}
-            perPage={meta?.per_page}
-            total={meta?.total}
-            onPageChange={(current, pageSize) =>
-              handleGetJobsAppliedRecent(current, pageSize)
-            }
-          />
-        )}
       </div>
     </div>
   );

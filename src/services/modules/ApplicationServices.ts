@@ -160,4 +160,17 @@ export const API_APPLICATION = {
     if (resData.data) return resData.data;
     return null;
   },
+  getTop5RecentApplied: async (userId: string, accessToken: string) => {
+    const resData = await axiosInstance.get(
+      `${APPLICATIONS}/recently/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    if (resData.data) return resData.data;
+    return null;
+  },
 };
