@@ -85,7 +85,6 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
     try {
       const { token, decoded } = handleDecoded(accessToken);
       await handleGetDetailUser(decoded?.sub + "", token);
-      // window.location.href=`${import.meta.env.VITE_API_URL_APP}`
       window.history.replaceState(null, "", window.location.pathname);
     } catch (error) {
       console.error(error);
