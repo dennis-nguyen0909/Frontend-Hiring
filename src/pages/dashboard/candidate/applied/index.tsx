@@ -1,7 +1,7 @@
-import { Avatar, Button, Image, Table } from "antd";
+import { Button, Image, Table } from "antd";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Meta } from "../../../../types";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import { Circle, CircleCheck, CircleX, MapPin, Eye } from "lucide-react";
@@ -9,6 +9,7 @@ import { capitalizeFirstLetter, formatCurrency } from "../../../../untils";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 interface Applied {
   _id: string;
@@ -19,10 +20,16 @@ interface Applied {
     city_id: {
       name: string;
     };
-    salary: string;
-    jobType: string;
-    jobTypeBg: string;
-    jobTypeColor: string;
+    salary_range_min?: number;
+    salary_range_max?: number;
+    type_money?: {
+      symbol: string;
+    };
+    job_type?: {
+      name: string;
+    };
+    expire_date?: string;
+    is_negotiable?: boolean;
   };
   employer_id: {
     avatar_company: string;
@@ -33,18 +40,63 @@ interface Applied {
   applied_date: string;
 }
 
+interface AppliedResponse {
+  items: Applied[];
+  meta: Meta;
+}
+
+interface RootState {
+  user: {
+    _id: string;
+    access_token: string;
+  };
+}
+
 const Applied = () => {
-  const userDetail = useSelector((state: any) => state.user);
-  const [listApplied, setListApplied] = useState<Applied[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const userDetail = useSelector((state: RootState) => state.user);
   const [meta, setMeta] = useState<Meta>({
     current_page: 1,
     per_page: 10,
     total: 0,
+    count: 0,
+    total_pages: 0,
   });
   const { formatDate } = useMomentFn();
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const queryOptions: UseQueryOptions<AppliedResponse> = {
+    queryKey: [
+      "appliedJobs",
+      userDetail?._id,
+      meta.current_page,
+      meta.per_page,
+    ],
+    queryFn: async () => {
+      const params = {
+        current: meta.current_page,
+        pageSize: meta.per_page,
+        query: {
+          user_id: userDetail?._id,
+        },
+      };
+      const res = await API_APPLICATION.getAllRecentlyAppliedCandidate(
+        params,
+        userDetail?.access_token
+      );
+      return res.data;
+    },
+    enabled: !!userDetail?._id,
+  };
+
+  const { data, isLoading } = useQuery<AppliedResponse>(queryOptions);
+
+  // Update meta when data changes
+  useEffect(() => {
+    if (data?.meta) {
+      setMeta(data.meta);
+    }
+  }, [data?.meta]);
 
   const columns = [
     {
@@ -95,7 +147,6 @@ const Applied = () => {
                 </>
               )}
             </div>
-            {console.log("job_id", record.job_id)}
             <div className="flex items-center gap-4">
               {record?.job_id?.is_negotiable ? (
                 <span className="text-[12px] text-gray-600">
@@ -188,45 +239,16 @@ const Applied = () => {
     },
   ];
 
-  const handleGetData = async (current = 1, pageSize = 10) => {
-    try {
-      setIsLoading(true);
-      const params = {
-        current,
-        pageSize,
-        query: {
-          user_id: userDetail?._id,
-        },
-      };
-      const res = await API_APPLICATION.getAllRecentlyAppliedCandidate(
-        params,
-        userDetail?.access_token
-      );
-      if (res.data) {
-        setListApplied(res.data.items);
-        setMeta(res.data.meta);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    handleGetData();
-  }, []);
-
   return (
     <div>
       <h1 className="text-[20px] font-semibold mb-6">
-        {t("job_applied")} ({listApplied.length || 0})
+        {t("job_applied")} ({data?.items?.length || 0})
       </h1>
 
       <div className="bg-white rounded-lg shadow overflow-x-auto">
         <Table
           columns={columns}
-          dataSource={listApplied}
+          dataSource={data?.items}
           pagination={false}
           loading={isLoading}
           scroll={{ x: "max-content" }}
@@ -241,7 +263,11 @@ const Applied = () => {
           total={meta.total}
           perPage={meta.per_page}
           onPageChange={(current, pageSize) => {
-            handleGetData(current, pageSize);
+            setMeta((prev) => ({
+              ...prev,
+              current_page: current,
+              per_page: pageSize,
+            }));
           }}
         />
       </div>

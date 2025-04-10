@@ -17,6 +17,7 @@ import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import ViewAllLink from "../../../../components/ViewAll/ViewAll";
 import { formatCurrency } from "../../../../untils";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 interface UserDetail {
   _id: string;
@@ -76,6 +77,10 @@ interface TableRecord {
   status: string;
   icon?: string;
   is_negotiable?: boolean;
+}
+
+interface AppliedCountResponse {
+  data: string;
 }
 
 const OverViewCandidate = ({
@@ -221,75 +226,76 @@ const OverViewCandidate = ({
     },
   ];
 
-  const [loading, setLoading] = useState(false);
-  const [jobsApplied, setJobsApplied] = useState([]);
   const [countApplied, setCountApplied] = useState(0);
   const [endValue, setEndValue] = useState(0);
 
-  const handleGetAppliedUser = async () => {
-    const res = await API_APPLICATION.getCountAppliedCandidate(
-      userDetail?._id,
-      userDetail?.access_token
-    );
-    if (res.data) {
-      setEndValue(+res.data);
-      setCountApplied(0);
-    }
-  };
-
-  const handleGetJobsAppliedRecent = async () => {
-    try {
-      setLoading(true);
-      const res = await API_APPLICATION.getTop5RecentApplied(
+  // React Query for fetching applied jobs count
+  const appliedCountOptions: UseQueryOptions<AppliedCountResponse> = {
+    queryKey: ["appliedCount", userDetail?._id],
+    queryFn: () =>
+      API_APPLICATION.getCountAppliedCandidate(
         userDetail?._id,
         userDetail?.access_token
-      );
-      if (res?.data) {
-        const formattedData = res?.data?.map((item: JobRecord) => {
-          if (!item?.job_id) {
-            return {
-              key: item?._id,
-              job: t("job_not_exist"),
-              location: "",
-              salary: "",
-              dateApplied: new Date(item?.applied_date)?.toLocaleString(),
-              status:
-                item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
-              icon: item?.employer_id?.avatar_company,
-              is_negotiable: false,
-            };
-          }
+      ),
+    enabled: !!userDetail?._id,
+  };
+
+  const { data: appliedCountData } =
+    useQuery<AppliedCountResponse>(appliedCountOptions);
+
+  useEffect(() => {
+    if (appliedCountData?.data) {
+      setEndValue(+appliedCountData.data);
+      setCountApplied(0);
+    }
+  }, [appliedCountData]);
+
+  // React Query for fetching recent applied jobs
+  const { data: jobsApplied = [], isLoading } = useQuery({
+    queryKey: ["recentAppliedJobs", userDetail?._id],
+    queryFn: () =>
+      API_APPLICATION.getTop5RecentApplied(
+        userDetail?._id,
+        userDetail?.access_token
+      ),
+    enabled: !!userDetail?._id,
+    select: (res) => {
+      if (!res?.data) return [];
+      return res.data.map((item: JobRecord) => {
+        if (!item?.job_id) {
           return {
             key: item?._id,
-            job: item?.job_id?.title,
-            jobId: item?.job_id?._id,
-            location: `${item?.job_id?.city_id?.name}`,
-            salary_range_min: item?.job_id?.salary_range_min,
-            salary_range_max: item?.job_id?.salary_range_max,
-            type_money: item?.job_id?.type_money?.symbol,
-            job_type: item?.job_id?.job_type?.name,
-            expire_date: item?.job_id?.expire_date,
+            job: t("job_not_exist"),
+            location: "",
+            salary: "",
             dateApplied: new Date(item?.applied_date)?.toLocaleString(),
             status:
               item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
             icon: item?.employer_id?.avatar_company,
-            is_negotiable: item?.job_id?.is_negotiable,
+            is_negotiable: false,
           };
-        });
-        setJobsApplied(formattedData);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        }
+        return {
+          key: item?._id,
+          job: item?.job_id?.title,
+          jobId: item?.job_id?._id,
+          location: `${item?.job_id?.city_id?.name}`,
+          salary_range_min: item?.job_id?.salary_range_min,
+          salary_range_max: item?.job_id?.salary_range_max,
+          type_money: item?.job_id?.type_money?.symbol,
+          job_type: item?.job_id?.job_type?.name,
+          expire_date: item?.job_id?.expire_date,
+          dateApplied: new Date(item?.applied_date)?.toLocaleString(),
+          status:
+            item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
+          icon: item?.employer_id?.avatar_company,
+          is_negotiable: item?.job_id?.is_negotiable,
+        };
+      });
+    },
+  });
 
-  useEffect(() => {
-    handleGetJobsAppliedRecent();
-    handleGetAppliedUser();
-  }, []);
-
+  // Animation effect for count
   useEffect(() => {
     if (countApplied >= endValue || endValue === 0) return;
     const duration = 500;
@@ -395,7 +401,7 @@ const OverViewCandidate = ({
       <div className="bg-white rounded-lg shadow">
         <div className="overflow-x-auto">
           <Table
-            loading={loading}
+            loading={isLoading}
             className="text-[12px] w-full"
             columns={recentlyAppliedColumns}
             dataSource={jobsApplied}
