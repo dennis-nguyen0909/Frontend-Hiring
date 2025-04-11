@@ -1,8 +1,6 @@
-import { Avatar, Button, Image, Table } from "antd";
-import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
+import { Avatar, Button, Image, Table, Spin } from "antd";
 import { useEffect, useState } from "react";
 import {
-  BellRing,
   Bookmark,
   BriefcaseBusiness,
   Check,
@@ -18,23 +16,22 @@ import { useTranslation } from "react-i18next";
 import ViewAllLink from "../../../../components/ViewAll/ViewAll";
 import { formatCurrency } from "../../../../untils";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
+import { API_FAVORITE_JOB } from "../../../../services/modules/FavoriteJobServices";
+import { USER_API } from "../../../../services/modules/userServices";
 
 interface UserDetail {
   _id: string;
   access_token: string;
   full_name: string;
   avatar: string;
-  favorite_jobs: Array<{
-    _id: string;
-    title: string;
-    // Add other favorite job properties as needed
-  }>;
 }
 
 interface OverViewCandidateProps {
   userDetail: UserDetail;
   onViewAppliedJob: () => void;
   handleViewFavoriteJob: () => void;
+  handleViewedJob: () => void;
 }
 
 interface JobRecord {
@@ -42,23 +39,15 @@ interface JobRecord {
   job_id?: {
     _id: string;
     title: string;
-    city_id?: {
-      name: string;
-    };
+    city_id?: { name: string };
     salary_range_min?: number;
     salary_range_max?: number;
-    type_money?: {
-      symbol: string;
-    };
-    job_type?: {
-      name: string;
-    };
+    type_money?: { symbol: string };
+    job_type?: { name: string };
     expire_date?: string;
     is_negotiable?: boolean;
   };
-  employer_id?: {
-    avatar_company: string;
-  };
+  employer_id?: { avatar_company: string };
   applied_date: string;
   status: string;
 }
@@ -83,18 +72,27 @@ interface AppliedCountResponse {
   data: string;
 }
 
+interface FavoriteCountResponse {
+  data: number;
+}
+
+interface ViewedJobsCountResponse {
+  data: number;
+}
+
 const OverViewCandidate = ({
   userDetail,
   onViewAppliedJob,
   handleViewFavoriteJob,
+  handleViewedJob,
 }: OverViewCandidateProps) => {
+  const { formatDate, dateFormat } = useMomentFn();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: caculateProfile } = useCalculateUserProfile(
     userDetail?._id,
     userDetail?.access_token
   );
-  const { formatDate } = useMomentFn();
 
   const recentlyAppliedColumns = [
     {
@@ -118,7 +116,7 @@ const OverViewCandidate = ({
               </h3>
               {record.job_type && (
                 <h3 className="px-3 py-1 rounded-full text-[10px] font-medium bg-blue-50 text-blue-600  border-blue-100 shadow-sm hover:bg-blue-100 transition-colors duration-200">
-                  {record.job_type}
+                  {t(record.job_type)}
                 </h3>
               )}
               {record?.expire_date && (
@@ -131,7 +129,7 @@ const OverViewCandidate = ({
                 >
                   {new Date(record.expire_date) < new Date()
                     ? t("expired")
-                    : record.expire_date}
+                    : formatDate(record.expire_date)}
                 </h3>
               )}
             </div>
@@ -211,9 +209,7 @@ const OverViewCandidate = ({
       key: "action",
       render: (record: TableRecord) => (
         <Button
-          onClick={() => {
-            navigate(`/job-information/${record.jobId}`);
-          }}
+          onClick={() => navigate(`/job-information/${record.jobId}`)}
           size="small"
           type="primary"
           className="!bg-blue-500 hover:!bg-blue-600 text-[14px] font-medium transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg rounded-md px-2 py-1 flex items-center gap-1"
@@ -228,8 +224,11 @@ const OverViewCandidate = ({
 
   const [countApplied, setCountApplied] = useState(0);
   const [endValue, setEndValue] = useState(0);
+  const [favoriteCount, setFavoriteCount] = useState(0);
+  const [endFavoriteValue, setEndFavoriteValue] = useState(0);
+  const [viewedJobsCount, setViewedJobsCount] = useState(0);
+  const [endViewedJobsValue, setEndViewedJobsValue] = useState(0);
 
-  // React Query for fetching applied jobs count
   const appliedCountOptions: UseQueryOptions<AppliedCountResponse> = {
     queryKey: ["appliedCount", userDetail?._id],
     queryFn: () =>
@@ -240,8 +239,34 @@ const OverViewCandidate = ({
     enabled: !!userDetail?._id,
   };
 
-  const { data: appliedCountData } =
+  const favoriteCountOptions: UseQueryOptions<FavoriteCountResponse> = {
+    queryKey: ["favoriteCount", userDetail?._id],
+    queryFn: () =>
+      API_FAVORITE_JOB.countFavoriteJobOfCandidate(
+        userDetail?._id,
+        userDetail?.access_token
+      ),
+    enabled: !!userDetail?._id,
+  };
+
+  const viewedJobsCountOptions: UseQueryOptions<ViewedJobsCountResponse> = {
+    queryKey: ["viewedJobsCount", userDetail?._id],
+    queryFn: () =>
+      USER_API.countViewedJobsOfCandidate(
+        userDetail?._id,
+        userDetail?.access_token
+      ),
+    enabled: !!userDetail?._id,
+  };
+
+  const { data: appliedCountData, isLoading: isCountLoading } =
     useQuery<AppliedCountResponse>(appliedCountOptions);
+
+  const { data: favoriteCountData, isLoading: isFavoriteCountLoading } =
+    useQuery<FavoriteCountResponse>(favoriteCountOptions);
+
+  const { data: viewedJobsCountData, isLoading: isViewedJobsCountLoading } =
+    useQuery<ViewedJobsCountResponse>(viewedJobsCountOptions);
 
   useEffect(() => {
     if (appliedCountData?.data) {
@@ -250,8 +275,21 @@ const OverViewCandidate = ({
     }
   }, [appliedCountData]);
 
-  // React Query for fetching recent applied jobs
-  const { data: jobsApplied = [], isLoading } = useQuery({
+  useEffect(() => {
+    if (favoriteCountData?.data) {
+      setEndFavoriteValue(favoriteCountData.data);
+      setFavoriteCount(0);
+    }
+  }, [favoriteCountData]);
+
+  useEffect(() => {
+    if (viewedJobsCountData?.data) {
+      setEndViewedJobsValue(viewedJobsCountData.data);
+      setViewedJobsCount(endViewedJobsValue);
+    }
+  }, [viewedJobsCountData]);
+
+  const { data: jobsApplied = [], isLoading: isJobsLoading } = useQuery({
     queryKey: ["recentAppliedJobs", userDetail?._id],
     queryFn: () =>
       API_APPLICATION.getTop5RecentApplied(
@@ -267,7 +305,6 @@ const OverViewCandidate = ({
             key: item?._id,
             job: t("job_not_exist"),
             location: "",
-            salary: "",
             dateApplied: new Date(item?.applied_date)?.toLocaleString(),
             status:
               item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
@@ -277,13 +314,13 @@ const OverViewCandidate = ({
         }
         return {
           key: item?._id,
-          job: item?.job_id?.title,
           jobId: item?.job_id?._id,
+          job: item?.job_id?.title,
           location: `${item?.job_id?.city_id?.name}`,
           salary_range_min: item?.job_id?.salary_range_min,
           salary_range_max: item?.job_id?.salary_range_max,
           type_money: item?.job_id?.type_money?.symbol,
-          job_type: item?.job_id?.job_type?.name,
+          job_type: item?.job_id?.job_type?.key,
           expire_date: item?.job_id?.expire_date,
           dateApplied: new Date(item?.applied_date)?.toLocaleString(),
           status:
@@ -295,7 +332,6 @@ const OverViewCandidate = ({
     },
   });
 
-  // Animation effect for count
   useEffect(() => {
     if (countApplied >= endValue || endValue === 0) return;
     const duration = 500;
@@ -310,9 +346,56 @@ const OverViewCandidate = ({
         return newCount;
       });
     }, intervalTime);
-
     return () => clearInterval(interval);
   }, [countApplied, endValue]);
+
+  useEffect(() => {
+    if (favoriteCount >= endFavoriteValue || endFavoriteValue === 0) return;
+    const duration = 500;
+    const intervalTime = duration / (endFavoriteValue - favoriteCount);
+    const interval = setInterval(() => {
+      setFavoriteCount((prevCount) => {
+        const newCount = prevCount + 1;
+        if (newCount >= endFavoriteValue) {
+          clearInterval(interval);
+          return endFavoriteValue;
+        }
+        return newCount;
+      });
+    }, intervalTime);
+    return () => clearInterval(interval);
+  }, [favoriteCount, endFavoriteValue]);
+
+  useEffect(() => {
+    if (viewedJobsCount >= endViewedJobsValue || endViewedJobsValue === 0)
+      return;
+    const duration = 500;
+    const intervalTime = duration / (endViewedJobsValue - viewedJobsCount);
+    const interval = setInterval(() => {
+      setViewedJobsCount((prevCount) => {
+        const newCount = prevCount + 1;
+        if (newCount >= endViewedJobsValue) {
+          clearInterval(interval);
+          return endViewedJobsValue;
+        }
+        return newCount;
+      });
+    }, intervalTime);
+    return () => clearInterval(interval);
+  }, [viewedJobsCount, endViewedJobsValue]);
+
+  if (
+    isCountLoading ||
+    isJobsLoading ||
+    isFavoriteCountLoading ||
+    isViewedJobsCountLoading
+  ) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spin size="large" tip={t("loading")} />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -323,7 +406,6 @@ const OverViewCandidate = ({
         {t("this_is_the_daily_activity_and_job_notification_of_you")}
       </p>
 
-      {/* Stats */}
       <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div
           className="bg-blue-50 p-4 rounded-lg relative border border-blue-100 hover:bg-blue-100 hover:border-blue-200 hover:scale-105 transition-all duration-300 cursor-pointer group"
@@ -344,7 +426,7 @@ const OverViewCandidate = ({
           onClick={handleViewFavoriteJob}
         >
           <div className="text-[18px] font-bold group-hover:text-yellow-700">
-            {userDetail?.favorite_jobs.length || 0}
+            {favoriteCount || 0}
           </div>
           <div className="text-yellow-600 text-[12px] group-hover:text-yellow-700">
             {t("favorite_job")}
@@ -353,9 +435,12 @@ const OverViewCandidate = ({
             <Bookmark color="#feb536" absoluteStrokeWidth />
           </div>
         </div>
-        <div className="bg-green-50 p-4 rounded-lg relative border border-green-100 hover:bg-green-100 hover:border-green-200 hover:scale-105 transition-all duration-300 cursor-pointer group">
+        <div
+          onClick={handleViewedJob}
+          className="bg-green-50 p-4 rounded-lg relative border border-green-100 hover:bg-green-100 hover:border-green-200 hover:scale-105 transition-all duration-300 cursor-pointer group"
+        >
           <div className="text-[18px] font-bold group-hover:text-green-700">
-            0
+            {viewedJobsCount || 0}
           </div>
           <div className="text-green-600 text-[12px] group-hover:text-green-700">
             {t("job_seen")}
@@ -366,7 +451,6 @@ const OverViewCandidate = ({
         </div>
       </div>
 
-      {/* Profile Alert */}
       {+caculateProfile < 100 && (
         <div className="bg-[#e05051] p-4 rounded-lg flex flex-col sm:flex-row items-center mb-6">
           <Avatar size={50} src={userDetail?.avatar} />
@@ -394,14 +478,11 @@ const OverViewCandidate = ({
         </h2>
         <div onClick={onViewAppliedJob}>
           <ViewAllLink />
-          {/* Xem tất cả */}
         </div>
       </div>
-      {/* Recently Applied Việc làm */}
       <div className="bg-white rounded-lg shadow">
         <div className="overflow-x-auto">
           <Table
-            loading={isLoading}
             className="text-[12px] w-full"
             columns={recentlyAppliedColumns}
             dataSource={jobsApplied}
@@ -410,12 +491,7 @@ const OverViewCandidate = ({
             components={{
               header: {
                 cell: (props: React.ThHTMLAttributes<HTMLTableCellElement>) => (
-                  <th
-                    {...props}
-                    style={{
-                      backgroundColor: "#f0f2f4",
-                    }}
-                  />
+                  <th {...props} style={{ backgroundColor: "#f0f2f4" }} />
                 ),
               },
             }}
