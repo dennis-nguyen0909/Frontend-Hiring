@@ -1,6 +1,6 @@
 import { notification } from "antd";
 import { axiosInstance } from "../config/axiosInterceptor";
-type AvatarType = 'avatar_company' | 'banner_company';
+type AvatarType = "avatar_company" | "banner_company";
 // src/services/authService.ts
 export const getDetailUser = async (id: string, access_token: string) => {
   const resData = await axiosInstance.get(`/users/${id}`, {
@@ -74,16 +74,12 @@ export const USER_API = {
   },
   updateUser: async (updateUserDto: any, access_token?: string) => {
     try {
-      const response = await axiosInstance.patch(
-        "users",
-        updateUserDto,
-        {
-          headers: {
-            Authorization: access_token ? `Bearer ${access_token}` : "", // Thêm Authorization header nếu có access_token
-          }
-        }
-      );
-  
+      const response = await axiosInstance.patch("users", updateUserDto, {
+        headers: {
+          Authorization: access_token ? `Bearer ${access_token}` : "", // Thêm Authorization header nếu có access_token
+        },
+      });
+
       if (response.data) {
         return response.data; // Dữ liệu trả về sau khi cập nhật thành công
       }
@@ -121,20 +117,24 @@ export const USER_API = {
     if (resData) return resData.data;
     return null;
   },
-  employerSendMailtoCandidate: async (params: any, accessToken:string) => {
+  employerSendMailtoCandidate: async (params: any, accessToken: string) => {
     try {
-      const res = await axiosInstance.post(`users/send-application-email`, params, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        withCredentials: true,
-      });
+      const res = await axiosInstance.post(
+        `users/send-application-email`,
+        params,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          withCredentials: true,
+        }
+      );
 
       if (res.data) {
-        return res.data; 
+        return res.data;
       }
 
-      return null; 
+      return null;
     } catch (error) {
       notification.error({
         message: "Thông báo",
@@ -143,27 +143,35 @@ export const USER_API = {
       return error; // Return null if any error occurs
     }
   },
-  checkUpdateCompany: async (userId:string,accessToken:string) => {
+  checkUpdateCompany: async (userId: string, accessToken: string) => {
     try {
-      const res = await axiosInstance.get(`users/check-update-company/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        withCredentials: true,
-      });
+      const res = await axiosInstance.get(
+        `users/check-update-company/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          withCredentials: true,
+        }
+      );
 
       if (res.data) {
-        return res.data; 
+        return res.data;
       }
-      return null; 
+      return null;
     } catch (error) {
       return error; // Return null if any error occurs
     }
   },
-  deleteAvatarEmployer: async (userId:string,type:AvatarType,accessToken:string) => {
+  deleteAvatarEmployer: async (
+    userId: string,
+    type: AvatarType,
+    accessToken: string
+  ) => {
     try {
       const res = await axiosInstance.delete(`users/delete-avatar`, {
-        data: { // Sử dụng 'data' để truyền dữ liệu vào body
+        data: {
+          // Sử dụng 'data' để truyền dữ liệu vào body
           user_id: userId,
           type: type,
         },
@@ -172,7 +180,7 @@ export const USER_API = {
         },
         withCredentials: true,
       });
-  
+
       if (res.data) {
         return res.data;
       }
@@ -188,8 +196,37 @@ export const USER_API = {
       },
       withCredentials: true,
     });
-  
+
     if (resData) return resData.data;
     return null;
-  }
+  },
+  getViewedJobs: async (userId: string, params: any, access_token: string) => {
+    const resData = await axiosInstance.get(
+      `${`/users/get-viewed-jobs/${userId}`}`,
+      {
+        params: {
+          ...params,
+        },
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+        withCredentials: true,
+      }
+    );
+    if (resData.data) return resData.data;
+    return null;
+  },
+  countViewedJobsOfCandidate: async (userId: string, accessToken: string) => {
+    const resData = await axiosInstance.get(
+      `users/count-viewed-jobs/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    if (resData.data) return resData.data;
+    return null;
+  },
 };

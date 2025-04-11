@@ -1,15 +1,15 @@
-import { Button, Table, Image } from "antd";
+import { Button, Table, Image, Spin } from "antd";
 import { Bookmark, BookmarkCheck, MapPin } from "lucide-react";
 import { API_FAVORITE_JOB } from "../../../../services/modules/FavoriteJobServices";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
-import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import { useNavigate } from "react-router-dom";
 import { isExpired, formatCurrency } from "../../../../untils";
 import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import useMomentFn from "../../../../hooks/useMomentFn";
 
 interface JobApplication {
   _id: string;
@@ -35,9 +35,7 @@ interface RootState {
   user: {
     _id: string;
     access_token: string;
-    favorite_jobs: Array<{
-      job_id: string;
-    }>;
+    favorite_jobs: Array<{ job_id: string }>;
   };
 }
 
@@ -48,9 +46,7 @@ interface FavoriteJob {
 interface QueryParams {
   current: number;
   pageSize: number;
-  query: {
-    user_id: string;
-  };
+  query: { user_id: string };
 }
 
 const FavoriteJob = () => {
@@ -71,9 +67,7 @@ const FavoriteJob = () => {
     const params: QueryParams = {
       current,
       pageSize,
-      query: {
-        user_id: userDetail?._id,
-      },
+      query: { user_id: userDetail?._id },
     };
     const res = await API_FAVORITE_JOB.getAllJobFavorite(
       params,
@@ -81,13 +75,13 @@ const FavoriteJob = () => {
     );
     return res.data;
   };
+  const { dateFormat, formatDate } = useMomentFn();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ["favoriteJobs", currentPage, pageSize, userDetail?._id],
     queryFn: () => fetchFavoriteJobs({ current: currentPage, pageSize }),
     enabled: !!userDetail?._id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    keepPreviousData: true,
   });
 
   const favoriteMutation = useMutation({
@@ -98,11 +92,7 @@ const FavoriteJob = () => {
       jobId: string;
       jobTitle: string;
     }) => {
-      const params = {
-        user_id: userDetail?._id,
-        job_id: jobId,
-        jobTitle,
-      };
+      const params = { user_id: userDetail?._id, job_id: jobId, jobTitle };
       return await API_FAVORITE_JOB.createFavoriteJobs(
         params,
         userDetail?.access_token
@@ -113,13 +103,10 @@ const FavoriteJob = () => {
     },
   });
 
-  const onApplyNow = async (id: string) => {
-    navigate(`/job-information/${id}`);
-  };
+  const onApplyNow = async (id: string) => navigate(`/job-information/${id}`);
 
-  const handleFavorite = async (jobId: string, jobTitle: string) => {
+  const handleFavorite = async (jobId: string, jobTitle: string) =>
     favoriteMutation.mutate({ jobId, jobTitle });
-  };
 
   const columns = [
     {
@@ -128,16 +115,14 @@ const FavoriteJob = () => {
       key: "title",
       render: (text: string, record: JobApplication) => (
         <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center">
-            <Image
-              width={60}
-              height={60}
-              className="shadow-md !object-contain rounded-lg border-gray-200 hover:scale-105 transition-transform duration-300"
-              src={record?.job_id?.user_id?.avatar_company || avatarDefault}
-              fallback={avatarDefault}
-              preview={false}
-            />
-          </div>
+          <Image
+            width={60}
+            height={60}
+            className="shadow-md !object-contain rounded-lg border-gray-200 hover:scale-105 transition-transform duration-300"
+            src={record?.job_id?.user_id?.avatar_company || avatarDefault}
+            fallback={avatarDefault}
+            preview={false}
+          />
           <div className="flex flex-col gap-1">
             <div className="flex flex-row items-center justify-start gap-4">
               <h3 className="font-semibold text-[14px] text-gray-900">
@@ -145,9 +130,9 @@ const FavoriteJob = () => {
                   ? t("job_not_exist")
                   : record?.job_id?.title}
               </h3>
-              {record?.job_id?.job_type?.name && (
+              {record?.job_id?.job_type?.key && (
                 <h3 className="px-3 py-1 rounded-full text-[10px] font-medium bg-blue-50 text-blue-600 border-blue-100 shadow-sm hover:bg-blue-100 transition-colors duration-200">
-                  {record?.job_id?.job_type?.name}
+                  {t(record?.job_id?.job_type?.key)}
                 </h3>
               )}
               {record?.job_id?.expire_date && (
@@ -160,7 +145,7 @@ const FavoriteJob = () => {
                 >
                   {isExpired(record?.job_id?.expire_date)
                     ? t("expired")
-                    : record?.job_id?.expire_date}
+                    : formatDate(record?.job_id?.expire_date)}
                 </h3>
               )}
             </div>
@@ -247,35 +232,40 @@ const FavoriteJob = () => {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spin size="large" tip={isFetching ? t("caching") : t("loading")} />
+      </div>
+    );
+  }
+
   return (
     <div className="">
       <h1 className="text-[20px] font-semibold mb-6">
         {t("favorite_job")} ({data?.items?.length || 0})
       </h1>
 
-      <LoadingComponent isLoading={isLoading}>
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <Table
-            columns={columns}
-            dataSource={data?.items}
-            pagination={false}
-            className="sm:w-full w-auto"
-          />
-        </div>
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
+        <Table
+          columns={columns}
+          dataSource={data?.items}
+          pagination={false}
+          className="sm:w-full w-auto"
+        />
+      </div>
 
-        {/* Pagination */}
-        <div className="mt-4 flex justify-center">
-          <CustomPagination
-            currentPage={data?.meta?.current_page || 1}
-            total={data?.meta?.total || 0}
-            perPage={data?.meta?.per_page || 10}
-            onPageChange={(current, pageSize) => {
-              setCurrentPage(current);
-              setPageSize(pageSize);
-            }}
-          />
-        </div>
-      </LoadingComponent>
+      <div className="mt-4 flex justify-center">
+        <CustomPagination
+          currentPage={data?.meta?.current_page || 1}
+          total={data?.meta?.total || 0}
+          perPage={data?.meta?.per_page || 10}
+          onPageChange={(current, pageSize) => {
+            setCurrentPage(current);
+            setPageSize(pageSize);
+          }}
+        />
+      </div>
     </div>
   );
 };

@@ -17,25 +17,28 @@ export const API_FAVORITE_JOB = {
       return null;
     } catch (error) {
       notification.error({
-        message:'Thông báo',
-        description:error.response.data.message
-      })
+        message: "Thông báo",
+        description: error.response.data.message,
+      });
     }
   },
-  getFavoriteJobDetailByUserId: async (params:any, accessToken: string) => {
-    const res = await axiosInstance.get(`${FAVORITE_JOB}/get-detail?user_id=${params.user_id}&job_id=${params.job_id}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      withCredentials: true,
-    });
+  getFavoriteJobDetailByUserId: async (params: any, accessToken: string) => {
+    const res = await axiosInstance.get(
+      `${FAVORITE_JOB}/get-detail?user_id=${params.user_id}&job_id=${params.job_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
     if (res.data) return res.data;
     return null;
   },
-  getAllJobFavorite: async (params:any,accessToken: string) => {
+  getAllJobFavorite: async (params: any, accessToken: string) => {
     const resData = await axiosInstance.get(`${FAVORITE_JOB}`, {
       params: {
-        ...params
+        ...params,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -45,7 +48,17 @@ export const API_FAVORITE_JOB = {
     if (resData.data) return resData.data;
     return null;
   },
-  
-
-  
+  countFavoriteJobOfCandidate: async (userId: string, accessToken: string) => {
+    const resData = await axiosInstance.get(
+      `${FAVORITE_JOB}/candidate/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    if (resData.data) return resData.data;
+    return null;
+  },
 };
