@@ -156,24 +156,24 @@ export default function JobPosting() {
         }));
         if (res?.data?.length === 0) {
           notification.success({
-            message: "Thông báo",
-            description: "Bạn vừa xóa 1 công việc",
+            message: t("notification"),
+            description: t("you_removing_one_job"),
           });
         }
 
         if (res?.data?._id) {
           notification.success({
-            message: "Thông báo",
+            message: t("notification"),
             description: (
               <span>
-                Bạn đã lưu việc làm thành công.{" "}
+                {t("you_have_successfully_saved_your_job")}{" "}
                 <a
                   onClick={() =>
                     navigate("/dashboard/candidate?activeTab=favoriteJobs")
                   }
                   className="text-blue-500 hover:text-blue-600 cursor-pointer"
                 >
-                  Xem việc làm đã lưu
+                  {t("view_job_saved")}
                 </a>
               </span>
             ),
@@ -273,13 +273,15 @@ export default function JobPosting() {
             {/* Left Column */}
             <div className="lg:col-span-2 space-y-8">
               {/* Description */}
-              <Card className="p-6 bg-gray-100">
-                <h2 className="text-xl font-bold mb-4">{t("description")}</h2>
-                <p
-                  className="text-gray-700"
-                  dangerouslySetInnerHTML={{ __html: jobDetail?.description }}
-                ></p>
-              </Card>
+              {jobDetail?.description && (
+                <Card className="p-6 bg-gray-100">
+                  <h2 className="text-xl font-bold mb-4">{t("description")}</h2>
+                  <p
+                    className="text-gray-700"
+                    dangerouslySetInnerHTML={{ __html: jobDetail?.description }}
+                  ></p>
+                </Card>
+              )}
 
               {jobDetail?.professional_skills?.length > 0 && (
                 <Card className="p-6 bg-white border border-gray-300">

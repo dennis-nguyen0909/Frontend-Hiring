@@ -3,17 +3,28 @@ import { Download, Star, Forward, Trash, Pencil } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CV_API } from "../../../services/modules/CvServices";
-import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Meta } from "../../../types";
 import avtDefault from "../../../assets/avatars/avatar-default.jpg";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import useMomentFn from "../../../hooks/useMomentFn";
+import { RootState } from "../../../redux/store/store";
+import { useState } from "react";
 
 interface CV {
   _id: string;
-  name: string;
-  lastUpdated: string;
+  user_id: string;
+  cv_name: string;
+  cv_link: string;
+  public_id: string;
+  createdAt: string;
+  updatedAt: string;
   isPrimary?: boolean;
+}
+
+interface CVResponse {
+  items: CV[];
+  meta: Meta;
 }
 
 const CVCard = ({
@@ -25,9 +36,9 @@ const CVCard = ({
 }: {
   cv: CV;
   userDetail: any;
-  onDelete: any;
-  onUpdate: any;
-  handleShare;
+  onDelete: () => void;
+  onUpdate: () => void;
+  handleShare: () => void;
 }) => {
   const onDownloadCV = () => {
     const link = document.createElement("a");
@@ -96,51 +107,83 @@ const CVCard = ({
     </div>
   );
 };
-interface CV {
-  _id: string;
-  user_id: string;
-  createdAt: string;
 
-  cv_link: string;
-
-  cv_name: string;
-
-  public_id: string;
-
-  updatedAt: string;
-}
 export default function ListCV() {
   const navigate = useNavigate();
-  const userDetail = useSelector((state) => state.user);
-  const [listCv, setListCv] = useState<CV[]>([]);
-  const [meta, setMeta] = useState<Meta>({});
+  const userDetail = useSelector((state: RootState) => state.user);
   const [visible, setVisible] = useState<boolean>(false);
   const [cv, setCv] = useState<CV>({} as CV);
-  const handleGetCvByUserId = async (current = 1, pageSize = 10) => {
-    try {
+  const [form] = Form.useForm();
+  const queryClient = useQueryClient();
+
+  // Fetch CVs with React Query
+  const { data: cvData } = useQuery<CVResponse>({
+    queryKey: ["cvs", userDetail?.id],
+    queryFn: async () => {
       const params = {
-        current,
-        pageSize,
+        current: 1,
+        pageSize: 10,
         query: {
-          user_id: userDetail?._id,
+          user_id: userDetail?.id,
         },
       };
       const res = await CV_API.getAll(params, userDetail?.access_token);
-      if (res.data) {
-        setListCv([...res.data.items]);
-        setMeta(res.data.meta);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+      return res.data;
+    },
+    enabled: !!userDetail?.id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Delete CV mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await CV_API.deleteManyCVByUser([id], userDetail?.access_token);
+    },
+    onSuccess: () => {
+      notification.success({
+        message: "Thông báo",
+        description: "Xóa thành công",
+      });
+      queryClient.invalidateQueries({ queryKey: ["cvs"] });
+    },
+    onError: () => {
+      notification.error({
+        message: "Thông báo",
+        description: "Xóa thất bại",
+      });
+    },
+  });
+
+  // Update CV mutation
+  const updateMutation = useMutation({
+    mutationFn: async (data: { id: string; cv_name: string }) => {
+      return await CV_API.update(
+        data.id,
+        { cv_name: data.cv_name },
+        userDetail?.access_token
+      );
+    },
+    onSuccess: () => {
+      notification.success({
+        message: "Thông báo",
+        description: "Cập nhật thành công",
+      });
+      queryClient.invalidateQueries({ queryKey: ["cvs"] });
+      onClose();
+    },
+    onError: () => {
+      notification.error({
+        message: "Thông báo",
+        description: "Cập nhật thất bại",
+      });
+    },
+  });
+
   const onClose = () => {
     setVisible(false);
     setCv({} as CV);
   };
-  useEffect(() => {
-    handleGetCvByUserId();
-  }, []);
 
   const handleShare = () => {
     notification.info({
@@ -148,49 +191,16 @@ export default function ListCV() {
       description: "Tính năng chưa phát triển",
     });
   };
-  const onDelete = async (id: string) => {
-    try {
-      const res = await CV_API.deleteManyCVByUser(
-        [id],
-        userDetail?.access_token
-      );
-      if (+res.statusCode === 200) {
-        notification.success({
-          message: "Thông báo",
-          description: "Xóa thành công",
-        });
-        handleGetCvByUserId();
-      }
-    } catch (error) {
-      notification.error({
-        message: "Thông báo",
-        description: "Xóa thất bại",
-      });
-    }
+
+  const onDelete = (id: string) => {
+    deleteMutation.mutate(id);
   };
-  const handleSubmit = async () => {
-    try {
-      const res = await CV_API.update(
-        cv._id,
-        form.getFieldsValue(),
-        userDetail?.access_token
-      );
-      if (res.data) {
-        notification.success({
-          message: "Thông báo",
-          description: "Tạo CV thành công",
-        });
-        handleGetCvByUserId();
-        onClose();
-      }
-    } catch (error) {
-      notification.error({
-        message: "Thông báo",
-        description: "Cập nhật thất bại",
-      });
-    }
+
+  const handleSubmit = () => {
+    const values = form.getFieldsValue();
+    updateMutation.mutate({ id: cv._id, cv_name: values.cv_name });
   };
-  const [form] = Form.useForm();
+
   const renderBody = () => {
     return (
       <Form form={form} layout="vertical" className="mt-4">
@@ -224,6 +234,7 @@ export default function ListCV() {
       </Form>
     );
   };
+
   const onUpdate = async (id: string) => {
     try {
       const res = await CV_API.findById(id, userDetail?.access_token);
@@ -236,11 +247,12 @@ export default function ListCV() {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: "Thông báo",
         description: "Cập nhật thất bại",
       });
     }
   };
+
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
@@ -254,8 +266,8 @@ export default function ListCV() {
         </Button>
       </div>
       <div className="flex gap-10 flex-wrap">
-        {listCv.map((cv) => (
-          <div key={cv._id} className="w-[300px] ">
+        {cvData?.items.map((cv) => (
+          <div key={cv._id} className="w-[300px]">
             <CVCard
               handleShare={handleShare}
               cv={cv}

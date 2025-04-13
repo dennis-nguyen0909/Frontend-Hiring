@@ -1,6 +1,7 @@
 import React from "react";
 import { Select } from "antd";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 const { Option } = Select;
 
@@ -23,9 +24,10 @@ const DateFormatSelect: React.FC<{
   setSelectedFormat: (format: string) => void;
   handleChange: (value: string) => void;
 }> = ({ selectedFormat, setSelectedFormat, handleChange }) => {
+  const { t } = useTranslation();
   return (
     <div style={{ width: 300 }}>
-      <label>Định dạng ngày:</label>
+      <label>{t("date_format")}:</label>
       <Select
         defaultValue={selectedFormat}
         onChange={handleChange}

@@ -741,7 +741,11 @@
     "no_job_suggestion":"No job suggestion",
     "job_not_exist":"This job has been deleted or does not exist",
     "job_seen":"Viewed jobs",
-    "days_remaining":"days remaining"
+    "days_remaining":"days remaining",
+    "you_removing_one_job":"You just deleted a job.",
+    "you_have_successfully_saved_your_job":"You have successfully saved your job.",
+    "view_job_saved":"View saved jobs",
+    "date_format":"Date format"
     
 
   }

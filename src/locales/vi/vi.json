@@ -748,5 +748,9 @@
     "job_not_exist":"Công việc này đã bị xóa hoặc không tồn tại",
     "job_seen":"Việc làm đã xem",
     "still_recruiting":"Còn tuyển dụng",
-  "days_remaining":"ngày còn lại"
+  "days_remaining":"ngày còn lại",
+  "you_removing_one_job":"Bạn vừa xóa 1 công việc",
+  "you_have_successfully_saved_your_job":"Bạn đã lưu công việc thành công.",
+  "view_job_saved":"Xem việc làm đã lưu",
+  "date_format":"Định dạng ngày"
 }

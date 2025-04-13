@@ -16,7 +16,8 @@ const FloatingButton = () => {
   const navigate = useNavigate(); // Sử dụng hook useNavigate
 
   // Hàm điều hướng đến trang system/activities
-  const handleNavigate = (route) => {
+  const handleNavigate = (route: string) => {
+    console.log("route", route);
     navigate(route);
   };
 
