@@ -15,6 +15,7 @@ import {
   Bookmark,
   BriefcaseBusiness,
   Eye,
+  FileText,
   LayoutDashboard,
   SettingsIcon,
   X,
@@ -27,6 +28,7 @@ import Applied from "./applied";
 import FavoriteJob from "./FavoriteJob";
 import ViewedJob from "./ViewedJob/ViewedJob";
 import SettingCandidate from "./setting";
+import MyCV from "./MyCV/MyCV";
 
 const DashboardCandidate = () => {
   const [searchParams] = useSearchParams();
@@ -96,6 +98,12 @@ const DashboardCandidate = () => {
       icon: <Eye className="mr-3" />,
       component: <ViewedJob />,
       // badge: "09",
+    },
+    {
+      key: "mycv",
+      label: t("mycv"),
+      icon: <FileText className="mr-3" />,
+      component: <MyCV />,
     },
     {
       key: "settings",
