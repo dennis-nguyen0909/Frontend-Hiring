@@ -214,7 +214,7 @@ export const JobApi = {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-          withCredentials: false,
+          withCredentials: true,
         }
       );
 
@@ -240,7 +240,7 @@ export const JobApi = {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-          withCredentials: false,
+          withCredentials: true,
         }
       );
 

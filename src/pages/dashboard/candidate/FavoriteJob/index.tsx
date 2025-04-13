@@ -1,5 +1,14 @@
 import { Button, Table, Image, Spin } from "antd";
-import { Bookmark, BookmarkCheck, MapPin } from "lucide-react";
+import {
+  Bookmark,
+  BookmarkCheck,
+  CheckCircle,
+  CircleCheck,
+  CircleX,
+  Eye,
+  Key,
+  MapPin,
+} from "lucide-react";
 import { API_FAVORITE_JOB } from "../../../../services/modules/FavoriteJobServices";
 import { useSelector } from "react-redux";
 import { useState } from "react";
@@ -10,6 +19,8 @@ import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useMomentFn from "../../../../hooks/useMomentFn";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa6";
+import { title } from "process";
 
 interface JobApplication {
   _id: string;
@@ -184,50 +195,88 @@ const FavoriteJob = () => {
       className: "min-w-[400px] text-[12px]",
     },
     {
+      title: t("status"),
+      key: "status",
+      render: (record: JobApplication) => {
+        if (record?.job_id === null) return null;
+
+        const expireDate = record?.job_id?.expire_date
+          ? new Date(record?.job_id?.expire_date)
+          : null;
+        const isExpired = expireDate && expireDate < new Date();
+        const daysRemaining = expireDate
+          ? Math.ceil(
+              (expireDate.getTime() - new Date().getTime()) /
+                (1000 * 60 * 60 * 24)
+            )
+          : 0;
+        return (
+          <div className="flex items-center gap-2">
+            <span>
+              {isExpired ? (
+                <CircleX className="text-red-500" size={14} />
+              ) : (
+                <CircleCheck size={14} className="text-blue-600" />
+              )}
+            </span>
+            {expireDate && (
+              <h3
+                className={`px-3 py-1 rounded-full text-[10px] font-medium ${
+                  isExpired
+                    ? "bg-red-50 text-red-600 border-red-100"
+                    : "bg-blue-50 text-blue-600 border-blue-100"
+                } shadow-sm hover:bg-blue-100 transition-colors duration-200`}
+              >
+                {isExpired
+                  ? t("expired")
+                  : `${daysRemaining} ${t("days_remaining")}`}
+              </h3>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       title: t("action"),
       key: "action",
-      render: (record: JobApplication) => (
-        <div className="flex justify-start items-center gap-4">
-          {record?.job_id &&
-          userDetail?.favorite_jobs?.some(
-            (job: FavoriteJob) => job.job_id === record?.job_id?._id
-          ) ? (
-            <BookmarkCheck
-              size={20}
-              onClick={() =>
-                handleFavorite(record?.job_id?._id, record?.job_id?.title)
-              }
-              className="text-blue-500 cursor-pointer hover:text-blue-600 transition-colors duration-200"
-            />
-          ) : (
-            <Bookmark
-              size={20}
-              onClick={() =>
-                handleFavorite(record?.job_id?._id, record?.job_id?.title)
-              }
-              className="text-gray-400 cursor-pointer hover:text-gray-500 transition-colors duration-200"
-            />
-          )}
-          {record?.job_id && (
-            <Button
-              onClick={() => onApplyNow(record?.job_id?._id)}
-              size="small"
-              type={
-                isExpired(record?.job_id?.expire_date) ? "default" : "primary"
-              }
-              className={`${
-                isExpired(record?.job_id?.expire_date)
-                  ? "bg-gray-200 text-gray-500"
-                  : "!bg-blue-500 hover:!bg-blue-600"
-              } text-[14px] font-medium transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg rounded-md px-2 py-1`}
-            >
-              {isExpired(record?.job_id?.expire_date)
-                ? t("job_expired")
-                : t("apply_now")}
-            </Button>
-          )}
-        </div>
-      ),
+      render: (record: JobApplication) => {
+        if (record?.job_id === null) return null;
+
+        const expireDate = record?.job_id?.expire_date
+          ? new Date(record?.job_id?.expire_date)
+          : null;
+        const isExpired = expireDate && expireDate < new Date();
+
+        return (
+          <div className="flex justify-start items-center gap-4">
+            {isExpired ? (
+              <Button
+                onClick={() =>
+                  navigate(`/job-information/${record?.job_id?._id}`)
+                }
+                size="small"
+                type="primary"
+                className="!bg-blue-500 hover:!bg-blue-600 text-[14px] font-medium transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg rounded-md px-2 py-1 flex items-center gap-1"
+              >
+                <Eye className="w-3 h-3" />
+                {t("view_detail")}
+              </Button>
+            ) : (
+              <Button
+                onClick={() =>
+                  navigate(`/job-information/${record?.job_id?._id}`)
+                }
+                size="small"
+                type="primary"
+                className="!bg-blue-500 hover:!bg-blue-600 text-[14px] font-medium transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg rounded-md px-2 py-1 flex items-center gap-1"
+              >
+                <CheckCircle className="w-3 h-3" />
+                {t("apply_now")}
+              </Button>
+            )}
+          </div>
+        );
+      },
       className: "min-w-[200px] text-[14px]",
     },
   ];

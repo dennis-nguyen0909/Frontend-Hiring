@@ -9,7 +9,7 @@ import {
   Eye,
   MapPin,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";

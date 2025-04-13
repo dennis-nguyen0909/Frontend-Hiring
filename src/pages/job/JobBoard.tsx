@@ -72,6 +72,9 @@ const popularSearches = [
 ];
 
 export default function JobBoard() {
+  const location = useLocation();
+  const { keyword } = location.state || {};
+  const [searchTerm, setSearchTerm] = useState(keyword || "");
   const userDetail = useSelector((state: RootState) => state.user);
   const [collapsed, setCollapsed] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState("newest");
@@ -79,16 +82,13 @@ export default function JobBoard() {
   const [selectedFilters, setSelectedFilters] = useState<{
     [key: string]: string[];
   }>({});
-  const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const { data: jobTypes } = useJobType();
   const { data: jobContractTypes } = useContractType();
   const { cities } = useCities();
   const [searchCity, setSearchCity] = useState<string>("");
-  const location = useLocation();
   const { t } = useTranslation();
-  const { keyword } = location.state || {};
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(9);
 

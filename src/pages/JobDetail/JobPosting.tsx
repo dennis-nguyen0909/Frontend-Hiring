@@ -1,5 +1,14 @@
 import { Check } from "lucide-react";
-import { Avatar, Button, Card, Form, Modal, Select, Spin, Tag } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Modal,
+  notification,
+  Select,
+  Spin,
+  Tag,
+} from "antd";
 import { useEffect, useState } from "react";
 import { Job } from "../../types";
 import { JobApi } from "../../services/modules/jobServices";
@@ -12,12 +21,12 @@ import TextArea from "antd/es/input/TextArea";
 import { API_APPLICATION } from "../../services/modules/ApplicationServices";
 import { toast } from "react-toastify";
 import { CV_API } from "../../services/modules/CvServices";
-import { HeartFilled, HeartOutlined } from "@ant-design/icons";
+import { FaRegBookmark, FaBookmark } from "react-icons/fa6";
 import { API_FAVORITE_JOB } from "../../services/modules/FavoriteJobServices";
 import useMomentFn from "../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import CustomAvatar from "../../components/CustomAvatar/CustomAvatar";
-import { formatCurrency, formatCurrencyWithSymbol } from "../../untils";
+import { formatCurrencyWithSymbol } from "../../untils";
 
 export default function JobPosting() {
   const { t } = useTranslation();
@@ -141,11 +150,35 @@ export default function JobPosting() {
         userDetail?.access_token
       );
       if (+res.statusCode === 201) {
-        // Update the local state after successful like operation
         setLike((prevLike) => ({
           ...prevLike,
-          _id: prevLike?._id ? null : res?.data?._id, // Toggle the like status
+          _id: prevLike?._id ? null : res?.data?._id,
         }));
+        if (res?.data?.length === 0) {
+          notification.success({
+            message: "Thông báo",
+            description: "Bạn vừa xóa 1 công việc",
+          });
+        }
+
+        if (res?.data?._id) {
+          notification.success({
+            message: "Thông báo",
+            description: (
+              <span>
+                Bạn đã lưu việc làm thành công.{" "}
+                <a
+                  onClick={() =>
+                    navigate("/dashboard/candidate?activeTab=favoriteJobs")
+                  }
+                  className="text-blue-500 hover:text-blue-600 cursor-pointer"
+                >
+                  Xem việc làm đã lưu
+                </a>
+              </span>
+            ),
+          });
+        }
       }
     } catch (error) {
       console.error(error);
@@ -201,15 +234,13 @@ export default function JobPosting() {
             <div className="flex items-center gap-4">
               <div className="hover:scale-110 transform transition-transform duration-200 cursor-pointer">
                 {like?._id ? (
-                  <HeartFilled
+                  <FaBookmark
                     onClick={onLike}
-                    style={{ color: "red", fontSize: "24px" }}
+                    size={20}
+                    className="text-primaryColor"
                   />
                 ) : (
-                  <HeartOutlined
-                    onClick={onLike}
-                    style={{ fontSize: "24px" }}
-                  />
+                  <FaRegBookmark onClick={onLike} size={20} />
                 )}
               </div>
               {new Date(jobDetail?.expire_date) < new Date() ? (
