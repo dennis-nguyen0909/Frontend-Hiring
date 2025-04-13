@@ -1,4 +1,4 @@
-import { Input, Select } from "antd";
+import { Select } from "antd";
 import { ArrowRight, Pencil, Plus, Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { API_LOG_ACTIVITY } from "../../services/modules/LogServices";
@@ -21,10 +21,6 @@ export default function SystemActivities() {
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const { formatDate } = useMomentFn();
   const { t } = useTranslation();
-  const [dateRange, setDateRange] = useState({
-    start_date: "",
-    end_date: "",
-  });
 
   const handleGetSystemActivities = async (
     current = 1,
@@ -57,7 +53,6 @@ export default function SystemActivities() {
 
     let newValue = value;
 
-    // Nếu key là avatar, trả về thẻ <a> với link
     if (key === "avatar" && typeof value === "string") {
       return (
         <a
@@ -71,23 +66,19 @@ export default function SystemActivities() {
       );
     }
 
-    // Kiểm tra nếu value là boolean và trả về giá trị chuỗi tương ứng
     if (typeof value === "boolean") {
       return value ? t("on") : t("off");
     }
 
-    // Tối ưu hóa phần kiểm tra 'gender'
     if (key === "gender") {
       const genderMap: { [key: number]: string } = {
         0: t("0"),
         1: t("1"),
         2: t("2"),
       };
-
-      return genderMap[+value] || t("unknown"); // Trả về nếu gender hợp lệ, hoặc 'unknown' nếu không
+      return genderMap[+value] || t("unknown");
     }
 
-    // Kiểm tra và format ngày nếu hợp lệ
     if (moment(value, moment.ISO_8601, true).isValid()) {
       newValue = formatDate(value);
     }
@@ -115,11 +106,10 @@ export default function SystemActivities() {
     );
   };
 
-  // Debounce search input
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       setDebouncedSearch(search);
-    }, 300); // 300ms delay
+    }, 300);
 
     return () => clearTimeout(delayDebounce);
   }, [search]);
@@ -130,46 +120,34 @@ export default function SystemActivities() {
     }
   }, [debouncedSearch]);
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
-  };
-
   const handleActivity = (value: any) => {
     const userName = t("your") || value?.userId?.full_name;
     const activityDetail = value?.activityDetail;
     const entityName = value?.entityName;
-    const link = value?.changesLink?.link;
-    if (value?.action === "CREATE") {
-      return `${userName} ${t("has")} ${t("activity_create")} ${t(
+
+    const activityMessages: { [key: string]: string } = {
+      CREATE: `${userName} ${t("has")} ${t("activity_create")} ${t(
         activityDetail
-      )} ${entityName}`;
-    } else if (value?.action === "UPDATE") {
-      // Ví dụ về việc sử dụng `i18n` để tạo câu trả về với tham số động
-      return `${userName} ${t("has")} ${t("activity_update")} ${t(
+      )} ${entityName}`,
+      UPDATE: `${userName} ${t("has")} ${t("activity_update")} ${t(
         activityDetail,
-        {
-          entityName: entityName, // Chèn entityName vào chuỗi dịch
-        }
-      )}`;
-    } else if (value?.action === "DELETE") {
-      return `${userName} ${t("has")} ${t(activityDetail, {
-        entityName: entityName, // Chèn entityName vào chuỗi dịch
-      })}`;
-    } else if (value?.action === "APPLY") {
-      return `${userName} ${t("has")} ${t("activity_apply")} ${t(entityName)}`;
-    } else if (value?.action === "FAVORITE") {
-      return `${userName} ${t("has")} ${t("activity_favorite")} ${t(
+        { entityName }
+      )}`,
+      DELETE: `${userName} ${t("has")} ${t(activityDetail, { entityName })}`,
+      APPLY: `${userName} ${t("has")} ${t("activity_apply")} ${t(entityName)}`,
+      FAVORITE: `${userName} ${t("has")} ${t("activity_favorite")} ${t(
         entityName
-      )}`;
-    } else if (value?.action === "UNFAVORITE") {
-      return `${userName} ${t("has")} ${t("activity_unfavorite")} ${t(
+      )}`,
+      UNFAVORITE: `${userName} ${t("has")} ${t("activity_unfavorite")} ${t(
         entityName
-      )}`;
-    } else if (value?.action === "UPLOAD_CV") {
-      return `${userName} ${t("has")} ${t("activity_upload_cv")}`;
-    } else if (value?.action === "DELETE_CV") {
-      return `${userName} ${t("has")} ${t("activity_delete_cv")} ${entityName}`;
-    }
+      )}`,
+      UPLOAD_CV: `${userName} ${t("has")} ${t("activity_upload_cv")}`,
+      DELETE_CV: `${userName} ${t("has")} ${t(
+        "activity_delete_cv"
+      )} ${entityName}`,
+    };
+
+    return activityMessages[value?.action] || "";
   };
 
   const changesLinkDisplay = (activity: Activities) => {
@@ -205,34 +183,42 @@ export default function SystemActivities() {
   };
 
   const handleSelectAction = async (value: string) => {
-    setAction(value.toLocaleUpperCase());
+    setAction(value.toUpperCase());
     await handleGetSystemActivities(1, 10, {
-      action: value.toLocaleUpperCase(),
+      action: value.toUpperCase(),
     });
   };
+
   const handleSelectRole = async (value: string) => {
-    setRole(value.toLocaleUpperCase());
+    setRole(value.toUpperCase());
     await handleGetSystemActivities(1, 10, {
-      userRole: value.toLocaleUpperCase(),
+      userRole: value.toUpperCase(),
     });
   };
+
+  const getActivityIcon = (action: string) => {
+    const icons: { [key: string]: { icon: JSX.Element; color: string } } = {
+      CREATE: { icon: <Plus size={12} />, color: "blue-500" },
+      UPDATE: { icon: <Pencil size={12} />, color: "green-500" },
+      UPLOAD_CV: { icon: <Pencil size={12} />, color: "green-500" },
+      DELETE: { icon: <Trash2 size={12} />, color: "red-500" },
+      DELETE_CV: { icon: <Trash2 size={12} />, color: "red-500" },
+      APPLY: { icon: <InfoOutlined size={12} />, color: "blue-500" },
+      FAVORITE: { icon: <Star size={12} />, color: "yellow-500" },
+      UNFAVORITE: { icon: <Star size={12} />, color: "gray-500" },
+    };
+
+    return icons[action] || { icon: <Plus size={12} />, color: "blue-500" };
+  };
+
   return (
-    <div className="p-4 max-w-full  mx-6">
-      {/* Search and Filter Bar */}
+    <div className="p-4 max-w-full mx-6">
       <div className="flex gap-4 mb-6">
-        {/* <SearchInput
-          placeholder={t("search")}
-          color="black"
-          borderColor="black"
-          value={search}
-          onChange={(e) => handleSearch(e.target.value)}
-          onClick={() => handleSearch(search)}
-        /> */}
         <Select
           defaultValue="all"
           style={{ width: 200 }}
           placeholder={t("select_action")}
-          onChange={(value) => handleSelectAction(value)}
+          onChange={handleSelectAction}
         >
           <Select.Option value="all">{t("all_actions")}</Select.Option>
           <Select.Option value="update">{t("update")}</Select.Option>

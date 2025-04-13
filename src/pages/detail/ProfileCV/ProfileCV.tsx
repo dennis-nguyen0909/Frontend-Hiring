@@ -1,12 +1,4 @@
-import {
-  Form,
-  Input,
-  Button,
-  Avatar,
-  Divider,
-  Switch,
-  notification,
-} from "antd";
+import { Form, Button, Avatar, Divider, Switch, notification } from "antd";
 import avtDefault from "../../../assets/avatars/avatar-default.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { CheckCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
@@ -25,7 +17,7 @@ const ProfileCV = () => {
 
   useEffect(() => {
     if (!userDetail?.access_token) {
-      navigate('/');
+      navigate("/");
       return;
     }
   }, [userDetail?.access_token]);
@@ -104,8 +96,8 @@ const ProfileCV = () => {
           </div>
           <div>
             <div className="flex flex-wrap gap-0">
-            <p className="text-[12px]">Chào bạn trở lại,</p>
-            <b className="text-[12px]">{userDetail.full_name}</b>
+              <p className="text-[12px]">Chào bạn trở lại,</p>
+              <b className="text-[12px]">{userDetail.full_name}</b>
             </div>
             <div className="bg-[#7b8381] px-1 py-1 rounded-sm text-white text-[12px] w-fit">
               <p>Tài khoản đã xác thực</p>

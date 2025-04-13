@@ -99,19 +99,6 @@ const ViewedJob = () => {
                       {t(record.job_type?.key)}
                     </h3>
                   )}
-                  {record.expire_date && (
-                    <h3
-                      className={`px-3 py-1 rounded-full text-[10px] font-medium ${
-                        new Date(record.expire_date) < new Date()
-                          ? "bg-red-50 text-red-600 border-red-100"
-                          : "bg-blue-50 text-blue-600 border-blue-100"
-                      } shadow-sm hover:bg-blue-100 transition-colors duration-200`}
-                    >
-                      {new Date(record.expire_date) < new Date()
-                        ? t("expired")
-                        : formatDate(record.expire_date)}
-                    </h3>
-                  )}
                 </>
               )}
             </div>
@@ -147,43 +134,56 @@ const ViewedJob = () => {
       ),
       className: "min-w-[200px] text-[12px]",
     },
-    {
-      title: t("date_applied"),
-      dataIndex: "dateApplied",
-      key: "dateApplied",
-      className: "min-w-[150px] text-[12px]",
-      render: (record: Applied) => (
-        <div className="text-[12px]">{formatDate(record?.expire_date)}</div>
-      ),
-    },
+    // {
+    //   title: t("date_applied"),
+    //   dataIndex: "dateApplied",
+    //   key: "dateApplied",
+    //   className: "min-w-[150px] text-[12px]",
+    //   render: (record: Applied) => (
+    //     <div className="text-[12px]">{formatDate(record?.expire_date)}</div>
+    //   ),
+    // },
     {
       title: t("status"),
       dataIndex: "status",
       key: "status",
-      render: (text: string) => (
-        <div className="flex items-center gap-2">
-          <span>
-            {text === "pending" ? (
-              <Circle size={14} className="text-yellow-500" />
-            ) : text === "rejected" ? (
-              <CircleX className="text-red-500" size={14} />
-            ) : (
-              <CircleCheck size={14} className="text-green-500" />
+      render: (text: string, record: Applied) => {
+        const expireDate = record.expire_date
+          ? new Date(record.expire_date)
+          : null;
+        const isExpired = expireDate && expireDate < new Date();
+        const daysRemaining = expireDate
+          ? Math.ceil(
+              (expireDate.getTime() - new Date().getTime()) /
+                (1000 * 60 * 60 * 24)
+            )
+          : 0;
+
+        return (
+          <div className="flex items-center gap-2">
+            <span>
+              {isExpired ? (
+                <CircleX className="text-red-500" size={14} />
+              ) : (
+                <CircleCheck size={14} className="text-blue-600" />
+              )}
+            </span>
+            {expireDate && (
+              <h3
+                className={`px-3 py-1 rounded-full text-[10px] font-medium ${
+                  isExpired
+                    ? "bg-red-50 text-red-600 border-red-100"
+                    : "bg-blue-50 text-blue-600 border-blue-100"
+                } shadow-sm hover:bg-blue-100 transition-colors duration-200`}
+              >
+                {isExpired
+                  ? t("expired")
+                  : `${daysRemaining} ${t("days_remaining")}`}
+              </h3>
             )}
-          </span>
-          <span
-            className={`${
-              text === "pending"
-                ? "text-yellow-500"
-                : text === "rejected"
-                ? "text-red-500"
-                : "text-green-500"
-            } text-[14px]`}
-          >
-            {capitalizeFirstLetter(text)}
-          </span>
-        </div>
-      ),
+          </div>
+        );
+      },
       className: "min-w-[120px] text-[12px]",
     },
     {
@@ -197,7 +197,7 @@ const ViewedJob = () => {
           className="!bg-blue-500 hover:!bg-blue-600 text-[14px] font-medium transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg rounded-md px-2 py-1 flex items-center gap-1"
         >
           <Eye className="w-3 h-3" />
-          {t("view_detail")}
+          {t("apply_now")}
         </Button>
       ),
       className: "min-w-[120px] text-[14px]",

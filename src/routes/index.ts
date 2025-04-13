@@ -116,7 +116,6 @@ export const privateRoutes: IRoute[] = [
     isShowHeader: true,
     isShowFooter: true,
     isPrivate: true,
-    roles: ["admin"],
     title: "System Activities",
   },
 ];

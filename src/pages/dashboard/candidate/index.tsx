@@ -8,7 +8,7 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { resetUser } from "../../../redux/slices/userSlices";
 import {
   AlignJustify,
@@ -29,8 +29,11 @@ import ViewedJob from "./ViewedJob/ViewedJob";
 import SettingCandidate from "./setting";
 
 const DashboardCandidate = () => {
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get("activeTab") || "overview"
+  );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();

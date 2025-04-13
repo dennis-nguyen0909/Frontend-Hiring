@@ -70,12 +70,6 @@ export function JobCard({ job, onSave }: JobCardProps) {
               )}
             </div>
           </div>
-          <button
-            onClick={() => onSave?.(job.id)}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <BookOutlined className={job.isSaved ? "text-blue-500" : ""} />
-          </button>
         </div>
         <div className="flex items-center gap-3">
           <Avatar
