@@ -752,5 +752,23 @@
   "you_removing_one_job":"Bạn vừa xóa 1 công việc",
   "you_have_successfully_saved_your_job":"Bạn đã lưu công việc thành công.",
   "view_job_saved":"Xem việc làm đã lưu",
-  "date_format":"Định dạng ngày"
+  "date_format":"Định dạng ngày",
+  "mycv":"CV của tôi",
+  "your_resume":"CV của bạn",
+  "last_updated":"Cập nhật gần nhất",
+  "add_cv_resume":"Tạo CV / Lý lịch",
+  "browse_file_hint":"Tải lên file CV của bạn (PDF, DOC, DOCX) hoặc tạo CV mới",
+  "edit_cv":"Cập nhật CV",
+  "upload_cv_hint":"Tải lên CV/Resume của bạn",
+  "supported_formats":"Hỗ trợ định dạng: PDF, DOC, DOCX",
+  "upload_success":"Tải lên thành công",
+  "file_upload_success":"Tải file lên thành công",
+  "delete_all":"Xóa tất cả",
+  "are_you_sure_delete_all_cv":"Bạn có chắc chắn xóa tất cả CV ?",
+  "deleting":"Đang xóa",
+  "are_you_sure_delete_cv":"Bạn có chắc chắn xóa CV này?",
+  "upload_success_count": "Đã tải lên thành công {{count}} CV",
+  "upload_failed_count": "Đã tải lên thất bại {{count}} CV"
+
+
 }

@@ -745,7 +745,27 @@
     "you_removing_one_job":"You just deleted a job.",
     "you_have_successfully_saved_your_job":"You have successfully saved your job.",
     "view_job_saved":"View saved jobs",
-    "date_format":"Date format"
+    "date_format":"Date format",
+    "mycv":"My CV",
+    "your_resume":"Your CV/Resume",
+    "last_updated":"Last updated",
+    "add_cv_resume":"Create CV / Resume",
+    "browse_file_hint":"Upload your CV file (PDF, DOC, DOCX) or create a new CV",
+    "edit_cv":"Edit CV",
+     "upload_cv_hint":"Upload your CV/Resume",
+     "supported_formats":"Supported formats: PDF, DOC, DOCX",
+  "upload_success":"Upload success",
+  "file_upload_success":"File upload success",
+  "delete_all":"Delete all",
+  "are_you_sure_delete_all_cv":"Are you sure you want to delete all CVs?",
+  "deleting":"Deleting",
+  "are_you_sure_delete_cv":"Are you sure you want to delete this CV?",
+    "upload_success_count": "Successfully uploaded {{count}} CV(s)",
+    "upload_failed_count": "Failed to upload {{count}} CV(s)"
+  
+  
+
+
     
 
   }
