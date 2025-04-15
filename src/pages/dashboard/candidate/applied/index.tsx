@@ -1,15 +1,24 @@
-import { Button, Image, Table, Spin } from "antd";
+import React, { useState, useEffect } from "react";
+import { Button, Image, Table, Spin, Dropdown, Modal } from "antd";
+import type { MenuProps } from "antd";
 import { useSelector } from "react-redux";
-import { useState, useEffect } from "react";
 import { Meta } from "../../../../types";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
-import { Circle, CircleCheck, CircleX, MapPin, Eye } from "lucide-react";
+import {
+  Circle,
+  CircleCheck,
+  CircleX,
+  MapPin,
+  Eye,
+  Ellipsis,
+} from "lucide-react";
 import { capitalizeFirstLetter, formatCurrency } from "../../../../untils";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
+import { Document, Page, pdfjs } from "react-pdf";
 
 interface Applied {
   _id: string;
@@ -38,7 +47,7 @@ interface AppliedResponse {
 interface RootState {
   user: { _id: string; access_token: string };
 }
-
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const Applied = () => {
   const userDetail = useSelector((state: RootState) => state.user);
   const [meta, setMeta] = useState<Meta>({
@@ -51,6 +60,21 @@ const Applied = () => {
   const { formatDate } = useMomentFn();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [isPdfVisible, setIsPdfVisible] = useState(false);
+  const pdfUrl =
+    "http://res.cloudinary.com/da1ku5kao/raw/upload/v1744562619/hiring/pdf/ujco7poflxxpl0u6tsgf";
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1); // Để hiển thị trang đầu tiên
+
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
+
+  const handleCancelPdf = () => {
+    setIsPdfVisible(false);
+    setNumPages(null); // Reset số trang khi đóng modal
+    setPageNumber(1); // Reset về trang đầu tiên
+  };
 
   const queryOptions: UseQueryOptions<AppliedResponse> = {
     queryKey: [
@@ -81,6 +105,28 @@ const Applied = () => {
   useEffect(() => {
     if (data?.meta) setMeta(data.meta);
   }, [data?.meta]);
+
+  const handleWithdraw = (record: Applied) => {
+    setIsPdfVisible(true);
+    console.log("Withdraw application:", record._id);
+    // Thêm logic thực tế để rút ứng tuyển tại đây nếu cần
+  };
+
+  const getMenuItems = (record: Applied): MenuProps["items"] => [
+    {
+      key: "view",
+      label: t("view_detail"),
+      icon: <Eye className="w-3 h-3" />,
+      onClick: () => navigate(`/job-information/${record.job_id._id}`),
+    },
+    {
+      key: "withdraw",
+      label: t("withdraw_application"),
+      icon: <CircleX className="w-3 h-3" />,
+      danger: true,
+      onClick: () => handleWithdraw(record),
+    },
+  ];
 
   const columns = [
     {
@@ -202,18 +248,22 @@ const Applied = () => {
       className: "min-w-[120px] text-[12px]",
     },
     {
-      title: t("action"),
+      title: "",
       key: "action",
       render: (record: Applied) => (
-        <Button
-          onClick={() => navigate(`/job-information/${record.job_id._id}`)}
-          size="small"
-          type="primary"
-          className="!bg-blue-500 hover:!bg-blue-600 text-[14px] font-medium transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg rounded-md px-2 py-1 flex items-center gap-1"
+        <Dropdown
+          menu={{ items: getMenuItems(record) }}
+          placement="bottomRight"
+          trigger={["hover"]}
         >
-          <Eye className="w-3 h-3" />
-          {t("view_detail")}
-        </Button>
+          <Button
+            size="small"
+            type="text"
+            className="!bg-gray-100 hover:!bg-gray-200 text-[14px] font-medium transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm hover:shadow-md rounded-md px-2 py-1 flex items-center justify-center"
+          >
+            <Ellipsis className="w-4 h-4 text-gray-600" />
+          </Button>
+        </Dropdown>
       ),
       className: "min-w-[120px] text-[14px]",
     },
@@ -255,6 +305,45 @@ const Applied = () => {
           }
         />
       </div>
+
+      <Modal
+        title={t("view_pdf")}
+        open={isPdfVisible}
+        onCancel={handleCancelPdf}
+        width="90%"
+        style={{ top: 20 }}
+        footer={null}
+      >
+        <div style={{ height: "600px", overflow: "auto" }}>
+          <Document
+            file={pdfUrl}
+            onLoadSuccess={onDocumentLoadSuccess}
+            // onError={(error) => console.error('Error loading PDF', error)}
+          >
+            <Page pageNumber={pageNumber} width={window.innerWidth * 0.8} />{" "}
+            {/* Điều chỉnh width cho phù hợp */}
+          </Document>
+        </div>
+        {numPages > 1 && (
+          <div style={{ textAlign: "center", marginTop: 10 }}>
+            <Button
+              disabled={pageNumber <= 1}
+              onClick={() => setPageNumber(pageNumber - 1)}
+            >
+              {t("previous")}
+            </Button>
+            <span style={{ margin: "0 10px" }}>
+              {t("page")} {pageNumber} {t("of")} {numPages}
+            </span>
+            <Button
+              disabled={pageNumber >= numPages}
+              onClick={() => setPageNumber(pageNumber + 1)}
+            >
+              {t("next")}
+            </Button>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
