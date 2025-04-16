@@ -9,8 +9,8 @@ interface AuthGuardProps {
 
 export const AuthGuard = ({ children, route }: AuthGuardProps) => {
   // TODO: Implement your authentication logic here
-  const isAuthenticated = true; // Replace with actual auth check
-  const userRole = "user"; // Replace with actual user role
+  const isAuthenticated = true;
+  const userRole = "user";
 
   if (route.isPrivate && !isAuthenticated) {
     return <Navigate to="/login" replace />;

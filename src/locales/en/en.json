@@ -761,7 +761,13 @@
   "deleting":"Deleting",
   "are_you_sure_delete_cv":"Are you sure you want to delete this CV?",
     "upload_success_count": "Successfully uploaded {{count}} CV(s)",
-    "upload_failed_count": "Failed to upload {{count}} CV(s)"
+    "upload_failed_count": "Failed to upload {{count}} CV(s)",
+    "cv_preview":"Preview CV",
+  "withdraw_application":"View application", 
+    "withdraw_application_success":"Withdraw application successfully",
+    "withdraw_application_failed":"Withdraw application failed",
+    "share":"Share",
+    "download":"Download"
   
   
 
