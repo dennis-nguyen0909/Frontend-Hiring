@@ -29,6 +29,7 @@ import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store/store";
 import { CV_API } from "../../../../services/modules/CvServices";
+import { MediaApi } from "../../../../services/modules/mediaServices";
 
 interface CV {
   _id: string;
@@ -167,6 +168,7 @@ const MyCV: React.FC = () => {
     const link = document.createElement("a");
     link.href = cv.cv_link;
     link.download = cv.cv_name;
+    link.target = "_blank";
     link.click();
   };
 
@@ -190,7 +192,7 @@ const MyCV: React.FC = () => {
             const params = {
               user_id: userDetail?.id,
               cv_name: file.response.data.originalName,
-              cv_link: file.response.data.url,
+              cv_link: file.response.data.result.url,
               public_id: file.response.data.result.public_id,
               bytes: file.response.data.result.bytes,
             };
@@ -238,13 +240,34 @@ const MyCV: React.FC = () => {
     }
   };
 
+  const handleCancelUpload = async () => {
+    if (fileList.length > 0 && fileList[0].response) {
+      try {
+        // Delete the uploaded file from storage
+        const publicId = fileList[0].response.data.result.public_id;
+        MediaApi.deleteMedia(publicId, userDetail?.access_token);
+      } catch (error) {
+        console.error("Error deleting uploaded file:", error);
+        notification.error({
+          message: t("notification"),
+          description: t("file_deleted_failed"),
+        });
+      }
+    }
+    setUploadModalVisible(false);
+    setFileList([]);
+  };
+
   const uploadProps = {
     name: "file",
-    multiple: true,
+    multiple: false,
     accept: ".doc,.docx,.pdf",
     action: `${import.meta.env.VITE_API_URL}/media/upload-pdf`,
     headers: {
       "x-requested-with": "XMLHttpRequest",
+    },
+    data: {
+      userId: userDetail?.id,
     },
     fileList,
     onChange(info: UploadChangeParam<UploadFile>) {
@@ -267,51 +290,27 @@ const MyCV: React.FC = () => {
   const getDropdownItems = (cv: CV): MenuProps["items"] => [
     {
       key: "download",
-      label: (
-        <div
-          className="flex items-center text-blue-500 py-2 px-1"
-          onClick={() => handleDownload(cv)}
-        >
-          <Download size={16} className="mr-2" />
-          <span>{t("download")}</span>
-        </div>
-      ),
+      label: t("download"),
+      icon: <Download size={16} className="text-blue-500" />,
+      onClick: () => handleDownload(cv),
     },
     {
       key: "share",
-      label: (
-        <div
-          className="flex items-center text-green-500 py-2 px-1"
-          onClick={handleShare}
-        >
-          <Forward size={16} className="mr-2" />
-          <span>{t("share")}</span>
-        </div>
-      ),
+      label: t("share"),
+      icon: <Forward size={16} className="text-green-500" />,
+      onClick: handleShare,
     },
     {
       key: "edit",
-      label: (
-        <div
-          className="flex items-center text-blue-500 py-2 px-1"
-          onClick={() => handleEdit(cv)}
-        >
-          <Edit size={16} className="mr-2" />
-          <span>{t("edit")}</span>
-        </div>
-      ),
+      label: t("edit"),
+      icon: <Edit size={16} className="text-blue-500" />,
+      onClick: () => handleEdit(cv),
     },
     {
       key: "delete",
-      label: (
-        <div
-          className="flex items-center text-red-500 py-2 px-1"
-          onClick={() => handleDelete(cv._id)}
-        >
-          <Trash2 size={16} className="mr-2" />
-          <span>{t("delete")}</span>
-        </div>
-      ),
+      label: t("delete"),
+      icon: <Trash2 size={16} className="text-red-500" />,
+      onClick: () => handleDelete(cv._id),
     },
   ];
 
@@ -342,7 +341,9 @@ const MyCV: React.FC = () => {
               <div className="flex items-center">
                 <FileText size={24} className="text-blue-500 mr-3" />
                 <div>
-                  <h3 className="font-medium">{cv.cv_name}</h3>
+                  <h3 className="font-medium truncate max-w-[200px]">
+                    {cv.cv_name}
+                  </h3>
                   <p className="text-gray-500 text-sm">
                     {t("last_updated")} {formatDate(cv.updatedAt)}
                   </p>
@@ -414,10 +415,7 @@ const MyCV: React.FC = () => {
       <Modal
         title={t("upload_cv")}
         open={uploadModalVisible}
-        onCancel={() => {
-          setUploadModalVisible(false);
-          setFileList([]);
-        }}
+        onCancel={handleCancelUpload}
         footer={null}
         width={600}
       >
@@ -433,14 +431,7 @@ const MyCV: React.FC = () => {
           </Upload.Dragger>
 
           <div className="flex justify-end gap-3 mt-4">
-            <Button
-              onClick={() => {
-                setUploadModalVisible(false);
-                setFileList([]);
-              }}
-            >
-              {t("cancel")}
-            </Button>
+            <Button onClick={handleCancelUpload}>{t("cancel")}</Button>
             <Button
               type="primary"
               onClick={handleUploadCV}

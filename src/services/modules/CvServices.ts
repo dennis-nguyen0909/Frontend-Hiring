@@ -1,6 +1,6 @@
 // src/services/educationService.ts
 import { CV } from "../api/route.api";
-import { axiosInstance } from "../config/axiosInterceptor"; 
+import { axiosInstance } from "../config/axiosInterceptor";
 
 // Định nghĩa EducationApi và hàm postEducation
 export const CV_API = {
@@ -14,10 +14,10 @@ export const CV_API = {
     if (res.data) return res.data;
     return null;
   },
-  getAll: async (params:any,accessToken: string) => {
+  getAll: async (params: any, accessToken: string) => {
     const resData = await axiosInstance.get(`${CV}`, {
       params: {
-        ...params
+        ...params,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -27,7 +27,7 @@ export const CV_API = {
     if (resData.data) return resData.data;
     return null;
   },
-  findById: async (id:string ,accessToken: string) => {
+  findById: async (id: string, accessToken: string) => {
     const res = await axiosInstance.get(`${CV}/${id}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -37,8 +37,8 @@ export const CV_API = {
     if (res.data) return res.data;
     return null;
   },
-  update: async (id:string ,body:any,accessToken: string) => {
-    const res = await axiosInstance.patch(`${CV}/${id}`,body ,{
+  update: async (id: string, body: any, accessToken: string) => {
+    const res = await axiosInstance.patch(`${CV}/${id}`, body, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -49,7 +49,7 @@ export const CV_API = {
   },
   deleteManyCVByUser: async (ids: Array<string>, accessToken: string) => {
     const res = await axiosInstance({
-      method: 'delete',
+      method: "delete",
       url: `${CV}`,
       data: { ids },
       headers: {
@@ -57,7 +57,7 @@ export const CV_API = {
       },
       withCredentials: true,
     });
-  
+
     if (res.data) return res.data;
     return null;
   },

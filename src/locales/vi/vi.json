@@ -768,7 +768,13 @@
   "deleting":"Đang xóa",
   "are_you_sure_delete_cv":"Bạn có chắc chắn xóa CV này?",
   "upload_success_count": "Đã tải lên thành công {{count}} CV",
-  "upload_failed_count": "Đã tải lên thất bại {{count}} CV"
-
+  "upload_failed_count": "Đã tải lên thất bại {{count}} CV",
+  "cv_preview":"Xem CV",
+  "withdraw_application":"Xem CV ứng tuyển", 
+  "withdraw_application_success":"Thu hồi ứng tuyển thành công",
+  "withdraw_application_failed":"Thu hồi ứng tuyển thất bại",
+  "share":"Chia sẻ",
+  "download":"Tải xuống"
+  
 
 }
