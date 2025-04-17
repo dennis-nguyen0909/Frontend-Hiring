@@ -125,7 +125,11 @@ const ProjectComponent = () => {
   const onFileChange = async (file: any) => {
     try {
       setLoading(true);
-      const res = await MediaApi.postMedia(file, userDetail?.access_token);
+      const res = await MediaApi.postMedia(
+        file,
+        userDetail?._id,
+        userDetail?.access_token
+      );
       if (res.data.url) {
         setImgUrl(res.data.url);
       }

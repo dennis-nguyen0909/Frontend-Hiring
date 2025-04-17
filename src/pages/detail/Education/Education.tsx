@@ -133,7 +133,8 @@ const EducationComponent = () => {
                 <p style={{ margin: 0 }}>{school}</p>
                 <p className="block text-gray-600 text-[10px]">{major}</p>
                 <p className="block text-gray-500 text-[10px]">
-                  {formatDate(start_date)} - {formatDate(end_date || null)}
+                  {formatDate(start_date)} -{" "}
+                  {end_date === null ? t("present") : formatDate(end_date)}
                 </p>
               </div>
               <Pencil
@@ -205,7 +206,7 @@ const EducationComponent = () => {
         const data = form.getFieldsValue();
         const res = await EducationApi.updateEducation(
           education._id,
-          data,
+          { end_date: data.currently_studying && null, ...data },
           user.access_token
         );
         if (res.data) {

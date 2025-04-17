@@ -44,9 +44,9 @@ const ExperienceComponent = () => {
     label: t(`month_${i + 1}`),
   }));
 
-  const years = Array.from({ length: 30 }, (_, i) => ({
-    value: 2024 - i,
-    label: `${2024 - i}`,
+  const years = Array.from({ length: 200 }, (_, i) => ({
+    value: new Date().getFullYear() + 100 - i,
+    label: `${new Date().getFullYear() + 100 - i}`,
   }));
   const userDetail = useSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -220,6 +220,7 @@ const ExperienceComponent = () => {
         endYear,
         endMonth,
       });
+      setCurrentlyWorking(workExperience?.currently_working);
     }
   }, [workExperience]);
 
@@ -254,12 +255,25 @@ const ExperienceComponent = () => {
   const handleUpdateExperience = async () => {
     setIsLoading(true);
     let data = form.getFieldsValue();
+    const start_date = moment
+      .utc(`${data.startYear}-${data.startMonth}-01`, "YYYY-MM-DD")
+      .toDate();
+    const end_date = !data.currently_working
+      ? moment.utc(`${data.endYear}-${data.endMonth}-01`, "YYYY-MM-DD").toDate()
+      : null;
+
     if (selectedFile) {
       data = {
         ...data,
         image_url: selectedFile,
       };
     }
+    data = {
+      ...data,
+      end_date: data.currently_working ? null : end_date,
+      start_date,
+    };
+    console.log("duydeptrai", data);
     const res = await ExperienceApi.updateExperience(
       selectedId,
       data,
@@ -293,7 +307,11 @@ const ExperienceComponent = () => {
     const file = e.target.files[0];
     if (file) {
       try {
-        const res = await MediaApi.postMedia(file, userDetail.access_token);
+        const res = await MediaApi.postMedia(
+          file,
+          userDetail?._id,
+          userDetail.access_token
+        );
         if (res?.data?.url) {
           setSelectedFile(res?.data?.url);
         }
@@ -385,7 +403,8 @@ const ExperienceComponent = () => {
 
               <div>
                 <Typography.Text className="text-[12px]">
-                  <span className="text-red-500 pr-1">*</span>Kết thúc
+                  <span className="text-red-500 pr-1">*</span>
+                  {t("end_date")}
                 </Typography.Text>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <Form.Item
@@ -400,9 +419,7 @@ const ExperienceComponent = () => {
                     <Select
                       placeholder={t("select_month")}
                       options={months}
-                      disabled={
-                        workExperience?.currently_working || currentlyWorking
-                      }
+                      disabled={currentlyWorking}
                     />
                   </Form.Item>
                   <Form.Item
@@ -417,9 +434,7 @@ const ExperienceComponent = () => {
                     <Select
                       placeholder={t("select_year")}
                       options={years}
-                      disabled={
-                        workExperience?.currently_working || currentlyWorking
-                      }
+                      disabled={currentlyWorking}
                     />
                   </Form.Item>
                 </div>
@@ -437,23 +452,6 @@ const ExperienceComponent = () => {
               />
             </Form.Item>
 
-            <Typography.Text italic className="block mb-4 text-[12px]">
-              {t("add_link_or_upload_image_about_your_experience")}
-            </Typography.Text>
-
-            <div className="flex gap-4 mb-6">
-              <Button
-                className="!text-[12px]"
-                onClick={handleOnClickImage}
-                icon={<PictureOutlined />}
-              >
-                {t("upload_image")}
-              </Button>
-              <Button className="!text-[12px]" icon={<LinkOutlined />}>
-                {t("upload_link")}
-              </Button>
-            </div>
-
             <Form.Item>
               {actionType === "create" ? (
                 <Button
@@ -469,22 +467,25 @@ const ExperienceComponent = () => {
                   <Button
                     type="primary"
                     onClick={() => handleUpdateExperience()}
-                    className="!bg-primaryColorH text-white w-full"
-                    size="small"
+                    className="!bg-primaryColorH text-white"
+                    danger
+                    style={{
+                      width: "100%",
+                    }}
                   >
                     {t("update")}
                   </Button>
                   <Button
-                    size="small"
                     danger
                     onClick={() => handleDeleteExperience()}
+                    type="primary"
                     style={{
                       width: "100%",
                       backgroundColor: "black",
                       borderColor: "#4CAF50",
-                      color: "white",
                       border: "none",
                     }}
+                    className="!text-[12px]"
                   >
                     {t("delete")}
                   </Button>
@@ -509,6 +510,7 @@ const ExperienceComponent = () => {
     end_date,
     image,
     id,
+    currently_working,
   }: WorkExperienceProps) => {
     return (
       <Card className="mt-3">
@@ -532,10 +534,12 @@ const ExperienceComponent = () => {
                 <p style={{ margin: 0 }}>{company}</p>
                 <p className="block text-gray-600 text-[10px]">{position}</p>
                 <p className="block text-gray-500 text-[10px]">
-                  {formatDate(start_date)} - {formatDate(end_date + "")}
+                  {formatDate(start_date)} -{" "}
+                  {currently_working ? t("present") : formatDate(end_date + "")}
                 </p>
               </div>
               <Pencil
+                size={16}
                 className="text-primaryColor cursor-pointer"
                 onClick={() => handleOpenExperience("edit", id)}
               />
@@ -575,6 +579,7 @@ const ExperienceComponent = () => {
                 end_date={item.end_date}
                 currently_working={item.currently_working}
                 image={item.image_url}
+                description={item.description}
               />
             ))}
           </div>

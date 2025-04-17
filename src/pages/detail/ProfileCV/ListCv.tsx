@@ -266,7 +266,7 @@ export default function ListCV() {
         </Button>
       </div>
       <div className="flex gap-10 flex-wrap">
-        {cvData?.items.map((cv) => (
+        {cvData?.items?.map((cv) => (
           <div key={cv._id} className="w-[300px]">
             <CVCard
               handleShare={handleShare}

@@ -159,9 +159,11 @@ const MyCV: React.FC = () => {
   };
 
   const handleSubmit = () => {
+    setUploading(true);
     if (!selectedCV) return;
     const values = form.getFieldsValue();
     updateMutation.mutate({ id: selectedCV._id, cv_name: values.cv_name });
+    setUploading(false);
   };
 
   const handleDownload = (cv: CV) => {
@@ -333,7 +335,7 @@ const MyCV: React.FC = () => {
 
       <Spin spinning={deleteMutation.isPending} tip={t("deleting")}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {cvData?.items.map((cv) => (
+          {cvData?.items?.map((cv) => (
             <div
               key={cv._id}
               className="bg-gray-50 p-4 rounded-lg flex justify-between items-center"
@@ -341,10 +343,10 @@ const MyCV: React.FC = () => {
               <div className="flex items-center">
                 <FileText size={24} className="text-blue-500 mr-3" />
                 <div>
-                  <h3 className="font-medium truncate max-w-[200px]">
+                  <h3 className="text-[16px] truncate max-w-[250px]">
                     {cv.cv_name}
                   </h3>
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-gray-500 text-[12px]">
                     {t("last_updated")} {formatDate(cv.updatedAt)}
                   </p>
                   {cv.isPrimary && (
@@ -390,26 +392,28 @@ const MyCV: React.FC = () => {
         onCancel={handleCloseModal}
         footer={null}
       >
-        <Form form={form} layout="vertical" className="mt-4">
-          <Form.Item
-            label={t("cv_name")}
-            name="cv_name"
-            rules={[{ required: true, message: t("please_enter_cv_name") }]}
-          >
-            <Input className="w-full" />
-          </Form.Item>
-
-          <div className="flex justify-end gap-3 mt-6">
-            <Button onClick={handleCloseModal}>{t("cancel")}</Button>
-            <Button
-              type="primary"
-              onClick={handleSubmit}
-              className="bg-blue-500"
+        <Spin spinning={updateMutation.isPending} tip={t("updating")}>
+          <Form form={form} layout="vertical" className="mt-4">
+            <Form.Item
+              label={t("cv_name")}
+              name="cv_name"
+              rules={[{ required: true, message: t("please_enter_cv_name") }]}
             >
-              {t("update")}
-            </Button>
-          </div>
-        </Form>
+              <Input className="w-full" />
+            </Form.Item>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <Button onClick={handleCloseModal}>{t("cancel")}</Button>
+              <Button
+                type="primary"
+                onClick={handleSubmit}
+                className="bg-blue-500"
+              >
+                {t("update")}
+              </Button>
+            </div>
+          </Form>
+        </Spin>
       </Modal>
 
       <Modal

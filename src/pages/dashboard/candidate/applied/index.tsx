@@ -63,18 +63,23 @@ const Applied = () => {
   const navigate = useNavigate();
 
   const handleWithdraw = (record: Applied) => {
-    // Open CV in a modal with webview
-    Modal.info({
+    const modal = Modal.info({
       title: (
-        <div className="flex items-center gap-2">
-          <FileTextOutlined className="text-blue-500" />
-          <span className="text-lg font-semibold">{t("cv_preview")}</span>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <FileTextOutlined className="text-blue-500" />
+            <span className="text-lg font-semibold">{t("cv_preview")}</span>
+          </div>
+          <CloseOutlined
+            onClick={() => modal.destroy()}
+            className="text-gray-500 hover:text-red-500 cursor-pointer text-lg"
+          />
         </div>
       ),
       width: "80%",
       className: "cv-preview-modal",
       content: (
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-gray-50 rounded-lg">
           <iframe
             src={record.cv_link}
             className="w-full h-[70vh] rounded-lg shadow-md"
@@ -83,10 +88,8 @@ const Applied = () => {
           />
         </div>
       ),
-      okText: t("close"),
-      okButtonProps: {
-        className: "bg-blue-500 hover:bg-blue-600 text-white",
-      },
+      okButtonProps: { style: { display: "none" } }, // Ẩn nút OK
+      closable: false, // Không hiển thị icon mặc định
       maskClosable: true,
       maskStyle: {
         backgroundColor: "rgba(0, 0, 0, 0.5)",

@@ -1,12 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { notification } from "antd";
-import {
-  BellOutlined,
-  BookOutlined,
-  FileTextOutlined,
-  SettingOutlined,
-  LogoutOutlined,
-} from "@ant-design/icons";
+import { LogoutOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { resetUser } from "../../../redux/slices/userSlices";
@@ -22,7 +16,6 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import * as authServices from "../../../services/modules/authServices";
-
 import OverViewCandidate from "./overview";
 import Applied from "./applied";
 import FavoriteJob from "./FavoriteJob";
@@ -37,13 +30,21 @@ const DashboardCandidate = () => {
     searchParams.get("activeTab") || "overview"
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state: any) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleTabChange = (tab) => {
+  useEffect(() => {
+    const tab = searchParams.get("activeTab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setIsSidebarOpen(false);
+    navigate(`/dashboard/candidate?activeTab=${tab}`);
   };
 
   const logout = async () => {
@@ -57,7 +58,7 @@ const DashboardCandidate = () => {
           description: t("logout_success"),
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
         description: error.message,
@@ -97,7 +98,6 @@ const DashboardCandidate = () => {
       label: t("job_seen"),
       icon: <Eye className="mr-3" />,
       component: <ViewedJob />,
-      // badge: "09",
     },
     {
       key: "mycv",
@@ -136,7 +136,7 @@ const DashboardCandidate = () => {
           />
         </div>
         <nav className="mt-4 flex flex-col">
-          {tabs.map((tab) => (
+          {tabs?.map((tab) => (
             <a
               key={tab.key}
               href="#"
@@ -149,11 +149,6 @@ const DashboardCandidate = () => {
             >
               {tab.icon}
               {tab.label}
-              {tab.badge && (
-                <span className="ml-auto bg-blue-500 text-white text-xs px-2 rounded-full">
-                  {tab.badge}
-                </span>
-              )}
             </a>
           ))}
         </nav>

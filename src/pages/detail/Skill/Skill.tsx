@@ -202,8 +202,9 @@ const SkillComponent = () => {
             ) : (
               <div className="flex items-center justify-between gap-4">
                 <Button
-                  className="!bg-primaryColorH text-white !text-[12px]"
                   onClick={handleUpdateSkill}
+                  type="primary"
+                  className="!bg-primaryColorH text-white"
                   danger
                   style={{
                     width: "100%",
@@ -212,15 +213,16 @@ const SkillComponent = () => {
                   {t("update")}
                 </Button>
                 <Button
-                  type="primary"
-                  className="!text-[12px]"
                   onClick={handleDeleteSkill}
+                  danger
+                  type="primary"
                   style={{
                     width: "100%",
                     backgroundColor: "black",
                     borderColor: "#4CAF50",
                     border: "none",
                   }}
+                  className="!text-[12px]"
                 >
                   {t("delete")}
                 </Button>
@@ -246,6 +248,7 @@ const SkillComponent = () => {
                 <p className="block text-gray-600 text-[10px]">{evalute}</p>
               </div>
               <Pencil
+                size={16}
                 className="text-primaryColor cursor-pointer"
                 onClick={() => handleOpenSkill("edit", id)}
               />

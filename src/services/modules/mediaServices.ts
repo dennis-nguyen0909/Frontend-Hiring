@@ -2,9 +2,10 @@ import { axiosInstance } from "../config/axiosInterceptor"; // Cấu hình axios
 
 // Định nghĩa MediaApi và hàm postMedia
 export const MediaApi = {
-  postMedia: async (file: File, accessToken: string) => {
+  postMedia: async (file: File, userId: string, accessToken: string) => {
     const formData = new FormData();
     formData.append("file", file); // Thêm file vào form data
+    formData.append("userId", userId);
 
     const res = await axiosInstance.post("media/upload-file", formData, {
       headers: {
