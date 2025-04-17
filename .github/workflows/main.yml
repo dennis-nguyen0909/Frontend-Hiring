@@ -1,24 +1,26 @@
 name: Hire Dev
 
 on: 
-    push:
-      branches: [production]
+  push:
+    branches: [production]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Deploying Hire Dev
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: 22
-        script: |
-          cd /home/ubuntu/Frontend-Hiring
-          git fetch origin
-          git checkout production
-          git pull
-          npm install --legacy-peer-deps
-          npm run build
+      - name: Deploying Hire Dev (via Nginx)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            cd /home/ubuntu/Frontend-Hiring || exit 1
+            git fetch origin production
+            git reset --hard origin/production
+            npm install --legacy-peer-deps
+            npm run build || { echo "❌ Build failed"; exit 1; }
+
+            # OPTIONAL: if you copy build to nginx folder
+            # cp -r build/* /var/www/html/hire-dev/
