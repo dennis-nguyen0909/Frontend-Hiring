@@ -2,7 +2,15 @@ import { useSelector } from "react-redux";
 import Prize from "./PrizeComponent";
 import { useEffect, useState } from "react";
 import { PRIZE_API } from "../../../services/modules/PrizeServices";
-import { Button, Card, Form, Input, notification, Select } from "antd";
+import {
+  Button,
+  Card,
+  DatePicker,
+  Form,
+  Input,
+  notification,
+  Select,
+} from "antd";
 import { Award } from "lucide-react";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import UploadForm from "../../../components/ui/UploadForm/UploadForm";
@@ -142,7 +150,11 @@ export default function PrizeView() {
 
   const handleOnchangeFile = async (file: File) => {
     setIsLoading(true);
-    const res = await MediaApi.postMedia(file, userDetail.access_token);
+    const res = await MediaApi.postMedia(
+      file,
+      userDetail?._id,
+      userDetail.access_token
+    );
     if (res.data.url) {
       setImgUrl(res.data.url);
       setIsLoading(false);
@@ -304,7 +316,11 @@ export default function PrizeView() {
                 <Button
                   type="primary"
                   onClick={onUpdate}
-                  className="!bg-primaryColor hover:bg-green-600 text-white px-8 w-full"
+                  className="!bg-primaryColorH text-white"
+                  danger
+                  style={{
+                    width: "100%",
+                  }}
                 >
                   {t("update")}
                 </Button>

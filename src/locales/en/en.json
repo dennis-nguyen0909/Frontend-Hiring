@@ -767,7 +767,10 @@
     "withdraw_application_success":"Withdraw application successfully",
     "withdraw_application_failed":"Withdraw application failed",
     "share":"Share",
-    "download":"Download"
+    "download":"Download",
+    "cv_name":"CV name",
+    "updating":"Updating",
+    "current_avatar":"Current Avatar"
   
   
 

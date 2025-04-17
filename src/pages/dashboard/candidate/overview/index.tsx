@@ -19,7 +19,7 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { API_FAVORITE_JOB } from "../../../../services/modules/FavoriteJobServices";
 import { USER_API } from "../../../../services/modules/userServices";
-
+import avatarDefaul from "../../../../assets/avatars/avatar-default.jpg";
 interface UserDetail {
   _id: string;
   access_token: string;
@@ -453,7 +453,7 @@ const OverViewCandidate = ({
 
       {+caculateProfile < 100 && (
         <div className="bg-[#e05051] p-4 rounded-lg flex flex-col sm:flex-row items-center mb-6">
-          <Avatar size={50} src={userDetail?.avatar} />
+          <Avatar size={50} src={userDetail?.avatar || avatarDefaul} />
           <div className="flex-1 ml-3">
             <h3 className="font-semibold text-white text-[12px] text-center lg:text-left">
               {t("your_profile_is_not_complete")}
@@ -463,7 +463,11 @@ const OverViewCandidate = ({
             </p>
           </div>
           <Button
-            onClick={() => navigate(`/profile/${userDetail?._id}`)}
+            onClick={() =>
+              navigate(
+                "/dashboard/candidate?activeTab=settings&tabChild=profile"
+              )
+            }
             type="primary"
             className="mt-4 sm:mt-0 !bg-white !text-[#e05051] !border-red-500 !hover:bg-red-50 !text-[12px]"
           >

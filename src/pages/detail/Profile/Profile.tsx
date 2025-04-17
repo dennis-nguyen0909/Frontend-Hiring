@@ -49,7 +49,11 @@ const Profile = () => {
   }, [userDetail?.access_token]);
   const uploadFileToMedia = async (file: File) => {
     try {
-      const res = await MediaApi.postMedia(file, userDetail.access_token);
+      const res = await MediaApi.postMedia(
+        file,
+        userDetail?._id,
+        userDetail.access_token
+      );
       return res;
     } catch (error) {
       notification.error({

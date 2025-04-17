@@ -6,7 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Tabs } from "antd";
 import TabPane from "antd/es/tabs/TabPane";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "react-quill/dist/quill.snow.css";
 import Personal from "../Personal/Personal";
 import ProfileComponentSetting from "../../../detail/Profile/ProfileComponentSetting";
@@ -14,12 +14,26 @@ import AccountSetting from "../AccountSetting/AccountSetting";
 import "./style.css";
 import SocialLinkCandidate from "../SocialLink/SocialLink";
 import { useTranslation } from "react-i18next";
+import { useSearchParams, useNavigate } from "react-router-dom";
+
 const SettingCandidate = () => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("personal");
-  const handleTabChange = (key) => {
+
+  useEffect(() => {
+    const tab = searchParams.get("tabChild");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (key: string) => {
     setActiveTab(key);
+    navigate(`?tab=${key}`);
   };
+
   return (
     <div className="setting-candidate">
       <h1 className="text-[20px] font-semibold mb-6">{t("settings")}</h1>

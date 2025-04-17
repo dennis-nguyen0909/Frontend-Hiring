@@ -7,7 +7,6 @@ import {
   Card,
   Checkbox,
   Typography,
-  DatePicker,
   Tooltip,
   Image,
 } from "antd";
@@ -38,12 +37,21 @@ interface Certificate {
   __v: number;
 }
 
+interface CertificateFormValues {
+  certificate_name: string;
+  organization_name: string;
+  start_date: moment.Moment | null;
+  end_date?: moment.Moment | null;
+  is_not_expired: boolean;
+  link_certificate?: string;
+}
+
 const CertificateComponent = () => {
   const { t } = useTranslation();
-  const userDetail = useSelector((state) => state.user);
+  const userDetail = useSelector((state: any) => state.user);
   const { formatDate, dateFormat } = useMomentFn();
   const [file, setFile] = useState("");
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<CertificateFormValues>();
   const [link, setLink] = useState("");
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [selectedId, setSelectedId] = useState<string>("");
@@ -95,70 +103,82 @@ const CertificateComponent = () => {
   const handleGetDetailCertificate = async () => {
     try {
       setIsLoadingDetail(true);
+
       const res = await CERTIFICATE_API.findByCertificateId(
         selectedId,
         userDetail?._id
       );
+
+      console.log("duydeptrai", res);
+
       if (res.data) {
         const {
           certificate_name,
           organization_name,
           start_date,
-          is_not_expired,
           end_date,
+          is_not_expired,
           link_certificate,
         } = res.data;
 
-        form.setFieldsValue({
-          certificate_name: certificate_name,
-          organization_name: organization_name,
+        const formValues: CertificateFormValues = {
+          certificate_name: certificate_name || "",
+          organization_name: organization_name || "",
           start_date: start_date ? moment(start_date) : null,
           end_date: end_date ? moment(end_date) : null,
-          is_not_expired,
-        });
-        setIsNotExpired(is_not_expired);
-        setLink(link_certificate);
+          is_not_expired: !!is_not_expired,
+          link_certificate: link_certificate || "",
+        };
+
+        form.setFieldsValue(formValues);
+        setIsNotExpired(!!is_not_expired);
+        setLink(link_certificate || "");
       }
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
-        description: error.response.data.message,
+        description: error?.response?.data?.message || t("error_from_server"),
       });
     } finally {
       setIsLoadingDetail(false);
     }
   };
+
   useEffect(() => {
     if (selectedId) {
       handleGetDetailCertificate();
     }
   }, [selectedId]);
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: CertificateFormValues) => {
     setIsLoading(true);
-    let params = {
-      ...values,
-      candidate_id: userDetail?._id,
-      img_certificate: file ? file : null,
-    };
-    if (link && link.trim() !== "") {
-      params.link_certificate = link;
-    }
-    const response = await CERTIFICATE_API.create(params, userDetail?._id);
-    if (response.data) {
-      notification.success({
-        message: t("notification"),
-        description: t("create_success"),
-      });
-      await handleGetSkillByUserId({});
-      closeModal();
-      await handleUpdateProfile();
-      setIsLoading(false);
-    } else {
+    try {
+      const params = {
+        ...values,
+        start_date: values.start_date?.format("YYYY-MM-DD"),
+        end_date: values.end_date?.format("YYYY-MM-DD"),
+        candidate_id: userDetail?._id,
+        img_certificate: file ? file : null,
+      };
+      if (link && link.trim() !== "") {
+        params.link_certificate = link;
+      }
+      const response = await CERTIFICATE_API.create(params, userDetail?._id);
+      if (response.data) {
+        notification.success({
+          message: t("notification"),
+          description: t("create_success"),
+        });
+        await handleGetSkillByUserId({});
+        closeModal();
+        await handleUpdateProfile();
+      }
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
-        description: t("error_from_server"),
+        description: error.response?.data?.message || t("error_from_server"),
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -192,14 +212,19 @@ const CertificateComponent = () => {
   const handleUpdateCertificate = async (id: string) => {
     try {
       setIsLoading(true);
-      const data = form.getFieldsValue();
+      const formValues = form.getFieldsValue();
+
       const params = {
-        ...data,
+        ...formValues,
+        start_date: formValues.start_date?.format("YYYY-MM-DD"),
+        end_date: isNotExpired
+          ? null
+          : formValues.end_date?.format("YYYY-MM-DD"),
         img_certificate: file ? file : null,
+        link_certificate: link || null,
+        is_not_expired: isNotExpired,
       };
-      if (link && link.trim() !== "") {
-        params.link_certificate = link;
-      }
+
       const res = await CERTIFICATE_API.update(
         id,
         params,
@@ -213,12 +238,11 @@ const CertificateComponent = () => {
         await handleGetSkillByUserId({});
         closeModal();
         await handleUpdateProfile();
-        setIsLoading(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: t("notification"),
-        description: error.response.data.message,
+        description: error.response?.data?.message || t("error_from_server"),
       });
     } finally {
       setIsLoading(false);
@@ -227,7 +251,11 @@ const CertificateComponent = () => {
   const handleFileChange = async (file) => {
     setIsLoading(true);
     try {
-      const res = await MediaApi.postMedia(file, userDetail?.access_token);
+      const res = await MediaApi.postMedia(
+        file,
+        userDetail?._id,
+        userDetail?.access_token
+      );
       if (res?.data?.url) {
         setFile(res.data.url);
       }
@@ -287,16 +315,12 @@ const CertificateComponent = () => {
               </Checkbox>
             </Form.Item>
 
-            <div className="flex items-center ">
-              <div className="mr-4">
-                <Typography.Text className="text-[12px]">
-                  <span className="text-red-500 mr-1">*</span>
-                  {t("start_date")}
-                </Typography.Text>
-                <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <div className="w-full">
+                <div className="flex gap-4">
                   <Form.Item
-                    className="text-[12px]"
-                    label=""
+                    className="text-[12px] w-1/2"
+                    label={t("start_date")}
                     name="start_date"
                     required
                     rules={[
@@ -306,43 +330,44 @@ const CertificateComponent = () => {
                       },
                     ]}
                   >
-                    <DatePicker
-                      picker="date"
-                      placeholder={t("please_select_start_date")}
-                      format={dateFormat}
+                    <Input
+                      type="date"
                       className="text-[12px] w-full"
+                      onChange={(e) => {
+                        form.setFieldsValue({
+                          start_date: e.target.value
+                            ? moment(e.target.value)
+                            : null,
+                        });
+                      }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    className="text-[12px] w-1/2"
+                    label={t("end_date")}
+                    name="end_date"
+                    required={!isNotExpired}
+                    rules={[
+                      {
+                        required: !isNotExpired,
+                        message: t("please_select_end_date"),
+                      },
+                    ]}
+                  >
+                    <Input
+                      type="date"
+                      className="text-[12px] w-full"
+                      disabled={isNotExpired}
+                      onChange={(e) => {
+                        form.setFieldsValue({
+                          end_date: e.target.value
+                            ? moment(e.target.value)
+                            : null,
+                        });
+                      }}
                     />
                   </Form.Item>
                 </div>
-              </div>
-              <div className="ml-10">
-                <Typography.Text className="text-[12px]">
-                  <span className="text-red-500 mr-1">*</span>
-                  {t("end_date")}
-                </Typography.Text>
-                <Form.Item
-                  label=""
-                  name="end_date"
-                  rules={[
-                    {
-                      validator: (_, value) =>
-                        !value ||
-                        value.isAfter(form.getFieldValue("start_date"))
-                          ? Promise.resolve()
-                          : Promise.reject(
-                              new Error(t("end_date_must_be_after_start_date"))
-                            ),
-                    },
-                  ]}
-                >
-                  <DatePicker
-                    disabled={isNotExpired}
-                    picker="date"
-                    placeholder={t("please_select_end_date")}
-                    format={dateFormat}
-                    className="text-[12px] w-full"
-                  />
-                </Form.Item>
               </div>
             </div>
             <UploadForm
@@ -361,25 +386,27 @@ const CertificateComponent = () => {
               ) : (
                 <div className="flex items-center justify-between gap-4 mt-4">
                   <Button
-                    className="!bg-primaryColorH text-white !text-[12px]"
-                    onClick={() => handleDeleteCertificate(selectedId)}
+                    type="primary"
+                    onClick={() => handleUpdateCertificate(selectedId)}
+                    className="!bg-primaryColorH text-white"
                     danger
                     style={{
                       width: "100%",
                     }}
                   >
-                    {t("delete")}
+                    {t("update")}
                   </Button>
                   <Button
+                    onClick={() => handleDeleteCertificate(selectedId)}
                     type="primary"
-                    className="!text-[12px]"
-                    onClick={() => handleUpdateCertificate(selectedId)}
                     style={{
                       width: "100%",
                       backgroundColor: "black",
+                      borderColor: "#4CAF50",
+                      border: "none",
                     }}
                   >
-                    {t("update")}
+                    {t("delete")}
                   </Button>
                 </div>
               )}

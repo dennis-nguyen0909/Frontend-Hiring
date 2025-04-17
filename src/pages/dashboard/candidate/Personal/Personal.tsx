@@ -2,30 +2,16 @@ import { UploadOutlined } from "@ant-design/icons";
 import { Avatar, Button, Form, Input, message, Select, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { CV_API } from "../../../../services/modules/CvServices";
 import { USER_API } from "../../../../services/modules/userServices";
 import { updateUser } from "../../../../redux/slices/userSlices";
-import { useCities } from "../../../../hooks/useCities";
-import { useDistricts } from "../../../../hooks/useDistricts";
-import { useWards } from "../../../../hooks/useWards";
 import { MediaApi } from "../../../../services/modules/mediaServices";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import "./style.css";
-import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
-interface CV {
-  _id: string;
-  user_id: string;
-  cv_name: string;
-  cv_link: string;
-  public_id: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
 
 const Personal = () => {
-  const [listCv, setListCv] = useState<CV[]>([]);
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -33,34 +19,13 @@ const Personal = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const userDetail = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const { formatDate } = useMomentFn();
-  const { cities, loading: citiesLoading } = useCities();
-  const { districts, loading: districtLoading } = useDistricts(city);
-  const { wards, loading: wardsLoading } = useWards(district);
   const { t } = useTranslation();
 
   useEffect(() => {
     setCity(userDetail?.city_id?._id || "");
     setDistrict(userDetail?.district_id?._id || "");
     setWard(userDetail?.ward_id?._id || "");
-    handleGetCVbyUser();
   }, [userDetail]);
-
-  const handleCityChange = (value: string) => setCity(value);
-  const handleDistrictChange = (value: string) => setDistrict(value);
-  const handleWardChange = (value: string) => setWard(value);
-
-  const handleGetCVbyUser = async (current = 1, pageSize = 10) => {
-    const params = {
-      current,
-      pageSize,
-      query: {
-        user_id: userDetail?._id,
-      },
-    };
-    const res = await CV_API.getAll(params, userDetail?.access_token);
-    if (res.data) setListCv(res.data.items);
-  };
 
   const handleSaveChanges = async (values: any) => {
     setLoading(true);
@@ -95,7 +60,11 @@ const Personal = () => {
     const file = e.target.files?.[0];
     if (file) {
       setLoading(true);
-      const res = await MediaApi.postMedia(file, userDetail?.access_token);
+      const res = await MediaApi.postMedia(
+        file,
+        userDetail?._id,
+        userDetail?.access_token
+      );
       if (res.data) {
         setAvatar(res.data.url);
         handleSaveChanges({ avatar: res.data.url });
@@ -130,83 +99,87 @@ const Personal = () => {
           <div className="flex items-center gap-4">
             {!userDetail?.avatar ? (
               <div className="relative inline-block group">
-                <Avatar
-                  size={150}
-                  shape="circle"
-                  src={avatar || userDetail?.avatar}
-                  className="transition-opacity duration-300"
-                />
-                <span className="absolute top-[50px] inset-0 flex justify-center items-center text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {t("update")}
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-10"
-                />
+                <div className="relative w-[150px] h-[150px] rounded-full overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-all duration-300">
+                  <Avatar
+                    size={150}
+                    shape="circle"
+                    src={avatarDefault}
+                    className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-50"
+                  />
+                  <div className="absolute inset-0 flex flex-col justify-center items-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <UploadOutlined className="text-white text-2xl mb-2" />
+                    <span className="text-white text-sm">{t("update")}</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                </div>
               </div>
             ) : (
-              <div className="flex items-center">
-                <Upload
-                  name="avatar"
-                  listType="picture-card"
-                  showUploadList={false}
-                  className="upload-container"
-                  customRequest={async ({ file, onSuccess, onError }) => {
-                    try {
-                      setLoading(true);
-                      // Kiểm tra loại file
-                      const isImage = file.type.startsWith("image/");
-                      if (!isImage) {
-                        message.error(t("only_support_upload_image"));
-                        return;
-                      }
-
-                      // Kiểm tra kích thước file (5MB)
-                      const isSmallEnough = file.size / 1024 / 1024 < 5;
-                      if (!isSmallEnough) {
-                        message.error(t("image_size_must_be_less_than_5mb"));
-                        return;
-                      }
-
-                      // Gọi API tải lên ảnh
-                      const res = await MediaApi.postMedia(
-                        file,
-                        userDetail?.access_token
-                      );
-
-                      if (res) {
-                        setAvatar(res.data.url); // Cập nhật avatar mới
-                        await handleSaveChanges({ avatar: res.data.url }); // Lưu URL avatar mới
-                        onSuccess && onSuccess(res); // Gọi hàm onSuccess khi upload thành công
-                      }
-                    } catch (error) {
-                      onError && onError(error); // Gọi hàm onError khi có lỗi
-                      message.error(t("upload_failed")); // Hiển thị thông báo lỗi
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                >
-                  <div className="text-center">
-                    <UploadOutlined className="text-2xl mb-1" />
-                    <div className="text-[12px] text-gray-500">
-                      {t("upload_image")}
-                    </div>
-                    <div className="text-[12px] text-gray-400">
-                      {t("one_image_larger_than_400px_is_best")}
-                    </div>
-                  </div>
-                </Upload>
-                {userDetail?.avatar && (
+              <div className="flex items-center gap-6">
+                <div className="relative w-[150px] h-[150px] rounded-full overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-all duration-300">
                   <Avatar
-                    className="ml-10"
-                    shape="square"
-                    size={100}
+                    size={150}
+                    shape="circle"
                     src={userDetail?.avatar}
+                    className="w-full h-full object-cover"
                   />
-                )}
+                  <Upload
+                    name="avatar"
+                    listType="picture-card"
+                    showUploadList={false}
+                    className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300"
+                    customRequest={async ({ file, onSuccess, onError }) => {
+                      try {
+                        setLoading(true);
+                        const isImage = file.type.startsWith("image/");
+                        if (!isImage) {
+                          message.error(t("only_support_upload_image"));
+                          return;
+                        }
+
+                        const isSmallEnough = file.size / 1024 / 1024 < 5;
+                        if (!isSmallEnough) {
+                          message.error(t("image_size_must_be_less_than_5mb"));
+                          return;
+                        }
+
+                        const res = await MediaApi.postMedia(
+                          file,
+                          userDetail?._id,
+                          userDetail?.access_token
+                        );
+
+                        if (res) {
+                          setAvatar(res.data.url);
+                          await handleSaveChanges({ avatar: res.data.url });
+                          onSuccess && onSuccess(res);
+                        }
+                      } catch (error) {
+                        onError && onError(error);
+                        message.error(t("upload_failed"));
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                  >
+                    <div className="absolute inset-0 flex flex-col justify-center items-center bg-black bg-opacity-50">
+                      <UploadOutlined className="text-white text-2xl mb-2" />
+                      <span className="text-white text-sm">{t("update")}</span>
+                    </div>
+                  </Upload>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-[12px] text-gray-500">
+                    {t("current_avatar")}
+                  </span>
+                  <span className="text-[12px] text-gray-400">
+                    {t("one_image_larger_than_400px_is_best")}
+                  </span>
+                </div>
               </div>
             )}
           </div>

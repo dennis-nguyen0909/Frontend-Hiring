@@ -11,44 +11,48 @@ import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/slices/userSlices";
 
-const CompanyInfo = ({handleTabChange}) => {
+const CompanyInfo = ({ handleTabChange }) => {
   const [form] = useForm();
   const userDetail = useSelector((state) => state.user);
-  const dispatch =useDispatch()
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingBanner, setIsLoadingBanner] = useState<boolean>(false);
 
-  const onFinish = async(values: any) => {
+  const onFinish = async (values: any) => {
     if (!userDetail?.avatar_company && !values.logo) {
       message.error("Please upload a logo before proceeding.");
       return;
     }
-  
+
     if (!userDetail?.banner_company && !values.banner) {
       message.error("Please upload a banner before proceeding.");
       return;
     }
     const params = {
-        id:userDetail?._id,
-        company_name:values.company_name,
-        description:values?.description?.level?.content
-    }
-    const update = await USER_API.updateUser(params,userDetail?.access_token);
+      id: userDetail?._id,
+      company_name: values.company_name,
+      description: values?.description?.level?.content,
+    };
+    const update = await USER_API.updateUser(params, userDetail?.access_token);
     if (update.data) {
       form.setFieldsValue({
-        company_name:update?.data?.company_name,
-        description:update?.data?.description,
-      })
-      handleTabChange("founding")
-      dispatch(updateUser({...update.data}))
+        company_name: update?.data?.company_name,
+        description: update?.data?.description,
+      });
+      handleTabChange("founding");
+      dispatch(updateUser({ ...update.data }));
     }
   };
 
   const uploadFiled = async (file: File) => {
     try {
-      const res = await MediaApi.postMedia(file, userDetail?.access_token);
+      const res = await MediaApi.postMedia(
+        file,
+        userDetail?._id,
+        userDetail?.access_token
+      );
       return res;
-    } catch (error) {
+    } catch (error: any) {
       notification.error({
         message: "Thông báo",
         description: error,
@@ -65,14 +69,16 @@ const CompanyInfo = ({handleTabChange}) => {
             id: userDetail?._id,
             avatar_company: res?.data?.url,
           };
-          const update = await USER_API.updateUser(params,userDetail?.access_token);
+          const update = await USER_API.updateUser(
+            params,
+            userDetail?.access_token
+          );
           if (update.data) {
             notification.success({
               message: "Thông báo",
               description: "Cập nhật thành công",
             });
-;
-            dispatch(updateUser({...update.data}))
+            dispatch(updateUser({ ...update.data }));
           }
           setIsLoading(false);
         }
@@ -84,14 +90,16 @@ const CompanyInfo = ({handleTabChange}) => {
             id: userDetail?._id,
             banner_company: res?.data?.url,
           };
-          const update = await USER_API.updateUser(params,userDetail?.access_token);
+          const update = await USER_API.updateUser(
+            params,
+            userDetail?.access_token
+          );
           if (update.data) {
             notification.success({
               message: "Thông báo",
               description: "Cập nhật thành công",
             });
-;
-            dispatch(updateUser({...update.data}))
+            dispatch(updateUser({ ...update.data }));
           }
           setIsLoadingBanner(false);
         }
@@ -108,29 +116,33 @@ const CompanyInfo = ({handleTabChange}) => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Ảnh logo
           </label>
-         {userDetail?.avatar_company ? (
-            <Avatar shape="square" size={140}  src={userDetail?.avatar_company} />
-         ):(
+          {userDetail?.avatar_company ? (
+            <Avatar
+              shape="square"
+              size={140}
+              src={userDetail?.avatar_company}
+            />
+          ) : (
             <LoadingComponent isLoading={isLoading}>
-            <Dragger
-              name="logo"
-              multiple={false}
-              className="bg-gray-50 border-dashed"
-              showUploadList={false}
-              beforeUpload={() => false}
-              onChange={(info) => handleFileChange(info, "logo")}
-            >
-              <p className="text-gray-500">
-                <UploadOutlined className="text-2xl mb-2" />
-                <br />
-                Browse photo hoặc drop here
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                A photo larger than 400 pixels work best. Max photo size 5 MB.
-              </p>
-            </Dragger>
-          </LoadingComponent>
-         )}
+              <Dragger
+                name="logo"
+                multiple={false}
+                className="bg-gray-50 border-dashed"
+                showUploadList={false}
+                beforeUpload={() => false}
+                onChange={(info) => handleFileChange(info, "logo")}
+              >
+                <p className="text-gray-500">
+                  <UploadOutlined className="text-2xl mb-2" />
+                  <br />
+                  Browse photo hoặc drop here
+                </p>
+                <p className="text-xs text-gray-400 mt-2">
+                  A photo larger than 400 pixels work best. Max photo size 5 MB.
+                </p>
+              </Dragger>
+            </LoadingComponent>
+          )}
         </div>
 
         <div>
@@ -138,28 +150,32 @@ const CompanyInfo = ({handleTabChange}) => {
             Ảnh nền
           </label>
           {userDetail?.banner_company ? (
-            <Avatar shape="square" size={140}  src={userDetail?.banner_company} />
-          ):(
+            <Avatar
+              shape="square"
+              size={140}
+              src={userDetail?.banner_company}
+            />
+          ) : (
             <LoadingComponent isLoading={isLoadingBanner}>
-            <Dragger
-              name="banner"
-              multiple={false}
-              className="bg-gray-50 border-dashed"
-              showUploadList={false}
-              beforeUpload={() => false}
-              onChange={(info) => handleFileChange(info, "banner")}
-            >
-              <p className="text-gray-500">
-                <UploadOutlined className="text-2xl mb-2" />
-                <br />
-                Browse photo hoặc drop here
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                Banner images optimal dimension 1520×400. Supported format JPEG,
-                PNG. Max photo size 5 MB.
-              </p>
-            </Dragger>
-          </LoadingComponent>
+              <Dragger
+                name="banner"
+                multiple={false}
+                className="bg-gray-50 border-dashed"
+                showUploadList={false}
+                beforeUpload={() => false}
+                onChange={(info) => handleFileChange(info, "banner")}
+              >
+                <p className="text-gray-500">
+                  <UploadOutlined className="text-2xl mb-2" />
+                  <br />
+                  Browse photo hoặc drop here
+                </p>
+                <p className="text-xs text-gray-400 mt-2">
+                  Banner images optimal dimension 1520×400. Supported format
+                  JPEG, PNG. Max photo size 5 MB.
+                </p>
+              </Dragger>
+            </LoadingComponent>
           )}
         </div>
       </div>
@@ -167,10 +183,10 @@ const CompanyInfo = ({handleTabChange}) => {
         onFinish={onFinish}
         form={form}
         layout="vertical"
-        className="space-y-6" 
+        className="space-y-6"
         initialValues={{
-            company_name:userDetail?.company_name,
-            description:userDetail?.description,
+          company_name: userDetail?.company_name,
+          description: userDetail?.description,
         }}
       >
         <div>
@@ -208,7 +224,10 @@ const CompanyInfo = ({handleTabChange}) => {
             />
           </Form.Item>
         </div>
-        <Button htmlType="submit"  className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white">
+        <Button
+          htmlType="submit"
+          className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white"
+        >
           Lưu & tiếp tục
         </Button>
       </Form>

@@ -774,7 +774,10 @@
   "withdraw_application_success":"Thu hồi ứng tuyển thành công",
   "withdraw_application_failed":"Thu hồi ứng tuyển thất bại",
   "share":"Chia sẻ",
-  "download":"Tải xuống"
+  "download":"Tải xuống",
+  "cv_name":"Tên CV",
+  "updating":"Đang cập nhật",
+  "current_avatar":"Avatar hiện tại"
   
 
 }
