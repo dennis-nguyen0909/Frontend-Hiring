@@ -7,6 +7,7 @@ import {
   SettingOutlined,
   LogoutOutlined,
   DollarOutlined,
+  SettingFilled,
 } from "@ant-design/icons";
 import OverviewEmployer from "./Overview";
 import PostJob from "./PostJob";
@@ -48,7 +49,7 @@ export default function DashBoardEmployer() {
     {
       key: "management",
       label: t("manage_post"),
-      icon: <SettingOutlined />,
+      icon: <SettingFilled />,
       children: [{ key: TAB_SKILL, label: t("manage_skill") }],
     },
   ];
