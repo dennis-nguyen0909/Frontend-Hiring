@@ -2,8 +2,8 @@ import { Table, Button, Dropdown, Badge, Select, notification } from "antd";
 import { EllipsisOutlined, TeamOutlined } from "@ant-design/icons";
 import { JobApi } from "../../../../services/modules/jobServices";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { Job, Meta } from "../../../../types";
+import { useState } from "react";
+import { Job } from "../../../../types";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import {
   DELETE,
@@ -17,9 +17,116 @@ import JobApplication from "./JobApplication";
 import JobDetail from "./JodDetail";
 import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { RootState } from "../../../../redux/store/store";
+
+interface MenuEvent {
+  key: string;
+}
 
 export default function MyJobEmployer() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const userDetail = useSelector((state: RootState) => state.user);
+  const [currentMenu, setCurrentMenu] = useState<string>(MY_JOB_HOME);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Fetch jobs with React Query
+  const { data: jobsData, isLoading } = useQuery({
+    queryKey: ["myJobs", userDetail?.id, currentPage, pageSize],
+    queryFn: async () => {
+      const params = {
+        current: currentPage,
+        pageSize,
+        query: {
+          user_id: userDetail?.id,
+        },
+      };
+      const res = await JobApi.getJobByEmployerID(
+        params,
+        userDetail.access_token
+      );
+      return res.data;
+    },
+    enabled: !!userDetail?.id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Update job mutation
+  const updateJobMutation = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { is_active: boolean };
+    }) => {
+      return await JobApi.updateJob(id, data, userDetail.access_token);
+    },
+    onSuccess: () => {
+      notification.success({
+        message: t("notification"),
+        description: t("update_success"),
+      });
+      queryClient.invalidateQueries({ queryKey: ["myJobs"] });
+    },
+  });
+
+  // Delete job mutation
+  const deleteJobMutation = useMutation({
+    mutationFn: (id: string) => {
+      if (!userDetail?.id) {
+        throw new Error("User ID is required");
+      }
+      return JobApi.deleteManyJobs(
+        [id],
+        userDetail.id,
+        userDetail?.access_token
+      );
+    },
+    onSuccess: () => {
+      notification.success({
+        message: t("notification.success"),
+        description: t("notification.deleteJobSuccess"),
+      });
+      queryClient.invalidateQueries({ queryKey: ["jobs", userDetail?.id] });
+    },
+    onError: () => {
+      notification.error({
+        message: t("notification.error"),
+        description: t("notification.deleteJobError"),
+      });
+    },
+  });
+
+  const handleOnChangeMenu = async (e: MenuEvent, record: Job) => {
+    if (e.key === MARK_AS_EXPIRED) {
+      updateJobMutation.mutate({ id: record._id, data: { is_active: true } });
+      return;
+    }
+    if (e.key === DELETE) {
+      deleteJobMutation.mutate(record._id);
+      return;
+    }
+    if (e.key) {
+      setCurrentMenu(e.key);
+      setSelectedJob(record);
+    }
+  };
+
+  const handleChangeHome = () => {
+    setCurrentMenu(MY_JOB_HOME);
+    setSelectedJob(null);
+  };
+
+  const handlePageChange = (current: number, pageSize: number) => {
+    setCurrentPage(current);
+    setPageSize(pageSize);
+  };
+
   const columns = [
     {
       title: t("job_title"),
@@ -28,7 +135,10 @@ export default function MyJobEmployer() {
       render: (text: string, record: Job) => (
         <div className="truncate">
           <div className="font-medium">{text}</div>
-          <div className="text-gray-500 text-sm"></div>
+          <div className="text-gray-500 text-sm">
+            {record.job_contract_type?.name} • {record.city_id?.name},{" "}
+            {record.district_id?.name}
+          </div>
         </div>
       ),
       className: "text-[12px]",
@@ -154,97 +264,6 @@ export default function MyJobEmployer() {
     },
   ];
 
-  const userDetail = useSelector((state) => state.user);
-  const [listMyJobs, setListMyJobs] = useState<Job[]>([]);
-  const [meta, setMeta] = useState<Meta>({
-    count: 0,
-    current_page: 1,
-    per_page: 10,
-    total: 0,
-    total_pages: 0,
-  });
-  const [currentMenu, setCurrentMenu] = useState<string>(MY_JOB_HOME);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const handleOnChangeMenu = async (e, record) => {
-    if (e.key === MARK_AS_EXPIRED) {
-      const res = await JobApi.updateJob(
-        record._id,
-        { is_active: true },
-        userDetail.access_token
-      );
-      if (res.data) {
-        notification.success({
-          message: t("notification"),
-          description: t("update_success"),
-        });
-        handleGetMyJob({});
-      }
-      return;
-    }
-    if (e.key === DELETE) {
-      const res = await JobApi.deleteManyJobs(
-        [record?._id],
-        userDetail?._id,
-        userDetail?.access_token
-      );
-      if (res.data) {
-        notification.success({
-          message: t("notification"),
-          description: t("delete_success"),
-        });
-        handleGetMyJob({});
-      }
-      return;
-    }
-    if (e.key) {
-      setCurrentMenu(e.key);
-      setSelectedJob(record);
-    }
-  };
-
-  const handleChangeHome = () => {
-    setCurrentMenu(MY_JOB_HOME);
-    setSelectedJob(null);
-  };
-
-  const handleGetMyJob = async ({
-    current = 1,
-    pageSize = 10,
-  }: {
-    current?: number;
-    pageSize?: number;
-  }) => {
-    const params = {
-      current,
-      pageSize,
-      query: {
-        user_id: userDetail?._id,
-      },
-    };
-
-    try {
-      setIsLoading(true);
-      const res = await JobApi.getJobByEmployerID(
-        params,
-        userDetail.access_token
-      );
-      if (res.data) {
-        setListMyJobs(res.data.items);
-        setMeta(res.data.meta);
-      }
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    handleGetMyJob({ current: 1, pageSize: 10 });
-  }, []);
-
   return (
     <div className="bg-gray-50 min-h-screen ">
       {!selectedJob && currentMenu === MY_JOB_HOME && (
@@ -253,7 +272,9 @@ export default function MyJobEmployer() {
             <div className="flex flex-wrap justify-between items-start mx-2 gap-4">
               <h1 className="text-2xl font-semibold">
                 {t("my_jobs")}{" "}
-                <span className="text-gray-400">({meta && meta.total})</span>
+                <span className="text-gray-400">
+                  ({jobsData?.meta?.total || 0})
+                </span>
               </h1>
               <div className="flex flex-col gap-4 sm:flex-row">
                 <div className="flex gap-4 flex-wrap justify-start w-full sm:w-auto">
@@ -330,25 +351,22 @@ export default function MyJobEmployer() {
               </div>
             </div>
           </div>
-          {/* Responsive table */}
           <LoadingComponentSkeleton isLoading={isLoading}>
             <div className="overflow-x-auto mt-5">
               <Table
                 columns={columns}
-                dataSource={listMyJobs}
+                dataSource={jobsData?.items}
                 pagination={false}
                 className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
               />
             </div>
 
-            {listMyJobs?.length > 0 && (
+            {jobsData?.items?.length > 0 && (
               <CustomPagination
-                currentPage={meta?.current_page}
-                total={meta?.total}
-                perPage={meta?.per_page}
-                onPageChange={(current, pageSize) => {
-                  handleGetMyJob({ current, pageSize });
-                }}
+                currentPage={jobsData?.meta?.current_page}
+                total={jobsData?.meta?.total}
+                perPage={jobsData?.meta?.per_page}
+                onPageChange={handlePageChange}
               />
             )}
           </LoadingComponentSkeleton>

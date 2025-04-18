@@ -1,34 +1,135 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Avatar, Card, Image, Space } from "antd";
 import { CheckCircle, XCircle } from "lucide-react";
-import { StarFilled } from "@ant-design/icons";
 import { USER_API } from "../../../../services/modules/userServices";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { RootState } from "../../../../redux/store/store";
+import { useSelector } from "react-redux";
+
+interface WorkExperience {
+  company: string;
+  position: string;
+  start_date: string;
+  end_date: string;
+  currently_working: boolean;
+  image_url?: string;
+}
+
+interface Education {
+  school: string;
+  major: string;
+  start_date: string;
+  currently_studying: boolean;
+}
+
+interface Certificate {
+  certificate_name: string;
+  organization_name: string;
+  start_date: string;
+  is_not_expired: boolean;
+  link_certificate?: string;
+  img_certificate?: string;
+}
+
+interface Prize {
+  prize_name: string;
+  organization_name: string;
+  date_of_receipt: string;
+  prize_link?: string;
+  prize_image?: string;
+}
+
+interface Project {
+  project_name: string;
+  customer_name: string;
+  start_date: string;
+  end_date: string;
+  technology: string;
+  team_number: string;
+  location: string;
+  mission: string;
+  project_link?: string;
+  project_image?: string;
+}
+
+interface Course {
+  course_name: string;
+  organization_name: string;
+  start_date: string;
+  end_date: string;
+  course_link?: string;
+  course_image?: string;
+}
+
+interface CandidateDetail {
+  _id: string;
+  avatar?: string;
+  full_name: string;
+  introduce?: string;
+  email: string;
+  phone?: string;
+  city_id?: {
+    name: string;
+  };
+  gender?: number;
+  birthday?: string;
+  is_search_jobs_status: boolean;
+  no_experience: boolean;
+  total_experience_years?: number;
+  total_experience_months?: number;
+  work_experience_ids?: WorkExperience[];
+  skills?: { name: string }[];
+  education_ids?: Education[];
+  certificates?: Certificate[];
+  prizes?: Prize[];
+  projects?: Project[];
+  courses?: Course[];
+}
+
+interface UserDetail {
+  id: string;
+  access_token: string;
+}
 
 const CandidateDetailView = ({
   candidateId,
   userDetail,
 }: {
   candidateId: string;
-  userDetail: any;
+  userDetail: UserDetail;
 }) => {
   const { t } = useTranslation();
-  const [candidateDetail, setCandidateDetail] = useState();
   const { formatDate } = useMomentFn();
-  const handleGetCandidateDetail = async () => {
-    const res = await USER_API.viewProfileCandidate(
-      candidateId,
-      userDetail?.access_token
-    );
-    if (res?.data?.items) {
-      setCandidateDetail(res?.data?.items);
-    }
-  };
 
-  useEffect(() => {
-    handleGetCandidateDetail();
-  }, []);
+  const { data: candidateDetail, isLoading } = useQuery({
+    queryKey: ["candidateDetail", candidateId],
+    queryFn: async () => {
+      const res = await USER_API.viewProfileCandidate(
+        candidateId,
+        userDetail?.access_token
+      );
+      return res?.data?.items as CandidateDetail;
+    },
+    enabled: !!candidateId && !!userDetail?.access_token,
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!candidateDetail) {
+    return <div>No candidate data found</div>;
+  }
+
+  const workExperiences = candidateDetail.work_experience_ids || [];
+  const skills = candidateDetail.skills || [];
+  const educations = candidateDetail.education_ids || [];
+  const certificates = candidateDetail.certificates || [];
+  const prizes = candidateDetail.prizes || [];
+  const projects = candidateDetail.projects || [];
+  const courses = candidateDetail.courses || [];
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
@@ -37,166 +138,165 @@ const CandidateDetailView = ({
       <div className="space-y-6">
         {/* Avatar */}
         <div className="flex items-center space-x-4">
-          <Avatar size={64} src={candidateDetail?.avatar} />
+          <Avatar size={64} src={candidateDetail.avatar} />
           <div className="text-xl font-semibold">
-            {candidateDetail?.full_name}
+            {candidateDetail.full_name}
           </div>
         </div>
 
         <div className="flex justify-start gap-2">
           <div className="font-medium">{t("introduce")}:</div>
-          <div>{candidateDetail?.introduce}</div>
+          <div>{candidateDetail.introduce}</div>
         </div>
 
         {/* Email */}
         <div className="flex justify-between">
           <div className="font-medium">{t("email")}:</div>
-          <div>{candidateDetail?.email}</div>
+          <div>{candidateDetail.email}</div>
         </div>
 
-        {/* Số điện thoại */}
+        {/* Phone */}
         <div className="flex justify-between">
           <div className="font-medium">{t("phone")}:</div>
-          <div>{candidateDetail?.phone || t("not_updated")}</div>
+          <div>{candidateDetail.phone || t("not_updated")}</div>
         </div>
 
         {/* Address */}
         <div className="flex justify-between">
           <div className="font-medium">{t("address")}:</div>
-          <div>{candidateDetail?.city_id?.name || t("not_updated")}</div>
+          <div>{candidateDetail.city_id?.name || t("not_updated")}</div>
         </div>
 
         {/* Gender */}
         <div className="flex justify-between">
           <div className="font-medium">{t("gender")}:</div>
           <div>
-            {candidateDetail?.gender === 0
+            {candidateDetail.gender === 0
               ? t("male")
-              : candidateDetail?.gender === 1
+              : candidateDetail.gender === 1
               ? t("female")
               : t("not_defined")}
           </div>
         </div>
+
+        {/* Birthday */}
         <div className="flex justify-between">
           <div className="font-medium">{t("birthday")}:</div>
-          <div>{formatDate(candidateDetail?.birthday) || t("not_updated")}</div>
+          <div>
+            {candidateDetail.birthday
+              ? formatDate(candidateDetail.birthday)
+              : t("not_updated")}
+          </div>
         </div>
 
         {/* Search Job Status */}
         <div className="flex justify-between">
           <div className="font-medium">{t("search_job_status")}:</div>
           <div>
-            {candidateDetail?.is_search_jobs_status
+            {candidateDetail.is_search_jobs_status
               ? t("searching")
               : t("not_searching")}
           </div>
         </div>
 
-        {/* No Experience */}
+        {/* Experience */}
         <div className="flex justify-between">
           <div className="font-medium">{t("no_experience")}:</div>
-          <div>{candidateDetail?.no_experience ? t("yes") : t("no")}</div>
+          <div>{candidateDetail.no_experience ? t("yes") : t("no")}</div>
         </div>
+
         {/* Total Experience Years */}
         <div className="flex justify-between">
           <div className="font-medium">{t("total_experience_years")}:</div>
-          <div>{candidateDetail?.total_experience_years}</div>
+          <div>{candidateDetail.total_experience_years}</div>
         </div>
 
         {/* Total Experience Months */}
         <div className="flex justify-between">
           <div className="font-medium">{t("total_experience_months")}:</div>
-          <div>{candidateDetail?.total_experience_months}</div>
+          <div>{candidateDetail.total_experience_months}</div>
         </div>
 
         {/* Work Experience */}
-        {candidateDetail?.work_experience_ids?.length > 0 && (
+        {workExperiences.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
               {t("work_experience")}:
             </div>
-            {candidateDetail?.work_experience_ids?.length > 0 ? (
-              candidateDetail?.work_experience_ids.map((work, index) => (
-                <Card key={index}>
-                  <div className="flex items-center justify-between">
+            {workExperiences.map((work, index) => (
+              <Card key={index}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold">{work.company}</div>
+                    <div>{work.position}</div>
                     <div>
-                      <div className="font-semibold">{work?.company}</div>
-                      <div>{work?.position}</div>
-                      <div>
-                        {work?.start_date &&
-                          new Date(work?.start_date).toLocaleDateString()}{" "}
-                        -{" "}
-                        {work?.currently_working
-                          ? "Hiện tại"
-                          : new Date(work?.end_date).toLocaleDateString()}
-                      </div>
+                      {formatDate(work.start_date)} -{" "}
+                      {work.currently_working
+                        ? t("currently_working")
+                        : formatDate(work.end_date)}
                     </div>
+                  </div>
+                  {work.image_url && (
                     <Image
                       width={100}
                       height={"100%"}
-                      src={work?.image_url}
+                      src={work.image_url}
                       preview={false}
                     />
-                  </div>
-                </Card>
-              ))
-            ) : (
-              <div>Chưa có kinh nghiệm làm việc</div>
-            )}
+                  )}
+                </div>
+              </Card>
+            ))}
           </div>
         )}
 
         {/* Skills */}
-        {candidateDetail?.skills?.length > 0 && (
+        {skills.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
               {t("skills")}:
             </div>
             <div className="flex flex-wrap gap-2">
-              {candidateDetail?.skills?.map(
-                (skill: { name: string }, index: number) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-gray-100 rounded-full"
-                  >
-                    {skill.name}
-                  </span>
-                )
-              )}
+              {skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-gray-100 rounded-full"
+                >
+                  {skill.name}
+                </span>
+              ))}
             </div>
           </div>
         )}
 
         {/* Education */}
-        {candidateDetail?.education_ids?.length > 0 && (
+        {educations.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
               {t("education")}:
             </div>
-            {candidateDetail?.education_ids?.length > 0 ? (
-              candidateDetail?.education_ids.map((education, index) => (
-                <Card key={index}>
-                  <div className="font-semibold">{education?.school}</div>
-                  <div>{education?.major}</div>
-                  <div>
-                    {new Date(education?.start_date).toLocaleDateString()} -{" "}
-                    {education?.currently_studying
-                      ? t("studying")
-                      : t("graduated")}
-                  </div>
-                </Card>
-              ))
-            ) : (
-              <div>{t("no_education")}</div>
-            )}
+            {educations.map((education, index) => (
+              <Card key={index}>
+                <div className="font-semibold">{education.school}</div>
+                <div>{education.major}</div>
+                <div>
+                  {formatDate(education.start_date)} -{" "}
+                  {education.currently_studying
+                    ? t("currently_studying")
+                    : t("graduated")}
+                </div>
+              </Card>
+            ))}
           </div>
         )}
-        {candidateDetail?.certificates?.length > 0 && (
+
+        {/* Certificates */}
+        {certificates.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
               {t("certificate")}
             </div>
-            {candidateDetail?.certificates?.map((item: any, index: number) => (
+            {certificates.map((item, index) => (
               <Card
                 key={index}
                 title={item.certificate_name}
@@ -211,7 +311,7 @@ const CandidateDetailView = ({
                     <div className="flex items-center">
                       <strong>{t("start_date")}: </strong>
                       <span className="ml-2">
-                        {new Date(item.start_date).toLocaleDateString()}
+                        {formatDate(item.start_date)}
                       </span>
                     </div>
                     <div className="flex items-center">
@@ -239,7 +339,7 @@ const CandidateDetailView = ({
                           href={item.link_certificate}
                           className="ml-2"
                         >
-                          {item?.link_certificate}
+                          {item.link_certificate}
                         </a>
                       </div>
                     )}
@@ -254,7 +354,7 @@ const CandidateDetailView = ({
                           maxWidth: 80,
                           maxHeight: 80,
                         }}
-                        src={item?.img_certificate}
+                        src={item.img_certificate}
                       />
                     </div>
                   )}
@@ -264,12 +364,13 @@ const CandidateDetailView = ({
           </div>
         )}
 
-        {candidateDetail?.prizes?.length > 0 && (
+        {/* Prizes */}
+        {prizes.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
               {t("prize")}
             </div>
-            {candidateDetail?.prizes?.map((item: any, index: number) => (
+            {prizes.map((item, index) => (
               <Card key={index} className="shadow-lg">
                 <Space className="flex items-center justify-between" size={16}>
                   <div>
@@ -293,7 +394,6 @@ const CandidateDetailView = ({
                       </a>
                     )}
                   </div>
-                  {/* Hiển thị ảnh nếu có */}
                   {item.prize_image && (
                     <Image
                       preview={false}
@@ -303,7 +403,7 @@ const CandidateDetailView = ({
                         maxWidth: 80,
                         maxHeight: 80,
                       }}
-                      src={item?.prize_image}
+                      src={item.prize_image}
                     />
                   )}
                 </Space>
@@ -312,12 +412,13 @@ const CandidateDetailView = ({
           </div>
         )}
 
-        {candidateDetail?.projects?.length > 0 && (
+        {/* Projects */}
+        {projects.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
               {t("project")}
             </div>
-            {candidateDetail?.projects?.map((item, index) => (
+            {projects.map((item, index) => (
               <Card key={index} className="shadow-lg">
                 <Space className="flex items-center justify-between" size={16}>
                   <div>
@@ -354,7 +455,6 @@ const CandidateDetailView = ({
                       </a>
                     )}
                   </div>
-                  {/* Hiển thị ảnh nếu có */}
                   {item.project_image && (
                     <Image
                       preview={true}
@@ -369,12 +469,13 @@ const CandidateDetailView = ({
           </div>
         )}
 
-        {candidateDetail?.courses?.length > 0 && (
+        {/* Courses */}
+        {courses.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
               {t("course")}
             </div>
-            {candidateDetail?.courses?.map((item, index) => (
+            {courses.map((item, index) => (
               <Card key={index} className="p-4 shadow-lg">
                 <Space className="flex items-center justify-between" size={16}>
                   <div>
@@ -399,7 +500,6 @@ const CandidateDetailView = ({
                       </a>
                     )}
                   </div>
-                  {/* Hiển thị ảnh nếu có */}
                   {item.course_image && (
                     <Image
                       width={100}
@@ -413,7 +513,6 @@ const CandidateDetailView = ({
                 </Space>
               </Card>
             ))}
-            {/* <Button onClick={()=>downloadCV(candidateDetail?._id)}>Download cv</Button> */}
           </div>
         )}
       </div>

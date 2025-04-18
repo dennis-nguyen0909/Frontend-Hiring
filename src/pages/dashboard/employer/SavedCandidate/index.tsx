@@ -1,13 +1,5 @@
-import { useEffect, useState } from "react";
-import {
-  List,
-  Button,
-  Dropdown,
-  message,
-  Avatar,
-  notification,
-  Card,
-} from "antd";
+import { useState } from "react";
+import { Button, Dropdown, message, Avatar, notification, Card } from "antd";
 import {
   MoreOutlined,
   MailOutlined,
@@ -17,8 +9,8 @@ import {
 } from "@ant-design/icons";
 import { SAVE_CANDIDATE_API } from "../../../../services/modules/SaveCandidateServices";
 import { useSelector } from "react-redux";
-import { Meta } from "../../../../types";
-import { defaultMeta } from "../../../../untils";
+import { RootState } from "../../../../redux/store/store";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 import CandidateDetailView from "../CandidateDetail/CandidateDetail";
 import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
@@ -26,50 +18,100 @@ import { USER_API } from "../../../../services/modules/userServices";
 import { useTranslation } from "react-i18next";
 import useMomentFn from "../../../../hooks/useMomentFn";
 
-interface SaveCandidates {
+interface SaveCandidateItem {
   _id: string;
-  employer: object | string;
-  candidate: object | string;
+  candidate: {
+    _id: string;
+    full_name: string;
+    position: string;
+    avatar?: string;
+  };
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+}
+
+interface Candidate {
+  _id: string;
+  full_name: string;
+  position: string;
+  avatar?: string;
 }
 
 export default function SavedCandidate() {
   const { t } = useTranslation();
   const { formatDate } = useMomentFn();
-  const userDetail = useSelector((state) => state.user);
-  const [saveCandidates, setSaveCandidates] = useState<SaveCandidates[]>([]);
+  const userDetail = useSelector((state: RootState) => state.user);
   const [currentTab, setCurrentTab] = useState("save_candidate");
-  const [meta, setMeta] = useState<Meta>(defaultMeta);
   const [selectedCandidate, setSelectedCandidate] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const queryClient = useQueryClient();
 
-  const handleBookmark = (candidateId: string) => {
-    setSaveCandidates((prev) =>
-      prev.map((candidate) =>
-        candidate.id === candidateId
-          ? { ...candidate, isActive: !isActive }
-          : candidate
-      )
-    );
+  // Fetch saved candidates
+  const { data: saveCandidatesData, isLoading } = useQuery({
+    queryKey: ["savedCandidates", userDetail?.id, currentPage, pageSize],
+    queryFn: async () => {
+      const params = {
+        current: currentPage,
+        pageSize,
+      };
+      const res = await SAVE_CANDIDATE_API.getSaveCandidateByEmployerId(
+        userDetail?.id || "",
+        params,
+        userDetail?.access_token || ""
+      );
+      return res.data;
+    },
+    enabled: !!userDetail?.id && !!userDetail?.access_token,
+  });
+
+  // Update bookmark status mutation
+  const updateBookmarkMutation = useMutation({
+    mutationFn: async ({
+      candidateId,
+      isActive,
+    }: {
+      candidateId: string;
+      isActive: boolean;
+    }) => {
+      return await SAVE_CANDIDATE_API.updateSaveCandidate(
+        candidateId,
+        isActive,
+        userDetail?.access_token || ""
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["savedCandidates", userDetail?.id],
+      });
+      notification.success({
+        message: t("notification.success"),
+        description: t("notification.updateBookmarkSuccess"),
+      });
+    },
+    onError: () => {
+      notification.error({
+        message: t("notification.error"),
+        description: t("notification.updateBookmarkError"),
+      });
+    },
+  });
+
+  const handleBookmark = (candidateId: string, isActive: boolean) => {
+    updateBookmarkMutation.mutate({ candidateId, isActive: !isActive });
   };
 
-  const handleGetCandidate = async (id: string, access_token: string) => {
+  const handleGetCandidate = async (id: string) => {
     try {
-      const res = await USER_API.getDetailUser(id, access_token);
+      const res = await USER_API.getDetailUser(id, userDetail?.access_token);
       return res;
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleViewProfile = async (candidate: any) => {
+  const handleViewProfile = async (candidate: Candidate) => {
     try {
-      const res = await handleGetCandidate(
-        candidate?._id,
-        userDetail?.access_token
-      );
+      const res = await handleGetCandidate(candidate?._id);
       if (res?.data?.items) {
         const { is_profile_privacy } = res.data.items;
         if (is_profile_privacy) {
@@ -87,39 +129,20 @@ export default function SavedCandidate() {
     }
   };
 
-  const handleSendEmail = (candidateId: string) => {
+  const handleSendEmail = () => {
     message.success(t("send_email_success"));
   };
 
-  const handleDownloadCV = (candidateId: string) => {
+  const handleDownloadCV = () => {
     message.success(t("download_cv_success"));
   };
 
-  const handleGetSaveCandidates = async ({ current = 1, pageSize = 10 }) => {
-    setIsLoading(true);
-    const params = {
-      current,
-      pageSize,
-    };
-    const res = await SAVE_CANDIDATE_API.getSaveCandidateByEmployerId(
-      userDetail?._id,
-      params,
-      userDetail?.access_token
-    );
-    if (res.data) {
-      setSaveCandidates(res.data.items);
-      setMeta(res.data.meta);
-    } else {
-      setSaveCandidates([]);
-    }
-    setIsLoading(false);
+  const handlePageChange = (current: number, pageSize: number) => {
+    setCurrentPage(current);
+    setPageSize(pageSize);
   };
 
-  useEffect(() => {
-    handleGetSaveCandidates({ current: 1, pageSize: 10 });
-  }, []);
-
-  const renderItem = (item) => {
+  const renderItem = (item: SaveCandidateItem) => {
     const { candidate, isActive } = item;
     return (
       <Card className="mb-4 hover:shadow-md transition-shadow">
@@ -147,7 +170,7 @@ export default function SavedCandidate() {
                   className={isActive ? "text-blue-500" : "text-gray-400"}
                 />
               }
-              onClick={() => handleBookmark(candidate._id)}
+              onClick={() => handleBookmark(candidate._id, isActive)}
               aria-label={isActive ? t("remove_bookmark") : t("add_bookmark")}
             />
             <Button
@@ -164,13 +187,13 @@ export default function SavedCandidate() {
                     key: "1",
                     icon: <MailOutlined />,
                     label: t("send_email"),
-                    onClick: () => handleSendEmail(candidate._id),
+                    onClick: handleSendEmail,
                   },
                   {
                     key: "2",
                     icon: <DownloadOutlined />,
                     label: t("download_cv"),
-                    onClick: () => handleDownloadCV(candidate._id),
+                    onClick: handleDownloadCV,
                   },
                 ],
               }}
@@ -209,18 +232,18 @@ export default function SavedCandidate() {
 
           <div className="space-y-4">
             <LoadingComponentSkeleton isLoading={isLoading}>
-              {saveCandidates.map((candidate) => renderItem(candidate))}
+              {saveCandidatesData?.items?.map((candidate: SaveCandidateItem) =>
+                renderItem(candidate)
+              )}
             </LoadingComponentSkeleton>
           </div>
 
           <div className="mt-6">
             <CustomPagination
-              currentPage={meta?.current_page}
-              total={meta?.total}
-              perPage={meta?.per_page}
-              onPageChange={(current, pageSize) => {
-                handleGetSaveCandidates({ current, pageSize });
-              }}
+              currentPage={saveCandidatesData?.meta?.current_page}
+              total={saveCandidatesData?.meta?.total}
+              perPage={saveCandidatesData?.meta?.per_page}
+              onPageChange={handlePageChange}
             />
           </div>
         </div>
