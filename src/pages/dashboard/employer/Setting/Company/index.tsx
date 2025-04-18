@@ -7,9 +7,9 @@ import {
   Input,
   notification,
   Upload,
-  UploadFile,
+  UploadProps,
 } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import * as userServices from "../../../../../services/modules/userServices";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -17,144 +17,156 @@ import { updateUser } from "../../../../../redux/slices/userSlices";
 import { MediaApi } from "../../../../../services/modules/mediaServices";
 import LoadingComponent from "../../../../../components/Loading/LoadingComponent";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+interface CompanyFormValues {
+  company_name: string;
+  description: {
+    level: {
+      content: string;
+    };
+  };
+}
+
+interface UpdateUserParams {
+  id: string;
+  company_name?: string;
+  description?: string;
+  avatar_company?: string;
+  banner_company?: string;
+}
+
+interface RootState {
+  user: {
+    _id: string;
+    access_token: string;
+  };
+}
+
 const CompanyInfo = () => {
   const { t } = useTranslation();
   const uploadRef = useRef(null);
-  const [logoFile, setLogoFile] = useState<UploadFile | null>(null);
   const [form] = Form.useForm();
-  const userDetail = useSelector((state) => state.user);
+  const userDetail = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleUploadFile = async (file: File, type: string) => {
-    setIsLoading(true);
-    if (file) {
-      try {
-        const res = await MediaApi.postMedia(
-          file,
-          userDetail?._id,
-          userDetail.access_token
-        );
-        if (res?.data?.url) {
-          let params;
-          if (type === "banner") {
-            params = {
-              id: userDetail?._id,
-              banner_company: res?.data?.url,
-            };
-          } else {
-            params = {
-              id: userDetail?._id,
-              avatar_company: res?.data?.url,
-            };
-          }
-          const responseUpdate = await userServices.updateUser(params);
-          if (responseUpdate.data) {
-            notification.success({
-              message: t("notification"),
-              description: t("update_success"),
-            });
-            dispatch(
-              updateUser({
-                ...responseUpdate.data,
-                access_token: userDetail.access_token,
-              })
-            );
-          }
-        }
-
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-      }
-    }
-  };
-  const handleLogoChange = (info: any) => {
-    handleUploadFile(info.file, "logo");
-  };
-
-  const handleBannerChange = (info: any) => {
-    handleUploadFile(info.file, "banner");
-  };
-
-  const handleSave = async (values: any) => {
-    setIsLoading(true);
-    const { company_name, description } = values;
-    const params = {
-      company_name,
-      description: description?.level?.content,
-      id: userDetail?._id,
-    };
-    const res = await userServices.updateUser(params);
-    if (res.data) {
-      notification.success({
-        message: t("notification"),
-        description: t("update_success"),
-      });
-      dispatch(
-        updateUser({ ...res.data, access_token: userDetail.access_token })
-      );
-    }
-    setIsLoading(false);
-  };
-  const handleGetDetailUser = async () => {
-    try {
-      setIsLoading(true);
+  const { data: userData, isLoading: isLoadingUser } = useQuery({
+    queryKey: ["userDetail", userDetail?._id],
+    queryFn: async () => {
       const res = await userServices.USER_API.getDetailUser(
         userDetail?._id,
         userDetail?.access_token
       );
-      if (res.data) {
-        dispatch(updateUser({ ...res.data.items }));
+      return res.data;
+    },
+    enabled: !!userDetail?._id && !!userDetail?.access_token,
+  });
+
+  const updateUserMutation = useMutation({
+    mutationFn: async (params: UpdateUserParams) => {
+      const res = await userServices.updateUser(params);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      notification.success({
+        message: t("notification"),
+        description: t("update_success"),
+      });
+      dispatch(updateUser({ ...data, access_token: userDetail.access_token }));
+      queryClient.invalidateQueries({ queryKey: ["userDetail"] });
+    },
+  });
+
+  const deleteAvatarMutation = useMutation({
+    mutationFn: async ({
+      type,
+    }: {
+      type: "avatar_company" | "banner_company";
+    }) => {
+      const res = await userServices.USER_API.deleteAvatarEmployer(
+        userDetail?._id,
+        type,
+        userDetail?.access_token
+      );
+      return res;
+    },
+    onSuccess: (res) => {
+      if (+res.statusCode === 200) {
+        notification.success({
+          message: t("notification"),
+          description: t("delete_success"),
+        });
+        queryClient.invalidateQueries({ queryKey: ["userDetail"] });
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    },
+  });
+
+  const uploadMediaMutation = useMutation({
+    mutationFn: async ({
+      file,
+      type,
+    }: {
+      file: File;
+      type: "logo" | "banner";
+    }) => {
+      const res = await MediaApi.postMedia(
+        file,
+        userDetail?._id,
+        userDetail.access_token
+      );
+      return res;
+    },
+    onSuccess: (res, variables) => {
+      if (res?.data?.url) {
+        const params: UpdateUserParams = {
+          id: userDetail?._id,
+          [variables.type === "banner" ? "banner_company" : "avatar_company"]:
+            res.data.url,
+        };
+        updateUserMutation.mutate(params);
+      }
+    },
+  });
+
+  const handleLogoChange: UploadProps["onChange"] = (info) => {
+    if (info.file.originFileObj) {
+      uploadMediaMutation.mutate({
+        file: info.file.originFileObj,
+        type: "logo",
+      });
     }
   };
-  useEffect(() => {
-    handleGetDetailUser();
-  }, []);
-  const handleDeleteAvatar = async (type: string) => {
-    try {
-      setIsLoading(true);
-      if (type === "avatar_company") {
-        const res = await userServices.USER_API.deleteAvatarEmployer(
-          userDetail?._id,
-          "avatar_company",
-          userDetail?.access_token
-        );
-        if (+res.statusCode === 200) {
-          notification.success({
-            message: t("notification"),
-            description: t("delete_success"),
-          });
-        }
-        await handleGetDetailUser();
-        return;
-      }
-      if (type === "banner_company") {
-        const res = await userServices.USER_API.deleteAvatarEmployer(
-          userDetail?._id,
-          "banner_company",
-          userDetail?.access_token
-        );
-        if (+res.statusCode === 200) {
-          notification.success({
-            message: t("notification"),
-            description: t("delete_success"),
-          });
-        }
-        await handleGetDetailUser();
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+
+  const handleBannerChange: UploadProps["onChange"] = (info) => {
+    if (info.file.originFileObj) {
+      uploadMediaMutation.mutate({
+        file: info.file.originFileObj,
+        type: "banner",
+      });
     }
   };
+
+  const handleSave = async (values: CompanyFormValues) => {
+    const { company_name, description } = values;
+    const params: UpdateUserParams = {
+      company_name,
+      description: description?.level?.content,
+      id: userDetail?._id,
+    };
+    updateUserMutation.mutate(params);
+  };
+
+  const handleDeleteAvatar = (type: "avatar_company" | "banner_company") => {
+    deleteAvatarMutation.mutate({ type });
+  };
+
+  const isLoading =
+    isLoadingUser ||
+    updateUserMutation.isPending ||
+    deleteAvatarMutation.isPending ||
+    uploadMediaMutation.isPending;
+
   return (
     <LoadingComponent isLoading={isLoading}>
       <Form form={form} layout="vertical" onFinish={handleSave}>
@@ -165,10 +177,10 @@ const CompanyInfo = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="mb-2 text-[12px]">{t("upload_logo")}</p>
-              {userDetail?.avatar_company ? (
+              {userData?.items?.avatar_company ? (
                 <Image
                   className="px-2 py-2"
-                  src={userDetail?.avatar_company}
+                  src={userData?.items?.avatar_company}
                   alt="Logo"
                   width={200}
                   height={200}
@@ -184,24 +196,16 @@ const CompanyInfo = () => {
                     onChange={handleLogoChange}
                     beforeUpload={() => false}
                   >
-                    {logoFile ? (
-                      <img
-                        src="/placeholder.svg?height=200&width=200"
-                        alt="Logo"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center">
-                        <UploadOutlined className="text-2xl" />
-                        <div className="mt-2 text-[12px]">{t("upload")}</div>
-                      </div>
-                    )}
+                    <div className="flex flex-col items-center">
+                      <UploadOutlined className="text-2xl" />
+                      <div className="mt-2 text-[12px]">{t("upload")}</div>
+                    </div>
                   </Upload>
                 </Form.Item>
               )}
-              {userDetail?.avatar_company && (
+              {userData?.items?.avatar_company && (
                 <div className="flex items-center mt-2 gap-4">
-                  <span className=" text-gray-500 !text-[12px]">3.5 MB</span>
+                  <span className="text-gray-500 !text-[12px]">3.5 MB</span>
                   <div className="flex gap-2">
                     <Button
                       className="!text-[12px]"
@@ -211,15 +215,6 @@ const CompanyInfo = () => {
                     >
                       {t("remove")}
                     </Button>
-                    <Input
-                      type="file"
-                      ref={uploadRef}
-                      style={{ display: "none" }}
-                      onChange={(e) => {
-                        // Xử lý sự kiện khi người dùng chọn file
-                        const file = e.target.files[0];
-                      }}
-                    />
                   </div>
                 </div>
               )}
@@ -227,12 +222,11 @@ const CompanyInfo = () => {
 
             <div>
               <p className="mb-2 text-[12px]">{t("banner")}</p>
-              {userDetail?.banner_company ? (
+              {userData?.items?.banner_company ? (
                 <div className="relative w-full h-64">
-                  {" "}
                   <Image
                     className="w-full h-full object-cover"
-                    src={userDetail?.banner_company}
+                    src={userData?.items?.banner_company}
                     alt="Banner"
                     preview={false}
                     width={"100%"}
@@ -248,22 +242,14 @@ const CompanyInfo = () => {
                     onChange={handleBannerChange}
                     beforeUpload={() => false}
                   >
-                    {userDetail?.banner_company ? (
-                      <img
-                        src="/placeholder.svg?height=200&width=400"
-                        alt="Banner"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center">
-                        <UploadOutlined className="text-2xl" />
-                        <div className="mt-2 text-[12px]">{t("upload")}</div>
-                      </div>
-                    )}
+                    <div className="flex flex-col items-center">
+                      <UploadOutlined className="text-2xl" />
+                      <div className="mt-2 text-[12px]">{t("upload")}</div>
+                    </div>
                   </Upload>
                 </Form.Item>
               )}
-              {userDetail?.banner_company && (
+              {userData?.items?.banner_company && (
                 <div className="flex items-center justify-center gap-2 mt-2">
                   <span className="text-sm text-gray-500">4.3 MB</span>
                   <div className="flex gap-2">
@@ -284,7 +270,7 @@ const CompanyInfo = () => {
             <Form.Item
               label={<div className="text-[12px]">{t("company_name")}</div>}
               name="company_name"
-              initialValue={userDetail?.company_name}
+              initialValue={userData?.items?.company_name}
               rules={[
                 { required: true, message: t("please_enter_company_name") },
               ]}
@@ -300,13 +286,12 @@ const CompanyInfo = () => {
             <Form.Item
               label={<div className="text-[12px]">{t("about_us")}</div>}
               name="description"
-              initialValue={userDetail?.description}
+              initialValue={userData?.items?.description}
               rules={[{ required: true, message: t("please_write_about_us") }]}
             >
               <Editor
-                // apiKey={process.env.REACT_APP_TINYMCE_API_KEY}
                 apiKey="px41kgaxf4w89e8p41q6zuhpup6ve0myw5lzxzlf0gc06zh3"
-                value={userDetail?.description}
+                value={userData?.items?.description}
                 onEditorChange={(content) =>
                   form.setFieldsValue({ description: content })
                 }

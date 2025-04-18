@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Table,
   Button,
@@ -7,119 +7,149 @@ import {
   Tooltip,
   Form,
   Input,
-  Pagination,
+  TablePaginationConfig,
 } from "antd";
+import type { FilterValue, SorterResult } from "antd/es/table/interface";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { EmployerSkillApi } from "../../../services/modules/EmployerSkillServices";
 import { useSelector } from "react-redux";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import DrawerGeneral from "../../../components/ui/GeneralDrawer/GeneralDrawer";
-import { Meta, SkillEmployerFormData } from "../../../types";
+import { SkillEmployerFormData } from "../../../types";
 import "./styles.css";
 import CustomPagination from "../../../components/ui/CustomPanigation/CustomPanigation";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+interface RootState {
+  user: {
+    _id: string;
+    access_token: string;
+  };
+}
+
+interface TableFilters {
+  [key: string]: FilterValue | null;
+}
+
+interface SkillData extends SkillEmployerFormData {
+  _id: string;
+  name: string;
+  description?: string;
+}
 
 export default function SkillEmployer() {
   const { t } = useTranslation();
   const [form] = Form.useForm<SkillEmployerFormData>();
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleDrawer, setVisibleDrawer] = useState<boolean>(false);
-  const [listSkills, setListSkills] = useState<SkillEmployerFormData[]>([]);
-  const [selectedSkill, setSelectedSkill] =
-    useState<SkillEmployerFormData | null>(null);
-  const [meta, setMeta] = useState<Meta | null>({
-    count: 0,
-    current_page: 1,
-    per_page: 10,
-    total: 0,
-    total_pages: 0,
-  });
-  const userDetail = useSelector((state) => state.user);
+  const [selectedSkill, setSelectedSkill] = useState<SkillData | null>(null);
+  const userDetail = useSelector((state: RootState) => state.user);
+  const queryClient = useQueryClient();
 
-  const handleGetAllEmployerSkills = async (params?: any) => {
-    try {
+  const { data: skillsData, isLoading } = useQuery({
+    queryKey: ["skills", userDetail?._id],
+    queryFn: async () => {
       const res = await EmployerSkillApi.getSkillByUserId(
         userDetail.access_token,
-        params
+        { current: 1, pageSize: 10 }
       );
-      if (res.data) {
-        setListSkills(res.data.items);
-        setMeta(res.data.meta);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+      return res.data;
+    },
+    enabled: !!userDetail?._id && !!userDetail?.access_token,
+  });
 
-  useEffect(() => {
-    handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
-  }, []);
-
-  const onFinish = async (values: SkillEmployerFormData) => {
-    const { name, description } = values;
-    const res = await EmployerSkillApi.postSkill(
-      { name, description, user_id: userDetail?._id },
-      userDetail.access_token
-    );
-    if (res.data) {
+  const createSkillMutation = useMutation({
+    mutationFn: async (values: SkillEmployerFormData) => {
+      const res = await EmployerSkillApi.postSkill(
+        { ...values, user_id: userDetail?._id },
+        userDetail.access_token
+      );
+      return res.data;
+    },
+    onSuccess: () => {
       notification.success({
         message: t("notification"),
         description: t("create_success"),
       });
-      handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
+      queryClient.invalidateQueries({ queryKey: ["skills"] });
       setVisible(false);
       form.resetFields();
-    } else {
+    },
+    onError: () => {
       notification.error({
         message: t("notification"),
         description: t("create_failed"),
       });
-    }
-  };
+    },
+  });
 
-  const handleOpenDrawer = (record: any) => {
+  const updateSkillMutation = useMutation({
+    mutationFn: async (values: SkillEmployerFormData) => {
+      const res = await EmployerSkillApi.updateSkill(
+        selectedSkill?._id,
+        values,
+        userDetail.access_token
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      notification.success({
+        message: t("notification"),
+        description: t("update_success"),
+      });
+      queryClient.invalidateQueries({ queryKey: ["skills"] });
+      setVisibleDrawer(false);
+    },
+    onError: () => {
+      notification.error({
+        message: t("notification"),
+        description: t("update_failed"),
+      });
+    },
+  });
+
+  const deleteSkillMutation = useMutation({
+    mutationFn: async (id: string | undefined) => {
+      if (!id) return;
+      const res = await EmployerSkillApi.deleteManySkill(
+        [id],
+        userDetail.access_token
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      notification.success({
+        message: t("notification"),
+        description: t("delete_success"),
+      });
+      queryClient.invalidateQueries({ queryKey: ["skills"] });
+    },
+    onError: () => {
+      notification.error({
+        message: t("notification"),
+        description: t("delete_failed"),
+      });
+    },
+  });
+
+  const handleOpenDrawer = (record: SkillData) => {
     setSelectedSkill(record);
     setVisibleDrawer(true);
     form.setFieldsValue(record);
   };
 
-  const handleUpdate = async (values: any) => {
-    const res = await EmployerSkillApi.updateSkill(
-      selectedSkill?._id,
-      values,
-      userDetail.access_token
-    );
-    if (res.data) {
-      notification.success({
-        message: t("notification"),
-        description: t("update_success"),
-      });
-      handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
-      setVisibleDrawer(false);
-    } else {
-      notification.error({
-        message: t("notification"),
-        description: t("update_failed"),
-      });
-    }
+  const onFinish = (values: SkillEmployerFormData) => {
+    createSkillMutation.mutate(values);
   };
 
-  const handleDelete = async (record: any) => {
-    const res = await EmployerSkillApi.deleteManySkill(
-      [record._id],
-      userDetail.access_token
-    );
-    if (res.data) {
-      notification.success({
-        message: t("notification"),
-        description: t("delete_success"),
-      });
-      handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
-    } else {
-      notification.error({
-        message: t("notification"),
-        description: t("delete_failed"),
-      });
+  const handleUpdate = (values: SkillEmployerFormData) => {
+    updateSkillMutation.mutate(values);
+  };
+
+  const handleDelete = (record: SkillData) => {
+    if (record._id) {
+      deleteSkillMutation.mutate(record._id);
     }
   };
 
@@ -137,7 +167,7 @@ export default function SkillEmployer() {
     {
       title: t("actions"),
       key: "actions",
-      render: (text: any, record: SkillEmployerFormData) => (
+      render: (_: unknown, record: SkillData) => (
         <div>
           <Tooltip title={t("edit")}>
             <Button
@@ -162,15 +192,23 @@ export default function SkillEmployer() {
     },
   ];
 
-  const onChange = async (pagination: any, filters: any, sorter: any) => {
-    const currentPage = pagination.current;
-    const pageSize = pagination.pageSize;
-
-    await handleGetAllEmployerSkills({
-      current: currentPage,
-      pageSize: pageSize,
-      ...filters,
-      ...sorter,
+  const onChange = async (
+    pagination: TablePaginationConfig,
+    filters: TableFilters,
+    sorter: SorterResult<SkillData> | SorterResult<SkillData>[]
+  ) => {
+    const currentPage = pagination.current || 1;
+    const pageSize = pagination.pageSize || 10;
+    await queryClient.invalidateQueries({ queryKey: ["skills"] });
+    queryClient.prefetchQuery({
+      queryKey: ["skills", currentPage, pageSize],
+      queryFn: async () => {
+        const res = await EmployerSkillApi.getSkillByUserId(
+          userDetail.access_token,
+          { current: currentPage, pageSize, ...filters, ...sorter }
+        );
+        return res.data;
+      },
     });
   };
 
@@ -184,19 +222,29 @@ export default function SkillEmployer() {
       </Button>
       <Table
         columns={columns}
-        dataSource={listSkills}
+        dataSource={skillsData?.items}
         onChange={onChange}
         pagination={false}
-        rowKey="id"
+        rowKey="_id"
+        loading={isLoading}
       />
 
-      {/* Pagination Component */}
       <CustomPagination
-        currentPage={meta?.current_page}
-        total={meta?.total}
-        perPage={meta?.per_page}
+        currentPage={skillsData?.meta?.current_page || 1}
+        total={skillsData?.meta?.total || 0}
+        perPage={skillsData?.meta?.per_page || 10}
         onPageChange={(current, pageSize) => {
-          handleGetAllEmployerSkills({ current, pageSize });
+          queryClient.invalidateQueries({ queryKey: ["skills"] });
+          queryClient.prefetchQuery({
+            queryKey: ["skills", current, pageSize],
+            queryFn: async () => {
+              const res = await EmployerSkillApi.getSkillByUserId(
+                userDetail.access_token,
+                { current, pageSize }
+              );
+              return res.data;
+            },
+          });
         }}
       />
 
@@ -232,6 +280,7 @@ export default function SkillEmployer() {
                 type="primary"
                 htmlType="submit"
                 className="w-full !bg-primaryColor"
+                loading={createSkillMutation.isPending}
               >
                 {t("create")}
               </Button>
@@ -273,6 +322,7 @@ export default function SkillEmployer() {
                 type="primary"
                 htmlType="submit"
                 className="w-full !bg-primaryColor"
+                loading={updateSkillMutation.isPending}
               >
                 {t("update")}
               </Button>

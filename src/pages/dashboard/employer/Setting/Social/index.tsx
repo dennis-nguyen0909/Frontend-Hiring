@@ -1,18 +1,94 @@
 import { CloseOutlined, LinkOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Input, notification, Select } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SOCIAL_LINK_API } from "../../../../../services/modules/SocialLinkService";
 import { useSelector } from "react-redux";
 import LoadingComponentSkeleton from "../../../../../components/Loading/LoadingComponentSkeleton";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+interface SocialLink {
+  _id?: string;
+  type: string;
+  url: string;
+  error?: string;
+  isExisting?: boolean;
+  hasChanged?: boolean;
+}
 
 const SocialEmployer = () => {
   const { t } = useTranslation();
-  const userDetail = useSelector((state) => state.user);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [socialLinks, setSocialLinks] = useState([]);
+  const userDetail = useSelector((state: any) => state.user);
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const queryClient = useQueryClient();
 
-  const isValidUrl = (url) => {
+  const { isLoading, data } = useQuery({
+    queryKey: ["socialLinks", userDetail?._id],
+    queryFn: async () => {
+      const params = {
+        current: 1,
+        pageSize: 10,
+        query: {
+          user_id: userDetail?._id,
+        },
+      };
+      const res = await SOCIAL_LINK_API.getAll(
+        params,
+        userDetail?.access_token
+      );
+      return res.data;
+    },
+    enabled: !!userDetail?._id,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
+
+  // Update socialLinks when data changes
+  useState(() => {
+    if (data?.items) {
+      const existingLinks = data.items.map((link: any) => ({
+        ...link,
+        isExisting: true,
+        hasChanged: false,
+        error: "",
+      }));
+      setSocialLinks(existingLinks);
+    }
+  }, [data]);
+
+  const createMutation = useMutation({
+    mutationFn: async (params: any) => {
+      return SOCIAL_LINK_API.create(params, userDetail?.access_token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["socialLinks"] });
+      notification.success({
+        message: t("notification"),
+        description: t("create_success"),
+      });
+    },
+    onError: () => {
+      notification.error({
+        message: t("error"),
+        description: t("error_message"),
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return SOCIAL_LINK_API.deleteMany([id], userDetail?.access_token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["socialLinks"] });
+      notification.success({
+        message: t("notification"),
+        description: t("delete_success"),
+      });
+    },
+  });
+
+  const isValidUrl = (url: string) => {
     try {
       const parsed = new URL(url);
       return ["http:", "https:"].includes(parsed.protocol);
@@ -21,9 +97,13 @@ const SocialEmployer = () => {
     }
   };
 
-  const handleSocialLinkChange = (index, field, value) => {
+  const handleSocialLinkChange = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
     const updatedLinks = [...socialLinks];
-    updatedLinks[index][field] = value;
+    updatedLinks[index] = { ...updatedLinks[index], [field]: value };
 
     if (field === "url") {
       if (!value) {
@@ -49,40 +129,6 @@ const SocialEmployer = () => {
     setSocialLinks([...socialLinks, { type: "", url: "", error: "" }]);
   };
 
-  const handleGetSocialLinks = async (current = 1, pageSize = 10) => {
-    try {
-      setLoading(true);
-      const params = {
-        current,
-        pageSize,
-        query: {
-          user_id: userDetail?._id,
-        },
-      };
-      const res = await SOCIAL_LINK_API.getAll(
-        params,
-        userDetail?.access_token
-      );
-      if (res.data) {
-        const existingLinks = res.data.items.map((link) => ({
-          ...link,
-          isExisting: true,
-          hasChanged: false,
-          error: "",
-        }));
-        setSocialLinks([...existingLinks]);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    handleGetSocialLinks();
-  }, []);
-
   const handleSaveChanges = async () => {
     const hasInvalid = socialLinks.some((link) => link.error);
     if (hasInvalid) {
@@ -101,56 +147,33 @@ const SocialEmployer = () => {
       return;
     }
 
-    try {
-      const requests = socialLinks
-        .filter((social) => social.hasChanged || !social.isExisting)
-        .map((social) => {
-          const params = {
-            user_id: userDetail?._id,
-            type: social?.type,
-            url: social?.url,
-          };
-          return SOCIAL_LINK_API.create(params, userDetail?.access_token);
-        });
+    const linksToSave = socialLinks.filter(
+      (social) => social.hasChanged || !social.isExisting
+    );
 
-      if (requests.length > 0) {
-        const results = await Promise.all(requests);
-        if (results.every((res) => res.data)) {
-          notification.success({
-            message: t("notification"),
-            description: t("create_success"),
-          });
-        }
-      } else {
-        notification.info({
-          message: t("notification"),
-          description: t("no_changes_to_save"),
-        });
-      }
-    } catch (error) {
-      notification.error({
-        message: t("error"),
-        description: t("error_message"),
+    if (linksToSave.length > 0) {
+      linksToSave.forEach((social) => {
+        const params = {
+          user_id: userDetail?._id,
+          type: social.type,
+          url: social.url,
+        };
+        createMutation.mutate(params);
+      });
+    } else {
+      notification.info({
+        message: t("notification"),
+        description: t("no_changes_to_save"),
       });
     }
   };
 
-  const onDeleted = async (id) => {
-    const res = await SOCIAL_LINK_API.deleteMany(
-      [id],
-      userDetail?.access_token
-    );
-    if (+res.statusCode === 200) {
-      notification.success({
-        message: t("notification"),
-        description: t("delete_success"),
-      });
-      handleGetSocialLinks();
-    }
+  const onDeleted = (id: string) => {
+    deleteMutation.mutate(id);
   };
 
   return (
-    <LoadingComponentSkeleton isLoading={loading}>
+    <LoadingComponentSkeleton isLoading={isLoading}>
       <h2 className="text-xl font-semibold mb-4">{t("social_link")}</h2>
       {socialLinks.map((link, index) => (
         <div key={index} className="mb-4">
@@ -185,7 +208,7 @@ const SocialEmployer = () => {
                 type="text"
                 className="!text-[12px]"
                 icon={<CloseOutlined />}
-                onClick={() => onDeleted(link?._id)}
+                onClick={() => onDeleted(link?._id || "")}
               />
             </div>
           </div>

@@ -833,6 +833,10 @@
     "not_searching": "Not searching",
     "searching": "Searching",
     "work_experience": "Work Experience",
-    "certificate_is_valid": "Certificate is valid"
+    "certificate_is_valid": "Certificate is valid",
+    "user_name": "User name",
+    "reject": "Reject",
+    "accept": "Accept",
+    "please_fix_errors": "Please fix errors"
 }
   

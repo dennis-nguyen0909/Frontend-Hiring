@@ -839,5 +839,9 @@
   "not_searching": "Không tìm việc",
   "searching": "Đang tìm việc",
   "work_experience": "Kinh nghiệm làm việc",
-  "certificate_is_valid": "Chứng chỉ còn hiệu lực"
+  "certificate_is_valid": "Chứng chỉ còn hiệu lực",
+  "user_name": "Tên người dùng",
+  "reject": "Từ chối",
+  "accept": "Chấp nhận",
+  "please_fix_errors": "Vui lòng sửa lỗi"
 }
