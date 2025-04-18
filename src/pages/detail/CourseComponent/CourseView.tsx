@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { Button, Card, Form, Input, notification } from "antd";
+import { Button, Card, DatePicker, Form, Input, notification } from "antd";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import UploadForm from "../../../components/ui/UploadForm/UploadForm";
 import { MediaApi } from "../../../services/modules/mediaServices";
@@ -13,7 +13,7 @@ import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 import useMomentFn from "../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
-import moment from "moment";
+import dayjs from "dayjs";
 
 interface Course {
   _id: string;
@@ -28,7 +28,7 @@ interface Course {
 }
 
 export default function CourseView() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatDate } = useMomentFn();
   const userDetail = useSelector((state) => state.user);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -85,10 +85,8 @@ export default function CourseView() {
       if (res.data) {
         form.setFieldsValue({
           ...res.data,
-          start_date: moment(res.data.start_date)
-            ? moment(res.data.start_date)
-            : "",
-          end_date: moment(res.data.end_date) ? moment(res.data.end_date) : "",
+          start_date: dayjs(res.data.start_date),
+          end_date: dayjs(res.data.end_date),
         });
         setLink(res.data.course_link);
       }
@@ -117,8 +115,8 @@ export default function CourseView() {
       setLoading(true);
       const { start_date, end_date } = values;
 
-      const formattedStartDate = moment(start_date);
-      const formattedEndDate = moment(end_date);
+      const formattedStartDate = dayjs(start_date);
+      const formattedEndDate = dayjs(end_date);
 
       const params = {
         user_id: userDetail?._id,
@@ -142,7 +140,12 @@ export default function CourseView() {
         await handleUpdateProfile();
       }
     } catch (error) {
-      console.error(error);
+      notification.error({
+        message: t("notification"),
+        description: i18n.exists(error.response?.data?.message)
+          ? t(error.response?.data?.message)
+          : t("error_from_server"),
+      });
     } finally {
       setLoading(false);
     }
@@ -191,7 +194,9 @@ export default function CourseView() {
     } catch (error) {
       notification.error({
         message: t("notification"),
-        description: error.response.data.message,
+        description: i18n.exists(error.response?.data?.message)
+          ? t(error.response?.data?.message)
+          : error.response?.data?.message,
       });
     } finally {
       setLoading(false);
@@ -270,7 +275,10 @@ export default function CourseView() {
                   { required: true, message: t("please_enter_start_date") },
                 ]}
               >
-                <Input type="date" className="text-[12px]" />
+                <DatePicker
+                  className="w-full text-[12px]"
+                  placeholder={t("start_date")}
+                />
               </Form.Item>
 
               <Form.Item
@@ -280,7 +288,10 @@ export default function CourseView() {
                   { required: true, message: t("please_enter_end_date") },
                 ]}
               >
-                <Input type="date" className="text-[12px]" />
+                <DatePicker
+                  className="w-full text-[12px]"
+                  placeholder={t("end_date")}
+                />
               </Form.Item>
 
               <Form.Item

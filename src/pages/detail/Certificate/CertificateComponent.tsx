@@ -177,7 +177,9 @@ const CertificateComponent = () => {
     } catch (error: any) {
       notification.error({
         message: t("notification"),
-        description: error.response?.data?.message || t("error_from_server"),
+        description: i18n.exists(error.response?.data?.message)
+          ? t(error.response?.data?.message)
+          : t("error_from_server"),
       });
     } finally {
       setIsLoading(false);

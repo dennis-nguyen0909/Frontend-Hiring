@@ -24,7 +24,7 @@ import ExperienceNumberCandidate from "../../dashboard/candidate/ExperienceNumbe
 import CertificateComponent from "../Certificate/CertificateComponent";
 import ProjectComponent from "../ProjectComponent/ProjectComponent";
 import PrizeView from "../PrizeComponent/PrizeView";
-import CourseView from "../CourseComponent/CourseComponent";
+import CourseView from "../CourseComponent/CourseView";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import { useViewerCandidateProfile } from "../../../hooks/useViewerCandidateProfile";
 import { useViewerCandidateProfileMonth } from "../../../hooks/useViewerCandidateProfileMonth";
