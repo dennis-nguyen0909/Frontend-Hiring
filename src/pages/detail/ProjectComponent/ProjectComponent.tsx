@@ -23,7 +23,7 @@ import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 import useMomentFn from "../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
-import moment from "moment";
+import dayjs from "dayjs";
 interface Project {
   _id: string;
   user_id: string;
@@ -33,15 +33,15 @@ interface Project {
   location: string;
   mission: string;
   technology: string;
-  start_date: Date; // Assuming you're working with Date objects
-  end_date: Date; // Assuming you're working with Date objects
+  start_date: dayjs.Dayjs | null;
+  end_date: dayjs.Dayjs | null;
   project_link: string | null;
   project_image: string | null;
   description: string;
 }
 
 const ProjectComponent = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [form] = Form.useForm();
   const [link, setLink] = useState<string>("");
   const [imgUrl, setImgUrl] = useState<string>("");
@@ -84,8 +84,8 @@ const ProjectComponent = () => {
       location: values.location,
       mission: values.mission,
       technology: values.technology,
-      start_date: values?.project_time[0],
-      end_date: values?.project_time[1],
+      start_date: values?.start_date ? dayjs(values?.start_date) : null,
+      end_date: values?.end_date ? dayjs(values?.end_date) : null,
       project_link: link || null,
       project_image: imgUrl || null,
       description: values.description,
@@ -93,6 +93,15 @@ const ProjectComponent = () => {
     try {
       setLoading(true);
       const res = await PROJECT_API.create(params, userDetail.access_token);
+
+      if (res.status === 400) {
+        notification.error({
+          message: t("notification"),
+          description: i18n.exists(res.message[0])
+            ? t(res.message[0])
+            : res.message,
+        });
+      }
       if (res.data) {
         notification.success({
           message: t("notification"),
@@ -155,6 +164,14 @@ const ProjectComponent = () => {
         params,
         userDetail.access_token
       );
+      if (res.status === 400) {
+        notification.error({
+          message: t("notification"),
+          description: i18n.exists(res.message[0])
+            ? t(res.message[0])
+            : res.message,
+        });
+      }
       if (res.data) {
         notification.success({
           message: t("notification"),
@@ -173,6 +190,7 @@ const ProjectComponent = () => {
       setLoading(false);
     }
   };
+
   const handletGetDetail = async (id: string) => {
     try {
       setIsLoading(true);
@@ -186,10 +204,8 @@ const ProjectComponent = () => {
           location: res.data.location || "",
           mission: res.data.mission || "",
           technology: res.data.technology || "",
-          project_time: [
-            res.data.start_date ? moment(res.data.start_date) : null,
-            res.data.end_date ? moment(res.data.end_date) : null,
-          ],
+          start_date: res.data.start_date ? dayjs(res.data.start_date) : null,
+          end_date: res.data.end_date ? dayjs(res.data.end_date) : null,
           project_link: res.data.project_link || "",
           description: res.data.description || "",
         });
@@ -238,7 +254,7 @@ const ProjectComponent = () => {
         <LoadingComponent isLoading={loading}>
           <Form
             form={form}
-            onFinish={handleSubmit}
+            onFinish={type === "create" ? handleSubmit : undefined}
             layout="vertical"
             className="space-y-4"
           >
@@ -306,13 +322,23 @@ const ProjectComponent = () => {
 
             <Form.Item
               label={<div className="text-[12px]">{t("time")}</div>}
-              name="project_time"
+              name="start_date"
               rules={[{ required: true, message: t("please_select_time") }]}
             >
-              <DatePicker.RangePicker
-                className="w-full"
-                placeholder={[t("start"), t("end")]}
-                format={dateFormat}
+              <DatePicker
+                className="w-full text-[12px]"
+                placeholder={t("start_date")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label={<div className="text-[12px]">{t("end_date")}</div>}
+              name="end_date"
+              rules={[{ required: true, message: t("please_select_time") }]}
+            >
+              <DatePicker
+                className="w-full text-[12px]"
+                placeholder={t("end_date")}
               />
             </Form.Item>
 
@@ -351,14 +377,12 @@ const ProjectComponent = () => {
               {type === "edit" && (
                 <div className="flex justify-between gap-4">
                   <Button
-                    htmlType="submit"
                     className="px-4 !bg-primaryColor !text-white !border-none !hover:text-white w-full !cursor-pointer text-[12px]"
                     onClick={onUpdate}
                   >
                     {t("update")}
                   </Button>
                   <Button
-                    htmlType="submit"
                     className="px-4 !bg-black !text-white !border-none !hover:text-white w-full !cursor-pointer text-[12px]"
                     onClick={() => onDelete(selectedId)}
                   >
@@ -418,9 +442,8 @@ const ProjectComponent = () => {
                       {t("customer_name")}: {project.customer_name}
                     </p>
                     <p className="text-[12px]">
-                      {t("time")}:{" "}
-                      {moment(project.start_date).format(dateFormat)} -{" "}
-                      {moment(project.end_date).format(dateFormat)}
+                      {t("time")}: {formatDate(project.start_date)} -{" "}
+                      {formatDate(project.end_date)}
                     </p>
                     <p className="text-[12px]">
                       {t("mission")}: {project.mission}
