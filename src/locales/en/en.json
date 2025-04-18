@@ -770,7 +770,8 @@
     "download":"Download",
     "cv_name":"CV name",
     "updating":"Updating",
-    "current_avatar":"Current Avatar"
+    "current_avatar":"Current Avatar",
+    "end_date_must_be_bigger_than_start_date":"End date must be bigger than start date"
   
   
 

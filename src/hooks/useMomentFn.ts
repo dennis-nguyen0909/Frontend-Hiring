@@ -1,5 +1,6 @@
-import moment from 'moment';
-import { useSelector } from 'react-redux';
+import dayjs from "dayjs";
+import moment from "moment";
+import { useSelector } from "react-redux";
 
 const useMomentFn = () => {
   // Lấy thông tin người dùng từ Redux
@@ -7,9 +8,13 @@ const useMomentFn = () => {
 
   // Lấy định dạng ngày từ Redux hoặc mặc định "DD/MM/YYYY"
   const dateFormat = userDetail?.dateFormat || "DD/MM/YYYY";
-
-  // Hàm format ngày
-  const formatDate = (date: Date | string) => moment(date).format(dateFormat);
+  console.log("userdetaildadas", dateFormat);
+  const formatDate = (
+    date: string | Date | dayjs.Dayjs | null,
+    format = dateFormat
+  ) => {
+    return date ? dayjs(date).format(format) : "";
+  };
 
   return { formatDate, dateFormat };
 };

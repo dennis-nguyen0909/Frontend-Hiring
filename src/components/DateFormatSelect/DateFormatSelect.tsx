@@ -1,6 +1,5 @@
 import React from "react";
 import { Select } from "antd";
-import moment from "moment";
 import { useTranslation } from "react-i18next";
 
 const { Option } = Select;

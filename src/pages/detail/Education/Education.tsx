@@ -20,7 +20,7 @@ import LoadingComponentSkeleton from "../../../components/Loading/LoadingCompone
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import useMomentFn from "../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
-import moment from "moment";
+import dayjs from "dayjs";
 
 const { TextArea } = Input;
 
@@ -54,7 +54,7 @@ const EducationComponent = () => {
     userDetail?._id,
     userDetail?.access_token
   );
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleGetEducation = async (id: string, access_token: string) => {
     try {
@@ -86,7 +86,7 @@ const EducationComponent = () => {
         dispatch(
           updateUser({
             ...userDetail,
-            ...res?.data,
+            educations: res?.data, // Corrected: Use 'educations' to match the slice
             access_token: user.access_token,
           })
         );
@@ -134,7 +134,9 @@ const EducationComponent = () => {
                 <p className="block text-gray-600 text-[10px]">{major}</p>
                 <p className="block text-gray-500 text-[10px]">
                   {formatDate(start_date)} -{" "}
-                  {end_date === null ? t("present") : formatDate(end_date)}
+                  {end_date === null || end_date === undefined
+                    ? t("present")
+                    : formatDate(end_date)}
                 </p>
               </div>
               <Pencil
@@ -159,7 +161,7 @@ const EducationComponent = () => {
     } catch (error: any) {
       notification.error({
         message: t("notification"),
-        description: error.message,
+        description: error.response.data.message[0],
       });
     }
   };
@@ -168,7 +170,10 @@ const EducationComponent = () => {
     setVisibleModalEducation(false);
     setSelectedEducationId("");
     setEducation(null);
+    setActionType("");
+    setIsCurrentlyStudying(false);
     form.resetFields();
+    form.setFieldsValue({});
   };
 
   const handleDeleteEducation = async () => {
@@ -185,8 +190,8 @@ const EducationComponent = () => {
             description: t("delete_success"),
           });
           await handleGetEducationByUserId();
-          closeModal();
           await handleUpdateProfile();
+          closeModal();
         }
       }
     } catch (error: any) {
@@ -204,11 +209,29 @@ const EducationComponent = () => {
       setLoading(true);
       if (education) {
         const data = form.getFieldsValue();
+        const updatedData = {
+          end_date: data.currently_studying
+            ? null
+            : data.end_date
+            ? dayjs(data.end_date)
+            : undefined,
+          start_date: data.start_date ? dayjs(data.start_date) : undefined,
+          ...data,
+        };
         const res = await EducationApi.updateEducation(
           education._id,
-          { end_date: data.currently_studying && null, ...data },
+          updatedData,
           user.access_token
         );
+
+        if (res.status === 400) {
+          notification.error({
+            message: t("notification"),
+            description: i18n.exists(res.message[0])
+              ? t(res.message[0])
+              : res.message,
+          });
+        }
         if (res.data) {
           await handleGetEducationByUserId();
           closeModal();
@@ -234,10 +257,21 @@ const EducationComponent = () => {
     const params = {
       ...values,
       user_id: user._id,
+      currently_studying: values.currently_studying || false,
+      start_date: values.start_date ? dayjs(values.start_date) : undefined,
+      end_date: values.end_date ? dayjs(values.end_date) : undefined,
     };
 
     try {
       const res = await handlePostEducation(params, user.access_token);
+      if (res.status === 400) {
+        notification.error({
+          message: t("notification"),
+          description: i18n.exists(res.message[0])
+            ? t(res.message[0])
+            : res.message,
+        });
+      }
       if (res?.data) {
         notification.success({
           message: t("notification"),
@@ -254,25 +288,28 @@ const EducationComponent = () => {
       });
     } finally {
       setLoading(false);
-      closeModal();
+      // closeModal();
     }
   };
 
   const handleCheckboxChange = (e: any) => {
     setIsCurrentlyStudying(e.target.checked);
     if (e.target.checked) {
-      form.setFieldsValue({ end_date: null });
+      form.setFieldsValue({ end_date: undefined });
+    } else if (education?.end_date) {
+      form.setFieldsValue({ end_date: dayjs(education.end_date) });
     }
   };
 
   useEffect(() => {
-    if (actionType === "edit" && selectedEducationId) {
+    if (actionType === "edit") {
       handleGetEducation(selectedEducationId, user.access_token);
     } else {
       form.resetFields();
+      form.setFieldsValue({});
       setIsCurrentlyStudying(false);
     }
-  }, [actionType, selectedEducationId, form]);
+  }, [actionType, selectedEducationId]);
 
   useEffect(() => {
     if (education) {
@@ -280,14 +317,19 @@ const EducationComponent = () => {
       form.setFieldsValue({
         school: education.school,
         major: education.major,
-        start_date: education.start_date ? moment(education.start_date) : null,
-        end_date: education.end_date ? moment(education.end_date) : null,
+        start_date: education.start_date ? dayjs(education.start_date) : null,
+        end_date: education.end_date ? dayjs(education.end_date) : null,
         currently_studying: isCurrentlyStudying,
         description: education.description,
       });
       setIsCurrentlyStudying(isCurrentlyStudying);
+    } else if (actionType === "create") {
+      form.resetFields();
+      form.setFieldsValue({});
+      setEducation(null);
+      setIsCurrentlyStudying(false);
     }
-  }, [education, form]);
+  }, [education, form, actionType, dateFormat]);
 
   const renderBody = () => {
     return (
@@ -298,16 +340,16 @@ const EducationComponent = () => {
             layout="vertical"
             onFinish={onFinish}
             preserve={false}
-            initialValues={{
-              school: education?.school || "",
-              major: education?.major || "",
-              start_date: education?.start_date
-                ? moment(education.start_date)
-                : null,
-              end_date: education?.end_date ? moment(education.end_date) : null,
-              currently_studying: !education?.end_date,
-              description: education?.description || "",
-            }}
+            // initialValues={{
+            //   school: education?.school || "",
+            //   major: education?.major || "",
+            //   start_date: education?.start_date
+            //     ? dayjs(education.start_date)
+            //     : null,
+            //   end_date: education?.end_date ? dayjs(education.end_date) : null,
+            //   currently_studying: education?.currently_studying || false,
+            //   description: education?.description || "",
+            // }}
           >
             <Form.Item
               name="school"
@@ -347,11 +389,7 @@ const EducationComponent = () => {
                   { required: true, message: t("please_select_start_date") },
                 ]}
               >
-                <DatePicker
-                  format={dateFormat}
-                  picker="date"
-                  style={{ width: "100%", fontSize: "12px" }}
-                />
+                <DatePicker style={{ width: "100%", fontSize: "12px" }} />
               </Form.Item>
 
               {!isCurrentlyStudying && (
@@ -361,15 +399,14 @@ const EducationComponent = () => {
                   style={{ width: "200px" }}
                   rules={[
                     {
-                      required: true,
+                      required: !isCurrentlyStudying,
                       message: t("please_select_end_date"),
                     },
                   ]}
                 >
                   <DatePicker
-                    format={dateFormat}
-                    picker="date"
                     style={{ width: "100%", fontSize: "12px" }}
+                    disabled={isCurrentlyStudying}
                   />
                 </Form.Item>
               )}
@@ -434,12 +471,6 @@ const EducationComponent = () => {
     );
   };
 
-  useEffect(() => {
-    if (selectedEducationId) {
-      handleGetEducation(selectedEducationId, user.access_token);
-    }
-  }, [selectedEducationId]);
-
   return (
     <div>
       {listEducations.length > 0 ? (
@@ -458,7 +489,6 @@ const EducationComponent = () => {
               {t("add")}
             </Button>
           </div>
-          {/* <div className="flex items-center justify-start"> */}
           <div>
             {listEducations?.map((item: typePostEducation, index: number) => (
               <EducationItem
@@ -472,7 +502,6 @@ const EducationComponent = () => {
               />
             ))}
           </div>
-          {/* </div> */}
         </Card>
       ) : (
         <Card>

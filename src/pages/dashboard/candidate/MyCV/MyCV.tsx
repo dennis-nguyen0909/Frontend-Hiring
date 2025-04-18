@@ -208,8 +208,13 @@ const MyCV: React.FC = () => {
               failedCount++;
             }
           } catch (error) {
+            notification.error({
+              message: t("notification"),
+              description: `${error?.response?.data?.message}`,
+            });
+            MediaApi.deleteMedia(file.response.data.result.public_id, userDetail?.access_token);
             failedCount++;
-            console.error("Error uploading file:", error);
+     
           }
         }
       }
@@ -222,16 +227,17 @@ const MyCV: React.FC = () => {
         });
       }
       if (failedCount > 0) {
-        notification.warning({
-          message: t("notification"),
-          description: t("upload_failed_count", { count: failedCount }),
-        });
+        // notification.warning({
+        //   message: t("notification"),
+        //   description: t("upload_failed_count", { count: failedCount }),
+        // });
       }
 
       await refetchCVs();
       setUploadModalVisible(false);
       setFileList([]);
     } catch (error: unknown) {
+
       notification.error({
         message: t("notification"),
         description:
