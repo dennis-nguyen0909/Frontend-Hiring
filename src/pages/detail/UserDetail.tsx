@@ -15,6 +15,7 @@ import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import * as userServices from "../../services/modules/userServices";
 import { updateUser } from "../../redux/slices/userSlices";
+import { useTranslation } from "react-i18next";
 interface updateUserDto {
   full_name: string;
   address: string;
@@ -27,27 +28,31 @@ type InputValuesProps = {
   phoneNumber: string;
 };
 const UserDetail = () => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  useEffect(()=>{
-    if(!userDetail?.access_token){
-      navigate('/')
+
+  useEffect(() => {
+    if (!userDetail?.access_token) {
+      navigate("/");
       return;
     }
-  },[userDetail?.access_token])
+  }, [userDetail?.access_token]);
+
   const handleUpdateUser = async (values: updateUserDto) => {
     try {
       const res = await userServices.updateUser(values);
       return res.data;
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
   };
+
   const onFinish = async (values: InputValuesProps) => {
     const { phoneNumber, fullName, address } = values;
     const params = {
@@ -66,8 +71,8 @@ const UserDetail = () => {
         })
       );
       notification.success({
-        message: "Thông báo",
-        description: "Cập nhật thành công",
+        message: t("notification"),
+        description: t("update_success"),
       });
     }
   };
@@ -80,28 +85,29 @@ const UserDetail = () => {
           updateUser({ ...res.data, access_token: userDetail.access_token })
         );
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
   };
+
   const onChangeSwitch = async (checked: boolean, type: string) => {
     switch (type) {
       case "is_suggestion_job":
         // eslint-disable-next-line no-case-declarations
         const param = {
-         id: userDetail?._id,
-         is_suggestion_job: checked,
-       };
-       await updateUserApi(param);
+          id: userDetail?._id,
+          is_suggestion_job: checked,
+        };
+        await updateUserApi(param);
 
-       break;
+        break;
       case "isSearchJobStatus":
         // eslint-disable-next-line no-case-declarations
         const params = {
@@ -117,9 +123,11 @@ const UserDetail = () => {
   return (
     <div className="px-primaryx2 bg-[#f0f0f0] flex h-screen py-2">
       <div className="w-2/3 bg-white h-fit p-6 shadow-md mr-[50px] rounded-2xl mt-10">
-        <h1 className="text-lg font-bold mb-4">Cài đặt thông tin cá nhân</h1>
+        <h1 className="text-lg font-bold mb-4">
+          {t("setting_personal_information")}
+        </h1>
         <div className="mb-2 text-sm">
-          <span className="text-red-500">*</span> Các thông tin bắt buộc
+          <span className="text-red-500">*</span> {t("required_information")}
         </div>
         <Form
           form={form}
@@ -137,32 +145,32 @@ const UserDetail = () => {
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập họ tên!",
+                message: t("please_enter_your_full_name"),
               },
             ]}
           >
-            <Input placeholder="Nhập họ tên" />
+            <Input placeholder={t("please_enter_your_full_name")} />
           </Form.Item>
 
           <Form.Item
-            label="Số điện thoại"
+            label={t("phone_number")}
             name="phoneNumber"
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập số điện thoại!",
+                message: t("please_enter_your_phone_number"),
               },
               {
                 pattern: /^[0-9]+$/,
-                message: "Số điện thoại không hợp lệ!",
+                message: t("invalid_phone_number"),
               },
             ]}
           >
-            <Input placeholder="Nhập số điện thoại" />
+            <Input placeholder={t("please_enter_your_phone_number")} />
           </Form.Item>
 
-          <Form.Item label="Địa chỉ" name="address">
-            <Input placeholder="Nhập địa chỉ" />
+          <Form.Item label={t("address")} name="address">
+            <Input placeholder={t("please_enter_your_address")} />
           </Form.Item>
 
           <Form.Item>
@@ -172,7 +180,7 @@ const UserDetail = () => {
               size="large"
               htmlType="submit"
             >
-              Lưu
+              {t("save")}
             </Button>
           </Form.Item>
         </Form>
@@ -184,10 +192,10 @@ const UserDetail = () => {
             <Avatar src={userDetail?.avatar || avtDefault} size={100} />
           </div>
           <div>
-            <p>Chào bạn trở lại</p>
+            <p>{t("welcome_back")}</p>
             <b>{userDetail.full_name}</b>
             <div className="bg-[#7b8381] px-1 py-1 rounded-sm text-white text-[12px] w-fit">
-              <p>Tài khoản đã xác thực</p>
+              <p>{t("account_has_been_verified")}</p>
             </div>
           </div>
         </div>
@@ -200,11 +208,12 @@ const UserDetail = () => {
             value={userDetail?.is_search_jobs_status}
           />
           <span className="ml-2 font-semibold text-grayPrimary">
-            Đang Tắt tìm việc
+            {t("is_search_jobs_status")}
           </span>
           <div className=" mt-2 text-[12px] text-grayPrimary">
-            Bật tìm việc giúp hồ sơ của bạn nổi bật hơn và được chú ý nhiều hơn
-            trong danh sách tìm kiếm của NTD.
+            {t(
+              "enable_job_search_to_highlight_your_profile_and_be_noticed_more_in_the_search_list_of_employers"
+            )}
           </div>
         </div>
         <div className="mt-8">
@@ -215,23 +224,24 @@ const UserDetail = () => {
             value={userDetail?.is_suggestion_job}
           />
           <span className="ml-2 font-semibold text-grayPrimary">
-            Bật gợi ý việc làm
+            {t("enable_job_suggestion")}
           </span>
           <div className=" mt-2 text-[12px] text-grayPrimary">
-            Khi có cơ hội việc làm phù hợp, NTD sẽ liên hệ và trao đổi với bạn
-            qua:
+            {t(
+              "when_there_is_a_suitable_job_opportunity_employers_will_contact_and_discuss_with_you_via"
+            )}
           </div>
           <div className="mt-2">
             <div>
               <CheckCircleOutlined />
               <span className="ml-2 font-light text-grayPrimary text-[14px]">
-                Nhắn tin qua Top Connect trên HireDev
+                {t("send_messages_through_top_connect_on_hiredev")}
               </span>
             </div>
             <div>
               <CheckCircleOutlined />
               <span className="ml-2 font-light text-grayPrimary text-[14px]">
-                Email và Số điện thoại của bạn
+                {t("your_email_and_phone_number")}
               </span>
             </div>
           </div>
@@ -239,15 +249,17 @@ const UserDetail = () => {
         <Divider />
         <div>
           <div className=" mt-2 text-[12px] text-grayPrimary">
-            <InfoCircleOutlined /> Bạn cần hoàn thiện trên 70% TopCV Profile để
-            bắt đầu tiếp cận với nhà tuyển dụng
+            <InfoCircleOutlined />{" "}
+            {t(
+              "you_need_to_complete_over_70_topcv_profile_to_start_contacting_with_employers"
+            )}
           </div>
           <div className="mt-2">
             <Button
               onClick={() => navigate(`/profile/${userDetail?._id}`)}
               className="!border-primaryColor !text-primaryColor !hover:text-primaryColor !hover:border-primaryColor"
             >
-              Cập nhật Profile
+              {t("update_profile")}
             </Button>
           </div>
         </div>

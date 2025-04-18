@@ -7,15 +7,15 @@ import {
   FileTextOutlined,
 } from "@ant-design/icons";
 import type { UploadProps } from "antd";
-import * as userServices from "../../../services/modules/userServices";
 import { CV_API } from "../../../services/modules/CvServices";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { File } from "buffer";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 const { Dragger } = Upload;
 
 export default function UploadPDF() {
+  const { t } = useTranslation();
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [fileUrl, setFileUrl] = useState<string>("");
@@ -29,6 +29,7 @@ export default function UploadPDF() {
       return;
     }
   }, [userDetail?.access_token]);
+
   const props: UploadProps = {
     name: "file",
     multiple: false,
@@ -47,13 +48,13 @@ export default function UploadPDF() {
         setPublicId(info.file.response.data.result.public_id);
         setFileName(info.file.response.data.originalName);
         setBytes(info.file.response.data.result.bytes);
-        message.success(`${info.file.name} đã được tải lên thành công.`);
+        message.success(`${info.file.name} ${t("upload_success")}.`);
       } else if (status === "error") {
         notification.error({
-          message: "Thông báo",
-          description: "Tải lên thất bại",
+          message: t("notification"),
+          description: t("upload_failed"),
         });
-        message.error(`${info.file.name} tải lên thất bại.`);
+        message.error(`${info.file.name} ${t("upload_failed")}.`);
       }
     },
     onDrop(e) {
@@ -73,13 +74,13 @@ export default function UploadPDF() {
       const res = await CV_API.create(params, userDetail.access_token);
       if (res.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
@@ -91,10 +92,10 @@ export default function UploadPDF() {
       <div className="bg-green-600 text-white p-8 rounded-t-lg relative overflow-hidden">
         <div className="relative z-10">
           <h1 className="text-2xl font-bold mb-2">
-            Upload CV để các cơ hội việc làm tự tìm đến bạn
+            {t("upload_cv_to_let_the_job_opportunities_find_you")}
           </h1>
           <p className="text-green-100">
-            Giảm đến 50% thời gian cần thiết để tìm được một công việc phù hợp
+            {t("reduce_the_time_needed_to_find_a_suitable_job")}
           </p>
         </div>
         <div className="absolute right-0 top-0 h-full w-1/3">
@@ -113,10 +114,9 @@ export default function UploadPDF() {
       {/* Upload Section */}
       <div className="bg-white p-8 border border-gray-200 rounded-b-lg">
         <p className="text-gray-600 mb-6 text-center max-w-2xl mx-auto">
-          Bạn đã có sẵn CV của mình, chỉ cần tải CV lên, hệ thống sẽ tự động đề
-          xuất CV của bạn tới những nhà tuyển dụng uy tín. Tiết kiệm thời gian,
-          tìm việc thông minh, nắm bắt cơ hội và làm chủ đường đua nghề nghiệp
-          của chính mình.
+          {t(
+            "you_already_have_your_cv_ready_to_upload_the_system_will_automatically_suggest_your_cv_to_trusted_employers_save_time_find_a_suitable_job_and_take_control_of_your_career"
+          )}
         </p>
 
         <Dragger {...props} className="mb-8">
@@ -124,14 +124,14 @@ export default function UploadPDF() {
             <InboxOutlined className="text-green-500 text-4xl" />
           </p>
           <p className="ant-upload-text font-medium">
-            Tải lên CV từ máy tính, chọn hoặc kéo thả
+            {t("upload_cv_from_your_computer_select_or_drag_and_drop")}
           </p>
           <p className="ant-upload-hint text-gray-500">
-            Hỗ trợ định dạng .doc, .docx, pdf có kích thước dưới 5MB
+            {t("support_the_format_doc_docx_pdf_with_a_size_under_5mb")}
           </p>
         </Dragger>
         <div className="mt-5 flex items-center">
-          <Button onClick={onUpdate}>Cập nhật</Button>
+          <Button onClick={onUpdate}>{t("update")}</Button>
         </div>
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
@@ -139,11 +139,13 @@ export default function UploadPDF() {
             <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <FileTextOutlined className="text-2xl text-green-500" />
             </div>
-            <h3 className="font-medium mb-2">Nhận về các cơ hội tốt nhất</h3>
+            <h3 className="font-medium mb-2">
+              {t("receive_the_best_job_opportunities")}
+            </h3>
             <p className="text-gray-500 text-sm">
-              CV của bạn sẽ được ưu tiên hiển thị với các nhà tuyển dụng đã xác
-              thực. Nhận được lời mời với những cơ hội việc làm hấp dẫn từ các
-              doanh nghiệp uy tín.
+              {t(
+                "your_cv_will_be_prioritized_for_display_with_verified_employers_receive_invitations_with_attractive_job_opportunities_from_reputable_companies"
+              )}
             </p>
           </div>
 
@@ -151,10 +153,13 @@ export default function UploadPDF() {
             <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <BarChartOutlined className="text-2xl text-orange-500" />
             </div>
-            <h3 className="font-medium mb-2">Theo dõi số liệu, tối ưu CV</h3>
+            <h3 className="font-medium mb-2">
+              {t("track_your_cv_views_optimize_your_cv")}
+            </h3>
             <p className="text-gray-500 text-sm">
-              Theo dõi số lượt xem CV. Biết chính xác nhà tuyển dụng nào trên
-              TopCV đang quan tâm đến CV của bạn.
+              {t(
+                "track_your_cv_views_know_which_employers_on_topcv_are_interested_in_your_cv"
+              )}
             </p>
           </div>
 
@@ -162,9 +167,9 @@ export default function UploadPDF() {
             <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <SendOutlined className="text-2xl text-blue-500" />
             </div>
-            <h3 className="font-medium mb-2">Chia sẻ CV bất cứ nơi đâu</h3>
+            <h3 className="font-medium mb-2">{t("share_your_cv_anywhere")}</h3>
             <p className="text-gray-500 text-sm">
-              Upload một lần và sử dụng đường link gửi tới nhiều nhà tuyển dụng.
+              {t("upload_once_and_use_the_link_to_send_to_multiple_employers")}
             </p>
           </div>
 
@@ -173,11 +178,12 @@ export default function UploadPDF() {
               <MessageOutlined className="text-2xl text-red-500" />
             </div>
             <h3 className="font-medium mb-2">
-              Kết nối nhanh chóng với nhà tuyển dụng
+              {t("connect_with_employers_quickly")}
             </h3>
             <p className="text-gray-500 text-sm">
-              Dễ dàng kết nối với các nhà tuyển dụng nào xem và quan tâm tới CV
-              của bạn
+              {t(
+                "easily_connect_with_employers_who_view_and_are_interested_in_your_cv"
+              )}
             </p>
           </div>
         </div>

@@ -10,14 +10,14 @@ import {
   QuestionCircleOutlined,
   MessageOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const FloatingButton = () => {
-  const navigate = useNavigate(); // Sử dụng hook useNavigate
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  // Hàm điều hướng đến trang system/activities
   const handleNavigate = (route: string) => {
-    console.log("route", route);
     navigate(route);
   };
 
@@ -26,29 +26,32 @@ const FloatingButton = () => {
       <List
         itemLayout="horizontal"
         dataSource={[
-          { icon: <BulbOutlined />, text: "Đánh giá" },
-          { icon: <BookOutlined />, text: "Hướng dẫn sử dụng" },
-          { icon: <VideoCameraOutlined />, text: "Video hướng dẫn" },
-          { icon: <UserOutlined />, text: "Đặt lịch demo" },
+          // { icon: <BulbOutlined />, text: "Đánh giá" },
+          // { icon: <BookOutlined />, text: "Hướng dẫn sử dụng" },
+          // { icon: <VideoCameraOutlined />, text: "Video hướng dẫn" },
+          // { icon: <UserOutlined />, text: "Đặt lịch demo" },
           {
             icon: <HistoryOutlined />,
-            text: "Lịch sử hệ thống",
+            text: t("system_activities"),
             route: "/system/activities",
-          }, // Thêm route cho Lịch sử hệ thống
-          { icon: <FileTextOutlined />, text: "Phiên bản: 6.19.0" },
-          { icon: <QuestionCircleOutlined />, text: "Giúp đỡ và hỗ trợ" },
-          { icon: <MessageOutlined />, text: "Chat trực tiếp" },
+          },
+          // { icon: <FileTextOutlined />, text: "Phiên bản: 6.19.0" },
+          // { icon: <QuestionCircleOutlined />, text: "Giúp đỡ và hỗ trợ" },
+          // { icon: <MessageOutlined />, text: "Chat trực tiếp" },
         ]}
         renderItem={(item) => (
           <List.Item
-            className="!cursor-pointer hover:!bg-gray-100 !rounded-md"
+            className="!cursor-pointer hover:!bg-gray-100 !rounded-md transition-all duration-200 ease-in-out"
             onClick={() => item.route && handleNavigate(item.route)}
           >
-            {" "}
-            {/* Kiểm tra và điều hướng */}
             <List.Item.Meta
-              avatar={<span className="text-gray-400">{item.icon}</span>}
-              title={<span className="text-gray-600">{item.text}</span>}
+              avatar={
+                <span className="text-gray-400 text-lg mr-2">{item.icon}</span>
+              }
+              title={
+                <span className="text-gray-600 font-medium">{item.text}</span>
+              }
+              className="!items-center"
             />
           </List.Item>
         )}

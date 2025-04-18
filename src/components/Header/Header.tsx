@@ -146,11 +146,11 @@ const Header: React.FC = () => {
                 {userDetail?.full_name}
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
-                Mã ứng viên:
+                {t("candidate_code")}:
                 <span className="text-black">{userDetail?._id}</span>
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
-                Email: {userDetail?.email}
+                {t("email")}: {userDetail?.email}
               </p>
             </div>
           </div>
@@ -167,11 +167,11 @@ const Header: React.FC = () => {
                 {userDetail?.full_name}
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
-                Mã nhà tuyển dụng:
+                {t("employer_code")}:
                 <span className="text-black">{userDetail?._id}</span>
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
-                Email: {userDetail?.email}
+                {t("email")}: {userDetail?.email}
               </p>
             </div>
           </div>
@@ -183,16 +183,16 @@ const Header: React.FC = () => {
                 {userDetail?.full_name}
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
-                Mã quản trị viên:
+                {t("admin_code")}:
                 <span className="text-black">{userDetail?._id}</span>
               </p>
               <p className="font-light text-[12px] text-[#ccc]">
-                Email: {userDetail?.email}
+                {t("email")}: {userDetail?.email}
               </p>
             </div>
           </div>
         ) : (
-          <div>Không có quyền</div>
+          <div>{t("no_permission")}</div>
         )}
       </div>
     );
@@ -240,13 +240,13 @@ const Header: React.FC = () => {
         dispatch(resetUser());
         navigate("/");
         notification.success({
-          message: "Thông báo",
-          description: "Đăng xuất thành công",
+          message: t("notification"),
+          description: t("logout_success"),
         });
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
       console.error("Đăng xuất thất bại:", error);
@@ -259,7 +259,7 @@ const Header: React.FC = () => {
           className="flex flex-row items-center justify-between space-y-0 lg:pb-3 px-6"
           style={{ borderBottom: "1px solid #ccc" }}
         >
-          <div className="text-[12px] font-bold">Thông báo</div>
+          <div className="text-[12px] font-bold">{t("notification")}</div>
           <div className="flex items-center gap-2">
             <Button
               onClick={() =>
@@ -269,7 +269,7 @@ const Header: React.FC = () => {
               }
               className="text-green-600 text-[12px] border-none hover:text-green-700 p-0"
             >
-              Đánh dấu là đã đọc
+              {t("mark_as_read")}
             </Button>
           </div>
         </div>
@@ -289,7 +289,7 @@ const Header: React.FC = () => {
                       {formatDate(notification.createdAt)}
                     </p>
                     <p className="mt-2 text-[10px] text-slate-500">
-                      {notification.isRead ? "Đã xem" : ""}
+                      {notification.isRead ? t("read") : ""}
                     </p>
                   </div>
                 </div>
@@ -297,7 +297,7 @@ const Header: React.FC = () => {
             ) : (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={"Chưa có thông báo nào"}
+                description={t("no_notification")}
               />
             )}
           </div>
@@ -414,9 +414,6 @@ const Header: React.FC = () => {
                   className="block md:hidden"
                   onClick={() => navigate("/login")}
                 >
-                  {/* <div className="text-white transition-colors duration-200 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-[#FF4D7D] to-[#FF7A5C] cursor-pointer">
-                    Đăng nhập
-                  </div> */}
                   <ButtonComponent onClick={() => navigate("/login")}>
                     {t("login")}
                   </ButtonComponent>

@@ -1,195 +1,212 @@
-import { useEffect, useState } from 'react'
-import { Table, Button, notification, Popconfirm, Tooltip, Form, Input, Pagination } from 'antd'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { useSelector } from 'react-redux'
-import GeneralModal from '../../../components/ui/GeneralModal/GeneralModal'
-import DrawerGeneral from '../../../components/ui/GeneralDrawer/GeneralDrawer'
-import { Meta, Level } from '../../../types'
-import CustomPagination from '../../../components/ui/CustomPanigation/CustomPanigation'
-import { Level_API } from '../../../services/modules/LevelServices'
-
+import { useEffect, useState } from "react";
+import {
+  Table,
+  Button,
+  notification,
+  Popconfirm,
+  Tooltip,
+  Form,
+  Input,
+} from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
+import DrawerGeneral from "../../../components/ui/GeneralDrawer/GeneralDrawer";
+import { Meta, Level } from "../../../types";
+import CustomPagination from "../../../components/ui/CustomPanigation/CustomPanigation";
+import { Level_API } from "../../../services/modules/LevelServices";
+import { useTranslation } from "react-i18next";
 
 export default function SkillLevel() {
-  const [form] = Form.useForm<Level>()
-  const [visible, setVisible] = useState<boolean>(false)
-  const [visibleDrawer, setVisibleDrawer] = useState<boolean>(false)
-  const [listLevels, setListLevels] = useState<Level[]>([])
-  const [selectedSkill, setSelectedSkill] = useState<Level | null>(null)
+  const { t } = useTranslation();
+  const [form] = Form.useForm<Level>();
+  const [visible, setVisible] = useState<boolean>(false);
+  const [visibleDrawer, setVisibleDrawer] = useState<boolean>(false);
+  const [listLevels, setListLevels] = useState<Level[]>([]);
+  const [selectedSkill, setSelectedSkill] = useState<Level | null>(null);
   const [meta, setMeta] = useState<Meta | null>({
     count: 0,
     current_page: 1,
     per_page: 10,
     total: 0,
-    total_pages: 0
-  })
-  const userDetail = useSelector(state => state.user)
+    total_pages: 0,
+  });
+  const userDetail = useSelector((state) => state.user);
 
   const handleGetAllEmployerSkills = async (params?: any) => {
     try {
-      const newParams={
+      const newParams = {
         ...params,
-      }
-      const res = await Level_API.getAll(newParams,userDetail?.access_token)
+      };
+      const res = await Level_API.getAll(newParams, userDetail?.access_token);
       if (res.data) {
-        setListLevels(res.data.items)
-        setMeta(res.data.meta)
+        setListLevels(res.data.items);
+        setMeta(res.data.meta);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
-    handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
-  }, [])
+    handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
+  }, []);
 
   const onFinish = async (values: Level) => {
-    const { name, description,key } = values
-    const res = await Level_API.create({ name, description, user_id: userDetail?._id,key}, userDetail.access_token)
+    const { name, description, key } = values;
+    const res = await Level_API.create(
+      { name, description, user_id: userDetail?._id, key },
+      userDetail.access_token
+    );
     if (res.data) {
-
       notification.success({
-        message: "Thông báo",
-        description: "Thêm thành công",
-      })
-      form.resetFields()
-      handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
-      setVisible(false)
-      
+        message: t("notification"),
+        description: t("add_success"),
+      });
+      form.resetFields();
+      handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
+      setVisible(false);
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Thêm thất bại",
-      })
+        message: t("notification"),
+        description: t("add_failed"),
+      });
     }
-  }
+  };
 
   const handleOpenDrawer = (record: any) => {
-    setSelectedSkill(record)
-    setVisibleDrawer(true)
-    form.setFieldsValue(record)
-  }
+    setSelectedSkill(record);
+    setVisibleDrawer(true);
+    form.setFieldsValue(record);
+  };
 
   const handleUpdate = async (values: any) => {
-    const res = await Level_API.update(selectedSkill?._id, values, userDetail.access_token)
+    const res = await Level_API.update(
+      selectedSkill?._id,
+      values,
+      userDetail.access_token
+    );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Cập nhật thành công!",
-      })
-      handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
-      setVisibleDrawer(false)
+        message: t("notification"),
+        description: t("update_success"),
+      });
+      handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
+      setVisibleDrawer(false);
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Cap Nhat That Bai!",
-      })
+        message: t("notification"),
+        description: t("update_failed"),
+      });
     }
-  }
+  };
 
   const handleDelete = async (record: any) => {
-    const res = await Level_API.deleteManyLevels([record._id], userDetail.access_token)
+    const res = await Level_API.deleteManyLevels(
+      [record._id],
+      userDetail.access_token
+    );
     if (res.data) {
       notification.success({
-        message: "Thông báo",
-        description: "Xóa thành công",
-      })
-      handleGetAllEmployerSkills({ current: 1, pageSize: 10 })
+        message: t("notification"),
+        description: t("delete_success"),
+      });
+      handleGetAllEmployerSkills({ current: 1, pageSize: 10 });
     } else {
       notification.error({
-        message: "Thông báo",
-        description: "Xoa That Bai!",
-      })
+        message: t("notification"),
+        description: t("delete_failed"),
+      });
     }
-  }
+  };
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: t("name"),
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Mô tả',
-      dataIndex: 'description',
-      key: 'description',
+      title: t("description"),
+      dataIndex: "description",
+      key: "description",
     },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: t("actions"),
+      key: "actions",
       render: (text: any, record: Level) => (
         <div>
-          <Tooltip title="Edit">
+          <Tooltip title={t("edit")}>
             <Button
               icon={<EditOutlined />}
               onClick={() => handleOpenDrawer(record)}
               style={{ marginRight: 8 }}
             />
           </Tooltip>
-  
+
           <Popconfirm
-            title="Are you sure you want to delete?"
+            title={t("are_you_sure_you_want_to_delete")}
             onConfirm={() => handleDelete(record)}
-            okText="Yes"
-            cancelText="No"
+            okText={t("yes")}
+            cancelText={t("no")}
           >
-            <Tooltip title="Xóa">
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-              />
+            <Tooltip title={t("delete")}>
+              <Button icon={<DeleteOutlined />} danger />
             </Tooltip>
           </Popconfirm>
         </div>
       ),
     },
-  ]
-  const removeVietnameseTones = (str) => {
+  ];
+  const removeVietnameseTones = (str: string) => {
     return str
-      .normalize('NFD') // Chuẩn hóa chuỗi, tách các ký tự có dấu
-      .replace(/[\u0300-\u036f]/g, '') // Xóa các dấu
-      .replace(/đ/g, 'd') // Chuyển 'đ' thành 'd'
-      .replace(/Đ/g, 'D'); // Chuyển 'Đ' thành 'D'
+      .normalize("NFD") // Chuẩn hóa chuỗi, tách các ký tự có dấu
+      .replace(/[\u0300-\u036f]/g, "") // Xóa các dấu
+      .replace(/đ/g, "d") // Chuyển 'đ' thành 'd'
+      .replace(/Đ/g, "D"); // Chuyển 'Đ' thành 'D'
   };
-  
-  const onValuesChange = (changedValues, allValues) => {
+
+  const onValuesChange = (changedValues: any, allValues: any) => {
     if (changedValues.name) {
-        // Loại bỏ dấu tiếng Việt, chuyển thành chữ thường và thay khoảng trắng bằng dấu gạch dưới
-        const key = removeVietnameseTones(changedValues.name)
-          .toLowerCase()
-          .replace(/\s+/g, '_'); // Thay thế khoảng trắng bằng dấu gạch dưới
-        form.setFieldsValue({
-          key: key,
-        });
-      }
+      // Loại bỏ dấu tiếng Việt, chuyển thành chữ thường và thay khoảng trắng bằng dấu gạch dưới
+      const key = removeVietnameseTones(changedValues.name)
+        .toLowerCase()
+        .replace(/\s+/g, "_"); // Thay thế khoảng trắng bằng dấu gạch dưới
+      form.setFieldsValue({
+        key: key,
+      });
+    }
   };
 
   const onChange = async (pagination: any, filters: any, sorter: any) => {
     const currentPage = pagination.current;
     const pageSize = pagination.pageSize;
-  
+
     await handleGetAllEmployerSkills({
       current: currentPage,
       pageSize: pageSize,
       ...filters,
-      ...sorter, 
+      ...sorter,
     });
-  }
+  };
 
   return (
     <>
-      <Button className='!bg-primaryColor mb-4' onClick={() => setVisible(true)}>
-        Add
+      <Button
+        className="!bg-primaryColor mb-4"
+        onClick={() => setVisible(true)}
+      >
+        {t("add")}
       </Button>
       <Table
-    columns={columns}
-    dataSource={listLevels}
-    onChange={onChange}
-    pagination={false}
-    rowKey="id" 
-  />
+        columns={columns}
+        dataSource={listLevels}
+        onChange={onChange}
+        pagination={false}
+        rowKey="id"
+      />
 
-  {/* Pagination Component */}
+      {/* Pagination Component */}
       <CustomPagination
         currentPage={meta?.current_page}
         total={meta?.total}
@@ -198,14 +215,14 @@ export default function SkillLevel() {
           handleGetAllEmployerSkills({ current, pageSize });
         }}
       />
-  
+
       <GeneralModal
-        title="Thêm cấp độ"
+        title={t("add_skill_level")}
         visible={visible}
         onCancel={() => setVisible(false)}
         onOk={() => setVisible(false)}
         renderBody={() => (
-            <Form
+          <Form
             form={form}
             name="skillEmployerForm"
             onFinish={onFinish}
@@ -214,60 +231,78 @@ export default function SkillLevel() {
           >
             <Form.Item
               name="name"
-              label="Tên cấp độ"
-              rules={[{ required: true, message: 'Vui lòng nhập tên cấp độ!' }]}
+              label={t("name")}
+              rules={[
+                { required: true, message: t("please_enter_skill_level_name") },
+              ]}
             >
-              <Input placeholder="Nhập tên ..." />
+              <Input placeholder={t("enter_skill_level_name")} />
             </Form.Item>
-      
-            <Form.Item
-              name="key"
-              label="Key"
-            >
+
+            <Form.Item name="key" label={t("key")}>
               <Input disabled />
             </Form.Item>
-      
-            <Form.Item name="description" label="Mô tả">
-              <Input.TextArea placeholder="Nhập mô tả.." autoSize={{ minRows: 3, maxRows: 6 }} />
+
+            <Form.Item name="description" label={t("description")}>
+              <Input.TextArea
+                placeholder={t("enter_skill_level_description")}
+                autoSize={{ minRows: 3, maxRows: 6 }}
+              />
             </Form.Item>
-      
+
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="w-full !bg-primaryColor">
-                Lưu
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full !bg-primaryColor"
+              >
+                {t("save")}
               </Button>
             </Form.Item>
           </Form>
         )}
       />
-  
+
       <DrawerGeneral
         visible={visibleDrawer}
         onCancel={() => setVisibleDrawer(false)}
         onOk={() => setVisibleDrawer(false)}
         renderBody={() => (
-          <Form form={form} name="skillEmployerForm" onFinish={handleUpdate} layout="vertical">
+          <Form
+            form={form}
+            name="skillEmployerForm"
+            onFinish={handleUpdate}
+            layout="vertical"
+          >
             <Form.Item
               name="name"
-              label="Name"
-              rules={[{ required: true, message: 'Please input the Name!' }]}
+              label={t("name")}
+              rules={[{ required: true, message: t("please_input_the_name") }]}
             >
-              <Input placeholder="Enter Name" />
+              <Input placeholder={t("enter_name")} />
             </Form.Item>
-  
-            <Form.Item name="description" label="Mô tả">
-              <Input.TextArea placeholder="Enter Mô tả (optional)" autoSize={{ minRows: 3, maxRows: 6 }} />
+
+            <Form.Item name="description" label={t("description")}>
+              <Input.TextArea
+                placeholder={t("enter_description_optional")}
+                autoSize={{ minRows: 3, maxRows: 6 }}
+              />
             </Form.Item>
-  
+
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="w-full !bg-primaryColor">
-                Submit
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full !bg-primaryColor"
+              >
+                {t("submit")}
               </Button>
             </Form.Item>
           </Form>
         )}
         renderFooter={() => null}
-        renderTitle={() => 'Update Skill'}
+        renderTitle={() => t("update")}
       />
     </>
-  )
+  );
 }

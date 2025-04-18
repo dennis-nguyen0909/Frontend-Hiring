@@ -109,8 +109,6 @@ const CertificateComponent = () => {
         userDetail?.access_token
       );
 
-      console.log("duydeptrai", res);
-
       if (res.data) {
         const {
           certificate_name,
@@ -139,7 +137,6 @@ const CertificateComponent = () => {
         message: t("notification"),
         description: error?.response?.data?.message || t("error_from_server1"),
       });
-      console.log("error", error);
     } finally {
       setIsLoadingDetail(false);
     }

@@ -48,10 +48,7 @@ export default function SuggestionJobCity() {
     cacheTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  const handleSaveJob = (jobId: string) => {
-    // This will be handled by the backend API
-    console.log("Save job:", jobId);
-  };
+  const handleSaveJob = (jobId: string) => {};
 
   const handlePageChange = (current: number, pageSize: number) => {
     setMetaSuggestionCity((prev) => ({

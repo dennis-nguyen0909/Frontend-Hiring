@@ -8,7 +8,6 @@ const useMomentFn = () => {
 
   // Lấy định dạng ngày từ Redux hoặc mặc định "DD/MM/YYYY"
   const dateFormat = userDetail?.dateFormat || "DD/MM/YYYY";
-  console.log("userdetaildadas", dateFormat);
   const formatDate = (
     date: string | Date | dayjs.Dayjs | null,
     format = dateFormat

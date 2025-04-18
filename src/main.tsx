@@ -13,13 +13,27 @@ import { PersistGate } from "redux-persist/integration/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import "../src/config/i18n.config.ts";
-const messages = {
+import { pdfjs } from "react-pdf";
+
+type SupportedLanguages = "en" | "vi";
+
+const messages: Record<SupportedLanguages, any> = {
   en: enMessages,
   vi: viMessages,
 };
-const language = "vi"; // 'en', 'vi'
+
+const detectLanguage = (): SupportedLanguages => {
+  const saved = localStorage.getItem("lang");
+  if (saved === "vi" || saved === "en") return saved;
+  const browserLocale = navigator.language || navigator.languages[0] || "en";
+  const lang = browserLocale.startsWith("vi") ? "vi" : "en";
+  localStorage.setItem("lang", lang);
+  return lang;
+};
+
+const language: SupportedLanguages = detectLanguage();
+
 const queryClient = new QueryClient();
-import { pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -36,7 +50,6 @@ createRoot(document.getElementById("root")!).render(
           <ToastContainer />
         </PersistGate>
       </Provider>
-      {/* change api */}
     </IntlProvider>
   </QueryClientProvider>
   // </StrictMode>

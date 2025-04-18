@@ -4,6 +4,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { StarFilled } from "@ant-design/icons";
 import { USER_API } from "../../../../services/modules/userServices";
 import useMomentFn from "../../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 
 const CandidateDetailView = ({
   candidateId,
@@ -12,6 +13,7 @@ const CandidateDetailView = ({
   candidateId: string;
   userDetail: any;
 }) => {
+  const { t } = useTranslation();
   const [candidateDetail, setCandidateDetail] = useState();
   const { formatDate } = useMomentFn();
   const handleGetCandidateDetail = async () => {
@@ -30,7 +32,7 @@ const CandidateDetailView = ({
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6">Thông Tin Ứng Viên</h2>
+      <h2 className="text-2xl font-bold mb-6">{t("candidate_information")}</h2>
 
       <div className="space-y-6">
         {/* Avatar */}
@@ -42,68 +44,68 @@ const CandidateDetailView = ({
         </div>
 
         <div className="flex justify-start gap-2">
-          <div className="font-medium">Giới thiệu:</div>
+          <div className="font-medium">{t("introduce")}:</div>
           <div>{candidateDetail?.introduce}</div>
         </div>
 
         {/* Email */}
         <div className="flex justify-between">
-          <div className="font-medium">Email:</div>
+          <div className="font-medium">{t("email")}:</div>
           <div>{candidateDetail?.email}</div>
         </div>
 
         {/* Số điện thoại */}
         <div className="flex justify-between">
-          <div className="font-medium">Số điện thoại:</div>
-          <div>{candidateDetail?.phone || "Chưa cập nhật"}</div>
+          <div className="font-medium">{t("phone")}:</div>
+          <div>{candidateDetail?.phone || t("not_updated")}</div>
         </div>
 
         {/* Address */}
         <div className="flex justify-between">
-          <div className="font-medium">Địa chỉ:</div>
-          <div>{candidateDetail?.city_id?.name || "Chưa cập nhật"}</div>
+          <div className="font-medium">{t("address")}:</div>
+          <div>{candidateDetail?.city_id?.name || t("not_updated")}</div>
         </div>
 
         {/* Gender */}
         <div className="flex justify-between">
-          <div className="font-medium">Giới tính:</div>
+          <div className="font-medium">{t("gender")}:</div>
           <div>
             {candidateDetail?.gender === 0
-              ? "Nam"
+              ? t("male")
               : candidateDetail?.gender === 1
-              ? "Nữ"
-              : "Không xác định"}
+              ? t("female")
+              : t("not_defined")}
           </div>
         </div>
         <div className="flex justify-between">
-          <div className="font-medium">Ngày sinh:</div>
-          <div>{formatDate(candidateDetail?.birthday) || "Chưa cập nhật"}</div>
+          <div className="font-medium">{t("birthday")}:</div>
+          <div>{formatDate(candidateDetail?.birthday) || t("not_updated")}</div>
         </div>
 
         {/* Search Job Status */}
         <div className="flex justify-between">
-          <div className="font-medium">Tìm kiếm công việc:</div>
+          <div className="font-medium">{t("search_job_status")}:</div>
           <div>
             {candidateDetail?.is_search_jobs_status
-              ? "Đang tìm kiếm"
-              : "Không tìm kiếm"}
+              ? t("searching")
+              : t("not_searching")}
           </div>
         </div>
 
         {/* No Experience */}
         <div className="flex justify-between">
-          <div className="font-medium">Chưa cập nhật kinh nghiệm:</div>
-          <div>{candidateDetail?.no_experience ? "Có" : "Không"}</div>
+          <div className="font-medium">{t("no_experience")}:</div>
+          <div>{candidateDetail?.no_experience ? t("yes") : t("no")}</div>
         </div>
         {/* Total Experience Years */}
         <div className="flex justify-between">
-          <div className="font-medium">Tổng số năm kinh nghiệm:</div>
+          <div className="font-medium">{t("total_experience_years")}:</div>
           <div>{candidateDetail?.total_experience_years}</div>
         </div>
 
         {/* Total Experience Months */}
         <div className="flex justify-between">
-          <div className="font-medium">Tổng số tháng kinh nghiệm:</div>
+          <div className="font-medium">{t("total_experience_months")}:</div>
           <div>{candidateDetail?.total_experience_months}</div>
         </div>
 
@@ -111,7 +113,7 @@ const CandidateDetailView = ({
         {candidateDetail?.work_experience_ids?.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
-              Kinh nghiệm làm việc:
+              {t("work_experience")}:
             </div>
             {candidateDetail?.work_experience_ids?.length > 0 ? (
               candidateDetail?.work_experience_ids.map((work, index) => (
@@ -148,22 +150,20 @@ const CandidateDetailView = ({
         {candidateDetail?.skills?.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
-              Kỹ năng:
+              {t("skills")}:
             </div>
-            {candidateDetail?.skills?.length > 0 ? (
-              candidateDetail?.skills.map((skill, index) => (
-                <Card key={index}>
-                  <div className="font-semibold">{skill?.name}</div>
-                  <div>
-                    Mức độ : {skill?.evalute}{" "}
-                    <StarFilled className="text-yellow-500" />
-                  </div>
-                  <div>{skill?.description}</div>
-                </Card>
-              ))
-            ) : (
-              <div>Chưa có kỹ năng</div>
-            )}
+            <div className="flex flex-wrap gap-2">
+              {candidateDetail?.skills?.map(
+                (skill: { name: string }, index: number) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-gray-100 rounded-full"
+                  >
+                    {skill.name}
+                  </span>
+                )
+              )}
+            </div>
           </div>
         )}
 
@@ -171,7 +171,7 @@ const CandidateDetailView = ({
         {candidateDetail?.education_ids?.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
-              Học vấn:
+              {t("education")}:
             </div>
             {candidateDetail?.education_ids?.length > 0 ? (
               candidateDetail?.education_ids.map((education, index) => (
@@ -181,20 +181,20 @@ const CandidateDetailView = ({
                   <div>
                     {new Date(education?.start_date).toLocaleDateString()} -{" "}
                     {education?.currently_studying
-                      ? "Đang học"
-                      : "Đã tốt nghiệp"}
+                      ? t("studying")
+                      : t("graduated")}
                   </div>
                 </Card>
               ))
             ) : (
-              <div>Chưa có thông tin học vấn</div>
+              <div>{t("no_education")}</div>
             )}
           </div>
         )}
         {candidateDetail?.certificates?.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
-              Chứng chỉ
+              {t("certificate")}
             </div>
             {candidateDetail?.certificates?.map((item: any, index: number) => (
               <Card
@@ -205,17 +205,17 @@ const CandidateDetailView = ({
                 <div className="space-y-3 flex items-center justify-between">
                   <div>
                     <div className="flex items-center">
-                      <strong>Tổ chức cấp chứng chỉ: </strong>
+                      <strong>{t("organization_name")}: </strong>
                       <span className="ml-2">{item.organization_name}</span>
                     </div>
                     <div className="flex items-center">
-                      <strong>Ngày bắt đầu: </strong>
+                      <strong>{t("start_date")}: </strong>
                       <span className="ml-2">
                         {new Date(item.start_date).toLocaleDateString()}
                       </span>
                     </div>
                     <div className="flex items-center">
-                      <strong>Chứng chỉ còn hiệu lực: </strong>
+                      <strong>{t("certificate_is_valid")}: </strong>
                       <span
                         className={`ml-2 ${
                           item.is_not_expired
@@ -223,7 +223,7 @@ const CandidateDetailView = ({
                             : "text-red-500"
                         }`}
                       >
-                        {item.is_not_expired ? "Còn hiệu lực" : "Hết hiệu lực"}
+                        {item.is_not_expired ? t("valid") : t("expired")}
                       </span>
                       {item.is_not_expired ? (
                         <CheckCircle className="ml-2 text-green-500" />
@@ -233,7 +233,7 @@ const CandidateDetailView = ({
                     </div>
                     {item.link_certificate && (
                       <div className="flex items-center">
-                        <strong>Liên kết</strong>
+                        <strong>{t("link")}</strong>
                         <a
                           target="_blank"
                           href={item.link_certificate}
@@ -267,7 +267,7 @@ const CandidateDetailView = ({
         {candidateDetail?.prizes?.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
-              Giải thưởng
+              {t("prize")}
             </div>
             {candidateDetail?.prizes?.map((item: any, index: number) => (
               <Card key={index} className="shadow-lg">
@@ -280,7 +280,7 @@ const CandidateDetailView = ({
                       {item.organization_name}
                     </div>
                     <div className="text-gray-400">
-                      Ngày nhận: {formatDate(item.date_of_receipt)}
+                      {t("date_of_receipt")}: {formatDate(item.date_of_receipt)}
                     </div>
                     {item.prize_link && (
                       <a
@@ -289,7 +289,7 @@ const CandidateDetailView = ({
                         rel="noopener noreferrer"
                         className="text-blue-500 mt-4"
                       >
-                        Liên kết
+                        {t("link")}
                       </a>
                     )}
                   </div>
@@ -314,7 +314,9 @@ const CandidateDetailView = ({
 
         {candidateDetail?.projects?.length > 0 && (
           <div className="space-y-2">
-            <div className="font-medium bg-[#cccccc] rounded-md p-2">Dự án</div>
+            <div className="font-medium bg-[#cccccc] rounded-md p-2">
+              {t("project")}
+            </div>
             {candidateDetail?.projects?.map((item, index) => (
               <Card key={index} className="shadow-lg">
                 <Space className="flex items-center justify-between" size={16}>
@@ -323,21 +325,23 @@ const CandidateDetailView = ({
                       {item.project_name}
                     </div>
                     <div className="text-gray-600">
-                      Khách hàng: {item.customer_name}
+                      {t("customer_name")}: {item.customer_name}
                     </div>
                     <div className="text-gray-400">
-                      Thời gian: {formatDate(item.start_date)} -{" "}
+                      {t("time")}: {formatDate(item.start_date)} -{" "}
                       {formatDate(item.end_date)}
                     </div>
                     <div className="text-gray-400">
-                      Công nghệ: {item.technology}
+                      {t("technology")}: {item.technology}
                     </div>
                     <div className="text-gray-400">
-                      Team: {item.team_number}
+                      {t("team")}: {item.team_number}
                     </div>
-                    <div className="text-gray-400">Vị trí: {item.location}</div>
                     <div className="text-gray-400">
-                      Nhiệm vụ: {item.mission}
+                      {t("location")}: {item.location}
+                    </div>
+                    <div className="text-gray-400">
+                      {t("mission")}: {item.mission}
                     </div>
                     {item.project_link && (
                       <a
@@ -346,7 +350,7 @@ const CandidateDetailView = ({
                         rel="noopener noreferrer"
                         className="text-blue-500 mt-4"
                       >
-                        Liên kết dự án
+                        {t("link")}
                       </a>
                     )}
                   </div>
@@ -368,7 +372,7 @@ const CandidateDetailView = ({
         {candidateDetail?.courses?.length > 0 && (
           <div className="space-y-2">
             <div className="font-medium bg-[#cccccc] rounded-md p-2">
-              Khóa học
+              {t("course")}
             </div>
             {candidateDetail?.courses?.map((item, index) => (
               <Card key={index} className="p-4 shadow-lg">
@@ -381,7 +385,7 @@ const CandidateDetailView = ({
                       {item.organization_name}
                     </div>
                     <div className="text-gray-400">
-                      Thời gian: {formatDate(item.start_date)} -{" "}
+                      {t("time")}: {formatDate(item.start_date)} -{" "}
                       {formatDate(item.end_date)}
                     </div>
                     {item.course_link && (
@@ -391,7 +395,7 @@ const CandidateDetailView = ({
                         rel="noopener noreferrer"
                         className="text-blue-500 mt-4"
                       >
-                        Liên kết khóa học
+                        {t("link")}
                       </a>
                     )}
                   </div>

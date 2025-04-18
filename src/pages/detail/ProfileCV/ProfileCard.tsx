@@ -7,6 +7,7 @@ import { CV_API } from "../../../services/modules/CvServices";
 import { Meta } from "../../../types";
 import { USER_API } from "../../../services/modules/userServices";
 import useMomentFn from "../../../hooks/useMomentFn";
+import { useTranslation } from "react-i18next";
 
 interface CV {
   _id: string;
@@ -19,6 +20,7 @@ interface CV {
 }
 
 export default function ProfileCard({ userDetail }: any) {
+  const { t } = useTranslation();
   const [listCv, setListCv] = useState<CV[]>([]);
   const [meta, setMeta] = useState<Meta>();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -63,8 +65,8 @@ export default function ProfileCard({ userDetail }: any) {
       );
       if (updateCVMain.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
       }
       setIsModalVisible(false);
@@ -74,9 +76,9 @@ export default function ProfileCard({ userDetail }: any) {
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-[14px] font-bold">TopCV Profile</h2>
+        <h2 className="text-[14px] font-bold">{t("hiredev_profile")}</h2>
         <span className="text-gray-500 text-[12px]">
-          Cập nhật lần cuối {formatDate(userDetail?.updatedAt)}
+          {t("last_updated")} {formatDate(userDetail?.updatedAt)}
         </span>
       </div>
 
@@ -119,44 +121,43 @@ export default function ProfileCard({ userDetail }: any) {
               icon={<Edit className="w-4 h-4" />}
               className="flex items-center gap-2 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 !text-[12px]"
             >
-              Chỉnh sửa
+              {t("edit")}
             </Button>
             <Button
               icon={<Star className="w-4 h-4" />}
               className="flex items-center gap-2 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 !text-[12px]"
               onClick={() => setIsModalVisible(true)}
             >
-              Đặt làm CV chính
+              {t("set_as_primary_cv")}
             </Button>
           </div>
 
           {/* Mô tả */}
           <p className="text-gray-600 mb-2 text-[12px]">
-            TopCV Profile là tính năng giúp bạn giới thiệu với mọi người mình là
-            ai, đã làm gì và những thành tích nổi bật của bạn.
+            {t("hiredev_profile_description")}
           </p>
           <a
             href="#"
             className="text-green-600 hover:text-green-700 font-medium !text-[12px]"
           >
-            Tìm hiểu ngay
+            {t("learn_now")}
           </a>
         </div>
       </div>
 
       {/* Modal để chọn CV chính */}
       <Modal
-        title="Đặt làm CV chính"
+        title={t("set_as_primary_cv")}
         visible={isModalVisible}
         onOk={handleSetCVMain}
         onCancel={() => setIsModalVisible(false)}
       >
         <Form>
-          <Form.Item label="Chọn CV">
+          <Form.Item label={t("select_a_cv")}>
             <Select
               value={selectedCV}
               onChange={(value) => setSelectedCV(value)}
-              placeholder="Chọn một CV"
+              placeholder={t("select_a_cv")}
             >
               {listCv?.map((cv) => (
                 <Select.Option key={cv._id} value={cv._id}>

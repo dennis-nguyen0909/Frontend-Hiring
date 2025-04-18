@@ -192,8 +192,8 @@ export default function AccountSettingEmployer() {
                         <Button
                           onClick={() =>
                             notification.info({
-                              message: "Thông báo",
-                              description: "Tính năng chưa phát triển",
+                              message: t("notification"),
+                              description: t("not_developed"),
                             })
                           }
                           variant="link"

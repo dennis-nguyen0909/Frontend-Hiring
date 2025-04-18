@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
-import { List, Button, Dropdown, message, Avatar, notification } from "antd";
+import {
+  List,
+  Button,
+  Dropdown,
+  message,
+  Avatar,
+  notification,
+  Card,
+} from "antd";
 import {
   MoreOutlined,
   MailOutlined,
   DownloadOutlined,
   BookOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { SAVE_CANDIDATE_API } from "../../../../services/modules/SaveCandidateServices";
 import { useSelector } from "react-redux";
@@ -89,8 +98,8 @@ export default function SavedCandidate() {
   const handleGetSaveCandidates = async ({ current = 1, pageSize = 10 }) => {
     setIsLoading(true);
     const params = {
-      current, // Trang hiện tại
-      pageSize, // Số lượng phần tử mỗi trang
+      current,
+      pageSize,
     };
     const res = await SAVE_CANDIDATE_API.getSaveCandidateByEmployerId(
       userDetail?._id,
@@ -113,69 +122,71 @@ export default function SavedCandidate() {
   const renderItem = (item) => {
     const { candidate, isActive } = item;
     return (
-      <List.Item
-        key={candidate._id}
-        className="px-6 hover:bg-gray-50 transition-colors"
-        actions={[
-          <Button
-            key="bookmark"
-            type="text"
-            className="!text-[12px]"
-            icon={<BookOutlined className={isActive ? "text-blue-500" : ""} />}
-            onClick={() => handleBookmark(candidate._id)}
-            aria-label={isActive ? t("remove_bookmark") : t("add_bookmark")}
-          />,
-          <Button
-            key="view"
-            type="primary"
-            className="bg-blue-500 !text-[12px]"
-            onClick={() => handleViewProfile(candidate)}
-          >
-            {t("view_profile")}
-          </Button>,
-          <Dropdown
-            key="more"
-            menu={{
-              items: [
-                {
-                  key: "1",
-                  icon: <MailOutlined />,
-                  label: t("send_email"),
-                  onClick: () => handleSendEmail(candidate._id),
-                },
-                {
-                  key: "2",
-                  icon: <DownloadOutlined />,
-                  label: t("download_cv"),
-                  onClick: () => handleDownloadCV(candidate._id),
-                },
-              ],
-            }}
-            trigger={["click"]}
-            placement="bottomRight"
-          >
-            <Button
-              icon={<MoreOutlined />}
-              type="text"
-              aria-label={t("more_options")}
-            />
-          </Dropdown>,
-        ]}
-      >
-        <List.Item.Meta
-          avatar={
+      <Card className="mb-4 hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
             <Avatar
+              size={64}
               src={candidate.avatar}
-              alt={`${candidate.name}'s avatar`}
-              className="w-10 h-10"
+              icon={<UserOutlined />}
+              className="border-2 border-blue-500"
             />
-          }
-          title={<span className="font-medium">{candidate.full_name}</span>}
-          description={
-            <span className="text-gray-500">{candidate.position}</span>
-          }
-        />
-      </List.Item>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800">
+                {candidate.full_name}
+              </h3>
+              <p className="text-gray-600">{candidate.position}</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              type="text"
+              className="hover:bg-blue-50"
+              icon={
+                <BookOutlined
+                  className={isActive ? "text-blue-500" : "text-gray-400"}
+                />
+              }
+              onClick={() => handleBookmark(candidate._id)}
+              aria-label={isActive ? t("remove_bookmark") : t("add_bookmark")}
+            />
+            <Button
+              type="primary"
+              className="bg-blue-500 hover:bg-blue-600"
+              onClick={() => handleViewProfile(candidate)}
+            >
+              {t("view_profile")}
+            </Button>
+            <Dropdown
+              menu={{
+                items: [
+                  {
+                    key: "1",
+                    icon: <MailOutlined />,
+                    label: t("send_email"),
+                    onClick: () => handleSendEmail(candidate._id),
+                  },
+                  {
+                    key: "2",
+                    icon: <DownloadOutlined />,
+                    label: t("download_cv"),
+                    onClick: () => handleDownloadCV(candidate._id),
+                  },
+                ],
+              }}
+              trigger={["click"]}
+              placement="bottomRight"
+            >
+              <Button
+                icon={<MoreOutlined />}
+                type="text"
+                className="hover:bg-gray-100"
+                aria-label={t("more_options")}
+              />
+            </Dropdown>
+          </div>
+        </div>
+      </Card>
     );
   };
 
@@ -183,31 +194,26 @@ export default function SavedCandidate() {
     <div className="p-6 bg-gray-50 min-h-screen">
       {currentTab === "save_candidate" && (
         <div className="mx-auto max-w-7xl">
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="p-6 border-b">
-              <div className="flex  lg:justify-between lg:items-center items-start flex-col lg:flex-row ">
-                <h1 className="text-[20px] font-semibold">
-                  {t("saved_candidate")}
-                </h1>
-                <p className="text-[12px] text-gray-500">
-                  {t("all_of_the_saveCandidates_are_visible_until", {
-                    date: formatDate(new Date()),
-                  })}
-                </p>
-              </div>
-            </div>
-
-            <div className="px-4 py-4">
-              <LoadingComponentSkeleton isLoading={isLoading}>
-                <List
-                  itemLayout="horizontal"
-                  dataSource={saveCandidates}
-                  renderItem={(candidate) => renderItem(candidate)}
-                />
-              </LoadingComponentSkeleton>
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
+              <h1 className="text-2xl font-bold text-gray-800 mb-4 lg:mb-0">
+                {t("saved_candidate")}
+              </h1>
+              <p className="text-sm text-gray-500">
+                {t("all_of_the_saveCandidates_are_visible_until", {
+                  date: formatDate(new Date()),
+                })}
+              </p>
             </div>
           </div>
-          <div>
+
+          <div className="space-y-4">
+            <LoadingComponentSkeleton isLoading={isLoading}>
+              {saveCandidates.map((candidate) => renderItem(candidate))}
+            </LoadingComponentSkeleton>
+          </div>
+
+          <div className="mt-6">
             <CustomPagination
               currentPage={meta?.current_page}
               total={meta?.total}

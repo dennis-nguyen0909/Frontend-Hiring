@@ -23,7 +23,9 @@ import * as userServices from "../../../../services/modules/userServices";
 import DateFormatSelect from "../../../../components/DateFormatSelect/DateFormatSelect";
 import { t } from "i18next";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 const ContactForm = () => {
+  const { t } = useTranslation();
   const userDetail = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [city, setCity] = useState(userDetail?.city_id?._id || "");
@@ -76,13 +78,13 @@ const ContactForm = () => {
     try {
       const res = await USER_API.updateUser(params, userDetail?.access_token);
       if (res.data) {
-        message.success("Cập nhật thành công");
+        message.success(t("update_success"));
         dispatch(updateUser({ ...res.data }));
       }
     } catch (error) {
       console.error("error", error);
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.response.message.data,
       });
     }
@@ -113,13 +115,13 @@ const ContactForm = () => {
           updateUser({ ...res.data, access_token: userDetail.access_token })
         );
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }

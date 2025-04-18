@@ -60,8 +60,8 @@ export default function SettingEmployer() {
   ];
 
   return (
-    <div className="setting-employer lg:p-6 p-2 bg-gray-50 min-h-screen">
-      <div className=" mx-auto">
+    <div className="setting-employer bg-gray-50 min-h-screen mx-2">
+      <div className="mx-auto">
         <h1 className="text-2xl font-semibold mb-6">{t("setting")}</h1>
         <div className="bg-white rounded-lg shadow-sm">
           <Tabs

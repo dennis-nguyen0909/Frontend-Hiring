@@ -137,7 +137,7 @@ const ApplicationCard = ({
           src={user_id?.avatar || avatarDefault}
           width={48}
           height={48}
-          className="rounded-full mr-3"
+          className="rounded-full mr-3 object-cover"
         />
         <div className="flex-grow ml-3 flex flex-col">
           <Text className="font-bold text-[18px]">{user_id?.full_name}</Text>

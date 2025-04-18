@@ -8,8 +8,10 @@ import { updateUser } from "../../../redux/slices/userSlices";
 import ListCV from "./ListCv";
 import ProfileCard from "./ProfileCard";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const ProfileCV = () => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const userDetail = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ const ProfileCV = () => {
       return res.data;
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
@@ -52,8 +54,8 @@ const ProfileCV = () => {
         })
       );
       notification.success({
-        message: "Thông báo",
-        description: "Cập nhật thành công",
+        message: t("notification"),
+        description: t("update_success"),
       });
     }
   };
@@ -66,13 +68,13 @@ const ProfileCV = () => {
           updateUser({ ...res.data, access_token: userDetail.access_token })
         );
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error.message,
       });
     }
@@ -100,7 +102,7 @@ const ProfileCV = () => {
               <b className="text-[12px]">{userDetail.full_name}</b>
             </div>
             <div className="bg-[#7b8381] px-1 py-1 rounded-sm text-white text-[12px] w-fit">
-              <p>Tài khoản đã xác thực</p>
+              <p>{t("account_has_been_verified")}</p>
             </div>
           </div>
         </div>
@@ -113,11 +115,12 @@ const ProfileCV = () => {
             checked={userDetail?.is_search_jobs_status}
           />
           <span className="ml-2 font-semibold text-[12px] text-grayPrimary">
-            Đang Tắt tìm việc
+            {t("is_search_jobs_status")}
           </span>
           <div className="mt-2 text-[10px] text-grayPrimary">
-            Bật tìm việc giúp hồ sơ của bạn nổi bật hơn và được chú ý nhiều hơn
-            trong danh sách tìm kiếm của NTD.
+            {t(
+              "enable_job_search_to_highlight_your_profile_and_be_noticed_more_in_the_search_list_of_employers"
+            )}
           </div>
         </div>
         <div className="mt-8">
@@ -128,23 +131,24 @@ const ProfileCV = () => {
             checked={userDetail?.is_suggestion_job}
           />
           <span className="ml-2 font-semibold text-[12px] text-grayPrimary">
-            Bật gợi ý việc làm
+            {t("enable_job_suggestion")}
           </span>
           <div className="mt-2 text-[10px] text-grayPrimary">
-            Khi có cơ hội việc làm phù hợp, NTD sẽ liên hệ và trao đổi với bạn
-            qua:
+            {t(
+              "when_there_is_a_suitable_job_opportunity_employers_will_contact_and_discuss_with_you_via"
+            )}
           </div>
           <div className="mt-2">
             <div>
               <CheckCircleOutlined />
               <span className="ml-2 font-light text-grayPrimary text-[10px]">
-                Nhắn tin qua Top Connect trên HireDev
+                {t("send_messages_through_top_connect_on_hiredev")}
               </span>
             </div>
             <div>
               <CheckCircleOutlined />
               <span className="ml-2 font-light text-grayPrimary text-[10px]">
-                Email và Số điện thoại của bạn
+                {t("your_email_and_phone_number")}
               </span>
             </div>
           </div>
@@ -152,15 +156,17 @@ const ProfileCV = () => {
         <Divider />
         <div>
           <div className="mt-2 text-[10px] text-grayPrimary">
-            <InfoCircleOutlined /> Bạn cần hoàn thiện trên 70% TopCV Profile để
-            bắt đầu tiếp cận với nhà tuyển dụng
+            <InfoCircleOutlined />{" "}
+            {t(
+              "you_need_to_complete_over_70_topcv_profile_to_start_contacting_with_employers"
+            )}
           </div>
           <div className="mt-2">
             <Button
               onClick={() => navigate(`/profile/${userDetail?._id}`)}
               className="!border-primaryColor !text-primaryColor !hover:text-primaryColor !hover:border-primaryColor !text-[10px]"
             >
-              Cập nhật Profile
+              {t("update_profile")}
             </Button>
           </div>
         </div>

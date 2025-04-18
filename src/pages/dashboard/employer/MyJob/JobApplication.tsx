@@ -13,7 +13,11 @@ import {
   TimePicker,
   Typography,
 } from "antd";
-import { DownloadOutlined, EllipsisOutlined } from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  EllipsisOutlined,
+  FilterOutlined,
+} from "@ant-design/icons";
 import { Application, Job, Meta } from "../../../../types";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useSelector } from "react-redux";
@@ -26,8 +30,9 @@ import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComp
 import { useNavigate, useParams } from "react-router-dom";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
+import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 interface IPropJobApplication {
   handleChangeHome?: () => void;
   selectedJob?: Job;
@@ -229,129 +234,154 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   }, [location?.id, selectedJob?._id]);
   return (
     <div className="md:px-4 lg:px-primary mt-10 h-screen">
-      <div className="mb-6 text-sm text-gray-500">
-        {/* <ChevronLeft /> */}
-        <ChevronsLeft
-          className="cursor-pointer hover:text-primaryColor rounded-full"
-          onClick={onBack}
-          size={40}
-        />
-      </div>
-
-      <div className="mb-6 flex items-center justify-between">
-        <Title level={2} className="m-0 !text-[20px]">
-          {t("job_application")}
-        </Title>
-        <Space>
-          <Button className="!text-[12px]">{t("filter")}</Button>
+      <div className="mb-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+        <div className="flex items-center gap-4">
+          <ChevronsLeft
+            className="cursor-pointer text-gray-500 hover:text-primaryColor transition-colors duration-200 p-2 hover:bg-gray-100 rounded-full"
+            onClick={onBack}
+            size={40}
+          />
+          <div className="m-0 !text-[24px] font-semibold text-gray-800">
+            {t("job_application")}
+          </div>
+        </div>
+        <Space size={8}>
+          <Button
+            className="!text-[14px] h-10 px-4 flex items-center gap-2 border-gray-200 hover:border-primaryColor hover:text-primaryColor"
+            icon={<FilterOutlined />}
+          >
+            {t("filter")}
+          </Button>
           <Dropdown overlay={sortMenu} trigger={["click"]}>
-            <Button className="!text-[12px]">
-              {t("sort")} <DownloadOutlined />
+            <Button
+              className="!text-[14px] h-10 px-4 flex items-center gap-2 border-gray-200 hover:border-primaryColor hover:text-primaryColor"
+              icon={<DownloadOutlined />}
+            >
+              {t("sort")}
             </Button>
           </Dropdown>
         </Space>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 min-h-[500px]">
+        <div className="flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <Title
               level={4}
-              className="m-0 bg-yellow-500 text-white px-[15px]  rounded-full !text-[14px]"
+              className="m-0 bg-yellow-500 text-white px-[15px] rounded-full !text-[14px]"
             >
               {t("pending")}
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
-          {applications.length > 0 ? (
-            applications?.map((applied) => {
-              return (
-                <>
-                  {applied.status === "pending" && (
-                    <ApplicationCard
-                      applied={applied}
-                      handleFetchData={() =>
-                        handleGetJobByEmployer({ current: 1, pageSize: 10 })
-                      }
-                    />
-                  )}
-                </>
-              );
-            })
-          ) : (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={t("no_data")}
-            />
-          )}
+          <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+            {applications.length > 0 ? (
+              applications?.map((applied) => {
+                return (
+                  <div key={applied._id}>
+                    {applied.status === "pending" && (
+                      <ApplicationCard
+                        applied={applied}
+                        handleFetchData={() =>
+                          handleGetJobByEmployer({ current: 1, pageSize: 10 })
+                        }
+                      />
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={t("no_data")}
+              />
+            )}
+          </div>
         </div>
 
-        <div>
+        <div className="flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <Title
               level={4}
-              className="m-0 bg-red-500 text-white px-[15px]  rounded-full !text-[14px]"
+              className="m-0 bg-red-500 text-white px-[15px] rounded-full !text-[14px]"
             >
               {t("rejected")}
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
-          {applications?.length > 0 ? (
-            applications?.map((applied) => {
-              return (
-                <>
-                  {applied.status === "rejected" && (
-                    <ApplicationCard
-                      applied={applied}
-                      handleFetchData={() =>
-                        handleGetJobByEmployer({ current: 1, pageSize: 10 })
-                      }
-                    />
-                  )}
-                </>
-              );
-            })
-          ) : (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={t("no_data")}
-            />
-          )}
+          <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+            {applications?.length > 0 ? (
+              applications?.map((applied) => {
+                return (
+                  <div key={applied._id}>
+                    {applied.status === "rejected" && (
+                      <ApplicationCard
+                        applied={applied}
+                        handleFetchData={() =>
+                          handleGetJobByEmployer({ current: 1, pageSize: 10 })
+                        }
+                      />
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={t("no_data")}
+              />
+            )}
+          </div>
         </div>
-        <div>
+
+        <div className="flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <Title
               level={4}
-              className="m-0 bg-green-500 text-white px-[15px]  rounded-full !text-[14px]"
+              className="m-0 bg-green-500 text-white px-[15px] rounded-full !text-[14px]"
             >
               {t("accepted")}
             </Title>
             <Button icon={<EllipsisOutlined />} type="text" />
           </div>
-          {applications.length > 0 ? (
-            applications?.map((applied) => {
-              return (
-                <>
-                  {applied.status === "accepted" && (
-                    <ApplicationCard
-                      handleOpenModalEmail={handleOpenModalEmail}
-                      applied={applied}
-                      handleFetchData={() =>
-                        handleGetJobByEmployer({ current: 1, pageSize: 10 })
-                      }
-                    />
-                  )}
-                </>
-              );
-            })
-          ) : (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={t("no_data")}
-            />
-          )}
+          <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+            {applications.length > 0 ? (
+              applications?.map((applied) => {
+                return (
+                  <div key={applied._id}>
+                    {applied.status === "accepted" && (
+                      <ApplicationCard
+                        handleOpenModalEmail={handleOpenModalEmail}
+                        applied={applied}
+                        handleFetchData={() =>
+                          handleGetJobByEmployer({ current: 1, pageSize: 10 })
+                        }
+                      />
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={t("no_data")}
+              />
+            )}
+          </div>
         </div>
       </div>
+
+      <div className="mt-6 flex justify-center">
+        <CustomPagination
+          currentPage={meta.current_page}
+          total={meta.total}
+          perPage={meta.per_page}
+          onPageChange={(page: number, size: number) => {
+            handleGetJobByEmployer({ current: page, pageSize: size });
+          }}
+        />
+      </div>
+
       <GeneralModal
         title={t("update")}
         onOk={handleEditSubmit}

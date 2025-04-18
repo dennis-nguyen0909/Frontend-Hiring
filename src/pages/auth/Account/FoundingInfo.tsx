@@ -9,8 +9,10 @@ import { useOrganizationTypes } from "../../../hooks/useOrganizationTypes";
 import { useIndustryTypes } from "../../../hooks/useIndustryTypes";
 import { useTeamSizes } from "../../../hooks/useTeamSizes";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
+import { useTranslation } from "react-i18next";
 
 const FoundingInfo = ({ handleTabChange }) => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const userDetail = useSelector((state) => state.user);
   const [companyVision, setCompanyVision] = useState("");
@@ -57,14 +59,14 @@ const FoundingInfo = ({ handleTabChange }) => {
       );
       if (res.data) {
         notification.success({
-          message: "Thông báo",
-          description: "Cập nhật thành công",
+          message: t("notification"),
+          description: t("update_success"),
         });
 
         handleTabChange("social");
       } else {
         notification.error({
-          message: "Thông báo",
+          message: t("notification"),
           description: res.response.data.message,
         });
       }
@@ -100,13 +102,13 @@ const FoundingInfo = ({ handleTabChange }) => {
       <LoadingComponentSkeleton isLoading={loading}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <Form.Item
-            label="Loại tổ chức"
+            label={t("organization_type")}
             name="organization_type"
             rules={[
-              { required: true, message: "Please select organization type" },
+              { required: true, message: t("please_select_organization_type") },
             ]}
           >
-            <Select placeholder="Select...">
+            <Select placeholder={t("select")}>
               {organizationTypes.map((type) => (
                 <Select.Option key={type._id} value={type.name}>
                   {type.name}
@@ -116,11 +118,13 @@ const FoundingInfo = ({ handleTabChange }) => {
           </Form.Item>
 
           <Form.Item
-            label="Loại ngành"
+            label={t("industry_type")}
             name="industry_type"
-            rules={[{ required: true, message: "Please select industry type" }]}
+            rules={[
+              { required: true, message: t("please_select_industry_type") },
+            ]}
           >
-            <Select placeholder="Select...">
+            <Select placeholder={t("select")}>
               {industry_type.map((type) => (
                 <Select.Option key={type._id} value={type.name}>
                   {type.name}
@@ -130,11 +134,11 @@ const FoundingInfo = ({ handleTabChange }) => {
           </Form.Item>
 
           <Form.Item
-            label="Quy mô thành viên"
+            label={t("team_size")}
             name="team_size"
-            rules={[{ required: true, message: "Please select team size" }]}
+            rules={[{ required: true, message: t("please_select_team_size") }]}
           >
-            <Select placeholder="Select...">
+            <Select placeholder={t("select")}>
               {teamSizes.map((size) => (
                 <Select.Option key={size._id} value={size.name}>
                   {size.name}
@@ -146,33 +150,39 @@ const FoundingInfo = ({ handleTabChange }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <Form.Item
-            label="Năm thành lập"
+            label={t("year_of_establishment")}
             name="year_of_establishment"
             rules={[
-              { required: true, message: "Please select establishment date" },
+              {
+                required: true,
+                message: t("please_select_establishment_date"),
+              },
             ]}
           >
-            <Input placeholder="VD: 1998" />
+            <Input placeholder={t("example")} />
           </Form.Item>
 
           <Form.Item
-            label="Trang web công ty"
+            label={t("company_website")}
             name="company_website"
             rules={[
-              { required: true, message: "Please enter company_website URL" },
-              { type: "url", message: "Please enter a valid URL" },
+              {
+                required: true,
+                message: t("please_enter_company_website_url"),
+              },
+              { type: "url", message: t("please_enter_a_valid_url") },
             ]}
           >
             <Input
               prefix={<LinkOutlined className="text-gray-400" />}
-              placeholder="Website url..."
+              placeholder={t("website_url")}
             />
           </Form.Item>
         </div>
 
         <div className="mb-6">
           <Form.Item
-            label="Tầm nhìn công ty"
+            label={t("company_vision")}
             name="company_vision"
             // required
             // rules={[{ validator: validateCompanyVision }]}
@@ -202,7 +212,7 @@ const FoundingInfo = ({ handleTabChange }) => {
           onClick={handleSave}
           className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white"
         >
-          Lưu & tiếp tục
+          {t("save_and_continue")}
         </Button>
       </LoadingComponentSkeleton>
     </Form>

@@ -1,5 +1,14 @@
-import { UploadOutlined } from "@ant-design/icons";
-import { Avatar, Button, Form, Input, message, Select, Upload } from "antd";
+import { LinkOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  Avatar,
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  message,
+  Select,
+  Upload,
+} from "antd";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { USER_API } from "../../../../services/modules/userServices";
@@ -8,8 +17,9 @@ import { MediaApi } from "../../../../services/modules/mediaServices";
 import LoadingComponent from "../../../../components/Loading/LoadingComponent";
 import "./style.css";
 import { useTranslation } from "react-i18next";
-import moment from "moment";
 import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
+import dayjs from "dayjs";
+import { isValidUrl } from "../../../../helper";
 
 const Personal = () => {
   const [city, setCity] = useState("");
@@ -90,9 +100,7 @@ const Personal = () => {
           district: userDetail?.district_id?.name,
           ward: userDetail?.ward_id?.name,
           address: userDetail?.address,
-          birthday: userDetail?.birthday
-            ? moment(userDetail?.birthday).format("YYYY-MM-DD")
-            : "",
+          birthday: userDetail?.birthday ? dayjs(userDetail?.birthday) : "",
         }}
       >
         <div className="flex flex-col gap-6">
@@ -216,7 +224,11 @@ const Personal = () => {
               { required: true, message: t("please_enter_your_birthday") },
             ]}
           >
-            <Input type="date" className="text-[12px]" />
+            <DatePicker
+              className="text-[12px]"
+              format="YYYY-MM-DD"
+              picker="date"
+            />
           </Form.Item>
 
           <Form.Item
@@ -238,86 +250,27 @@ const Personal = () => {
           <Form.Item
             label={<span className="text-[12px]">{t("port_folio")}</span>}
             name="port_folio"
-            rules={[{ type: "url", message: t("please_enter_a_valid_url") }]}
-          >
-            <Input
-              placeholder="Enter your portfolio URL"
-              className="text-[12px]"
-            />
-          </Form.Item>
-
-          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Form.Item
-              label={<span className="text-[12px]">{t("city")}</span>}
-              name="city"
-            >
-              <Select
-                className="text-[12px]"
-                value={city}
-                onChange={handleCityChange}
-                loading={citiesLoading}
-                placeholder="Select City"
-              >
-                {cities.map((item) => (
-                  <Select.Option key={item._id} value={item._id}>
-                    {item.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              label={<span className="text-[12px]">{t("district")}</span>}
-              name="district"
-            >
-              <Select
-                className="text-[12px]"
-                value={district}
-                onChange={handleDistrictChange}
-                loading={districtLoading}
-                placeholder="Select District"
-              >
-                {districts.map((item) => (
-                  <Select.Option key={item._id} value={item._id}>
-                    {item.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              label={<span className="text-[12px]">Ward</span>}
-              name="ward"
-            >
-              <Select
-                className="text-[12px]"
-                value={ward}
-                onChange={handleWardChange}
-                loading={wardsLoading}
-                placeholder="Select Ward"
-              >
-                {wards.map((item) => (
-                  <Select.Option key={item._id} value={item._id}>
-                    {item.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </div>
-
-          <Form.Item
-            className="md:w-[400px]"
-            label={<span className="text-[12px]">{t("address")}</span>}
-            name="address"
             rules={[
-              { required: true, message: t("please_enter_your_address") },
+              {
+                required: true,
+                message: t("please_enter_a_valid_url"),
+              },
+              {
+                validator: (_, value) => {
+                  if (value && !isValidUrl(value)) {
+                    return Promise.reject(t("invalid_url"));
+                  }
+                  return Promise.resolve();
+                },
+              },
             ]}
           >
             <Input
-              placeholder={t("enter_your_address")}
+              prefix={<LinkOutlined className="text-gray-400" />}
+              placeholder={t("portfolio_url")}
               className="text-[12px]"
             />
-          </Form.Item> */}
+          </Form.Item>
 
           <div className="flex justify-end">
             <Button

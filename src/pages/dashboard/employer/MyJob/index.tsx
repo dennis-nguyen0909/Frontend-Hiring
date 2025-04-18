@@ -1,12 +1,4 @@
-import {
-  Table,
-  Button,
-  Dropdown,
-  Badge,
-  Select,
-  Switch,
-  notification,
-} from "antd";
+import { Table, Button, Dropdown, Badge, Select, notification } from "antd";
 import { EllipsisOutlined, TeamOutlined } from "@ant-design/icons";
 import { JobApi } from "../../../../services/modules/jobServices";
 import { useSelector } from "react-redux";
@@ -40,7 +32,6 @@ export default function MyJobEmployer() {
         </div>
       ),
       className: "text-[12px]",
-      // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
           whiteSpace: "nowrap",
@@ -60,8 +51,6 @@ export default function MyJobEmployer() {
         </div>
       ),
       className: "text-[12px]",
-
-      // Prevent title from wrapping
       onHeaderCell: () => ({
         style: {
           whiteSpace: "nowrap",
@@ -144,7 +133,7 @@ export default function MyJobEmployer() {
               items: [
                 { key: PROMOTE_JOB, label: t("promote_job") },
                 { key: VIEW_DETAIL, label: t("view_detail") },
-                { key: DELETE, label: t("delete") },
+                // { key: DELETE, label: t("delete") },
               ],
               onClick: (e) => handleOnChangeMenu(e, record),
             }}
@@ -257,12 +246,12 @@ export default function MyJobEmployer() {
   }, []);
 
   return (
-    <div className=" bg-gray-50 min-h-screen p-2 lg:p-2">
+    <div className="bg-gray-50 min-h-screen ">
       {!selectedJob && currentMenu === MY_JOB_HOME && (
-        <div className="rounded-lg shadow-sm">
+        <div className="rounded-lg">
           <div>
-            <div className="flex flex-wrap justify-between items-center gap-4">
-              <h1 className="text-[20px] font-semibold">
+            <div className="flex flex-wrap justify-between items-start mx-2 gap-4">
+              <h1 className="text-2xl font-semibold">
                 {t("my_jobs")}{" "}
                 <span className="text-gray-400">({meta && meta.total})</span>
               </h1>

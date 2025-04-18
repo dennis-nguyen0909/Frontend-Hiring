@@ -25,24 +25,28 @@ const { Sider, Content } = Layout;
 export default function DashBoardEmployer() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileView, setMobileView] = useState(false);
-  const [currentTab, setCurrentTab] = useState("1"); // Initialize state for the current tab
+  const [currentTab, setCurrentTab] = useState("overview"); // Initialize state for the current tab
   const userDetail = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const menuItems = [
     {
-      key: "1",
+      key: "overview",
       icon: <UserOutlined />,
       label: t("total_overview"),
       className: "bg-blue-50",
     },
-    { key: "3", icon: <FileTextOutlined />, label: t("post_job") },
-    { key: "4", icon: <FileTextOutlined />, label: t("my_job") },
-    { key: "5", icon: <SaveOutlined />, label: t("saved_candidate") },
-    { key: "6", icon: <DollarOutlined />, label: t("package_payment") },
-    { key: "8", icon: <SettingOutlined />, label: t("setting") },
+    { key: "post-job", icon: <FileTextOutlined />, label: t("post_job") },
+    { key: "my-jobs", icon: <FileTextOutlined />, label: t("my_job") },
     {
-      key: "sub4",
+      key: "saved-candidates",
+      icon: <SaveOutlined />,
+      label: t("saved_candidate"),
+    },
+    { key: "payment", icon: <DollarOutlined />, label: t("package_payment") },
+    { key: "settings", icon: <SettingOutlined />, label: t("setting") },
+    {
+      key: "management",
       label: t("manage_post"),
       icon: <SettingOutlined />,
       children: [{ key: TAB_SKILL, label: t("manage_skill") }],
@@ -50,7 +54,7 @@ export default function DashBoardEmployer() {
   ];
 
   const handleCollapse = async (collapsed: boolean) => {
-    setCollapsed(collapsed); // Cập nhật trạng thái collapsed ngay lập tức
+    setCollapsed(collapsed);
     try {
       const res = await userServices.updateUser({
         id: userDetail?._id,
@@ -67,7 +71,7 @@ export default function DashBoardEmployer() {
   const handleMenuClick = (e: any) => {
     setCurrentTab(e.key);
     if (mobileView) {
-      setCollapsed(true); // Automatically collapse sidebar in mobile view after selecting a tab
+      setCollapsed(true);
     }
   };
 
@@ -75,17 +79,17 @@ export default function DashBoardEmployer() {
     const handleResize = () => {
       setMobileView(window.innerWidth <= 768);
       if (window.innerWidth > 768) {
-        setCollapsed(false); // Đảm bảo sidebar luôn mở khi ở màn hình lớn
+        setCollapsed(false);
       } else {
         setCollapsed(true);
       }
     };
 
-    handleResize(); // Kiểm tra kích thước khi component mount
+    handleResize();
     window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize); // Dọn dẹp khi component unmount
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -97,7 +101,6 @@ export default function DashBoardEmployer() {
 
   return (
     <Layout className="min-h-screen flex">
-      {/* Sidebar */}
       <Sider
         collapsible
         collapsed={collapsed}
@@ -115,22 +118,21 @@ export default function DashBoardEmployer() {
         </div>
         <Menu
           mode="inline"
-          defaultSelectedKeys={["1"]}
-          selectedKeys={[currentTab]} // Use currentTab for active tab
-          onClick={handleMenuClick} // Update currentTab on click and collapse in mobile view
+          defaultSelectedKeys={["overview"]}
+          selectedKeys={[currentTab]}
+          onClick={handleMenuClick}
           items={menuItems}
           className="border-r-0"
         />
         <div className="absolute bottom-0 w-full p-4 border-t">
-          <Menu mode="inline" className="border-r-0">
+          {/* <Menu mode="inline" className="border-r-0">
             <Menu.Item key="logout" icon={<LogoutOutlined />}>
               {t("logout")}
             </Menu.Item>
-          </Menu>
+          </Menu> */}
         </div>
       </Sider>
 
-      {/* Main Content */}
       <Layout>
         {mobileView && (
           <Button
@@ -141,12 +143,12 @@ export default function DashBoardEmployer() {
             {collapsed ? t("open_menu") : t("close_menu")}
           </Button>
         )}
-        <Content className="lg:p-6 bg-gray-50 flex-1">
-          {currentTab === "1" && <OverviewEmployer />}
-          {currentTab === "3" && <PostJob />}
-          {currentTab === "4" && <MyJobEmployer />}
-          {currentTab === "8" && <SettingEmployer />}
-          {currentTab === "5" && <SavedCandidate />}
+        <Content className="lg:px-6 lg:py-2 bg-gray-50 flex-1">
+          {currentTab === "overview" && <OverviewEmployer />}
+          {currentTab === "post-job" && <PostJob />}
+          {currentTab === "my-jobs" && <MyJobEmployer />}
+          {currentTab === "settings" && <SettingEmployer />}
+          {currentTab === "saved-candidates" && <SavedCandidate />}
           {currentTab === TAB_SKILL && <SkillEmployer />}
         </Content>
       </Layout>

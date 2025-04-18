@@ -1,4 +1,4 @@
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import { CloseOutlined, LinkOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Input, notification, Select } from "antd";
 import { useEffect, useState } from "react";
 import { SOCIAL_LINK_API } from "../../../../../services/modules/SocialLinkService";
@@ -11,9 +11,29 @@ const SocialEmployer = () => {
   const userDetail = useSelector((state) => state.user);
   const [loading, setLoading] = useState<boolean>(true);
   const [socialLinks, setSocialLinks] = useState([]);
+
+  const isValidUrl = (url) => {
+    try {
+      const parsed = new URL(url);
+      return ["http:", "https:"].includes(parsed.protocol);
+    } catch {
+      return false;
+    }
+  };
+
   const handleSocialLinkChange = (index, field, value) => {
     const updatedLinks = [...socialLinks];
     updatedLinks[index][field] = value;
+
+    if (field === "url") {
+      if (!value) {
+        updatedLinks[index].error = t("please_enter_a_valid_url");
+      } else if (!isValidUrl(value)) {
+        updatedLinks[index].error = t("invalid_url");
+      } else {
+        updatedLinks[index].error = "";
+      }
+    }
 
     if (updatedLinks[index].isExisting) {
       updatedLinks[index].hasChanged = true;
@@ -25,12 +45,10 @@ const SocialEmployer = () => {
     setSocialLinks(updatedLinks);
   };
 
-  // Thêm một link mới
   const addNewSocialLink = () => {
-    setSocialLinks([...socialLinks, { type: "", url: "" }]);
+    setSocialLinks([...socialLinks, { type: "", url: "", error: "" }]);
   };
 
-  // Lấy các social links hiện tại từ server
   const handleGetSocialLinks = async (current = 1, pageSize = 10) => {
     try {
       setLoading(true);
@@ -46,11 +64,11 @@ const SocialEmployer = () => {
         userDetail?.access_token
       );
       if (res.data) {
-        // Đánh dấu các link lấy về từ server là "đã tồn tại"
         const existingLinks = res.data.items.map((link) => ({
           ...link,
-          isExisting: true, // Đánh dấu là đã tồn tại
-          hasChanged: false, // Ban đầu chưa có thay đổi
+          isExisting: true,
+          hasChanged: false,
+          error: "",
         }));
         setSocialLinks([...existingLinks]);
       }
@@ -61,13 +79,20 @@ const SocialEmployer = () => {
     }
   };
 
-  // Gọi hàm lấy dữ liệu ban đầu
   useEffect(() => {
     handleGetSocialLinks();
   }, []);
 
-  // Hàm lưu thay đổi
   const handleSaveChanges = async () => {
+    const hasInvalid = socialLinks.some((link) => link.error);
+    if (hasInvalid) {
+      notification.error({
+        message: t("notification"),
+        description: t("please_fix_errors"),
+      });
+      return;
+    }
+
     if (socialLinks.length <= 0) {
       notification.error({
         message: t("notification"),
@@ -75,6 +100,7 @@ const SocialEmployer = () => {
       });
       return;
     }
+
     try {
       const requests = socialLinks
         .filter((social) => social.hasChanged || !social.isExisting)
@@ -84,13 +110,11 @@ const SocialEmployer = () => {
             type: social?.type,
             url: social?.url,
           };
-          return SOCIAL_LINK_API.create(params, userDetail?.access_token); // Gọi API tạo mới hoặc cập nhật
+          return SOCIAL_LINK_API.create(params, userDetail?.access_token);
         });
-      // Nếu có yêu cầu nào cần thực hiện
+
       if (requests.length > 0) {
         const results = await Promise.all(requests);
-
-        // Kiểm tra kết quả của tất cả các lần gọi API
         if (results.every((res) => res.data)) {
           notification.success({
             message: t("notification"),
@@ -110,6 +134,7 @@ const SocialEmployer = () => {
       });
     }
   };
+
   const onDeleted = async (id) => {
     const res = await SOCIAL_LINK_API.deleteMany(
       [id],
@@ -123,6 +148,7 @@ const SocialEmployer = () => {
       handleGetSocialLinks();
     }
   };
+
   return (
     <LoadingComponentSkeleton isLoading={loading}>
       <h2 className="text-xl font-semibold mb-4">{t("social_link")}</h2>
@@ -138,26 +164,17 @@ const SocialEmployer = () => {
               value={link.type}
               onChange={(value) => handleSocialLinkChange(index, "type", value)}
             >
-              <Select.Option value="Facebook">
-                <span className="text-[12px]">Facebook</span>
-              </Select.Option>
-              <Select.Option value="Twitter">
-                <span className="text-[12px]">Twitter</span>
-              </Select.Option>
-              <Select.Option value="Instagram">
-                <span className="text-[12px]">Instagram</span>
-              </Select.Option>
-              <Select.Option value="Youtube">
-                <span className="text-[12px]">Youtube</span>
-              </Select.Option>
-              <Select.Option value="LinkedIn">
-                <span className="text-[12px]">LinkedIn</span>
-              </Select.Option>
+              <Select.Option value="Facebook">Facebook</Select.Option>
+              <Select.Option value="Twitter">Twitter</Select.Option>
+              <Select.Option value="Instagram">Instagram</Select.Option>
+              <Select.Option value="Youtube">Youtube</Select.Option>
+              <Select.Option value="LinkedIn">LinkedIn</Select.Option>
             </Select>
             <div className="md:flex-row flex w-full justify-start flex-row mt-2 md:mt-0">
               <Input
-                placeholder="Profile link/url..."
-                className="text-[12px]"
+                prefix={<LinkOutlined className="text-gray-500" />}
+                placeholder={t("profile_link_url")}
+                className={`text-[12px] ${link.error ? "border-red-500" : ""}`}
                 value={link.url}
                 onChange={(e) =>
                   handleSocialLinkChange(index, "url", e.target.value)
@@ -172,6 +189,9 @@ const SocialEmployer = () => {
               />
             </div>
           </div>
+          {link.error && (
+            <p className="text-red-500 text-[12px] mt-1">{link.error}</p>
+          )}
         </div>
       ))}
       <Button

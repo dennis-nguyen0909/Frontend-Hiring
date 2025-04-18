@@ -10,6 +10,7 @@ import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import useMomentFn from "../../../hooks/useMomentFn";
 import { RootState } from "../../../redux/store/store";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface CV {
   _id: string;
@@ -40,6 +41,7 @@ const CVCard = ({
   onUpdate: () => void;
   handleShare: () => void;
 }) => {
+  const { t } = useTranslation();
   const onDownloadCV = () => {
     const link = document.createElement("a");
     link.href = cv?.cv_link;
@@ -57,7 +59,9 @@ const CVCard = ({
         {cv?.isPrimary && (
           <div className="absolute top-6 right-6 flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md">
             <Star className="w-5 h-5" />
-            <span className="text-sm font-semibold">Đặt làm CV chính</span>
+            <span className="text-sm font-semibold">
+              {t("set_as_primary_cv")}
+            </span>
           </div>
         )}
       </div>
@@ -76,7 +80,7 @@ const CVCard = ({
           </div>
         </div>
         <p className="text-[12px] text-white/80 mb-5">
-          Cập nhật lần cuối {formatDate(cv.updatedAt)}
+          {t("last_updated")} {formatDate(cv.updatedAt)}
         </p>
 
         {/* Actions */}
@@ -87,14 +91,14 @@ const CVCard = ({
               className="bg-[#5c6674] w-[90px] rounded-full flex items-center justify-center gap-2 px-2 py-1 hover:bg-[#ccc] cursor-pointer"
             >
               <Forward size={14} color="white" />
-              <p className="text-[10px] text-white ">Chia sẻ</p>
+              <p className="text-[10px] text-white ">{t("share")}</p>
             </div>
             <div
               onClick={onDownloadCV}
               className="bg-[#5c6674] w-[90px] rounded-full flex items-center justify-center gap-2 px-2 py-1 hover:bg-[#ccc] cursor-pointer"
             >
               <Download size={14} color="white" />
-              <p className="text-[10px] text-white ">Tải xuống</p>
+              <p className="text-[10px] text-white ">{t("download")}</p>
             </div>
           </div>
           <div className="hover:bg-[#ccc] cursor-pointer px-1 py-1 rounded-full">
@@ -109,6 +113,7 @@ const CVCard = ({
 };
 
 export default function ListCV() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const userDetail = useSelector((state: RootState) => state.user);
   const [visible, setVisible] = useState<boolean>(false);
@@ -142,15 +147,15 @@ export default function ListCV() {
     },
     onSuccess: () => {
       notification.success({
-        message: "Thông báo",
-        description: "Xóa thành công",
+        message: t("notification"),
+        description: t("delete_success"),
       });
       queryClient.invalidateQueries({ queryKey: ["cvs"] });
     },
     onError: () => {
       notification.error({
-        message: "Thông báo",
-        description: "Xóa thất bại",
+        message: t("notification"),
+        description: t("delete_failed"),
       });
     },
   });
@@ -166,16 +171,16 @@ export default function ListCV() {
     },
     onSuccess: () => {
       notification.success({
-        message: "Thông báo",
-        description: "Cập nhật thành công",
+        message: t("notification"),
+        description: t("update_success"),
       });
       queryClient.invalidateQueries({ queryKey: ["cvs"] });
       onClose();
     },
     onError: () => {
       notification.error({
-        message: "Thông báo",
-        description: "Cập nhật thất bại",
+        message: t("notification"),
+        description: t("update_failed"),
       });
     },
   });
@@ -187,8 +192,8 @@ export default function ListCV() {
 
   const handleShare = () => {
     notification.info({
-      message: "Thông báo",
-      description: "Tính năng chưa phát triển",
+      message: t("notification"),
+      description: t("feature_not_developed"),
     });
   };
 
@@ -206,12 +211,12 @@ export default function ListCV() {
       <Form form={form} layout="vertical" className="mt-4">
         <Form.Item
           className="!text-[12px]"
-          label="Tên CV (thường là vị trí ứng tuyển)"
+          label={t("cv_name")}
           name="cv_name"
-          rules={[{ required: true, message: "Vui lòng nhập tên CV" }]}
+          rules={[{ required: true, message: t("please_enter_cv_name") }]}
         >
           <Input
-            placeholder="Nhập tên CV"
+            placeholder={t("enter_cv_name")}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 !text-[14px]"
           />
         </Form.Item>
@@ -221,14 +226,14 @@ export default function ListCV() {
             onClick={onClose}
             className="px-6 hover:bg-gray-100 !text-[12px]"
           >
-            Hủy
+            {t("cancel")}
           </Button>
           <Button
             type="primary"
             onClick={handleSubmit}
             className="px-6 bg-green-500 hover:bg-green-600 border-none !text-[12px]"
           >
-            Cập nhật
+            {t("update")}
           </Button>
         </div>
       </Form>
@@ -247,8 +252,8 @@ export default function ListCV() {
       }
     } catch (error) {
       notification.error({
-        message: "Thông báo",
-        description: "Cập nhật thất bại",
+        message: t("notification"),
+        description: t("update_failed"),
       });
     }
   };
@@ -256,13 +261,15 @@ export default function ListCV() {
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-[14px] font-bold">CV đã tải lên HireDev</h2>
+        <h2 className="text-[14px] font-bold">
+          {t("uploaded_cvs_to_hiredev")}
+        </h2>
         <Button
           onClick={() => navigate("/upload-cv")}
           type="primary"
           className="!bg-primaryColor cursor-pointer !text-[12px] !h-[30px]"
         >
-          Tải CV lên
+          {t("upload_cv")}
         </Button>
       </div>
       <div className="flex gap-10 flex-wrap">
@@ -280,7 +287,7 @@ export default function ListCV() {
       </div>
       <GeneralModal
         visible={visible}
-        title="Chỉnh sửa"
+        title={t("edit")}
         renderBody={renderBody}
         onCancel={onClose}
         onOk={onClose}

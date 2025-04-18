@@ -10,8 +10,10 @@ import { USER_API } from "../../../services/modules/userServices";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/slices/userSlices";
+import { useTranslation } from "react-i18next";
 
 const CompanyInfo = ({ handleTabChange }) => {
+  const { t } = useTranslation();
   const [form] = useForm();
   const userDetail = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -20,12 +22,12 @@ const CompanyInfo = ({ handleTabChange }) => {
 
   const onFinish = async (values: any) => {
     if (!userDetail?.avatar_company && !values.logo) {
-      message.error("Please upload a logo before proceeding.");
+      message.error(t("please_upload_a_logo_before_proceeding"));
       return;
     }
 
     if (!userDetail?.banner_company && !values.banner) {
-      message.error("Please upload a banner before proceeding.");
+      message.error(t("please_upload_a_banner_before_proceeding"));
       return;
     }
     const params = {
@@ -54,7 +56,7 @@ const CompanyInfo = ({ handleTabChange }) => {
       return res;
     } catch (error: any) {
       notification.error({
-        message: "Thông báo",
+        message: t("notification"),
         description: error,
       });
     }
@@ -75,8 +77,8 @@ const CompanyInfo = ({ handleTabChange }) => {
           );
           if (update.data) {
             notification.success({
-              message: "Thông báo",
-              description: "Cập nhật thành công",
+              message: t("notification"),
+              description: t("update_success"),
             });
             dispatch(updateUser({ ...update.data }));
           }
@@ -96,8 +98,8 @@ const CompanyInfo = ({ handleTabChange }) => {
           );
           if (update.data) {
             notification.success({
-              message: "Thông báo",
-              description: "Cập nhật thành công",
+              message: t("notification"),
+              description: t("update_success"),
             });
             dispatch(updateUser({ ...update.data }));
           }
@@ -105,7 +107,7 @@ const CompanyInfo = ({ handleTabChange }) => {
         }
       }
     } else if (info.file.status === "error") {
-      console.error("File upload failed:", info.file);
+      console.error(t("file_upload_failed"), info.file);
     }
   };
 
@@ -114,7 +116,7 @@ const CompanyInfo = ({ handleTabChange }) => {
       <div className="grid md:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Ảnh logo
+            {t("logo_image")}
           </label>
           {userDetail?.avatar_company ? (
             <Avatar
@@ -135,10 +137,10 @@ const CompanyInfo = ({ handleTabChange }) => {
                 <p className="text-gray-500">
                   <UploadOutlined className="text-2xl mb-2" />
                   <br />
-                  Browse photo hoặc drop here
+                  {t("browse_photo_or_drop_here")}
                 </p>
                 <p className="text-xs text-gray-400 mt-2">
-                  A photo larger than 400 pixels work best. Max photo size 5 MB.
+                  {t("a_photo_larger_than_400_pixels_work_best")}
                 </p>
               </Dragger>
             </LoadingComponent>
@@ -147,7 +149,7 @@ const CompanyInfo = ({ handleTabChange }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Ảnh nền
+            {t("banner_image")}
           </label>
           {userDetail?.banner_company ? (
             <Avatar
@@ -168,11 +170,11 @@ const CompanyInfo = ({ handleTabChange }) => {
                 <p className="text-gray-500">
                   <UploadOutlined className="text-2xl mb-2" />
                   <br />
-                  Browse photo hoặc drop here
+                  {t("browse_photo_or_drop_here")}
                 </p>
                 <p className="text-xs text-gray-400 mt-2">
-                  Banner images optimal dimension 1520×400. Supported format
-                  JPEG, PNG. Max photo size 5 MB.
+                  {t("banner_images_optimal_dimension_1520_400")}
+                  {t("jpeg_png")}. {t("max_photo_size_5_mb")}
                 </p>
               </Dragger>
             </LoadingComponent>
@@ -191,17 +193,19 @@ const CompanyInfo = ({ handleTabChange }) => {
       >
         <div>
           <Form.Item
-            label="Tên công ty"
+            label={t("company_name")}
             name="company_name"
-            rules={[{ required: true, message: "Vui lòng nhập tên công ty!" }]}
+            rules={[
+              { required: true, message: t("please_enter_company_name") },
+            ]}
           >
-            <Input placeholder="Nhập tên công ty" className="max-w-xl" />
+            <Input placeholder={t("company_name")} className="max-w-xl" />
           </Form.Item>
         </div>
 
         <div>
           <Form.Item
-            label="Về chúng tôi"
+            label={t("about_us")}
             name="description"
             // rules={[{ required: true, message: "Please input description!" }]}
           >
@@ -228,7 +232,7 @@ const CompanyInfo = ({ handleTabChange }) => {
           htmlType="submit"
           className="px-4 !bg-[#201527] !text-primaryColor !border-none !hover:text-white"
         >
-          Lưu & tiếp tục
+          {t("save_and_continue")}
         </Button>
       </Form>
     </div>

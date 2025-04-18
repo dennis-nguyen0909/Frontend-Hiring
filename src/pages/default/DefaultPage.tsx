@@ -19,6 +19,7 @@ import { ROLE_API } from "../../services/modules/RoleServices";
 import { handleDecoded } from "../../helper";
 import FooterV2 from "../../components/Footer/FooterV2";
 import FloatingButton from "../../components/Button/ButtonFloating";
+import { useTranslation } from "react-i18next";
 
 interface DefaultPageProps {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ interface DefaultPageProps {
 }
 
 const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const { userId } = location.state || {};
   const userDetail = useSelector((state) => state.user);
@@ -55,7 +57,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
       }
     } catch (error) {
       notification.error({
-        message: "Failed to fetch user details",
+        message: t("notification"),
         description: error.message,
       });
     }
@@ -94,27 +96,27 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   const tabs = [
     {
       id: "company",
-      label: "Thông tin công ty",
+      label: t("company_info"),
       content: <CompanyInfo handleTabChange={handleTabChange} />,
     },
     {
       id: "founding",
-      label: "Thông tin thành lập",
+      label: t("founding_info"),
       content: <FoundingInfo handleTabChange={handleTabChange} />,
     },
     {
       id: "social",
-      label: "Hồ sơ truyền thông xã hội",
+      label: t("social_info"),
       content: <SocialLinks handleTabChange={handleTabChange} />,
     },
     {
       id: "contact",
-      label: "Liên hệ",
+      label: t("contact_info"),
       content: <Contact handleTabChange={handleTabChange} />,
     },
     {
       id: "completed",
-      label: "Hoàn thành",
+      label: t("completed"),
       content: <Completed handleCompleted={handleCompleted} />,
     },
   ];
@@ -222,7 +224,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
       <div className="space-y-6">
         {/* Title */}
         <h2 className="text-2xl font-semibold text-gray-800 text-center">
-          Bạn là ?
+          {t("you_are")}
         </h2>
 
         <div className="grid grid-cols-2 gap-6">
@@ -239,7 +241,9 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
             onClick={() => handleTypeSelect("user")}
           >
             <User className="w-7 h-7 text-gray-600" />
-            <span className="text-lg font-medium text-gray-700">Ứng Viên</span>
+            <span className="text-lg font-medium text-gray-700">
+              {t("candidate")}
+            </span>
           </div>
 
           {/* Nhà Tuyển Dụng */}
@@ -256,7 +260,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
           >
             <BuildOutlined className="w-7 h-7 text-white" />
             <span className="text-lg font-medium text-white">
-              Nhà Tuyển Dụng
+              {t("employer")}
             </span>
           </div>
         </div>
@@ -286,7 +290,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
                 transition: "background-position 0.5s ease-in-out",
               }}
             >
-              Tiếp tục
+              {t("continue")}
             </button>
           </div>
         )}

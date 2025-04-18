@@ -250,7 +250,6 @@ const ExperienceComponent = () => {
       ...data,
       end_date: currentlyWorking ? null : data.end_date,
     };
-    console.log("duydeptrai", data);
     const res = await ExperienceApi.updateExperience(
       selectedId,
       data,
@@ -267,7 +266,6 @@ const ExperienceComponent = () => {
       await handleUpdateProfile();
       setIsLoading(false);
     } else {
-      console.log("res", res);
       notification.error({
         message: t("notification"),
         description: i18n.exists(res.message[0])
