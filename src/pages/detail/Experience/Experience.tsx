@@ -9,6 +9,7 @@ import {
   Typography,
   Select,
   Avatar,
+  DatePicker,
 } from "antd";
 import { LinkOutlined, PictureOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
@@ -22,6 +23,8 @@ import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
 import useMomentFn from "../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
+import i18n from "../../../config/i18n.config";
+import dayjs from "dayjs";
 const { TextArea } = Input;
 
 interface WorkExperienceProps {
@@ -39,15 +42,6 @@ const ExperienceComponent = () => {
   const { t } = useTranslation();
   const { formatDate } = useMomentFn();
   const [currentlyWorking, setCurrentlyWorking] = useState(false);
-  const months = Array.from({ length: 12 }, (_, i) => ({
-    value: i + 1,
-    label: t(`month_${i + 1}`),
-  }));
-
-  const years = Array.from({ length: 200 }, (_, i) => ({
-    value: new Date().getFullYear() + 100 - i,
-    label: `${new Date().getFullYear() + 100 - i}`,
-  }));
   const userDetail = useSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingDetail, setIsLoadingDetail] = useState<boolean>(false);
@@ -71,6 +65,7 @@ const ExperienceComponent = () => {
     setWorkExperience(null);
     setSelectedId("");
     form.resetFields();
+    setCurrentlyWorking(false);
     setActionType("");
   };
 
@@ -115,16 +110,14 @@ const ExperienceComponent = () => {
 
   const onFinish = async (values: any) => {
     setIsLoading(true);
-    const { currently_working, company, position, description } = values;
-
-    const start_date = moment
-      .utc(`${values.startYear}-${values.startMonth}-01`, "YYYY-MM-DD")
-      .toDate();
-    const end_date = !currently_working
-      ? moment
-          .utc(`${values.endYear}-${values.endMonth}-01`, "YYYY-MM-DD")
-          .toDate()
-      : null;
+    const {
+      currently_working,
+      company,
+      position,
+      description,
+      start_date,
+      end_date,
+    } = values;
 
     const params = {
       company,
@@ -152,9 +145,8 @@ const ExperienceComponent = () => {
     } else {
       notification.error({
         message: t("notification"),
-        description: res.message,
+        description: i18n.exists(res.message) ? t(res.message) : res.message,
       });
-      closeModal();
       setIsLoading(false);
     }
   };
@@ -199,26 +191,18 @@ const ExperienceComponent = () => {
 
   useEffect(() => {
     if (workExperience) {
-      const startDate = new Date(workExperience.start_date);
-      const endDate = new Date(workExperience.end_date);
-      const startMonth = startDate.getMonth() + 1;
-      const startYear = startDate.getFullYear();
-      let endMonth, endYear;
-      if (!workExperience.currently_working) {
-        endMonth = endDate.getMonth() + 1;
-        endYear = endDate.getFullYear();
-      }
       form.setFieldsValue({
         company: workExperience.company,
         position: workExperience.position,
-        startMonth: startMonth,
-        startYear: startYear,
-        end_date: workExperience.end_date,
+        end_date: workExperience.end_date
+          ? dayjs(workExperience.end_date)
+          : null,
         currently_working: workExperience.currently_working,
         description: workExperience.description,
         image: workExperience.image,
-        endYear,
-        endMonth,
+        start_date: workExperience.start_date
+          ? dayjs(workExperience.start_date)
+          : null,
       });
       setCurrentlyWorking(workExperience?.currently_working);
     }
@@ -255,12 +239,6 @@ const ExperienceComponent = () => {
   const handleUpdateExperience = async () => {
     setIsLoading(true);
     let data = form.getFieldsValue();
-    const start_date = moment
-      .utc(`${data.startYear}-${data.startMonth}-01`, "YYYY-MM-DD")
-      .toDate();
-    const end_date = !data.currently_working
-      ? moment.utc(`${data.endYear}-${data.endMonth}-01`, "YYYY-MM-DD").toDate()
-      : null;
 
     if (selectedFile) {
       data = {
@@ -270,8 +248,7 @@ const ExperienceComponent = () => {
     }
     data = {
       ...data,
-      end_date: data.currently_working ? null : end_date,
-      start_date,
+      end_date: currentlyWorking ? null : data.end_date,
     };
     console.log("duydeptrai", data);
     const res = await ExperienceApi.updateExperience(
@@ -279,6 +256,7 @@ const ExperienceComponent = () => {
       data,
       userDetail?.access_token
     );
+
     if (res.data) {
       await handleGetWorkExperiencesByUser();
       notification.success({
@@ -289,9 +267,12 @@ const ExperienceComponent = () => {
       await handleUpdateProfile();
       setIsLoading(false);
     } else {
+      console.log("res", res);
       notification.error({
         message: t("notification"),
-        description: t("update_failed"),
+        description: i18n.exists(res.message[0])
+          ? t(res.message[0])
+          : res.message,
       });
       closeModal();
       setIsLoading(false);
@@ -360,8 +341,32 @@ const ExperienceComponent = () => {
                 {t("i_am_working_here")}
               </Checkbox>
             </Form.Item>
+            <Form.Item
+              label={<div className="text-[12px]">{t("start_date")}</div>}
+              name="start_date"
+              rules={[
+                { required: true, message: t("please_select_start_date") },
+              ]}
+            >
+              <DatePicker style={{ width: "100%", fontSize: "12px" }} />
+            </Form.Item>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Form.Item
+              label={<div className="text-[12px]">{t("end_date")}</div>}
+              name="end_date"
+              rules={[
+                {
+                  required: !currentlyWorking,
+                  message: t("please_select_end_date"),
+                },
+              ]}
+            >
+              <DatePicker
+                style={{ width: "100%", fontSize: "12px" }}
+                disabled={currentlyWorking}
+              />
+            </Form.Item>
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Typography.Text className="text-[12px]">
                   <span className="text-red-500 pr-1">*</span>
@@ -439,7 +444,7 @@ const ExperienceComponent = () => {
                   </Form.Item>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <Form.Item
               label={<div className="text-[12px]">{t("description")}</div>}
