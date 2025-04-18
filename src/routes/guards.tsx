@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { IRoute } from "./types";
+import { useSelector } from "react-redux";
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -8,15 +9,13 @@ interface AuthGuardProps {
 }
 
 export const AuthGuard = ({ children, route }: AuthGuardProps) => {
-  // TODO: Implement your authentication logic here
   const isAuthenticated = true;
-  const userRole = "user";
-
+  const user = useSelector((state) => state.user);
   if (route.isPrivate && !isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  if (route.roles && !route.roles.includes(userRole)) {
+  if (route.roles && !route.roles.includes(user?.role?.role_name)) {
     return <Navigate to="/" replace />;
   }
 

@@ -54,7 +54,7 @@ export const privateRoutes: IRoute[] = [
     page: AdminPage,
     isShowHeader: true,
     isPrivate: true,
-    roles: ["admin"],
+    roles: ["ADMIN"],
     title: "Admin",
   },
   {
@@ -76,7 +76,7 @@ export const privateRoutes: IRoute[] = [
     page: ManagePage,
     isShowHeader: true,
     isPrivate: true,
-    roles: ["employer"],
+    roles: ["EMPLOYER"],
     title: "Employer Management",
   },
   {

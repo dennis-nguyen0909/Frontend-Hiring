@@ -843,5 +843,6 @@
   "user_name": "Tên người dùng",
   "reject": "Từ chối",
   "accept": "Chấp nhận",
-  "please_fix_errors": "Vui lòng sửa lỗi"
+  "please_fix_errors": "Vui lòng sửa lỗi",
+  "link_not_exist": "Link không tồn tại"
 }

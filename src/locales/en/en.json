@@ -837,6 +837,7 @@
     "user_name": "User name",
     "reject": "Reject",
     "accept": "Accept",
-    "please_fix_errors": "Please fix errors"
+    "please_fix_errors": "Please fix errors",
+    "link_not_exist": "Link does not exist"
 }
   

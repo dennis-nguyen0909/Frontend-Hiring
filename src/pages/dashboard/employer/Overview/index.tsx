@@ -25,6 +25,8 @@ const OverviewEmployer = () => {
   const userDetail = useSelector((state: RootState) => state.user);
   const [countOpenJob, setCountOpenJob] = useState(0);
   const [countSaveCandidate, setCountSaveCandidate] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // Fetch saved candidates
   const { data: savedCandidatesData } = useQuery({
@@ -47,12 +49,12 @@ const OverviewEmployer = () => {
 
   // Fetch recent jobs
   const { data: recentJobsData } = useQuery({
-    queryKey: ["recentJobs", userDetail?.id],
+    queryKey: ["recentJobs", userDetail?.id, currentPage, pageSize],
     queryFn: async () => {
       if (!userDetail?.id) throw new Error("User ID is required");
       const params = {
-        current: 1,
-        pageSize: 10,
+        current: currentPage,
+        pageSize: pageSize,
         query: {
           user_id: userDetail.id,
         },
@@ -211,6 +213,11 @@ const OverviewEmployer = () => {
     },
   ];
 
+  const handlePageChange = (page: number, pageSize: number) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
+
   return (
     <div className="mx-2">
       <div className="mb-8 flex flex-col gap-1">
@@ -260,12 +267,10 @@ const OverviewEmployer = () => {
       </div>
 
       <CustomPagination
-        currentPage={recentJobsData?.meta?.current_page}
-        total={recentJobsData?.meta?.total}
-        perPage={recentJobsData?.meta?.per_page}
-        onPageChange={() => {
-          // Handle page change if needed
-        }}
+        currentPage={recentJobsData?.meta?.current_page || currentPage}
+        total={recentJobsData?.meta?.total || 0}
+        perPage={recentJobsData?.meta?.per_page || pageSize}
+        onPageChange={handlePageChange}
       />
     </div>
   );

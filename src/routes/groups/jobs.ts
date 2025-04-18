@@ -33,7 +33,7 @@ export const jobsRoutes: IRoute[] = [
     isShowHeader: true,
     isShowFooter: true,
     isPrivate: true,
-    roles: ["employer"],
+    roles: ["EMPLOYER"],
     title: "Job Detail",
   },
   {
@@ -42,7 +42,7 @@ export const jobsRoutes: IRoute[] = [
     isShowHeader: true,
     isShowFooter: true,
     isPrivate: true,
-    roles: ["employer"],
+    roles: ["EMPLOYER"],
     title: "Application Detail",
   },
 ];

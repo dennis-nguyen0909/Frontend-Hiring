@@ -1,7 +1,9 @@
 import {
+  CloseOutlined,
   DeleteOutlined,
   DownloadOutlined,
   EditOutlined,
+  FileTextOutlined,
   HeartFilled,
   HeartOutlined,
 } from "@ant-design/icons";
@@ -12,6 +14,7 @@ import {
   Image,
   Menu,
   MenuProps,
+  Modal,
   notification,
   Typography,
 } from "antd";
@@ -55,6 +58,11 @@ const ApplicationCard = ({
       label: <span className="!text-[12px]">{t("pending")}</span>,
       onClick: () => handleMenuClick("pending", applied._id),
     },
+    {
+      key: "withdraw",
+      label: <span className="!text-[12px]">{t("withdraw_application")}</span>,
+      onClick: () => handleWithdraw(applied?.cv_id?.cv_link || ""),
+    },
   ];
 
   const itemsDelete: MenuProps["items"] = [
@@ -64,7 +72,76 @@ const ApplicationCard = ({
       onClick: () => handleMenuClick("delete", applied._id),
     },
   ];
+
+  const handleWithdraw = (link_url: string) => {
+    if (!link_url) {
+      notification.error({
+        message: t("notification"),
+        description: t("link_not_exist"),
+      });
+      return;
+    }
+
+    const modal = Modal.info({
+      title: (
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <FileTextOutlined className="text-blue-500" />
+            <span className="text-lg font-semibold">{t("cv_preview")}</span>
+          </div>
+          <CloseOutlined
+            onClick={() => modal.destroy()}
+            className="text-gray-500 hover:text-red-500 cursor-pointer text-lg"
+          />
+        </div>
+      ),
+      width: "80%",
+      className: "cv-preview-modal",
+      content: (
+        <div className="bg-gray-50 rounded-lg p-4">
+          {console.log("duydeptrai link_url", link_url)}
+          {link_url !== "" ? (
+            <div className="flex flex-col gap-4">
+              <iframe
+                src={link_url}
+                className="w-full h-[70vh] rounded-lg shadow-md"
+                style={{ border: "none" }}
+                title={t("cv_preview")}
+              />
+              <div className="flex justify-end gap-2">
+                <Button
+                  icon={<DownloadOutlined />}
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = link_url;
+                    link.download = applied?.cv_id?.cv_name || "CV.pdf";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  {t("download")}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-center items-center h-[70vh]">
+              <span className="text-gray-500">{t("link_not_exist")}</span>
+            </div>
+          )}
+        </div>
+      ),
+      okButtonProps: { style: { display: "none" } },
+      closable: false,
+      maskClosable: true,
+      maskStyle: {
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+      },
+    });
+  };
+
   const handleDelete = () => {};
+
   const handleMenuClick = async (action: string, id: string) => {
     try {
       if (action === "delete") {
@@ -117,18 +194,22 @@ const ApplicationCard = ({
     const cvLink = applied?.cv_id?.cv_link;
     const cvName = applied?.cv_id?.cv_name;
     const link = document.createElement("a");
-    if (cvLink === "" || !cvLink) {
+
+    if (!cvLink && !primary_cv_id?.cv_link) {
       notification.error({
         message: t("notification"),
         description: t("candidate_not_update_cv"),
       });
+      return;
     }
-    link.href = cvLink || primary_cv_id.cv_link;
-    link.download = cvName || primary_cv_id.cv_name;
+
+    link.href = cvLink || primary_cv_id?.cv_link;
+    link.download = cvName || primary_cv_id?.cv_name;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
+
   const isSaved = save_candidates && save_candidates.includes(user_id?._id);
   return (
     <Card className={`mb-4 ${className}`}>
