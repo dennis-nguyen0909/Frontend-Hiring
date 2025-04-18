@@ -6,7 +6,6 @@ import {
   notification,
   Card,
   Checkbox,
-  Typography,
   Tooltip,
   Image,
   DatePicker,
@@ -35,6 +34,7 @@ interface Certificate {
   updatedAt: string;
   img_certificate?: string;
   link_certificate?: string;
+  end_date?: string;
   __v: number;
 }
 
@@ -48,9 +48,9 @@ interface CertificateFormValues {
 }
 
 const CertificateComponent = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const userDetail = useSelector((state: any) => state.user);
-  const { formatDate, dateFormat } = useMomentFn();
+  const { formatDate } = useMomentFn();
   const [file, setFile] = useState("");
   const [form] = Form.useForm<CertificateFormValues>();
   const [link, setLink] = useState("");
@@ -243,7 +243,9 @@ const CertificateComponent = () => {
     } catch (error: any) {
       notification.error({
         message: t("notification"),
-        description: error.response?.data?.message || t("error_from_server"),
+        description: i18n.exists(error.response?.data?.message)
+          ? t(error.response?.data?.message)
+          : t("error_from_server"),
       });
     } finally {
       setIsLoading(false);
@@ -449,6 +451,12 @@ const CertificateComponent = () => {
                       </span>
                     </div>
                     <div className="flex items-center">
+                      <strong className="text-[12px]">{t("end_date")}: </strong>
+                      <span className="ml-2 text-[12px]">
+                        {formatDate(item.end_date)}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
                       <strong className="text-[12px]">
                         {t("certificate_is_effective")}:{" "}
                       </strong>
@@ -456,20 +464,29 @@ const CertificateComponent = () => {
                         className={`ml-2 text-[12px] ${
                           item.is_not_expired
                             ? "text-green-500"
-                            : "text-red-500"
+                            : dayjs(item.end_date).isBefore(dayjs())
+                            ? "text-red-500"
+                            : "text-green-500"
                         }`}
                       >
                         {item.is_not_expired
                           ? t("certificate_is_effective")
-                          : t("certificate_is_not_effective")}
+                          : dayjs(item.end_date).isBefore(dayjs())
+                          ? t("certificate_is_not_effective")
+                          : t("certificate_is_effective")}
                       </span>
                       {item.is_not_expired ? (
                         <CheckCircle
                           size={12}
                           className="ml-2 text-green-500"
                         />
-                      ) : (
+                      ) : dayjs(item.end_date).isBefore(dayjs()) ? (
                         <XCircle size={12} className="ml-2 text-red-500" />
+                      ) : (
+                        <CheckCircle
+                          size={12}
+                          className="ml-2 text-green-500"
+                        />
                       )}
                     </div>
                     {item.link_certificate && (

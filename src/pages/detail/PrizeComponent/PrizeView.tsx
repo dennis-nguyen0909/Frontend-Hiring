@@ -2,25 +2,16 @@ import { useSelector } from "react-redux";
 import Prize from "./PrizeComponent";
 import { useEffect, useState } from "react";
 import { PRIZE_API } from "../../../services/modules/PrizeServices";
-import {
-  Button,
-  Card,
-  DatePicker,
-  Form,
-  Input,
-  notification,
-  Select,
-} from "antd";
+import { Button, Card, DatePicker, Form, Input, notification } from "antd";
 import { Award } from "lucide-react";
 import GeneralModal from "../../../components/ui/GeneralModal/GeneralModal";
 import UploadForm from "../../../components/ui/UploadForm/UploadForm";
-import moment from "moment";
 import { MediaApi } from "../../../services/modules/mediaServices";
 import useCalculateUserProfile from "../../../hooks/useCaculateProfile";
 import LoadingComponent from "../../../components/Loading/LoadingComponent";
 import LoadingComponentSkeleton from "../../../components/Loading/LoadingComponentSkeleton";
-import useMomentFn from "../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
 interface Prize {
   _id: string;
   user_id: string;
@@ -31,7 +22,6 @@ interface Prize {
   prize_image?: string;
 }
 export default function PrizeView() {
-  const { formatDate, dateFormat } = useMomentFn();
   const { t } = useTranslation();
   const userDetail = useSelector((state) => state.user);
   const [prizes, setPrizes] = useState<Prize[]>([]);
@@ -103,10 +93,7 @@ export default function PrizeView() {
         setLink(res.data.prize_link);
         form.setFieldsValue({
           ...res.data,
-          date_of_receipt: {
-            year: moment(res.data.date_of_receipt).year(),
-            month: moment(res.data.date_of_receipt).month() + 1,
-          },
+          date_of_receipt: dayjs(res.data.date_of_receipt),
         });
       }
     } catch (error) {
@@ -121,17 +108,11 @@ export default function PrizeView() {
     setIsLoading(true);
     const { date_of_receipt } = values;
 
-    // Chuyển đổi start_date và end_date thành moment với giờ
-    const dateOfReceipt = moment(
-      `${date_of_receipt.year}-${date_of_receipt.month}`,
-      "YYYY-MM"
-    );
-
     const params = {
       user_id: userDetail?._id,
       prize_name: values.prize_name,
       organization_name: values.organization_name,
-      date_of_receipt: dateOfReceipt.toDate(),
+      date_of_receipt: dayjs(date_of_receipt),
       prize_link: link ? link : null,
       prize_image: imgUrl ? imgUrl : null,
     };
@@ -169,14 +150,10 @@ export default function PrizeView() {
   const onUpdate = async () => {
     setIsLoading(true);
     const values = form.getFieldsValue();
-    // Chuyển đổi start_date và end_date thành moment với giờ
-    const dateOfReceipt = moment(
-      `${values.date_of_receipt.year}-${values.date_of_receipt.month}`,
-      "YYYY-MM"
-    );
+
     const params = {
       ...values,
-      date_of_receipt: dateOfReceipt.toDate(),
+      date_of_receipt: dayjs(values.date_of_receipt),
       user_id: userDetail?._id,
       prize_image: imgUrl ? imgUrl : null,
       prize_link: link ? link : null,
@@ -267,36 +244,15 @@ export default function PrizeView() {
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <Form.Item
-                      name={["date_of_receipt", "month"]}
+                      name={"date_of_receipt"}
                       rules={[
                         { required: true, message: t("please_select_month") },
                       ]}
                     >
-                      <Select placeholder={t("please_select_month")}>
-                        {Array.from({ length: 12 }, (_, i) => (
-                          <Select.Option key={i + 1} value={i + 1}>
-                            {t(`month_${i + 1}`)}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-
-                    <Form.Item
-                      name={["date_of_receipt", "year"]}
-                      rules={[
-                        { required: true, message: t("please_select_year") },
-                      ]}
-                    >
-                      <Select placeholder={t("please_select_year")}>
-                        {Array.from({ length: 10 }, (_, i) => {
-                          const year = new Date().getFullYear() - i;
-                          return (
-                            <Select.Option key={year} value={year}>
-                              {year}
-                            </Select.Option>
-                          );
-                        })}
-                      </Select>
+                      <DatePicker
+                        className="w-full text-[12px]"
+                        placeholder={t("date_of_receipt")}
+                      />
                     </Form.Item>
                   </div>
                 </div>
