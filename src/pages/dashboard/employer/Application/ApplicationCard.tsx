@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Dropdown, Menu, message, Space, Typography } from "antd";
+import { Button, Dropdown, Menu, message, Space } from "antd";
 import {
   CheckCircleOutlined,
   DeleteOutlined,
@@ -13,8 +13,6 @@ import { API_APPLICATION } from "../../../../services/modules/ApplicationService
 import { useSelector } from "react-redux";
 import { SAVE_CANDIDATE_API } from "../../../../services/modules/SaveCandidateServices";
 import { useTranslation } from "react-i18next";
-
-const { Title } = Typography;
 
 // Define the RootState interface for Redux state
 interface RootState {
@@ -125,7 +123,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
         userDetail.access_token
       );
       if (res?.data) {
-        message.success(t("status_updated_successfully"));
         handleFetchData();
       }
     } catch (error) {
@@ -202,80 +199,85 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   );
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Title level={5} className="!mb-0">
+    <div className="bg-white p-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 hover:border-gray-200">
+      <div className="flex items-center justify-between mb-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className="font-medium text-sm truncate max-w-[120px]">
             {applied.user_id.full_name}
-          </Title>
+          </span>
           <Button
             type="text"
+            size="small"
             icon={
               isSaved ? (
-                <StarFilled className="text-yellow-500" />
+                <StarFilled className="text-yellow-500 text-xs" />
               ) : (
-                <StarOutlined />
+                <StarOutlined className="text-xs" />
               )
             }
             onClick={handleSaveCandidate}
             loading={isLoading}
+            className="!p-0 !h-5 !w-5 hover:scale-110 transition-transform"
           />
         </div>
-        <Space>
+        <Space size={2}>
           <Button
             type="text"
-            icon={<MailOutlined />}
+            size="small"
+            icon={<MailOutlined className="text-xs" />}
             onClick={() =>
               (window.location.href = `mailto:${applied.user_id.email}`)
             }
+            className="!p-0 !h-5 !w-5 hover:scale-110 transition-transform"
           />
           <Dropdown overlay={menu} trigger={["click"]}>
-            <Button icon={<EllipsisOutlined />} />
+            <Button
+              icon={<EllipsisOutlined className="text-xs" />}
+              size="small"
+              className="!p-0 !h-5 !w-5 hover:scale-110 transition-transform"
+            />
           </Dropdown>
         </Space>
       </div>
 
       {applied.cv_id && (
-        <div className="mb-2">
-          <div className="text-gray-500 text-sm mb-1">{t("cv_candidate")}</div>
+        <div className="mb-1.5 flex items-center">
+          <span className="text-gray-500 text-xs mr-1">{t("cv")}:</span>
           <a
             href={applied?.cv_id?.cv_link}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-700"
+            className="text-blue-500 hover:text-blue-700 text-xs truncate max-w-[150px] hover:underline"
           >
             {applied?.cv_id?.cv_name}
           </a>
         </div>
       )}
 
-      <div className="mb-2">
-        <div className="text-gray-500 text-sm mb-1">{t("work_experience")}</div>
-        <div className="font-medium">
+      <div className="mb-1.5 flex items-center">
+        <span className="text-gray-500 text-xs mr-1">{t("exp")}:</span>
+        <span className="font-medium text-xs">
           {applied?.user_id?.total_experience_months
-            ? `${Math.floor(
-                applied?.user_id?.total_experience_months / 12
-              )} ${t("year")} ${
-                applied?.user_id?.total_experience_months % 12
-              } ${t("month")}`
-            : t("no_experience")}
-        </div>
+            ? `${Math.floor(applied?.user_id?.total_experience_months / 12)}${t(
+                "y"
+              )} ${applied?.user_id?.total_experience_months % 12}${t("m")}`
+            : t("no_exp")}
+        </span>
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-gray-500 text-sm">
-          {t("application_date")}:{" "}
+        <span className="text-gray-500 text-xs">
           {new Date(applied.applied_date).toLocaleDateString()}
-        </div>
-        <div
-          className={`px-3 py-1 rounded-full text-sm`}
+        </span>
+        <span
+          className={`px-2 py-0.5 rounded-full text-[10px] font-medium`}
           style={{
-            backgroundColor: applied.status.color + "20",
+            backgroundColor: applied.status.color + "15",
             color: applied.status.color,
           }}
         >
           {t(applied.status.name)}
-        </div>
+        </span>
       </div>
     </div>
   );

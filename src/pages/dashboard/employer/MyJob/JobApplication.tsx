@@ -11,12 +11,22 @@ import {
   Form,
   DatePicker,
   TimePicker,
+  Modal,
+  Table,
+  Popconfirm,
+  Space,
+  Tooltip,
+  Switch,
 } from "antd";
 import {
   EllipsisOutlined,
   SearchOutlined,
   SortAscendingOutlined,
   QuestionCircleOutlined,
+  SettingOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { Job, Application } from "../../../../types";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
@@ -137,6 +147,12 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   const location = useParams();
   const navigate = useNavigate();
   const [form] = useForm();
+  const [isStatusModalVisible, setIsStatusModalVisible] = useState(false);
+  const [editingStatus, setEditingStatus] = useState<CompanyStatus | null>(
+    null
+  );
+  const [statusForm] = useForm();
+  const [isStatusLoading, setIsStatusLoading] = useState(false);
 
   const filteredAndSortedApplications = useMemo(() => {
     let filtered = [...applications];
@@ -261,8 +277,6 @@ const JobApplication: React.FC<IPropJobApplication> = ({
 
         // Call API in background
         await handleStatusChange(draggableId, newStatus._id);
-
-        message.success(t("status_updated_successfully"));
       } catch (err) {
         // Revert UI if API call fails
         handleGetJobByEmployer({
@@ -363,7 +377,6 @@ const JobApplication: React.FC<IPropJobApplication> = ({
         { status: newStatus },
         userDetail.access_token
       );
-      message.success("Application status updated successfully");
       handleGetJobByEmployer({
         current: meta.current_page,
         pageSize: meta.per_page,
@@ -417,6 +430,248 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     );
   };
 
+  const handleOpenStatusModal = () => {
+    setIsStatusModalVisible(true);
+  };
+
+  const handleCloseStatusModal = () => {
+    setIsStatusModalVisible(false);
+    setEditingStatus(null);
+    statusForm.resetFields();
+  };
+
+  const handleEditStatus = (status: CompanyStatus) => {
+    if (status.name.toLowerCase() === "pending") {
+      message.warning(t("cannot_edit_default_status"));
+      return;
+    }
+
+    setEditingStatus(status);
+    statusForm.setFieldsValue({
+      name: status.name,
+      description: status.description,
+      color: status.color,
+      order: status.order,
+      is_active: status.is_active,
+    });
+    setIsStatusModalVisible(true);
+  };
+
+  const handleDeleteStatus = async (statusId: string) => {
+    try {
+      const statusToDelete = companyStatuses.find(
+        (status) => status._id === statusId
+      );
+      if (statusToDelete && statusToDelete.name.toLowerCase() === "pending") {
+        message.warning(t("cannot_delete_default_status"));
+        return;
+      }
+
+      setIsStatusLoading(true);
+      await COMPANY_STATUS_API.deleteCompanyStatus(
+        statusId,
+        userDetail.id,
+        userDetail.access_token
+      );
+      message.success(t("delete_status_success"));
+      fetchCompanyStatuses();
+    } catch (err) {
+      console.error("Error deleting status:", err);
+      message.error(t("delete_status_failed"));
+    } finally {
+      setIsStatusLoading(false);
+    }
+  };
+
+  const handleStatusSubmit = async (values: Record<string, unknown>) => {
+    try {
+      setIsStatusLoading(true);
+      if (editingStatus) {
+        if (editingStatus.name.toLowerCase() === "pending") {
+          message.warning(t("cannot_edit_default_status"));
+          setIsStatusLoading(false);
+          return;
+        }
+
+        await COMPANY_STATUS_API.updateCompanyStatus(
+          editingStatus._id,
+          values,
+          userDetail.id,
+          userDetail.access_token
+        );
+        message.success(t("update_status_success"));
+      } else {
+        await COMPANY_STATUS_API.createCompanyStatus(
+          values,
+          userDetail.id,
+          userDetail.access_token
+        );
+        message.success(t("create_status_success"));
+      }
+      handleCloseStatusModal();
+      fetchCompanyStatuses();
+    } catch (err) {
+      console.error("Error saving status:", err);
+      message.error(t("save_status_failed"));
+    } finally {
+      setIsStatusLoading(false);
+    }
+  };
+
+  const statusColumns = [
+    {
+      title: t("name"),
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: t("description"),
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: t("color"),
+      dataIndex: "color",
+      key: "color",
+      render: (color: string) => (
+        <div className="flex items-center">
+          <div
+            className="w-6 h-6 rounded-full mr-2"
+            style={{ backgroundColor: color }}
+          />
+          <span>{color}</span>
+        </div>
+      ),
+    },
+    {
+      title: t("order"),
+      dataIndex: "order",
+      key: "order",
+    },
+    {
+      title: t("status"),
+      dataIndex: "is_active",
+      key: "is_active",
+      render: (isActive: boolean) => (
+        <span className={isActive ? "text-green-500" : "text-red-500"}>
+          {isActive ? t("active") : t("inactive")}
+        </span>
+      ),
+    },
+    {
+      title: t("actions"),
+      key: "actions",
+      render: (_: unknown, record: CompanyStatus) => {
+        const isPending = record.name.toLowerCase() === "pending";
+        return (
+          <Space>
+            <Tooltip
+              title={isPending ? t("default_status_cannot_edit") : t("edit")}
+            >
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={() => handleEditStatus(record)}
+                disabled={isPending}
+              />
+            </Tooltip>
+            <Popconfirm
+              title={t("delete_status_confirm")}
+              onConfirm={() => handleDeleteStatus(record._id)}
+              okText={t("yes")}
+              cancelText={t("no")}
+              disabled={isPending}
+            >
+              <Tooltip
+                title={
+                  isPending ? t("default_status_cannot_delete") : t("delete")
+                }
+              >
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  disabled={isPending}
+                />
+              </Tooltip>
+            </Popconfirm>
+          </Space>
+        );
+      },
+    },
+  ];
+
+  const renderStatusModal = () => {
+    return (
+      <Modal
+        title={editingStatus ? t("edit_status") : t("create_status")}
+        open={isStatusModalVisible}
+        onCancel={handleCloseStatusModal}
+        footer={null}
+        width={800}
+      >
+        <div className="mb-6">
+          <Table
+            dataSource={companyStatuses}
+            columns={statusColumns}
+            rowKey="_id"
+            pagination={false}
+          />
+        </div>
+        <Form form={statusForm} layout="vertical" onFinish={handleStatusSubmit}>
+          <Form.Item
+            name="name"
+            label={t("name")}
+            rules={[{ required: true, message: t("please_input_name") }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label={t("description")}
+            rules={[{ required: true, message: t("please_input_description") }]}
+          >
+            <Input.TextArea rows={3} />
+          </Form.Item>
+          <Form.Item
+            name="color"
+            label={t("color")}
+            rules={[{ required: true, message: t("please_input_color") }]}
+          >
+            <Input type="color" />
+          </Form.Item>
+          <Form.Item
+            name="order"
+            label={t("order")}
+            rules={[{ required: true, message: t("please_input_order") }]}
+          >
+            <Input type="number" min={0} />
+          </Form.Item>
+          <Form.Item
+            name="is_active"
+            label={t("status")}
+            valuePropName="checked"
+            initialValue={true}
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item className="mb-0 flex justify-end">
+            <Space>
+              <Button onClick={handleCloseStatusModal}>{t("cancel")}</Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isStatusLoading}
+              >
+                {editingStatus ? t("update") : t("create")}
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
+  };
+
   useEffect(() => {
     handleGetJobByEmployer({ current: 1, pageSize: 10 });
     fetchSavedCandidates();
@@ -424,8 +679,8 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   }, [location?.id, selectedJob?._id]);
 
   return (
-    <div className="md:px-4 lg:px-primary mt-10 min-h-screen bg-gray-100">
-      <div className="mb-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+    <div className="md:px-4 min-h-screen bg-gray-50">
+      <div className="mb-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm sticky top-0 z-10">
         <div className="flex items-center gap-4">
           <ChevronsLeft
             className="cursor-pointer text-gray-500 hover:text-primaryColor transition-colors duration-200 p-2 hover:bg-gray-100 rounded-full"
@@ -437,6 +692,15 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           </div>
         </div>
         <div className="flex items-center space-x-4">
+          <Tooltip title={t("manage_statuses")}>
+            <Button
+              icon={<SettingOutlined />}
+              onClick={handleOpenStatusModal}
+              className="flex items-center"
+            >
+              {t("manage_statuses")}
+            </Button>
+          </Tooltip>
           <Input
             placeholder={t("search_applications")}
             prefix={<SearchOutlined className="text-gray-400" />}
@@ -476,78 +740,94 @@ const JobApplication: React.FC<IPropJobApplication> = ({
         </div>
       </div>
 
+      {renderStatusModal()}
+
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="grid grid-cols-4 gap-6">
-          {columns.map((column) => (
-            <div
-              key={column.id}
-              className="flex flex-col bg-gray-50 rounded-lg p-4"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <Title
-                  level={4}
-                  className={`m-0 text-white px-[15px] rounded-full !text-[14px]`}
-                  style={{ backgroundColor: column.color }}
-                >
-                  {column.title}
-                  <span className="ml-2">({column.items.length})</span>
-                </Title>
-                <Button icon={<EllipsisOutlined />} type="text" />
-              </div>
-              <DroppableComponent droppableId={column.id}>
-                {(provided: DroppableProvided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className="space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2"
+        <div className="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          <div className="flex min-w-max gap-6 px-2 py-1">
+            {columns.map((column) => (
+              <div
+                key={column.id}
+                className="flex flex-col bg-white rounded-lg p-4 shadow-sm w-[320px] min-w-[320px] border border-gray-100 hover:shadow-md transition-shadow duration-300 h-[calc(100vh-180px)]"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <Title
+                    level={4}
+                    className={`m-0 text-white px-[15px] py-1.5 rounded-full !text-[14px] whitespace-nowrap font-medium flex items-center`}
+                    style={{ backgroundColor: column.color }}
                   >
-                    <LoadingComponentSkeleton isLoading={isLoading}>
-                      {column.items.length > 0 ? (
-                        column.items.map((applied, index) => (
-                          <Draggable
-                            key={applied._id}
-                            draggableId={applied._id}
-                            index={index}
-                          >
-                            {(provided: DraggableProvided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                              >
-                                <ApplicationCard
-                                  applied={applied}
-                                  handleFetchData={() =>
-                                    handleGetJobByEmployer({
-                                      current: 1,
-                                      pageSize: 10,
-                                    })
-                                  }
-                                  companyStatuses={companyStatuses}
-                                  handleOpenModalEmail={handleOpenModalEmail}
-                                  savedCandidateIds={savedCandidateIds}
-                                />
-                              </div>
-                            )}
-                          </Draggable>
-                        ))
-                      ) : (
-                        <Empty
-                          image={Empty.PRESENTED_IMAGE_SIMPLE}
-                          description={t("no_data")}
-                        />
-                      )}
-                    </LoadingComponentSkeleton>
-                    {provided.placeholder}
-                  </div>
-                )}
-              </DroppableComponent>
-            </div>
-          ))}
+                    {column.title}
+                    <span className="ml-2 bg-white bg-opacity-20 px-2 py-0.5 rounded-full text-xs">
+                      {column.items.length}
+                    </span>
+                  </Title>
+                  <Button
+                    icon={<EllipsisOutlined />}
+                    type="text"
+                    className="hover:bg-gray-100 rounded-full"
+                  />
+                </div>
+                <DroppableComponent droppableId={column.id}>
+                  {(provided: DroppableProvided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1"
+                    >
+                      <LoadingComponentSkeleton isLoading={isLoading}>
+                        {column.items.length > 0 ? (
+                          column.items.map((applied, index) => (
+                            <Draggable
+                              key={applied._id}
+                              draggableId={applied._id}
+                              index={index}
+                            >
+                              {(provided: DraggableProvided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`bg-gray-50 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 hover:border-gray-200 ${
+                                    snapshot.isDragging
+                                      ? "shadow-lg border-primaryColor"
+                                      : ""
+                                  }`}
+                                >
+                                  <ApplicationCard
+                                    applied={applied}
+                                    handleFetchData={() =>
+                                      handleGetJobByEmployer({
+                                        current: 1,
+                                        pageSize: 10,
+                                      })
+                                    }
+                                    companyStatuses={companyStatuses}
+                                    handleOpenModalEmail={handleOpenModalEmail}
+                                    savedCandidateIds={savedCandidateIds}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))
+                        ) : (
+                          <Empty
+                            image={Empty.PRESENTED_IMAGE_SIMPLE}
+                            description={t("no_data")}
+                            className="py-8"
+                          />
+                        )}
+                      </LoadingComponentSkeleton>
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </DroppableComponent>
+              </div>
+            ))}
+          </div>
         </div>
       </DragDropContext>
 
-      <div className="mt-6 flex justify-center">
+      <div className="mt-6 flex justify-center pb-6">
         <CustomPagination
           currentPage={meta.current_page}
           total={meta.total}
