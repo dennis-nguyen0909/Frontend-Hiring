@@ -262,7 +262,18 @@ export interface Application {
   cv_id: string; // CV identifier
   employer_id: EmployerApplication; // Employer's details (referenced from `Employer`)
   job_id: JobApplication; // Job details (referenced from `Job`)
-  status: "pending" | "accepted" | "rejected"; // Application status
+  status: {
+    _id: string;
+    company_id: string;
+    name: string;
+    description: string;
+    order: number;
+    color: string;
+    is_active: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  }; // Application status
   user_id: UserApplication; // Applicant's details (referenced from `User`)
   __v: number; // MongoDB version key (internal versioning)
 }

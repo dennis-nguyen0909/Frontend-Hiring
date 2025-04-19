@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Dropdown,
-  Menu,
-  message,
-  Modal,
-  Space,
-  Typography,
-} from "antd";
+import { Button, Dropdown, Menu, message, Space, Typography } from "antd";
 import {
   CheckCircleOutlined,
-  CloseCircleOutlined,
   DeleteOutlined,
   EllipsisOutlined,
   MailOutlined,
@@ -34,6 +25,19 @@ interface RootState {
 }
 
 // Extended Application interface to include additional properties
+interface CompanyStatus {
+  _id: string;
+  company_id: string;
+  name: string;
+  description: string;
+  order: number;
+  color: string;
+  is_active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 interface ExtendedApplication
   extends Omit<Application, "cv_id" | "user_id" | "job_id"> {
   user_id: {
@@ -53,16 +57,24 @@ interface ExtendedApplication
     cv_link: string;
     cv_name: string;
   };
+  status: CompanyStatus;
+  updatedAt: string;
 }
 
 interface ApplicationCardProps {
   applied: ExtendedApplication;
   handleFetchData: () => void;
+  handleOpenModalEmail?: (applied: ExtendedApplication) => void;
+  savedCandidateIds?: string[];
+  companyStatuses?: CompanyStatus[];
 }
 
 const ApplicationCard: React.FC<ApplicationCardProps> = ({
   applied,
   handleFetchData,
+  handleOpenModalEmail,
+  savedCandidateIds,
+  companyStatuses = [],
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -73,6 +85,14 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   useEffect(() => {
     const checkIfSaved = async () => {
       try {
+        if (
+          savedCandidateIds &&
+          savedCandidateIds.includes(applied.user_id._id)
+        ) {
+          setIsSaved(true);
+          return;
+        }
+
         const res = await SAVE_CANDIDATE_API.isSaveCandidate(
           applied.user_id._id,
           userDetail.id,
@@ -89,80 +109,28 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     if (userDetail.id && applied.user_id._id) {
       checkIfSaved();
     }
-  }, [userDetail.id, applied.user_id._id, userDetail.access_token]);
+  }, [
+    userDetail.id,
+    applied.user_id._id,
+    userDetail.access_token,
+    savedCandidateIds,
+  ]);
 
-  const handleAccept = async () => {
+  const handleStatusChange = async (newStatus: CompanyStatus) => {
     setIsLoading(true);
     try {
       const res = await API_APPLICATION.updateApplication(
         applied._id,
-        { status: "accepted" },
+        { status: newStatus._id },
         userDetail.access_token
       );
       if (res?.data) {
-        message.success(t("accept"));
+        message.success(t("status_updated_successfully"));
         handleFetchData();
       }
     } catch (error) {
-      console.error("Error accepting application:", error);
-      message.error(t("error"));
-    }
-    setIsLoading(false);
-  };
-
-  const handleReject = async () => {
-    setIsLoading(true);
-    try {
-      const res = await API_APPLICATION.updateApplication(
-        applied._id,
-        { status: "rejected" },
-        userDetail.access_token
-      );
-      if (res?.data) {
-        message.success(t("reject"));
-        handleFetchData();
-      }
-    } catch (error) {
-      console.error("Error rejecting application:", error);
-      message.error(t("error"));
-    }
-    setIsLoading(false);
-  };
-
-  const handlePending = async () => {
-    setIsLoading(true);
-    try {
-      const res = await API_APPLICATION.updateApplication(
-        applied._id,
-        { status: "pending" },
-        userDetail.access_token
-      );
-      if (res?.data) {
-        message.success(t("reject"));
-        handleFetchData();
-      }
-    } catch (error) {
-      console.error("Error rejecting application:", error);
-      message.error(t("error"));
-    }
-    setIsLoading(false);
-  };
-
-  const handleWithdraw = async () => {
-    setIsLoading(true);
-    try {
-      const res = await API_APPLICATION.updateApplication(
-        applied._id,
-        { status: "withdrawn" },
-        userDetail.access_token
-      );
-      if (res?.data) {
-        message.success(t("withdraw_application_success"));
-        handleFetchData();
-      }
-    } catch (error) {
-      console.error("Error withdrawing application:", error);
-      message.error(t("withdraw_application_failed"));
+      console.error("Error updating application status:", error);
+      message.error(t("failed_to_update_status"));
     }
     setIsLoading(false);
   };
@@ -204,32 +172,31 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     setIsLoading(false);
   };
 
-  const handleMenuClick = (key: string) => {
-    switch (key) {
-      case "accept":
-        handleAccept();
-        break;
-      case "reject":
-        handleReject();
-        break;
-      case "pending":
-        handlePending();
-        break;
-      default:
-        break;
-    }
-  };
-
   const menu = (
-    <Menu onClick={({ key }) => handleMenuClick(key)}>
-      <Menu.Item key="accept" icon={<CheckCircleOutlined />}>
-        {t("accept")}
+    <Menu>
+      {companyStatuses.map((status) => (
+        <Menu.Item
+          key={status._id}
+          onClick={() => handleStatusChange(status)}
+          icon={<CheckCircleOutlined />}
+        >
+          {t(status.name)}
+        </Menu.Item>
+      ))}
+      <Menu.Item
+        key="email"
+        onClick={() => handleOpenModalEmail?.(applied)}
+        icon={<MailOutlined />}
+      >
+        {t("send_email")}
       </Menu.Item>
-      <Menu.Item key="reject" icon={<CloseCircleOutlined />}>
-        {t("reject")}
-      </Menu.Item>
-      <Menu.Item key="pending" icon={<DeleteOutlined />}>
-        {t("pending")}
+      <Menu.Item
+        key="delete"
+        onClick={handleDelete}
+        icon={<DeleteOutlined />}
+        danger
+      >
+        {t("delete")}
       </Menu.Item>
     </Menu>
   );
@@ -301,15 +268,13 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           {new Date(applied.applied_date).toLocaleDateString()}
         </div>
         <div
-          className={`px-3 py-1 rounded-full text-sm ${
-            applied.status === "accepted"
-              ? "bg-green-100 text-green-800"
-              : applied.status === "rejected"
-              ? "bg-red-100 text-red-800"
-              : "bg-yellow-100 text-yellow-800"
-          }`}
+          className={`px-3 py-1 rounded-full text-sm`}
+          style={{
+            backgroundColor: applied.status.color + "20",
+            color: applied.status.color,
+          }}
         >
-          {t(applied.status)}
+          {t(applied.status.name)}
         </div>
       </div>
     </div>

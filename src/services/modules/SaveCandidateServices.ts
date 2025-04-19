@@ -91,4 +91,19 @@ export const SAVE_CANDIDATE_API = {
     if (resData.data) return resData.data;
     return null;
   },
+  updateCandidateStatus: async (
+    candidateId: string,
+    status: "pending" | "reviewed" | "shortlisted" | "interviewed" | "rejected",
+    token: string
+  ) => {
+    return await axiosInstance.patch(
+      `/save-candidates/${candidateId}/status`,
+      { status },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  },
 };
