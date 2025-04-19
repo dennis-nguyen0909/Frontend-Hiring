@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button, Image, Table, Spin, Dropdown, Modal } from "antd";
 import type { MenuProps } from "antd";
 import { useSelector } from "react-redux";
 import { Meta } from "../../../../types";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
-import {
-  Circle,
-  CircleCheck,
-  CircleX,
-  MapPin,
-  Eye,
-  Ellipsis,
-} from "lucide-react";
+import { Circle, CircleCheck, CircleX, MapPin, Ellipsis } from "lucide-react";
 import { capitalizeFirstLetter, formatCurrency } from "../../../../untils";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
@@ -220,15 +213,15 @@ const Applied = () => {
           </div>
         </div>
       ),
-      className: "min-w-[200px] text-[12px]",
+      className: "min-w-[200px] text-[14px]",
     },
     {
       title: t("date_applied"),
       dataIndex: "dateApplied",
       key: "dateApplied",
-      className: "min-w-[150px] text-[12px]",
+      className: "min-w-[150px] text-[14px]",
       render: (text: string, record: Applied) => (
-        <div className="text-[12px]">{formatDate(record?.applied_date)}</div>
+        <div className="text-[14px]">{formatDate(record?.applied_date)}</div>
       ),
     },
     {
@@ -259,7 +252,7 @@ const Applied = () => {
           </span>
         </div>
       ),
-      className: "min-w-[120px] text-[12px]",
+      className: "min-w-[120px] text-[14px]",
     },
     {
       title: "",

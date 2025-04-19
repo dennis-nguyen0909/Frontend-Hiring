@@ -635,8 +635,8 @@
   "download_cv_success": "Tải xuống cv thành công",
   "download_cv": "Tải xuống cv",
   "view_profile": "Xem thông tin",
-  "remove_bookmark": "Xóa lưu trữ",
-  "add_bookmark": "Thêm lưu trữ",
+  "remove_bookmark": "Xóa ứng viên",
+  "add_bookmark": "Lưu ứng viên thành công",
   "more_options": "Thêm lưu trữ",
   "candidate_not_update_cv": "Ứng viên chưa cập nhật CV",
   "application_date": "Ngày nộp",
@@ -844,5 +844,6 @@
   "reject": "Từ chối",
   "accept": "Chấp nhận",
   "please_fix_errors": "Vui lòng sửa lỗi",
-  "link_not_exist": "Link không tồn tại"
+  "link_not_exist": "Link không tồn tại",
+  "cv_candidate": "CV ứng viên"
 }

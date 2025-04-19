@@ -17,6 +17,7 @@ import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComp
 import { USER_API } from "../../../../services/modules/userServices";
 import { useTranslation } from "react-i18next";
 import useMomentFn from "../../../../hooks/useMomentFn";
+import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 
 interface SaveCandidateItem {
   _id: string;
@@ -96,6 +97,26 @@ export default function SavedCandidate() {
     },
   });
 
+  const handleSaveCandidate = async (candidate: Candidate) => {
+    try {
+      console.log("candidate", candidate);
+      const res = await SAVE_CANDIDATE_API.toggleSaveCandidate(
+        candidate?._id,
+        userDetail?.id || "",
+        userDetail?.access_token || ""
+      );
+      if (res.data) {
+        queryClient.refetchQueries({
+          queryKey: ["savedCandidates", userDetail?.id],
+        });
+      }
+    } catch (error) {
+      notification.error({
+        message: t("notification"),
+        description: error.message,
+      });
+    }
+  };
   const handleBookmark = (candidateId: string, isActive: boolean) => {
     updateBookmarkMutation.mutate({ candidateId, isActive: !isActive });
   };
@@ -143,7 +164,7 @@ export default function SavedCandidate() {
   };
 
   const renderItem = (item: SaveCandidateItem) => {
-    const { candidate, isActive } = item;
+    const { candidate, isActive, _id } = item;
     return (
       <Card className="mb-4 hover:shadow-md transition-shadow">
         <div className="flex items-center justify-between">
@@ -170,7 +191,7 @@ export default function SavedCandidate() {
                   className={isActive ? "text-blue-500" : "text-gray-400"}
                 />
               }
-              onClick={() => handleBookmark(candidate._id, isActive)}
+              onClick={() => handleSaveCandidate(candidate)}
               aria-label={isActive ? t("remove_bookmark") : t("add_bookmark")}
             />
             <Button

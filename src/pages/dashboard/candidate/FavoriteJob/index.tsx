@@ -1,14 +1,5 @@
 import { Button, Table, Image, Spin } from "antd";
-import {
-  Bookmark,
-  BookmarkCheck,
-  CheckCircle,
-  CircleCheck,
-  CircleX,
-  Eye,
-  Key,
-  MapPin,
-} from "lucide-react";
+import { CheckCircle, CircleCheck, CircleX, Eye, MapPin } from "lucide-react";
 import { API_FAVORITE_JOB } from "../../../../services/modules/FavoriteJobServices";
 import { useSelector } from "react-redux";
 import { useState } from "react";
@@ -19,8 +10,7 @@ import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useMomentFn from "../../../../hooks/useMomentFn";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa6";
-import { title } from "process";
+import { FaBookmark } from "react-icons/fa6";
 
 interface JobApplication {
   _id: string;
@@ -86,13 +76,12 @@ const FavoriteJob = () => {
     );
     return res.data;
   };
-  const { dateFormat, formatDate } = useMomentFn();
+  const { formatDate } = useMomentFn();
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["favoriteJobs", currentPage, pageSize, userDetail?._id],
     queryFn: () => fetchFavoriteJobs({ current: currentPage, pageSize }),
     enabled: !!userDetail?._id,
-    keepPreviousData: true,
   });
 
   const favoriteMutation = useMutation({
@@ -114,14 +103,13 @@ const FavoriteJob = () => {
     },
   });
 
-  const onApplyNow = async (id: string) => navigate(`/job-information/${id}`);
-
-  const handleFavorite = async (jobId: string, jobTitle: string) =>
+  const handleFavorite = async (jobId: string, jobTitle: string) => {
     favoriteMutation.mutate({ jobId, jobTitle });
+  };
 
   const columns = [
     {
-      title: t("job_title"),
+      title: t("job"),
       dataIndex: "title",
       key: "title",
       render: (text: string, record: JobApplication) => (
@@ -162,7 +150,7 @@ const FavoriteJob = () => {
             </div>
             <div className="flex items-center gap-4">
               {record?.job_id?.is_negotiable ? (
-                <span className="text-[12px] text-gray-600">
+                <span className="text-[14px] text-gray-600">
                   {t("salary")}: {t("negotiable")}
                 </span>
               ) : (
@@ -192,7 +180,7 @@ const FavoriteJob = () => {
           </div>
         </div>
       ),
-      className: "min-w-[400px] text-[12px]",
+      className: "min-w-[400px] text-[14px]",
     },
     {
       title: t("status"),
@@ -237,7 +225,6 @@ const FavoriteJob = () => {
       },
     },
     {
-      title: t("action"),
       key: "action",
       render: (record: JobApplication) => {
         if (record?.job_id === null) return null;
@@ -249,6 +236,13 @@ const FavoriteJob = () => {
 
         return (
           <div className="flex justify-start items-center gap-4">
+            <FaBookmark
+              onClick={() =>
+                handleFavorite(record?.job_id?._id, record?.job_id?.title)
+              }
+              size={18}
+              className="text-primaryColor hover:scale-110 transform transition-transform duration-200 cursor-pointer"
+            />
             {isExpired ? (
               <Button
                 onClick={() =>

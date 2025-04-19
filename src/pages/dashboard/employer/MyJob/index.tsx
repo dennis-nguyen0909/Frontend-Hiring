@@ -129,7 +129,7 @@ export default function MyJobEmployer() {
 
   const columns = [
     {
-      title: t("job_title"),
+      title: t("job"),
       dataIndex: "title",
       key: "title",
       render: (text: string, record: Job) => (
@@ -141,7 +141,7 @@ export default function MyJobEmployer() {
           </div>
         </div>
       ),
-      className: "text-[12px]",
+      className: "text-[14px]",
       onHeaderCell: () => ({
         style: {
           whiteSpace: "nowrap",
@@ -160,7 +160,7 @@ export default function MyJobEmployer() {
           </div>
         </div>
       ),
-      className: "text-[12px]",
+      className: "text-[14px]",
       onHeaderCell: () => ({
         style: {
           whiteSpace: "nowrap",
@@ -191,7 +191,7 @@ export default function MyJobEmployer() {
           </div>
         );
       },
-      className: "text-[12px]",
+      className: "text-[14px]",
 
       // Prevent title from wrapping
       onHeaderCell: () => ({
@@ -215,7 +215,7 @@ export default function MyJobEmployer() {
           </span>
         </div>
       ),
-      className: "text-[12px]",
+      className: "text-[14px]",
       onHeaderCell: () => ({
         style: {
           whiteSpace: "nowrap",
@@ -225,7 +225,6 @@ export default function MyJobEmployer() {
       }),
     },
     {
-      title: t("actions"),
       key: "actions",
       render: (record: Job) => (
         <div className="flex gap-2">
@@ -253,7 +252,7 @@ export default function MyJobEmployer() {
           </Dropdown>
         </div>
       ),
-      className: "text-[12px]",
+      className: "text-[14px]",
       onHeaderCell: () => ({
         style: {
           whiteSpace: "nowrap",

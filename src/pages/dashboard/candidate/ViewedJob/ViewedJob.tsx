@@ -3,9 +3,8 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { Meta } from "../../../../types";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
-import { Circle, CircleCheck, CircleX, MapPin, Eye } from "lucide-react";
-import { capitalizeFirstLetter, formatCurrency } from "../../../../untils";
-import useMomentFn from "../../../../hooks/useMomentFn";
+import { CircleCheck, CircleX, MapPin, Eye } from "lucide-react";
+import { formatCurrency } from "../../../../untils";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
@@ -42,7 +41,6 @@ const ViewedJob = () => {
     count: 0,
     total_pages: 0,
   });
-  const { formatDate } = useMomentFn();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -58,7 +56,6 @@ const ViewedJob = () => {
       return res.data;
     },
     enabled: !!userDetail?._id,
-    keepPreviousData: true,
   };
 
   const { data, isLoading, isFetching } =
@@ -132,17 +129,8 @@ const ViewedJob = () => {
           </div>
         </div>
       ),
-      className: "min-w-[200px] text-[12px]",
+      className: "min-w-[200px] text-[14px]",
     },
-    // {
-    //   title: t("date_applied"),
-    //   dataIndex: "dateApplied",
-    //   key: "dateApplied",
-    //   className: "min-w-[150px] text-[12px]",
-    //   render: (record: Applied) => (
-    //     <div className="text-[12px]">{formatDate(record?.expire_date)}</div>
-    //   ),
-    // },
     {
       title: t("status"),
       dataIndex: "status",
@@ -184,7 +172,7 @@ const ViewedJob = () => {
           </div>
         );
       },
-      className: "min-w-[120px] text-[12px]",
+      className: "min-w-[120px] text-[14px]",
     },
     {
       title: t("action"),

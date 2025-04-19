@@ -31,12 +31,36 @@ import { useNavigate, useParams } from "react-router-dom";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import CustomPagination from "../../../../components/ui/CustomPanigation/CustomPanigation";
+import { SAVE_CANDIDATE_API } from "../../../../services/modules/SaveCandidateServices";
 
 const { Title } = Typography;
 interface IPropJobApplication {
   handleChangeHome?: () => void;
   selectedJob?: Job;
 }
+
+// Define the RootState interface for Redux state
+interface RootState {
+  user: {
+    id: string;
+    access_token: string;
+    company_name: string;
+    email: string;
+  };
+}
+
+// Extended Application interface to include additional properties
+interface ExtendedApplication extends Application {
+  user_id: {
+    _id: string;
+    full_name: string;
+    email?: string;
+  };
+  job_id: {
+    title: string;
+  };
+}
+
 const JobApplication: React.FC<IPropJobApplication> = ({
   handleChangeHome,
   selectedJob,
@@ -53,12 +77,15 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     </Menu>
   );
 
-  const userDetail = useSelector((state) => state.user);
-  const [applications, setApplications] = useState<Application[]>([]);
+  const userDetail = useSelector((state: RootState) => state.user);
+  const [applications, setApplications] = useState<ExtendedApplication[]>([]);
   const [visibleEdit, setVisibleEdit] = useState<boolean>(false);
   const [visibleEmail, setVisibleEmail] = useState<boolean>(false);
-  const [selectedApplied, setSelectedApplie] = useState<any>({});
+  const [selectedApplied, setSelectedApplie] = useState<ExtendedApplication>(
+    {} as ExtendedApplication
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [savedCandidateIds, setSavedCandidateIds] = useState<string[]>([]);
   const [meta, setMeta] = useState<Meta>({
     count: 0,
     current_page: 1,
@@ -101,12 +128,12 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     );
   };
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: Record<string, unknown>) => {
     setIsLoading(true);
     const params = {
       ...values,
-      interviewDate: formatDate(values.interviewDate),
-      interviewTime: formatDate(values.interviewTime),
+      interviewDate: formatDate(values.interviewDate as string),
+      interviewTime: formatDate(values.interviewTime as string),
     };
     const res = await USER_API.employerSendMailtoCandidate(
       params,
@@ -114,13 +141,13 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     );
     if (+res.statusCode === 201) {
       setVisibleEmail(false);
-      setSelectedApplie({});
+      setSelectedApplie({} as ExtendedApplication);
       message.success(t("send_email_success"));
     }
     setIsLoading(false);
   };
   const [form] = useForm();
-  const handleOpenModalEmail = (applied: any) => {
+  const handleOpenModalEmail = (applied: ExtendedApplication) => {
     setVisibleEmail(true);
     setSelectedApplie(applied);
   };
@@ -209,6 +236,25 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       </LoadingComponentSkeleton>
     );
   };
+
+  const fetchSavedCandidates = async () => {
+    try {
+      if (userDetail?.id) {
+        const res = await SAVE_CANDIDATE_API.employerSavedCandidate(
+          userDetail.id,
+          userDetail.access_token
+        );
+        if (res.data) {
+          // Extract candidate IDs from the response
+          const candidateIds = res.data.savedCandidateIds;
+          setSavedCandidateIds(candidateIds);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching saved candidates:", error);
+    }
+  };
+
   const handleGetJobByEmployer = async ({ current = 1, pageSize = 10 }) => {
     const params = {
       current, // Trang hiện tại
@@ -216,22 +262,28 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     };
 
     try {
+      const jobId = selectedJob?._id || location?.id;
+      if (!jobId) return;
+
       const res = await API_APPLICATION.getApplicationByEmployerJobId(
-        selectedJob?._id || location?.id,
+        jobId,
         params,
         userDetail.access_token
       );
       if (res.data) {
-        setApplications(res.data.items);
+        setApplications(res.data.items as ExtendedApplication[]);
         setMeta(res.data.meta);
       }
     } catch (error) {
       console.error("Error fetching jobs:", error);
     }
   };
+
   useEffect(() => {
     handleGetJobByEmployer({ current: 1, pageSize: 10 });
+    fetchSavedCandidates();
   }, [location?.id, selectedJob?._id]);
+
   return (
     <div className="md:px-4 lg:px-primary mt-10 h-screen">
       <div className="mb-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
@@ -285,6 +337,8 @@ const JobApplication: React.FC<IPropJobApplication> = ({
                         handleFetchData={() =>
                           handleGetJobByEmployer({ current: 1, pageSize: 10 })
                         }
+                        handleOpenModalEmail={handleOpenModalEmail}
+                        savedCandidateIds={savedCandidateIds}
                       />
                     )}
                   </div>
@@ -320,6 +374,8 @@ const JobApplication: React.FC<IPropJobApplication> = ({
                         handleFetchData={() =>
                           handleGetJobByEmployer({ current: 1, pageSize: 10 })
                         }
+                        handleOpenModalEmail={handleOpenModalEmail}
+                        savedCandidateIds={savedCandidateIds}
                       />
                     )}
                   </div>
@@ -356,6 +412,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
                         handleFetchData={() =>
                           handleGetJobByEmployer({ current: 1, pageSize: 10 })
                         }
+                        savedCandidateIds={savedCandidateIds}
                       />
                     )}
                   </div>

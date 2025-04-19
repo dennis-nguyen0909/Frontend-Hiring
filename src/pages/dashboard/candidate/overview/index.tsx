@@ -9,7 +9,7 @@ import {
   Eye,
   MapPin,
 } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useCalculateUserProfile from "../../../../hooks/useCaculateProfile";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
@@ -86,7 +86,7 @@ const OverViewCandidate = ({
   handleViewFavoriteJob,
   handleViewedJob,
 }: OverViewCandidateProps) => {
-  const { formatDate, dateFormat } = useMomentFn();
+  const { formatDate } = useMomentFn();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: caculateProfile } = useCalculateUserProfile(
@@ -163,15 +163,15 @@ const OverViewCandidate = ({
           </div>
         </div>
       ),
-      className: "min-w-[200px] text-[12px]",
+      className: "min-w-[200px] text-[14px]",
     },
     {
       title: t("date_applied"),
       dataIndex: "dateApplied",
       key: "dateApplied",
-      className: "min-w-[150px] text-[12px]",
+      className: "min-w-[150px] text-[14px]",
       render: (dateApplied: string) => (
-        <div className="text-[12px]">{formatDate(dateApplied)}</div>
+        <div className="text-[14px]">{formatDate(dateApplied)}</div>
       ),
     },
     {
@@ -202,7 +202,7 @@ const OverViewCandidate = ({
           </span>
         </div>
       ),
-      className: "min-w-[120px] text-[12px]",
+      className: "min-w-[120px] text-[14px]",
     },
     {
       title: t("action"),

@@ -1,297 +1,318 @@
-import {
-  CloseOutlined,
-  DeleteOutlined,
-  DownloadOutlined,
-  EditOutlined,
-  FileTextOutlined,
-  HeartFilled,
-  HeartOutlined,
-} from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
 import {
   Button,
-  Card,
   Dropdown,
-  Image,
   Menu,
-  MenuProps,
+  message,
   Modal,
-  notification,
+  Space,
   Typography,
 } from "antd";
-import avatarDefault from "../../../../assets/avatars/avatar-default.jpg";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  DeleteOutlined,
+  EllipsisOutlined,
+  MailOutlined,
+  StarFilled,
+  StarOutlined,
+} from "@ant-design/icons";
+import { Application } from "../../../../types";
 import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 import { useSelector } from "react-redux";
-import useMomentFn from "../../../../hooks/useMomentFn";
+import { SAVE_CANDIDATE_API } from "../../../../services/modules/SaveCandidateServices";
 import { useTranslation } from "react-i18next";
 
-const { Text } = Typography;
-interface IPropsApplicationCard {
-  applied: any;
-  handleFetchData: () => void;
-  className?: any;
-  handleOpenModalEmail: () => void;
+const { Title } = Typography;
+
+// Define the RootState interface for Redux state
+interface RootState {
+  user: {
+    id: string;
+    access_token: string;
+  };
 }
 
-const ApplicationCard = ({
+// Extended Application interface to include additional properties
+interface ExtendedApplication
+  extends Omit<Application, "cv_id" | "user_id" | "job_id"> {
+  user_id: {
+    _id: string;
+    full_name: string;
+    email?: string;
+    avatar?: string;
+    total_experience_months?: number;
+  };
+  job_id: {
+    _id: string;
+    title: string;
+    description: string;
+    requirement: string[];
+  };
+  cv_id: {
+    cv_link: string;
+    cv_name: string;
+  };
+}
+
+interface ApplicationCardProps {
+  applied: ExtendedApplication;
+  handleFetchData: () => void;
+}
+
+const ApplicationCard: React.FC<ApplicationCardProps> = ({
   applied,
   handleFetchData,
-  className,
-  handleOpenModalEmail,
-}: IPropsApplicationCard) => {
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const userDetail = useSelector((state: RootState) => state.user);
   const { t } = useTranslation();
-  const { formatDate } = useMomentFn();
-  const { user_id, applied_date, job_id, save_candidates } = applied;
-  const userDetail = useSelector((state) => state.user);
-  const items: MenuProps["items"] = [
-    {
-      key: "rejected",
-      label: <span className="!text-[12px]">{t("reject")}</span>,
-      onClick: () => handleMenuClick("rejected", applied._id),
-    },
-    {
-      key: "accepted",
-      label: <span className="!text-[12px]">{t("accept")}</span>,
-      onClick: () => handleMenuClick("accepted", applied._id),
-    },
-    {
-      key: "pending",
-      label: <span className="!text-[12px]">{t("pending")}</span>,
-      onClick: () => handleMenuClick("pending", applied._id),
-    },
-    {
-      key: "withdraw",
-      label: <span className="!text-[12px]">{t("withdraw_application")}</span>,
-      onClick: () => handleWithdraw(applied?.cv_id?.cv_link || ""),
-    },
-  ];
 
-  const itemsDelete: MenuProps["items"] = [
-    {
-      key: "delete",
-      label: <span className="!text-[12px]">{t("delete")}</span>,
-      onClick: () => handleMenuClick("delete", applied._id),
-    },
-  ];
-
-  const handleWithdraw = (link_url: string) => {
-    if (!link_url) {
-      notification.error({
-        message: t("notification"),
-        description: t("link_not_exist"),
-      });
-      return;
-    }
-
-    const modal = Modal.info({
-      title: (
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <FileTextOutlined className="text-blue-500" />
-            <span className="text-lg font-semibold">{t("cv_preview")}</span>
-          </div>
-          <CloseOutlined
-            onClick={() => modal.destroy()}
-            className="text-gray-500 hover:text-red-500 cursor-pointer text-lg"
-          />
-        </div>
-      ),
-      width: "80%",
-      className: "cv-preview-modal",
-      content: (
-        <div className="bg-gray-50 rounded-lg p-4">
-          {console.log("duydeptrai link_url", link_url)}
-          {link_url !== "" ? (
-            <div className="flex flex-col gap-4">
-              <iframe
-                src={link_url}
-                className="w-full h-[70vh] rounded-lg shadow-md"
-                style={{ border: "none" }}
-                title={t("cv_preview")}
-              />
-              <div className="flex justify-end gap-2">
-                <Button
-                  icon={<DownloadOutlined />}
-                  onClick={() => {
-                    const link = document.createElement("a");
-                    link.href = link_url;
-                    link.download = applied?.cv_id?.cv_name || "CV.pdf";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  }}
-                >
-                  {t("download")}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex justify-center items-center h-[70vh]">
-              <span className="text-gray-500">{t("link_not_exist")}</span>
-            </div>
-          )}
-        </div>
-      ),
-      okButtonProps: { style: { display: "none" } },
-      closable: false,
-      maskClosable: true,
-      maskStyle: {
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-      },
-    });
-  };
-
-  const handleDelete = () => {};
-
-  const handleMenuClick = async (action: string, id: string) => {
-    try {
-      if (action === "delete") {
-        const res = await API_APPLICATION.deleteManyApplication(
-          [id],
-          user_id?.access_token
+  // Check if candidate is saved on component mount
+  useEffect(() => {
+    const checkIfSaved = async () => {
+      try {
+        const res = await SAVE_CANDIDATE_API.isSaveCandidate(
+          applied.user_id._id,
+          userDetail.id,
+          userDetail.access_token
         );
-        if (res.data) {
-          handleFetchData();
+        if (res?.data) {
+          setIsSaved(res.data.isSaved);
         }
-      } else {
-        const res = await API_APPLICATION.updateApplication(
-          id,
-          { status: action },
-          user_id?.access_token
-        );
-        if (res.data) {
-          handleFetchData();
-        }
+      } catch (error) {
+        console.error("Error checking if candidate is saved:", error);
       }
-    } catch (error) {
-      notification.error({
-        message: t("notification"),
-        description: error.message,
-      });
-    }
-  };
+    };
 
-  const handleSaveCandidate = async (userId: string) => {
+    if (userDetail.id && applied.user_id._id) {
+      checkIfSaved();
+    }
+  }, [userDetail.id, applied.user_id._id, userDetail.access_token]);
+
+  const handleAccept = async () => {
+    setIsLoading(true);
     try {
-      const res = await API_APPLICATION.saveCandidate(
-        applied?._id,
-        userId,
-        user_id?.access_token,
-        userDetail?.access_token
+      const res = await API_APPLICATION.updateApplication(
+        applied._id,
+        { status: "accepted" },
+        userDetail.access_token
       );
-      if (res.data) {
+      if (res?.data) {
+        message.success(t("accept"));
         handleFetchData();
       }
     } catch (error) {
-      notification.error({
-        message: t("notification"),
-        description: error.message,
-      });
+      console.error("Error accepting application:", error);
+      message.error(t("error"));
+    }
+    setIsLoading(false);
+  };
+
+  const handleReject = async () => {
+    setIsLoading(true);
+    try {
+      const res = await API_APPLICATION.updateApplication(
+        applied._id,
+        { status: "rejected" },
+        userDetail.access_token
+      );
+      if (res?.data) {
+        message.success(t("reject"));
+        handleFetchData();
+      }
+    } catch (error) {
+      console.error("Error rejecting application:", error);
+      message.error(t("error"));
+    }
+    setIsLoading(false);
+  };
+
+  const handlePending = async () => {
+    setIsLoading(true);
+    try {
+      const res = await API_APPLICATION.updateApplication(
+        applied._id,
+        { status: "pending" },
+        userDetail.access_token
+      );
+      if (res?.data) {
+        message.success(t("reject"));
+        handleFetchData();
+      }
+    } catch (error) {
+      console.error("Error rejecting application:", error);
+      message.error(t("error"));
+    }
+    setIsLoading(false);
+  };
+
+  const handleWithdraw = async () => {
+    setIsLoading(true);
+    try {
+      const res = await API_APPLICATION.updateApplication(
+        applied._id,
+        { status: "withdrawn" },
+        userDetail.access_token
+      );
+      if (res?.data) {
+        message.success(t("withdraw_application_success"));
+        handleFetchData();
+      }
+    } catch (error) {
+      console.error("Error withdrawing application:", error);
+      message.error(t("withdraw_application_failed"));
+    }
+    setIsLoading(false);
+  };
+
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      const res = await API_APPLICATION.deleteManyApplication(
+        [applied._id],
+        userDetail.access_token
+      );
+      if (res?.data) {
+        message.success(t("delete_success"));
+        handleFetchData();
+      }
+    } catch (error) {
+      console.error("Error deleting application:", error);
+      message.error(t("delete_failed"));
+    }
+    setIsLoading(false);
+  };
+
+  const handleSaveCandidate = async () => {
+    setIsLoading(true);
+    try {
+      const res = await SAVE_CANDIDATE_API.toggleSaveCandidate(
+        applied.user_id._id,
+        userDetail.id,
+        userDetail.access_token
+      );
+      if (res?.data) {
+        setIsSaved(!isSaved);
+        message.success(isSaved ? t("remove_bookmark") : t("add_bookmark"));
+      }
+    } catch (error) {
+      console.error("Error saving candidate:", error);
+      message.error(t("error"));
+    }
+    setIsLoading(false);
+  };
+
+  const handleMenuClick = (key: string) => {
+    switch (key) {
+      case "accept":
+        handleAccept();
+        break;
+      case "reject":
+        handleReject();
+        break;
+      case "pending":
+        handlePending();
+        break;
+      default:
+        break;
     }
   };
 
-  const onDownloadCvCandidate = () => {
-    const { primary_cv_id } = user_id;
-    const cvLink = applied?.cv_id?.cv_link;
-    const cvName = applied?.cv_id?.cv_name;
-    const link = document.createElement("a");
+  const menu = (
+    <Menu onClick={({ key }) => handleMenuClick(key)}>
+      <Menu.Item key="accept" icon={<CheckCircleOutlined />}>
+        {t("accept")}
+      </Menu.Item>
+      <Menu.Item key="reject" icon={<CloseCircleOutlined />}>
+        {t("reject")}
+      </Menu.Item>
+      <Menu.Item key="pending" icon={<DeleteOutlined />}>
+        {t("pending")}
+      </Menu.Item>
+    </Menu>
+  );
 
-    if (!cvLink && !primary_cv_id?.cv_link) {
-      notification.error({
-        message: t("notification"),
-        description: t("candidate_not_update_cv"),
-      });
-      return;
-    }
-
-    link.href = cvLink || primary_cv_id?.cv_link;
-    link.download = cvName || primary_cv_id?.cv_name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const isSaved = save_candidates && save_candidates.includes(user_id?._id);
   return (
-    <Card className={`mb-4 ${className}`}>
-      <div className="flex items-start">
-        <Image
-          src={user_id?.avatar || avatarDefault}
-          width={48}
-          height={48}
-          className="rounded-full mr-3 object-cover"
-        />
-        <div className="flex-grow ml-3 flex flex-col">
-          <Text className="font-bold text-[18px]">{user_id?.full_name}</Text>
-          <Text type="secondary" className="text-[12px]">
-            {job_id?.title}
-          </Text>
+    <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Title level={5} className="!mb-0">
+            {applied.user_id.full_name}
+          </Title>
+          <Button
+            type="text"
+            icon={
+              isSaved ? (
+                <StarFilled className="text-yellow-500" />
+              ) : (
+                <StarOutlined />
+              )
+            }
+            onClick={handleSaveCandidate}
+            loading={isLoading}
+          />
         </div>
-        <div className="flex space-x-2">
-          <Dropdown overlay={<Menu items={items} />} placement="top">
-            <Button icon={<EditOutlined />} size="small" type="default" />
+        <Space>
+          <Button
+            type="text"
+            icon={<MailOutlined />}
+            onClick={() =>
+              (window.location.href = `mailto:${applied.user_id.email}`)
+            }
+          />
+          <Dropdown overlay={menu} trigger={["click"]}>
+            <Button icon={<EllipsisOutlined />} />
           </Dropdown>
+        </Space>
+      </div>
 
-          <Dropdown overlay={<Menu items={itemsDelete} />} placement="top">
-            <Button
-              icon={<DeleteOutlined />}
-              onClick={handleDelete}
-              size="small"
-              type="default"
-              danger
-            />
-          </Dropdown>
-        </div>
-      </div>
-      <div className="mt-4 space-y-2 text-sm">
-        {user_id?.total_experience_months && user_id?.total_experience_years ? (
-          <p className="text-[12px]">
-            {t("experience")}:{" "}
-            {user_id?.total_experience_months +
-              " " +
-              t("month") +
-              " " +
-              user_id?.total_experience_years +
-              " " +
-              t("year")}
-          </p>
-        ) : (
-          <p className="text-[12px]">
-            {t("experience")}: {t("no_experience")}
-          </p>
-        )}
-        {user_id?.education_ids?.map((edu, index) => (
-          <p className="text-[12px]" key={index}>
-            {t("education")}: {edu.school}
-          </p>
-        ))}
-        <div className="flex justify-between items-center">
-          <p className="text-[12px]">
-            {t("application_date")}: {formatDate(applied_date)}
-          </p>
-          <div
-            className="cursor-pointer text-xl text-red-500"
-            onClick={() => handleSaveCandidate(user_id?._id)}
+      {applied.cv_id && (
+        <div className="mb-2">
+          <div className="text-gray-500 text-sm mb-1">{t("cv_candidate")}</div>
+          <a
+            href={applied?.cv_id?.cv_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:text-blue-700"
           >
-            {isSaved ? <HeartFilled /> : <HeartOutlined />}
-          </div>
+            {applied?.cv_id?.cv_name}
+          </a>
+        </div>
+      )}
+
+      <div className="mb-2">
+        <div className="text-gray-500 text-sm mb-1">{t("work_experience")}</div>
+        <div className="font-medium">
+          {applied?.user_id?.total_experience_months
+            ? `${Math.floor(
+                applied?.user_id?.total_experience_months / 12
+              )} ${t("year")} ${
+                applied?.user_id?.total_experience_months % 12
+              } ${t("month")}`
+            : t("no_experience")}
         </div>
       </div>
-      <Button
-        onClick={onDownloadCvCandidate}
-        icon={<DownloadOutlined />}
-        className="w-full mt-4 !border-black !text-black !hover:text-primaryColor !text-[12px]"
-      >
-        {t("download_cv")}
-      </Button>
-      {applied.status === "accepted" && (
-        <Button
-          className="!text-[12px]"
-          onClick={() => handleOpenModalEmail(applied)}
+
+      <div className="flex items-center justify-between">
+        <div className="text-gray-500 text-sm">
+          {t("application_date")}:{" "}
+          {new Date(applied.applied_date).toLocaleDateString()}
+        </div>
+        <div
+          className={`px-3 py-1 rounded-full text-sm ${
+            applied.status === "accepted"
+              ? "bg-green-100 text-green-800"
+              : applied.status === "rejected"
+              ? "bg-red-100 text-red-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
         >
-          {t("send_email")}
-        </Button>
-      )}
-    </Card>
+          {t(applied.status)}
+        </div>
+      </div>
+    </div>
   );
 };
 

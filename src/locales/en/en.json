@@ -345,6 +345,7 @@
     "notify_profile_saved": "Notify me when employers save my profile",
     "notify_rejected": "Notify me when employers reject my application",
     "profile_privacy": "Profile privacy",
+    "recent_jobs":"Recent jobs",
     "profile_privacy_description": "Your profile is now public",
     "resume_privacy": "Resume privacy",
     "resume_privacy_description": "Your resume is now private",
@@ -630,8 +631,8 @@
     "download_cv_success":"Download cv successfully",
     "download_cv":"Download cv",
     "view_profile":"View profile",
-    "remove_bookmark":"Remove bookmark",
-    "add_bookmark":"Add bookmark",
+    "remove_bookmark": "Remove candidate",
+    "add_bookmark": "Add candidate successfully",
     "more_options":"More options",
     "candidate_not_update_cv":"Candidate not update cv",
     "application_date":"Application date",
@@ -838,6 +839,7 @@
     "reject": "Reject",
     "accept": "Accept",
     "please_fix_errors": "Please fix errors",
-    "link_not_exist": "Link does not exist"
+    "link_not_exist": "Link does not exist",
+    "cv_candidate": "CV candidate"
 }
   

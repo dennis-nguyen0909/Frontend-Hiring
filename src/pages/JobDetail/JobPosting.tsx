@@ -39,17 +39,14 @@ export default function JobPosting() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const { formatDate } = useMomentFn();
-  const [jobDetail, setJobDetail] = useState<Job>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [form] = useForm();
   const navigate = useNavigate();
-  const [cvUser, setCvUser] = useState<CV[]>([]);
   const [selectedCV, setSelectedCV] = useState<CV | null>(null);
   const [like, setLike] = useState<any>();
   const [coverLetter, setCoverLetter] = useState<string>("");
   const { id } = useParams();
   const userDetail = useSelector((state: RootState) => state.user);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Fetch job details
   const { data: jobData, isLoading: isJobLoading } = useQuery({
@@ -81,6 +78,26 @@ export default function JobPosting() {
     },
     enabled: !!userDetail?._id && !!userDetail?.access_token,
   });
+
+  const { data: favoriteJobDetail, isLoading: isFavoriteJobDetailLoading } =
+    useQuery({
+      queryKey: ["favoriteJobDetail", id],
+      queryFn: async () => {
+        const res = await API_FAVORITE_JOB.getFavoriteJobDetailByUserId(
+          {
+            user_id: userDetail?._id,
+            job_id: id,
+          },
+          userDetail?.access_token
+        );
+        if (res.data) {
+          setLike(res.data);
+        } else {
+          setLike(null);
+        }
+      },
+      enabled: !!userDetail?._id && !!userDetail?.access_token,
+    });
 
   // Apply for job mutation
   const applyJobMutation = useMutation({

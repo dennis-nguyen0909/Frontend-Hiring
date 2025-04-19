@@ -98,11 +98,11 @@ export const API_APPLICATION = {
   },
   saveCandidate: async (
     applicationId: string,
-    userId: string,
+    candidateId: string,
     accessToken: string
   ) => {
     const resData = await axiosInstance.put(
-      `${APPLICATIONS}/${applicationId}/toggle-save/${userId}`,
+      `${APPLICATIONS}/${applicationId}/toggle-save/${candidateId}`,
       {},
       {
         headers: {

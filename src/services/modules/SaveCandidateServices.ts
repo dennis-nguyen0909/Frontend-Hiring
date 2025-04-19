@@ -44,4 +44,51 @@ export const SAVE_CANDIDATE_API = {
     if (resData.data) return resData.data;
     return null;
   },
+  toggleSaveCandidate: async (
+    candidateId: string,
+    employerId: string,
+    accessToken: string
+  ) => {
+    const resData = await axiosInstance.post(
+      `${SAVE_CANDIDATE}/toggle/${employerId}/${candidateId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    if (resData.data) return resData.data;
+    return null;
+  },
+  isSaveCandidate: async (
+    candidateId: string,
+    employerId: string,
+    accessToken: string
+  ) => {
+    const resData = await axiosInstance.get(
+      `${SAVE_CANDIDATE}/check/${employerId}/${candidateId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    if (resData.data) return resData.data;
+    return null;
+  },
+  employerSavedCandidate: async (employerId: string, accessToken: string) => {
+    const resData = await axiosInstance.get(
+      `${SAVE_CANDIDATE}/employer-saved/${employerId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    if (resData.data) return resData.data;
+    return null;
+  },
 };

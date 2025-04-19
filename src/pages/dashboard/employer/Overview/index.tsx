@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { RootState } from "../../../../redux/store/store";
 import { Job } from "../../../../types";
+import { Bookmark, FileText, Save } from "lucide-react";
 const { Text } = Typography;
 
 const OverviewEmployer = () => {
@@ -28,8 +29,13 @@ const OverviewEmployer = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Fetch saved candidates
-  const { data: savedCandidatesData } = useQuery({
+  // Fetch saved candidates with enhanced caching
+  const {
+    data: savedCandidatesData,
+    isLoading: isLoadingSavedCandidates,
+    isError: isErrorSavedCandidates,
+    error: savedCandidatesError,
+  } = useQuery({
     queryKey: ["savedCandidates", userDetail?.id],
     queryFn: async () => {
       if (!userDetail?.id) throw new Error("User ID is required");
@@ -45,6 +51,9 @@ const OverviewEmployer = () => {
       return res.data;
     },
     enabled: !!userDetail?.id,
+    staleTime: 5 * 60 * 1000, // Data is considered fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Cache is kept for 30 minutes
+    retry: 2, // Retry failed requests twice
   });
 
   // Fetch recent jobs
@@ -65,8 +74,13 @@ const OverviewEmployer = () => {
     enabled: !!userDetail?.id,
   });
 
-  // Fetch active jobs count
-  const { data: activeJobsCount } = useQuery({
+  // Fetch active jobs count with enhanced caching
+  const {
+    data: activeJobsCount,
+    isLoading: isLoadingActiveJobs,
+    isError: isErrorActiveJobs,
+    error: activeJobsError,
+  } = useQuery({
     queryKey: ["activeJobsCount", userDetail?.id],
     queryFn: async () => {
       if (!userDetail?.id) throw new Error("User ID is required");
@@ -77,6 +91,9 @@ const OverviewEmployer = () => {
       return res.data;
     },
     enabled: !!userDetail?.id,
+    staleTime: 5 * 60 * 1000, // Data is considered fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Cache is kept for 30 minutes
+    retry: 2, // Retry failed requests twice
   });
 
   // Animate countOpenJob
@@ -100,13 +117,13 @@ const OverviewEmployer = () => {
 
   // Animate countSaveCandidate
   useEffect(() => {
-    if (!savedCandidatesData?.meta?.total_pages) {
+    if (!savedCandidatesData?.meta?.total) {
       setCountSaveCandidate(0);
       return;
     }
 
     let start = 0;
-    const end = savedCandidatesData.meta.total_pages;
+    const end = savedCandidatesData.meta.total;
     const duration = 500;
     const intervalTime = duration / (end - start);
 
@@ -119,7 +136,25 @@ const OverviewEmployer = () => {
     }, intervalTime);
 
     return () => clearInterval(interval);
-  }, [savedCandidatesData?.meta?.total_pages]);
+  }, [savedCandidatesData?.meta?.total]);
+
+  // Display error messages if needed
+  useEffect(() => {
+    if (isErrorSavedCandidates) {
+      console.error("Error fetching saved candidates:", savedCandidatesError);
+      // You could show a toast or notification here
+    }
+
+    if (isErrorActiveJobs) {
+      console.error("Error fetching active jobs count:", activeJobsError);
+      // You could show a toast or notification here
+    }
+  }, [
+    isErrorSavedCandidates,
+    isErrorActiveJobs,
+    savedCandidatesError,
+    activeJobsError,
+  ]);
 
   const columns = [
     {
@@ -136,7 +171,7 @@ const OverviewEmployer = () => {
         </div>
       ),
       width: "30%",
-      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]",
+      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[14px]",
     },
     {
       title: t("status"),
@@ -161,7 +196,7 @@ const OverviewEmployer = () => {
         );
       },
       width: "15%",
-      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]",
+      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[14px]",
     },
     {
       title: t("number_of_applications"),
@@ -176,7 +211,7 @@ const OverviewEmployer = () => {
         </div>
       ),
       width: "20%",
-      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]",
+      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[14px]",
     },
     {
       title: t("action"),
@@ -209,7 +244,7 @@ const OverviewEmployer = () => {
         </div>
       ),
       width: "20%",
-      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[12px]",
+      className: "whitespace-nowrap overflow-hidden text-ellipsis text-[14px]",
     },
   ];
 
@@ -230,28 +265,44 @@ const OverviewEmployer = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div className="bg-blue-50 p-6 rounded-lg">
-          <div className="text-3xl font-bold !text-[20px]">{countOpenJob}</div>
+        <div className="bg-blue-50 p-4 rounded-lg relative hover:scale-105 transition-all duration-300 cursor-pointer group border border-blue-200">
+          <div className="text-2xl font-bold !text-[16px] group-hover:text-blue-700">
+            {isLoadingActiveJobs ? (
+              <span className="animate-pulse">Loading...</span>
+            ) : (
+              countOpenJob
+            )}
+          </div>
           <div className="flex items-center gap-2">
-            <FileTextOutlined />
-            <span className="!text-[12px]">{t("job_open")}</span>
+            <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg group-hover:shadow-2xl group-hover:scale-125 transition-all duration-300">
+              <FileText color="#1156b8" absoluteStrokeWidth />
+            </div>
+            <span className="!text-[12px] text-blue-700">{t("job_open")}</span>
           </div>
         </div>
-        <div className="bg-orange-50 p-6 rounded-lg">
-          <div className="text-3xl font-bold !text-[20px]">
-            {countSaveCandidate}
+        <div className="bg-orange-50 p-4 rounded-lg relative hover:scale-105 transition-all duration-300 cursor-pointer group border border-orange-200">
+          <div className="text-2xl font-bold !text-[16px] group-hover:text-orange-400">
+            {isLoadingSavedCandidates ? (
+              <span className="animate-pulse">Loading...</span>
+            ) : (
+              countSaveCandidate
+            )}
           </div>
           <div className="flex items-center gap-2">
-            <SaveOutlined />
-            <span className="!text-[12px]">{t("saved_candidate")}</span>
+            <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg transform scale-110 shadow-lg group-hover:shadow-2xl group-hover:scale-125 transition-all duration-300">
+              <Bookmark color="#ffd6a9" absoluteStrokeWidth />
+            </div>
+            <span className="!text-[12px] text-orange-300">
+              {t("saved_candidate")}
+            </span>
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
-          <p className="mb-0 text-[12px]">{t("recent_jobs")}</p>
-          <Button className="!text-[12px]" type="link">
+          <p className="mb-0 text-[14px]">{t("recent_jobs")}</p>
+          <Button className="!text-[14px]" type="link">
             {t("view_all")}
           </Button>
         </div>
@@ -265,7 +316,6 @@ const OverviewEmployer = () => {
           />
         </div>
       </div>
-
       <CustomPagination
         currentPage={recentJobsData?.meta?.current_page || currentPage}
         total={recentJobsData?.meta?.total || 0}
