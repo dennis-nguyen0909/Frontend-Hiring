@@ -482,7 +482,6 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       setIsStatusLoading(false);
     }
   };
-
   const handleStatusSubmit = async (values: Record<string, unknown>) => {
     try {
       setIsStatusLoading(true);
@@ -493,16 +492,37 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           return;
         }
 
+        // Ensure order is a valid number
+        const orderValue = parseInt(String(values.order), 10);
+        if (isNaN(orderValue)) {
+          message.error(t("order_must_be_number"));
+          setIsStatusLoading(false);
+          return;
+        }
+
         await COMPANY_STATUS_API.updateCompanyStatus(
           editingStatus._id,
-          values,
-          userDetail.id,
+          {
+            ...values,
+            order: orderValue,
+          },
           userDetail.access_token
         );
         message.success(t("update_status_success"));
       } else {
+        // Ensure order is a valid number for new status
+        const orderValue = parseInt(String(values.order), 10);
+        if (isNaN(orderValue)) {
+          message.error(t("order_must_be_number"));
+          setIsStatusLoading(false);
+          return;
+        }
+
         await COMPANY_STATUS_API.createCompanyStatus(
-          values,
+          {
+            ...values,
+            order: orderValue,
+          },
           userDetail.id,
           userDetail.access_token
         );
