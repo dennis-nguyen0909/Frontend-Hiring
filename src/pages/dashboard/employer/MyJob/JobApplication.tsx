@@ -34,7 +34,6 @@ import ApplicationCard from "../Application/ApplicationCard";
 import { ChevronsLeft } from "lucide-react";
 import { useForm } from "antd/es/form/Form";
 import { USER_API } from "../../../../services/modules/userServices";
-import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComponentSkeleton";
 import useMomentFn from "../../../../hooks/useMomentFn";
 import { useTranslation } from "react-i18next";
 import { SAVE_CANDIDATE_API } from "../../../../services/modules/SaveCandidateServices";
@@ -1077,13 +1076,13 @@ const JobApplication: React.FC<IPropJobApplication> = ({
                             </Draggable>
                           ))}
                           {provided.placeholder}
-                          {loadingStates[column.id] && (
+                          {/* {loadingStates[column.id] && (
                             <div className="flex justify-center py-4">
                               <div className="text-gray-500">
                                 Loading more...
                               </div>
                             </div>
-                          )}
+                          )} */}
                         </div>
                       ) : (
                         <Empty

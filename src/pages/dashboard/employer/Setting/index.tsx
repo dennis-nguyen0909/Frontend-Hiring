@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs } from "antd";
 import {
   UserOutlined,
@@ -11,14 +11,23 @@ import Founding from "./Founding";
 import SocialEmployer from "./Social";
 import AccountSettingEmployer from "./Account";
 import { useTranslation } from "react-i18next";
-
+import { useNavigate, useSearchParams } from "react-router-dom";
+import "./style.css";
 export default function SettingEmployer() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState("1");
+  const [activeTab, setActiveTab] = useState("company_info");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const tab = searchParams.get("tabChild");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const tabItems = [
     {
-      key: "1",
+      key: "company_info",
       label: (
         <span className="!text-black flex items-center gap-2">
           <UserOutlined />
@@ -28,7 +37,7 @@ export default function SettingEmployer() {
       content: <CompanyInfo />,
     },
     {
-      key: "2",
+      key: "founding_info",
       label: (
         <span className="!text-black flex items-center gap-2">
           <GlobalOutlined />
@@ -38,7 +47,7 @@ export default function SettingEmployer() {
       content: <Founding />,
     },
     {
-      key: "3",
+      key: "social_info",
       label: (
         <span className="!text-black flex items-center gap-2">
           <WifiOutlined />
@@ -48,7 +57,7 @@ export default function SettingEmployer() {
       content: <SocialEmployer />,
     },
     {
-      key: "4",
+      key: "account_setting",
       label: (
         <span className="!text-black flex items-center gap-2">
           <SettingOutlined />
@@ -59,6 +68,11 @@ export default function SettingEmployer() {
     },
   ];
 
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+    navigate(`/dashboard/employer?activeTab=settings&tabChild=${key}`);
+  };
+
   return (
     <div className="setting-employer bg-gray-50 min-h-screen mx-2">
       <div className="mx-auto">
@@ -66,7 +80,7 @@ export default function SettingEmployer() {
         <div className="bg-white rounded-lg shadow-sm">
           <Tabs
             activeKey={activeTab}
-            onChange={setActiveTab}
+            onChange={handleTabChange}
             items={tabItems.map(({ key, label }) => ({
               key,
               label,

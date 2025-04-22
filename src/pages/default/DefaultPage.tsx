@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
 import { useLocation, useNavigate } from "react-router-dom";
-import Footer from "../../components/Footer/Footer";
 import { useSelector } from "react-redux";
 import { getDetailUser, USER_API } from "../../services/modules/userServices";
 import AccountSetup from "../auth/Account/SetupEmployer";
@@ -35,6 +34,11 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   const dispatch = useDispatch();
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleModalRole, setVisibleModalRole] = useState<boolean>(false);
+  const [selectedType, setSelectedType] = useState<"user" | "employer" | null>(
+    null
+  );
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [roles, setRoles] = useState<Array<any>>([]);
   const navigate = useNavigate();
   const handleTabChange = (id: string) => {
     setActiveTab(id);
@@ -144,7 +148,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
             setActiveTab("contact");
             setVisible(true);
           } else {
-            navigate("/");
+            // navigate("/");
             setVisible(false);
           }
         }
@@ -153,6 +157,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
       console.error(error);
     }
   };
+
   const handleCheckRole = async () => {
     try {
       const res = await USER_API.getDetailUser(
@@ -182,11 +187,6 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [children]);
-  const [selectedType, setSelectedType] = useState<"user" | "employer" | null>(
-    null
-  );
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [roles, setRoles] = useState<Array<any>>([]);
 
   useEffect(() => {
     if (selectedType) {
@@ -199,6 +199,7 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
   const handleTypeSelect = (type: "user" | "employer") => {
     setSelectedType(type);
   };
+
   const handleContinue = async () => {
     const role = roles?.find(
       (role) => role.role_name === selectedType?.toUpperCase()
@@ -213,12 +214,14 @@ const DefaultPage: React.FC<DefaultPageProps> = ({ children, showFooter }) => {
       window.location.reload();
     }
   };
+
   const handleGetRole = async () => {
     const res = await ROLE_API.getAll(userDetail?.access_token);
     if (res.data) {
       setRoles(res.data.items);
     }
   };
+
   const renderBody = () => {
     return (
       <div className="space-y-6">

@@ -31,7 +31,9 @@ const SettingCandidate = () => {
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
-    navigate(`?tab=${key}`);
+    // navigate(`?tab=${key}`);
+    navigate(`/dashboard/candidate?activeTab=settings&tabChild=${key}`);
+    // ?activeTab=settings&tabChild=profile
   };
 
   return (
