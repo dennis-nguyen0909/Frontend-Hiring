@@ -173,8 +173,9 @@ const CompanyInfo = ({ handleTabChange }) => {
                   {t("browse_photo_or_drop_here")}
                 </p>
                 <p className="text-xs text-gray-400 mt-2">
-                  {t("banner_images_optimal_dimension_1520_400")}
-                  {t("jpeg_png")}. {t("max_photo_size_5_mb")}
+                  {t(
+                    "banner_images_optimal_dimension_1520_400jpeg_png_max_photo_size_5_mb"
+                  )}
                 </p>
               </Dragger>
             </LoadingComponent>

@@ -115,14 +115,14 @@ const CompanyInfo = () => {
         userDetail?._id,
         userDetail.access_token
       );
-      return res;
+      return { res, type };
     },
-    onSuccess: (res, variables) => {
-      if (res?.data?.url) {
+    onSuccess: (data) => {
+      if (data.res?.data?.url) {
         const params: UpdateUserParams = {
           id: userDetail?._id,
-          [variables.type === "banner" ? "banner_company" : "avatar_company"]:
-            res.data.url,
+          [data.type === "banner" ? "banner_company" : "avatar_company"]:
+            data.res.data.url,
         };
         updateUserMutation.mutate(params);
       }
@@ -130,18 +130,18 @@ const CompanyInfo = () => {
   });
 
   const handleLogoChange: UploadProps["onChange"] = (info) => {
-    if (info.file.originFileObj) {
+    if (info.fileList?.[0]?.originFileObj) {
       uploadMediaMutation.mutate({
-        file: info.file.originFileObj,
+        file: info.fileList[0].originFileObj,
         type: "logo",
       });
     }
   };
 
   const handleBannerChange: UploadProps["onChange"] = (info) => {
-    if (info.file.originFileObj) {
+    if (info.fileList?.[0]?.originFileObj) {
       uploadMediaMutation.mutate({
-        file: info.file.originFileObj,
+        file: info.fileList[0].originFileObj,
         type: "banner",
       });
     }

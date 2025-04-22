@@ -879,6 +879,11 @@
     "delete_status_failed": "Delete status failed",
     "all_candidates": "All candidates",
     "show_all_candidates": "Show all candidates",
-    "hide_all_candidates": "Hide all candidates"
+    "hide_all_candidates": "Hide all candidates",
+    "logo_image": "Logo image",
+    "banner_image": "Banner image",
+    "a_photo_larger_than_400_pixels_work_best": "A photo larger than 400 pixels works best",
+    "browse_photo_or_drop_here": "Browse photo or drop here",
+    "banner_images_optimal_dimension_1520_400jpeg_png_max_photo_size_5_mb": "Banner images optimal dimension is 1520 x 400 pixels, format jpeg or png. Max photo size is 5MB"
 }
   

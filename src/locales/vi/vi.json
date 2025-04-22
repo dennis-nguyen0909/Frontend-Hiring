@@ -886,5 +886,10 @@
   "delete_status_failed": "Xóa trạng thái thất bại",
   "all_candidates": "Tất cả ứng viên",
   "show_all_candidates": "Hiển thị tất cả ứng viên",
-  "hide_all_candidates": "Ẩn tất cả ứng viên"
+  "hide_all_candidates": "Ẩn tất cả ứng viên",
+  "logo_image": "Ảnh đại diện",
+  "banner_image": "Ảnh nền",
+  "a_photo_larger_than_400_pixels_work_best": "Ảnh có kích thước lớn hơn 400 pixels sẽ hiển thị tốt nhất",
+  "browse_photo_or_drop_here": "Chọn ảnh hoặc thả ảnh vào đây",
+  "banner_images_optimal_dimension_1520_400jpeg_png_max_photo_size_5_mb": "Ảnh nền có kích thước tối ưu là 1520 x 400 pixels, định dạng jpeg hoặc png. Kích thước tối đa là 5MB"
 }
