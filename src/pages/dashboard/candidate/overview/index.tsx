@@ -180,25 +180,24 @@ const OverViewCandidate = ({
       key: "status",
       render: (text: string) => (
         <div className="flex items-center gap-2">
-          <span>
-            {text === "Pending" ? (
-              <Circle size={14} className="text-yellow-500" />
-            ) : text === "Rejected" ? (
-              <CircleX className="text-red-500" size={14} />
+          {/* <span>
+            {text?.name === "Pending" ? (
+              <Circle size={14} style={{ color: text?.color || "#eab308" }} />
+            ) : text?.name === "Rejected" ? (
+              <CircleX size={14} style={{ color: text?.color || "#ef4444" }} />
             ) : (
-              <Check size={16} color="#2ca547" absoluteStrokeWidth />
+              <Check
+                size={16}
+                style={{ color: text?.color || "#2ca547" }}
+                absoluteStrokeWidth
+              />
             )}
-          </span>
+          </span> */}
           <span
-            className={`${
-              text === "Pending"
-                ? "text-yellow-500"
-                : text === "Rejected"
-                ? "text-red-500"
-                : "text-green-500"
-            } text-[14px]`}
+            className="text-[14px]"
+            style={{ color: text?.color || "#95a5a6" }}
           >
-            {text}
+            {text?.name}
           </span>
         </div>
       ),
@@ -306,8 +305,7 @@ const OverViewCandidate = ({
             job: t("job_not_exist"),
             location: "",
             dateApplied: new Date(item?.applied_date)?.toLocaleString(),
-            status:
-              item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
+            status: item?.status,
             icon: item?.employer_id?.avatar_company,
             is_negotiable: false,
           };
@@ -323,8 +321,7 @@ const OverViewCandidate = ({
           job_type: item?.job_id?.job_type?.key,
           expire_date: item?.job_id?.expire_date,
           dateApplied: new Date(item?.applied_date)?.toLocaleString(),
-          status:
-            item?.status?.charAt(0)?.toUpperCase() + item?.status?.slice(1),
+          status: item?.status,
           icon: item?.employer_id?.avatar_company,
           is_negotiable: item?.job_id?.is_negotiable,
         };

@@ -230,7 +230,7 @@ const Applied = () => {
       key: "status",
       render: (text: string) => (
         <div className="flex items-center gap-2">
-          <span>
+          {/* <span>
             {text === "pending" ? (
               <Circle size={14} className="text-yellow-500" />
             ) : text === "rejected" ? (
@@ -238,17 +238,12 @@ const Applied = () => {
             ) : (
               <CircleCheck size={14} className="text-green-500" />
             )}
-          </span>
+          </span> */}
           <span
-            className={`${
-              text === "pending"
-                ? "text-yellow-500"
-                : text === "rejected"
-                ? "text-red-500"
-                : "text-green-500"
-            } text-[14px]`}
+            className={`text-[14px]`}
+            style={{ color: text?.color || "#95a5a6" }}
           >
-            {capitalizeFirstLetter(text)}
+            {capitalizeFirstLetter(text?.name)}
           </span>
         </div>
       ),

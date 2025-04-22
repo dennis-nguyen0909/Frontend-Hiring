@@ -165,12 +165,13 @@ const JobApplication: React.FC<IPropJobApplication> = ({
 }) => {
   const { t } = useTranslation();
   const userDetail = useSelector((state: RootState) => state.user);
-  const [applications, setApplications] = useState<ExtendedApplication[]>([]);
+  const [applications, setApplications] = useState<
+    Record<string, ExtendedApplication[]>
+  >({});
   const [visibleEmail, setVisibleEmail] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [savedCandidateIds, setSavedCandidateIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<string>("applied_date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [meta, setMeta] = useState<Meta>({
     page: 1,
@@ -191,51 +192,56 @@ const JobApplication: React.FC<IPropJobApplication> = ({
   const [statusForm] = useForm();
   const [isStatusLoading, setIsStatusLoading] = useState(false);
   const [columns, setColumns] = useState<ColumnType[]>([]);
+  const [paginationStates, setPaginationStates] = useState<
+    Record<string, { page: number; limit: number; total: number }>
+  >({});
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
     {}
   );
   const [hasMoreStates, setHasMoreStates] = useState<Record<string, boolean>>(
     {}
   );
-  const [pageStates, setPageStates] = useState<Record<string, number>>({});
   const [showAllCandidates, setShowAllCandidates] = useState(false);
 
   const handleViewApplication = (application: ExtendedApplication) => {
     // Implement view application logic
   };
 
-  const handleDownloadCV = (cvId: string) => {
-    // Implement CV download logic
+  const handleDownloadCV = (cvLink: string) => {
+    window.open(cvLink, "_blank");
   };
 
+  console.log("sortOrder", sortOrder);
   const getCandidatesByStatusIdAndJobId = async (
     statusId: string,
     jobId: string,
-    pageSize: number,
-    current: number
+    pageSize: number = 10,
+    currentPage: number = 1,
+    sortOrder: string = "desc"
   ) => {
     try {
+      setLoadingStates((prev) => ({ ...prev, [statusId]: true }));
       const res = await API_APPLICATION.getCandidatesByStatusIdAndJobId(
         statusId,
         jobId,
         userDetail.access_token,
         pageSize,
-        current
+        currentPage,
+        sortOrder
       );
 
       if (res?.data?.items) {
         const newApplications = res.data.items
           .map((item: ApiResponseItem) => {
-            // For "All" column, use the status from the API response
             const matchingStatus =
               statusId === "all"
                 ? {
-                    _id: item.status.id,
-                    name: item.status.name,
+                    _id: item?.status.id,
+                    name: item?.status.name,
                     color: "#000000",
                     order: 0,
                     is_active: true,
-                    company_id: userDetail.id,
+                    company_id: userDetail?.id,
                     description: "",
                     createdAt: "",
                     updatedAt: "",
@@ -251,68 +257,69 @@ const JobApplication: React.FC<IPropJobApplication> = ({
             return {
               _id: item.id,
               __v: 0,
-              applied_date: item.applied_date,
-              cover_letter: item.cover_letter,
+              applied_date: item?.applied_date,
+              cover_letter: item?.cover_letter,
               employer_id: {
-                _id: userDetail.id,
-                full_name: userDetail.company_name,
+                _id: userDetail?.id,
+                full_name: userDetail?.company_name,
                 phone: "",
                 address: "",
                 role: "",
               },
               user_id: {
-                _id: item.user_id,
-                full_name: item.name,
-                email: item.email,
-                avatar: item.avatar,
-                total_experience_months: item.total_experience_months,
+                _id: item?.user_id,
+                full_name: item?.name,
+                email: item?.email,
+                avatar: item?.avatar,
+                total_experience_months: item?.total_experience_months,
               },
-              status: {
-                _id: matchingStatus._id,
-                name: matchingStatus.name,
-                color: matchingStatus.color,
-                order: matchingStatus.order,
-                is_active: matchingStatus.is_active,
-                company_id: matchingStatus.company_id,
-                description: matchingStatus.description,
-                createdAt: matchingStatus.createdAt,
-                updatedAt: matchingStatus.updatedAt,
-                __v: matchingStatus.__v,
-              },
+              status: matchingStatus,
               cv_id: {
-                cv_link: item.cv_url,
-                cv_name: "CV",
+                cv_link: item?.cv_url,
+                cv_name: item?.cv_name,
               },
               job_id: {
-                _id: item.position.id,
-                title: item.position.name,
+                _id: item?.position?.id,
+                title: item?.position?.name,
                 description: "",
                 requirement: [],
               },
-              updatedAt: item.applied_date,
-              key: item.id,
+              updatedAt: item?.applied_date,
+              key: item?.id,
             };
           })
           .filter(Boolean);
 
         setApplications((prevApplications) => {
-          if (statusId === "all") {
-            // For "All" column, replace all applications
-            return newApplications;
+          const currentStatusApplications = prevApplications[statusId] || [];
+          if (currentPage === 1) {
+            return {
+              ...prevApplications,
+              [statusId]: newApplications,
+            };
           }
-          // For other columns, filter and add new applications
-          const filteredApplications = prevApplications.filter(
-            (app) => app.status._id !== statusId
-          );
-          return [...filteredApplications, ...newApplications];
+          return {
+            ...prevApplications,
+            [statusId]: [...currentStatusApplications, ...newApplications],
+          };
         });
 
+        // Update pagination states
+        setPaginationStates((prev) => ({
+          ...prev,
+          [statusId]: {
+            page: currentPage,
+            limit: pageSize,
+            total: res.data.meta?.total || 0,
+          },
+        }));
+
+        // Update loading and hasMore states
         setLoadingStates((prev) => ({ ...prev, [statusId]: false }));
         setHasMoreStates((prev) => ({
           ...prev,
-          [statusId]: current < (res.data.meta?.total_pages || 1),
+          [statusId]: currentPage * pageSize < (res.data.meta?.total || 0),
         }));
-        setPageStates((prev) => ({ ...prev, [statusId]: current }));
       }
     } catch (err) {
       console.error("Error fetching candidates by status:", err);
@@ -327,9 +334,20 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     const jobId = selectedJob?._id || location?.id;
     if (!jobId) return;
 
-    setLoadingStates((prev) => ({ ...prev, [statusId]: true }));
-    const nextPage = (pageStates[statusId] || 0) + 1;
-    await getCandidatesByStatusIdAndJobId(statusId, jobId, 10, nextPage);
+    const currentPagination = paginationStates[statusId] || {
+      page: 1,
+      limit: 10,
+      total: 0,
+    };
+    const nextPage = currentPagination.page + 1;
+
+    await getCandidatesByStatusIdAndJobId(
+      statusId,
+      jobId,
+      currentPagination.limit,
+      nextPage,
+      sortOrder
+    );
   };
 
   useEffect(() => {
@@ -340,35 +358,36 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       // Initialize states for each status including "all"
       const initialLoadingStates: Record<string, boolean> = { all: false };
       const initialHasMoreStates: Record<string, boolean> = { all: true };
-      const initialPageStates: Record<string, number> = { all: 0 };
+      const initialPaginationStates: Record<
+        string,
+        { page: number; limit: number; total: number }
+      > = {
+        all: { page: 1, limit: 10, total: 0 },
+      };
 
       companyStatuses.forEach((status) => {
         initialLoadingStates[status._id] = false;
         initialHasMoreStates[status._id] = true;
-        initialPageStates[status._id] = 0;
+        initialPaginationStates[status._id] = { page: 1, limit: 10, total: 0 };
       });
 
       setLoadingStates(initialLoadingStates);
       setHasMoreStates(initialHasMoreStates);
-      setPageStates(initialPageStates);
-
-      // Clear existing applications
-      setApplications([]);
+      setPaginationStates(initialPaginationStates);
+      setApplications({});
 
       // Fetch initial data for each status including "all"
-      getCandidatesByStatusIdAndJobId("all", jobId, 10, 1);
+      getCandidatesByStatusIdAndJobId("all", jobId, 10, 1, sortOrder);
       companyStatuses.forEach((status) => {
-        getCandidatesByStatusIdAndJobId(status._id, jobId, 10, 1);
+        getCandidatesByStatusIdAndJobId(status._id, jobId, 10, 1, sortOrder);
       });
     }
-  }, [companyStatuses, selectedJob?._id, location?.id]);
+  }, [companyStatuses, selectedJob?._id, location?.id, sortOrder]);
 
   // Update columns when applications change
   useEffect(() => {
     const statusColumns = companyStatuses.map((status: CompanyStatus) => {
-      const statusApplications = applications.filter(
-        (app) => app.status._id === status._id
-      );
+      const statusApplications = applications[status._id] || [];
 
       return {
         id: status._id,
@@ -379,7 +398,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
         items: statusApplications,
         loading: loadingStates[status._id] || false,
         hasMore: hasMoreStates[status._id] || false,
-        page: pageStates[status._id] || 0,
+        page: paginationStates[status._id]?.page || 0,
         render: (text: string, record: ExtendedApplication) => {
           const isStatusMatch = record.status._id === status._id;
           return isStatusMatch ? (
@@ -416,10 +435,10 @@ const JobApplication: React.FC<IPropJobApplication> = ({
       dataIndex: "status",
       key: "all",
       color: "#1890ff",
-      items: applications,
+      items: applications["all"] || [],
       loading: loadingStates["all"] || false,
       hasMore: hasMoreStates["all"] || false,
-      page: pageStates["all"] || 0,
+      page: paginationStates["all"]?.page || 0,
       render: (text: string, record: ExtendedApplication) => (
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
@@ -456,7 +475,7 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     applications,
     loadingStates,
     hasMoreStates,
-    pageStates,
+    paginationStates,
     showAllCandidates,
   ]);
 
@@ -479,16 +498,31 @@ const JobApplication: React.FC<IPropJobApplication> = ({
         if (!newStatus) return;
 
         // Update UI immediately for better UX
-        const updatedApplications = applications.map((app) => {
-          if (app._id === draggableId) {
-            return {
-              ...app,
-              status: newStatus,
-            };
-          }
-          return app;
-        });
-        setApplications(updatedApplications);
+        const sourceApplications = applications[source.droppableId] || [];
+        const destinationApplications =
+          applications[destination.droppableId] || [];
+        const draggedApplication = sourceApplications.find(
+          (app) => app._id === draggableId
+        );
+
+        if (!draggedApplication) return;
+
+        const updatedSourceApplications = sourceApplications.filter(
+          (app) => app._id !== draggableId
+        );
+        const updatedDestinationApplications = [
+          ...destinationApplications,
+          {
+            ...draggedApplication,
+            status: newStatus,
+          },
+        ];
+
+        setApplications((prev) => ({
+          ...prev,
+          [source.droppableId]: updatedSourceApplications,
+          [destination.droppableId]: updatedDestinationApplications,
+        }));
 
         // Call API to update status
         await API_APPLICATION.updateApplication(
@@ -497,34 +531,58 @@ const JobApplication: React.FC<IPropJobApplication> = ({
           userDetail.access_token
         );
 
-        // Refresh data after successful update
-        await getCandidatesByStatusIdAndJobId(
-          source.droppableId,
-          selectedJob?._id || location?.id || "",
-          meta.per_page,
-          meta.current_page
-        );
-        await getCandidatesByStatusIdAndJobId(
-          destination.droppableId,
-          selectedJob?._id || location?.id || "",
-          meta.per_page,
-          meta.current_page
-        );
+        // Refresh data after successful update but maintain pagination
+        const sourcePagination = paginationStates[source.droppableId];
+        const destinationPagination = paginationStates[destination.droppableId];
+
+        if (sourcePagination) {
+          await getCandidatesByStatusIdAndJobId(
+            source.droppableId,
+            selectedJob?._id || location?.id || "",
+            sourcePagination.limit,
+            sourcePagination.page,
+            sortOrder
+          );
+        }
+
+        if (destinationPagination) {
+          await getCandidatesByStatusIdAndJobId(
+            destination.droppableId,
+            selectedJob?._id || location?.id || "",
+            destinationPagination.limit,
+            destinationPagination.page,
+            sortOrder
+          );
+        }
       } catch (err) {
         // Revert UI if API call fails
-        const revertedApplications = applications.map((app) => {
-          if (app._id === draggableId) {
-            const originalStatus = companyStatuses.find(
-              (status) => status._id === source.droppableId
-            );
-            return {
-              ...app,
-              status: originalStatus || app.status,
-            };
-          }
-          return app;
-        });
-        setApplications(revertedApplications);
+        const sourceApplications = applications[source.droppableId] || [];
+        const destinationApplications =
+          applications[destination.droppableId] || [];
+        const draggedApplication = destinationApplications.find(
+          (app) => app._id === draggableId
+        );
+
+        if (!draggedApplication) return;
+
+        const originalStatus = companyStatuses.find(
+          (status) => status._id === source.droppableId
+        );
+
+        if (!originalStatus) return;
+
+        const revertedApplication = {
+          ...draggedApplication,
+          status: originalStatus,
+        };
+
+        setApplications((prev) => ({
+          ...prev,
+          [source.droppableId]: [...sourceApplications, revertedApplication],
+          [destination.droppableId]: destinationApplications.filter(
+            (app) => app._id !== draggableId
+          ),
+        }));
 
         console.error("Error updating application status:", err);
         message.error(t("failed_to_update_status"));
@@ -532,8 +590,13 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     }
   };
 
-  const handleOpenModalEmail = (applied: ExtendedApplication) => {
+  const handleOpenModalEmail = (application: ExtendedApplication) => {
     setVisibleEmail(true);
+    // Set form values for the email modal
+    form.setFieldsValue({
+      candidateEmail: application.user_id.email,
+      candidateName: application.user_id.full_name,
+    });
   };
 
   const onFinish = async (values: Record<string, unknown>) => {
@@ -805,6 +868,18 @@ const JobApplication: React.FC<IPropJobApplication> = ({
     );
   };
 
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>, statusId: string) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    // Load more when user scrolls to bottom (with 50px threshold)
+    if (
+      scrollHeight - scrollTop - clientHeight < 50 &&
+      !loadingStates[statusId] &&
+      hasMoreStates[statusId]
+    ) {
+      loadMore(statusId);
+    }
+  };
+
   return (
     <div className="md:px-4 min-h-screen bg-gray-50">
       <div className="mb-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm sticky top-0 z-10">
@@ -959,57 +1034,64 @@ const JobApplication: React.FC<IPropJobApplication> = ({
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       className="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1"
+                      onScroll={(e) => handleScroll(e, column.id)}
                     >
-                      <LoadingComponentSkeleton isLoading={column.loading}>
-                        {column.items.length > 0 ? (
-                          <>
-                            {column.items.map((applied, index) => (
-                              <Draggable
-                                key={applied._id}
-                                draggableId={applied._id}
-                                index={index}
-                              >
-                                {(provided: DraggableProvided, snapshot) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    className={`bg-gray-50 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 hover:border-gray-200 ${
-                                      snapshot.isDragging
-                                        ? "shadow-lg border-primaryColor"
-                                        : ""
-                                    }`}
-                                  >
-                                    <ApplicationCard
-                                      applied={applied}
-                                      handleFetchData={() =>
-                                        getCandidatesByStatusIdAndJobId(
-                                          applied.status._id,
-                                          applied.job_id._id,
-                                          10,
-                                          1
-                                        )
-                                      }
-                                      companyStatuses={companyStatuses}
-                                      handleOpenModalEmail={
-                                        handleOpenModalEmail
-                                      }
-                                      savedCandidateIds={savedCandidateIds}
-                                    />
-                                  </div>
-                                )}
-                              </Draggable>
-                            ))}
-                            {provided.placeholder}
-                          </>
-                        ) : (
-                          <Empty
-                            image={Empty.PRESENTED_IMAGE_SIMPLE}
-                            description={t("no_data")}
-                            className="py-8"
-                          />
-                        )}
-                      </LoadingComponentSkeleton>
+                      {column.items.length > 0 ? (
+                        <div>
+                          {column.items.map((applied, index) => (
+                            <Draggable
+                              key={applied._id}
+                              draggableId={applied._id}
+                              index={index}
+                            >
+                              {(provided: DraggableProvided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`bg-gray-50 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 hover:border-gray-200 ${
+                                    snapshot.isDragging
+                                      ? "shadow-lg border-primaryColor"
+                                      : ""
+                                  }`}
+                                >
+                                  <ApplicationCard
+                                    applied={applied}
+                                    handleFetchData={() =>
+                                      getCandidatesByStatusIdAndJobId(
+                                        applied.status._id,
+                                        applied.job_id._id,
+                                        paginationStates[applied.status._id]
+                                          ?.limit || 10,
+                                        paginationStates[applied.status._id]
+                                          ?.page || 1,
+                                        sortOrder
+                                      )
+                                    }
+                                    companyStatuses={companyStatuses}
+                                    handleOpenModalEmail={handleOpenModalEmail}
+                                    savedCandidateIds={savedCandidateIds}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                          {loadingStates[column.id] && (
+                            <div className="flex justify-center py-4">
+                              <div className="text-gray-500">
+                                Loading more...
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <Empty
+                          image={Empty.PRESENTED_IMAGE_SIMPLE}
+                          description={t("no_data")}
+                          className="py-8"
+                        />
+                      )}
                     </div>
                   )}
                 </DroppableComponent>

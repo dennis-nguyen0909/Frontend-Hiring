@@ -188,14 +188,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       >
         {t("send_email")}
       </Menu.Item>
-      <Menu.Item
-        key="delete"
-        onClick={handleDelete}
-        icon={<DeleteOutlined />}
-        danger
-      >
-        {t("delete")}
-      </Menu.Item>
     </Menu>
   );
 

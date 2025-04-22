@@ -178,11 +178,17 @@ export const API_APPLICATION = {
     jobId: string,
     accessToken: string,
     pageSize: number,
-    current: number
+    current: number,
+    sort: string
   ) => {
     const resData = await axiosInstance.get(
       `${APPLICATIONS}/recruitment/candidates?status_id=${statusId}&job_id=${jobId}&pageSize=${pageSize}&current=${current}`,
       {
+        params: {
+          query: {
+            sort: sort,
+          },
+        },
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
