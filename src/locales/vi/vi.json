@@ -880,5 +880,11 @@
   "delete_status_confirm": "Bạn có chắc chắn muốn xóa trạng thái này?",
   "save_status_failed": "Lưu trạng thái thất bại",
   "edit_status": "Chỉnh sửa trạng thái",
-  "update_status_success": "Cập nhật trạng thái thành công"
+  "update_status_success": "Cập nhật trạng thái thành công",
+  "delete_status_confirmation": "Bạn có chắc chắn muốn xóa trạng thái này?",
+  "delete_status_success": "Xóa trạng thái thành công",
+  "delete_status_failed": "Xóa trạng thái thất bại",
+  "all_candidates": "Tất cả ứng viên",
+  "show_all_candidates": "Hiển thị tất cả ứng viên",
+  "hide_all_candidates": "Ẩn tất cả ứng viên"
 }

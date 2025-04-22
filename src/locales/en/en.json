@@ -873,6 +873,12 @@
     "default_status_cannot_edit": "Default status cannot be edited",
     "default_status_cannot_delete": "Default status cannot be deleted",
     "delete_status_confirm": "Are you sure you want to delete this status?",
-    "update_status_success": "Update status successfully"
+    "update_status_success": "Update status successfully",
+    "delete_status_confirmation": "Are you sure you want to delete this status?",
+    "delete_status_success": "Delete status successfully",
+    "delete_status_failed": "Delete status failed",
+    "all_candidates": "All candidates",
+    "show_all_candidates": "Show all candidates",
+    "hide_all_candidates": "Hide all candidates"
 }
   

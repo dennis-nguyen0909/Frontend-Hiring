@@ -77,7 +77,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const userDetail = useSelector((state: RootState) => state.user);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Check if candidate is saved on component mount
   useEffect(() => {
@@ -85,14 +85,14 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       try {
         if (
           savedCandidateIds &&
-          savedCandidateIds.includes(applied.user_id._id)
+          savedCandidateIds.includes(applied?.user_id?._id)
         ) {
           setIsSaved(true);
           return;
         }
 
         const res = await SAVE_CANDIDATE_API.isSaveCandidate(
-          applied.user_id._id,
+          applied?.user_id?._id,
           userDetail.id,
           userDetail.access_token
         );
@@ -104,12 +104,12 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       }
     };
 
-    if (userDetail.id && applied.user_id._id) {
+    if (userDetail?.id && applied?.user_id?._id) {
       checkIfSaved();
     }
   }, [
     userDetail.id,
-    applied.user_id._id,
+    applied?.user_id?._id,
     userDetail.access_token,
     savedCandidateIds,
   ]);
@@ -153,10 +153,11 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   const handleSaveCandidate = async () => {
     setIsLoading(true);
     try {
+      console.log("applied1231231", applied);
       const res = await SAVE_CANDIDATE_API.toggleSaveCandidate(
-        applied.user_id._id,
-        userDetail.id,
-        userDetail.access_token
+        applied?.user_id?._id,
+        userDetail?.id,
+        userDetail?.access_token
       );
       if (res?.data) {
         setIsSaved(!isSaved);
@@ -177,7 +178,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           onClick={() => handleStatusChange(status)}
           icon={<CheckCircleOutlined />}
         >
-          {t(status.name)}
+          {i18n.exists(status.name) ? t(status.name) : status.name}
         </Menu.Item>
       ))}
       <Menu.Item
@@ -203,7 +204,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-1.5">
           <span className="font-medium text-sm truncate max-w-[120px]">
-            {applied.user_id.full_name}
+            {applied?.user_id?.full_name}
           </span>
           <Button
             type="text"
@@ -226,7 +227,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
             size="small"
             icon={<MailOutlined className="text-xs" />}
             onClick={() =>
-              (window.location.href = `mailto:${applied.user_id.email}`)
+              (window.location.href = `mailto:${applied?.user_id?.email}`)
             }
             className="!p-0 !h-5 !w-5 hover:scale-110 transition-transform"
           />
@@ -240,7 +241,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
         </Space>
       </div>
 
-      {applied.cv_id && (
+      {applied?.cv_id && (
         <div className="mb-1.5 flex items-center">
           <span className="text-gray-500 text-xs mr-1">{t("cv")}:</span>
           <a
@@ -267,16 +268,18 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
       <div className="flex items-center justify-between">
         <span className="text-gray-500 text-xs">
-          {new Date(applied.applied_date).toLocaleDateString()}
+          {new Date(applied?.applied_date).toLocaleDateString()}
         </span>
         <span
           className={`px-2 py-0.5 rounded-full text-[10px] font-medium`}
           style={{
-            backgroundColor: applied.status.color + "15",
-            color: applied.status.color,
+            backgroundColor: applied?.status?.color + "15",
+            color: applied?.status?.color,
           }}
         >
-          {t(applied.status.name)}
+          {i18n.exists(applied?.status?.name)
+            ? t(applied?.status?.name)
+            : applied?.status?.name}
         </span>
       </div>
     </div>

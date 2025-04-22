@@ -173,4 +173,23 @@ export const API_APPLICATION = {
     if (resData.data) return resData.data;
     return null;
   },
+  getCandidatesByStatusIdAndJobId: async (
+    statusId: string,
+    jobId: string,
+    accessToken: string,
+    pageSize: number,
+    current: number
+  ) => {
+    const resData = await axiosInstance.get(
+      `${APPLICATIONS}/recruitment/candidates?status_id=${statusId}&job_id=${jobId}&pageSize=${pageSize}&current=${current}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    if (resData.data) return resData.data;
+    return null;
+  },
 };

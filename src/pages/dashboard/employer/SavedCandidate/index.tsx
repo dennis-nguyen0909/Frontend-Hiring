@@ -17,7 +17,6 @@ import LoadingComponentSkeleton from "../../../../components/Loading/LoadingComp
 import { USER_API } from "../../../../services/modules/userServices";
 import { useTranslation } from "react-i18next";
 import useMomentFn from "../../../../hooks/useMomentFn";
-import { API_APPLICATION } from "../../../../services/modules/ApplicationServices";
 
 interface SaveCandidateItem {
   _id: string;
@@ -99,12 +98,13 @@ export default function SavedCandidate() {
 
   const handleSaveCandidate = async (candidate: Candidate) => {
     try {
-      console.log("candidate", candidate);
+      console.log("candidateduydeptrai", candidate);
       const res = await SAVE_CANDIDATE_API.toggleSaveCandidate(
         candidate?._id,
         userDetail?.id || "",
         userDetail?.access_token || ""
       );
+
       if (res.data) {
         queryClient.refetchQueries({
           queryKey: ["savedCandidates", userDetail?.id],
@@ -171,15 +171,15 @@ export default function SavedCandidate() {
           <div className="flex items-center space-x-4">
             <Avatar
               size={64}
-              src={candidate.avatar}
+              src={candidate?.avatar}
               icon={<UserOutlined />}
               className="border-2 border-blue-500"
             />
             <div>
               <h3 className="text-lg font-semibold text-gray-800">
-                {candidate.full_name}
+                {candidate?.full_name}
               </h3>
-              <p className="text-gray-600">{candidate.position}</p>
+              <p className="text-gray-600">{candidate?.position}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">

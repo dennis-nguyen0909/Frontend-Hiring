@@ -490,8 +490,8 @@ export default function JobPosting() {
                   loading={isCVLoading}
                 >
                   {cvData?.map((cv) => (
-                    <Select.Option key={cv._id} value={cv._id}>
-                      {cv.cv_name}
+                    <Select.Option key={cv?._id} value={cv?._id}>
+                      {cv?.cv_name}
                     </Select.Option>
                   ))}
                 </Select>
